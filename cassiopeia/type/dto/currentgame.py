@@ -1,7 +1,7 @@
 from cassiopeia.type.dto.common import CassiopeiaDto
 
 class Rune(CassiopeiaDto):
-    def __init__(self):
+    def __init__(self, dictionary):
         # int # The count of this rune used by the participant
         self.count = dictionary["count"]
 
@@ -10,7 +10,7 @@ class Rune(CassiopeiaDto):
 
 
 class Mastery(CassiopeiaDto):
-    def __init__(self):
+    def __init__(self, dictionary):
         # long # The ID of the mastery
         self.masteryId = dictionary["masteryId"]
 
@@ -19,13 +19,13 @@ class Mastery(CassiopeiaDto):
 
 
 class Observer(CassiopeiaDto):
-    def __init__(self):
+    def __init__(self, dictionary):
         # string # Key used to decrypt the spectator grid game data for playback
         self.encryptionKey = dictionary["encryptionKey"]
 
 
 class CurrentGameParticipant(CassiopeiaDto):
-    def __init__(self):
+    def __init__(self, dictionary):
         # boolean # Flag indicating whether or not this participant is a bot
         self.bot = dictionary["bot"]
 
@@ -58,7 +58,7 @@ class CurrentGameParticipant(CassiopeiaDto):
 
 
 class BannedChampion(CassiopeiaDto):
-    def __init__(self):
+    def __init__(self, dictionary):
         # long # The ID of the banned champion
         self.championId = dictionary["championId"]
 
@@ -70,7 +70,7 @@ class BannedChampion(CassiopeiaDto):
 
 
 class CurrentGameInfo(CassiopeiaDto):
-    def __init__(self):
+    def __init__(self, dictionary):
         # list<BannedChampion> # Banned champion information
         self.bannedChampions = [BannedChampion(ban) if not isinstance(ban, BannedChampion) else ban for ban in dictionary["bannedChampions"]]
 
