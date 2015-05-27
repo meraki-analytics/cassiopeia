@@ -1,30 +1,6 @@
 from cassiopeia.type.dto.common import CassiopeiaDto
 
-class Rune(CassiopeiaDto):
-    def __init__(self, dictionary):
-        # int # The count of this rune used by the participant
-        self.count = dictionary["count"]
-
-        # long # The ID of the rune
-        self.runeId = dictionary["runeId"]
-
-
-class Mastery(CassiopeiaDto):
-    def __init__(self, dictionary):
-        # long # The ID of the mastery
-        self.masteryId = dictionary["masteryId"]
-
-        # int # The number of points put into this mastery by the user 
-        self.rank = dictionary["rank"]
-
-
-class Observer(CassiopeiaDto):
-    def __init__(self, dictionary):
-        # string # Key used to decrypt the spectator grid game data for playback
-        self.encryptionKey = dictionary["encryptionKey"]
-
-
-class CurrentGameParticipant(CassiopeiaDto):
+class Participant(CassiopeiaDto):
     def __init__(self, dictionary):
         # boolean # Flag indicating whether or not this participant is a bot
         self.bot = dictionary["bot"]
@@ -32,14 +8,8 @@ class CurrentGameParticipant(CassiopeiaDto):
         # long # The ID of the champion played by this participant
         self.championId = dictionary["championId"]
 
-        # list<Mastery> # The masteries used by this participant
-        self.masteries = [Mastery(mastery) if not isinstance(mastery, Mastery) else mastery for mastery in dictionary["masteries"]]
-
         # long # The ID of the profile icon used by this participant
         self.profileIconId = dictionary["profileIconId"]
-
-        # list<Rune> # The runes used by this participant
-        self.runes = [Rune(rune) if not isinstance(rune, Rune) else rune for rune in dictionary["runes"]]
 
         # long # The ID of the first summoner spell used by this participant
         self.spell1Id = dictionary["spell1Id"]
@@ -47,14 +17,17 @@ class CurrentGameParticipant(CassiopeiaDto):
         # long # The ID of the second summoner spell used by this participant
         self.spell2Id = dictionary["spell2Id"]
 
-        # long # The summoner ID of this participant
-        self.summonerId = dictionary["summonerId"]
-
         # string # The summoner name of this participant
         self.summonerName = dictionary["summonerName"]
 
         # long # The team ID of this participant, indicating the participant's team
         self.teamId = dictionary["teamId"]
+
+
+class Observer(CassiopeiaDto):
+    def __init__(self, dictionary):
+        # string # Key used to decrypt the spectator grid game data for playback
+        self.encryptionKey = dictionary["encryptionKey"]
 
 
 class BannedChampion(CassiopeiaDto):
@@ -69,7 +42,7 @@ class BannedChampion(CassiopeiaDto):
         self.teamId = dictionary["teamId"]
 
 
-class CurrentGameInfo(CassiopeiaDto):
+class FeaturedGameInfo(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<BannedChampion> # Banned champion information
         self.bannedChampions = [BannedChampion(ban) if not isinstance(ban, BannedChampion) else ban for ban in dictionary["bannedChampions"]]
@@ -98,8 +71,17 @@ class CurrentGameInfo(CassiopeiaDto):
         # Observer # The observer information
         self.observers = Observer(dictionary["observers"]) if not isinstance(dictionary["observers"], Observer) else dictionary["observers"]
 
-        # list<CurrentGameParticipant> # The participant information
-        self.participants = [CurrentGameParticipant(participant) if not isinstance(participant, CurrentGameParticipant) else participant for participant in dictionary["participants"]]
+        # list<Participant> # The participant information
+        self.participants = [Participant(participant) if not isinstance(participant, BannedChampion) else participant for participant in dictionary["participants"]]
 
         # string # The ID of the platform on which the game is being played
         self.platformId = dictionary["platformId"]
+
+
+class FeaturedGames(CassiopeiaDto):
+    def __init__(self, dictionary):
+        # long # The suggested interval to wait before requesting FeaturedGames again
+        self.clientRefreshInterval = dictionary["clientRefreshInterval"]
+
+        # list<FeaturedGameInfo> # The list of featured games
+        self.gameList = [FeaturedGameInfo(game) if not isinstance(game, FeaturedGameInfo) else game for game in dictionary["gameList"]]
