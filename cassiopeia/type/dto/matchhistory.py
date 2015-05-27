@@ -1,11 +1,9 @@
 from cassiopeia.type.dto.common import CassiopeiaDto
 
-
 class PlayerHistory(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<MatchSummary> # List of matches for the player
-        self.matches = dictionary["matches"]
-
+        self.matches = [MatchSummary(match) if not isinstance(match,MatchSummary) else match for match in dictionary["matches"]]
 
 
 class MatchSummary(CassiopeiaDto):
@@ -50,7 +48,6 @@ class MatchSummary(CassiopeiaDto):
         self.season = dictionary["season"]
 
 
-
 class Participant(CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Champion ID
@@ -84,7 +81,6 @@ class Participant(CassiopeiaDto):
         self.timeline = ParticipantTimeline(dictionary["timeline"]) if not isinstance(dictionary["timeline"],ParticipantTimeline) else dictionary["timeline"]
 
 
-
 class ParticipantIdentity(CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Participant ID
@@ -94,7 +90,6 @@ class ParticipantIdentity(CassiopeiaDto):
         self.player = Player(dictionary["player"]) if not isinstance(dictionary["player"],Player) else dictionary["player"]
 
 
-
 class Mastery(CassiopeiaDto):
     def __init__(self, dictionary):
         # long # Mastery ID
@@ -102,7 +97,6 @@ class Mastery(CassiopeiaDto):
 
         # long # Mastery rank
         self.rank = dictionary["rank"]
-
 
 
 class ParticipantStats(CassiopeiaDto):
@@ -297,7 +291,6 @@ class ParticipantStats(CassiopeiaDto):
         self.winner = dictionary["winner"]
 
 
-
 class ParticipantTimeline(CassiopeiaDto):
     def __init__(self, dictionary):
         # ParticipantTimelineData # Ancient golem assists per minute timeline counts
@@ -382,7 +375,6 @@ class ParticipantTimeline(CassiopeiaDto):
         self.xpPerMinDeltas = ParticipantTimelineData(dictionary["xpPerMinDeltas"]) if isinstance(dictionary["xpPerMinDeltas"],ParticipantTimelineData) else dictionary["xpPerMinDeltas"]
 
 
-
 class Rune(CassiopeiaDto):
     def __init__(self, dictionary):
         # long # Rune rank
@@ -390,7 +382,6 @@ class Rune(CassiopeiaDto):
 
         # long # Rune ID
         self.runeId = dictionary["runeId"]
-
 
 
 class Player(CassiopeiaDto):
@@ -406,7 +397,6 @@ class Player(CassiopeiaDto):
 
         # string # Summoner name
         self.summonerName = dictionary["summonerName"]
-
 
 
 class ParticipantTimelineData(CassiopeiaDto):

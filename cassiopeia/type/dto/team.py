@@ -1,6 +1,5 @@
 from cassiopeia.type.dto.common import CassiopeiaDto
 
-
 class Team(CassiopeiaDto):
     def __init__(self, dictionary):
         # long # Date that team was created specified as epoch milliseconds.
@@ -18,7 +17,7 @@ class Team(CassiopeiaDto):
         # long # Date that team last joined the ranked team queue specified as epoch milliseconds.
         self.lastJoinedRankedTeamQueueDate = dictionary["lastJoinedRankedTeamQueueDate"]
 
-        # List[MatchHistorySummary] # MatchHistory
+        # list<MatchHistorySummary> # MatchHistory
         self.matchHistory = [MatchHistorySummary(mh) if not isinstance(mh,MatchHistorySummary) else mh for mh in dictionary["matchHistory"]]
 
         # long # Date that team was last modified specified as epoch milliseconds.
@@ -39,12 +38,11 @@ class Team(CassiopeiaDto):
         # string # Tag
          self.tag = dictionary["tag"]
 
-        # List[TeamStatDetail] # 
+        # list<TeamStatDetail> # Stat details
         self.teamStatDetails = [TeamStatDetail(ts) if not isinstance(ts,TeamStatDetail) else ts for ts in dictionary["teamStatDetails"]]
 
         # long # Date that third to last member joined specified as epoch milliseconds.
         self.thirdLastJoinDate = dictionary["thirdLastJoinDate"]
-
 
 
 class MatchHistorySummary(CassiopeiaDto):
@@ -83,7 +81,6 @@ class MatchHistorySummary(CassiopeiaDto):
         self.win = dictionary["win"]
 
 
-
 class Roster(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<TeamMemberInfo> # MemberList
@@ -91,7 +88,6 @@ class Roster(CassiopeiaDto):
 
         # long # OwnerId
         self.ownerId = dictionary["ownerId"]
-
 
 
 class TeamStatDetail(CassiopeiaDto):
@@ -107,7 +103,6 @@ class TeamStatDetail(CassiopeiaDto):
 
         # int # Wins
         self.wins = dictionary["wins"]
-
 
 
 class TeamMemberInfo(CassiopeiaDto):

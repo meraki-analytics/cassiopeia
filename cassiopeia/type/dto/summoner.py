@@ -1,6 +1,5 @@
 from cassiopeia.type.dto.common import CassiopeiaDto
 
-
 class RunePages(CassiopeiaDto):
     def __init__(self, dictionary):
         # Set<RunePage> # Collection of rune pages associated with the summoner.
@@ -8,7 +7,6 @@ class RunePages(CassiopeiaDto):
 
         # long # Summoner ID.
         self.summonerId = dictionary["summonerId"]
-
 
 
 class RunePage(CassiopeiaDto):
@@ -26,7 +24,6 @@ class RunePage(CassiopeiaDto):
         self.slots = {RuneSlot(s) if not isinstance(s,RuneSlot) else s for s in dictionary["slots"]}
 
 
-
 class RuneSlot(CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Rune ID associated with the rune slot. For static information correlating to rune IDs, please refer to the LoL Static Data API.
@@ -36,7 +33,6 @@ class RuneSlot(CassiopeiaDto):
         self.runeSlotId = dictionary["runeSlotId"]
 
 
-
 class MasteryPages(CassiopeiaDto):
     def __init__(self, dictionary):
         # Set<MasteryPage> # Collection of mastery pages associated with the summoner.
@@ -44,7 +40,6 @@ class MasteryPages(CassiopeiaDto):
 
         # long # Summoner ID.
         self.summonerId = dictionary["summonerId"]
-
 
 
 class MasteryPage(CassiopeiaDto):
@@ -62,7 +57,6 @@ class MasteryPage(CassiopeiaDto):
         self.name = dictionary["name"]
 
 
-
 class Mastery(CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Mastery ID. For static information correlating to masteries, please refer to the LoL Static Data API.
@@ -70,7 +64,6 @@ class Mastery(CassiopeiaDto):
 
         # int # Mastery rank (i.e., the number of points put into this mastery).
         self.rank = dictionary["rank"]
-
 
 
 class Summoner(CassiopeiaDto):
