@@ -1,6 +1,5 @@
 from cassiopeia.type.dto.common import CassiopeiaDto
 
-
 class PlayerStatsSummaryList(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<PlayerStatsSummary> # Collection of player stats summaries associated with the summoner.
@@ -8,7 +7,6 @@ class PlayerStatsSummaryList(CassiopeiaDto):
 
         # long # Summoner ID.
         self.summonerId = dictionary["summonerId"]
-
 
 
 class PlayerStatsSummary(CassiopeiaDto):
@@ -27,7 +25,6 @@ class PlayerStatsSummary(CassiopeiaDto):
 
         # int # Number of wins for this queue type.
         self.wins = dictionary["wins"]
-
 
 
 class AggregatedStats(CassiopeiaDto):
@@ -201,7 +198,6 @@ class AggregatedStats(CassiopeiaDto):
         self.totalUnrealKills = dictionary["totalUnrealKills"]
 
 
-
 class RankedStats(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<ChampionStats> # Collection of aggregated stats summarized by champion.
@@ -214,10 +210,8 @@ class RankedStats(CassiopeiaDto):
         self.summonerId = dictionary["summonerId"]
 
 
-
 class ChampionStats(CassiopeiaDto):
     def __init__(self, dictionary):
-
         # int # Champion ID. Note that champion ID 0 represents the combined stats for all champions. For static information correlating to champion IDs, please refer to the LoL Static Data API.
         self.id = dictionary["id"]
 

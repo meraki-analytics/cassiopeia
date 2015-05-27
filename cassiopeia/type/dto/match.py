@@ -1,6 +1,5 @@
 from cassiopeia.type.dto.common import CassiopeiaDto
 
-
 class MatchDetail(CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Match map ID
@@ -49,7 +48,6 @@ class MatchDetail(CassiopeiaDto):
         self.timeline = Timeline(dictionary["timeline"]) if not isinstance(dictionary["timeline"],Timeline) else dictionary["timeline"]
 
 
-
 class Participant(CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Champion ID
@@ -83,7 +81,6 @@ class Participant(CassiopeiaDto):
         self.timeline = ParticipantTimeline(dictionary["timeline"]) if not isinstance(dictionary["timeline"],ParticipantTimeline) else dictionary["timeline"]
 
 
-
 class ParticipantIdentity(CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Participant ID
@@ -91,7 +88,6 @@ class ParticipantIdentity(CassiopeiaDto):
 
         # Player # Player information
         self.player = Player(dictionary["player"]) if not isinstance(dictionary["player"],Player) else dictionary["player"]
-
 
 
 class Team(CassiopeiaDto):
@@ -139,7 +135,6 @@ class Team(CassiopeiaDto):
         self.winner = dictionary["winner"]
 
 
-
 class Timeline(CassiopeiaDto):
     def __init__(self, dictionary):
         # long # Time between each returned frame in milliseconds.
@@ -149,7 +144,6 @@ class Timeline(CassiopeiaDto):
         self.frames = [Frame(f) if not isinstance(f,Frame) else f for f in dictionary["frames"]]
 
 
-
 class Mastery(CassiopeiaDto):
     def __init__(self, dictionary):
         # long # Mastery ID
@@ -157,7 +151,6 @@ class Mastery(CassiopeiaDto):
 
         # long # Mastery rank
         self.rank = dictionary["rank"]
-
 
 
 class ParticipantStats(CassiopeiaDto):
@@ -352,7 +345,6 @@ class ParticipantStats(CassiopeiaDto):
         self.winner = dictionary["winner"]
 
 
-
 class ParticipantTimeline(CassiopeiaDto):
     def __init__(self, dictionary):
         # ParticipantTimelineData # Ancient golem assists per minute timeline counts
@@ -437,7 +429,6 @@ class ParticipantTimeline(CassiopeiaDto):
         self.xpPerMinDeltas = ParticipantTimelineData(dictionary["xpPerMinDeltas"]) if isinstance(dictionary["xpPerMinDeltas"],ParticipantTimelineData) else dictionary["xpPerMinDeltas"]
 
 
-
 class Rune(CassiopeiaDto):
     def __init__(self, dictionary):
         # long # Rune rank
@@ -445,7 +436,6 @@ class Rune(CassiopeiaDto):
 
         # long # Rune ID
         self.runeId = dictionary["runeId"]
-
 
 
 class Player(CassiopeiaDto):
@@ -463,7 +453,6 @@ class Player(CassiopeiaDto):
         self.summonerName = dictionary["summonerName"]
 
 
-
 class BannedChampion(CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Banned champion ID
@@ -473,18 +462,16 @@ class BannedChampion(CassiopeiaDto):
         self.pickTurn = dictionary["pickTurn"]
 
 
-
 class Frame(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<Event> # List of events for this frame.
         self.events = [Event(e) if not isinstance(e,Event) else e for e in dictionary["events"]]
 
-        # dict<string, # ParticipantFrame>   Map of each participant ID to the participant's information for the frame.
+        # dict<string, ParticipantFrame> # Map of each participant ID to the participant's information for the frame.
         self.participantFrames = {i:ParticipantFrame(pf) if not isinstance(pf,ParticipantFrame) else pf for i,pf in dictionary["participantFrames"]}
 
         # long # Represents how many milliseconds into the game the frame occurred.
         self.timestamp = dictionary["timestamp"]
-
 
 
 class ParticipantTimelineData(CassiopeiaDto):
@@ -502,14 +489,13 @@ class ParticipantTimelineData(CassiopeiaDto):
         self.zeroToTen = dictionary["zeroToTen"]
 
 
-
 class Event(CassiopeiaDto):
     def __init__(self, dictionary):
         # string # The ascended type of the event. Only present if relevant. Note that CLEAR_ASCENDED refers to when a participants kills the ascended player. (Legal values: CHAMPION_ASCENDED, CLEAR_ASCENDED, MINION_ASCENDED)
         self.ascendedType = dictionary["ascendedType"]
 
         # list<int> # The assisting participant IDs of the event. Only present if relevant.
-        self.assistingParticipantIds = [int(api) if not isinstance(api,int) else api for api in dictionary["assistingParticipantIds"]]
+        self.assistingParticipantIds = dictionary["assistingParticipantIds"]
 
         # string # The building type of the event. Only present if relevant. (Legal values: INHIBITOR_BUILDING, TOWER_BUILDING)
         self.buildingType = dictionary["buildingType"]
@@ -569,7 +555,6 @@ class Event(CassiopeiaDto):
         self.wardType = dictionary["wardType"]
 
 
-
 class ParticipantFrame(CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Participant's current gold
@@ -603,11 +588,10 @@ class ParticipantFrame(CassiopeiaDto):
         self.xp = dictionary["xp"]
 
 
-
 class Position(CassiopeiaDto):
     def __init__(self, dictionary):
-        # int 
+        # int # x position
         self.x = dictionary["x"]
 
-        # int
+        # int # y position
         self.y = dictionary["y"]
