@@ -3,103 +3,104 @@ from cassiopeia.type.dto.common import CassiopeiaDto
 class Rune(CassiopeiaDto):
     def __init__(self, dictionary):
         # int # The count of this rune used by the participant
-        self.count = dictionary["count"]
+        self.count = dictionary.get("count", 0)
 
-        # long # The ID of the rune
-        self.runeId = dictionary["runeId"]
+        # int # The ID of the rune
+        self.runeId = dictionary.get("runeId", 0)
 
 
 class Mastery(CassiopeiaDto):
     def __init__(self, dictionary):
-        # long # The ID of the mastery
-        self.masteryId = dictionary["masteryId"]
+        # int # The ID of the mastery
+        self.masteryId = dictionary.get("masteryId", 0)
 
         # int # The number of points put into this mastery by the user 
-        self.rank = dictionary["rank"]
+        self.rank = dictionary.get("rank", 0)
 
 
 class Observer(CassiopeiaDto):
     def __init__(self, dictionary):
-        # string # Key used to decrypt the spectator grid game data for playback
-        self.encryptionKey = dictionary["encryptionKey"]
+        # str # Key used to decrypt the spectator grid game data for playback
+        self.encryptionKey = dictionary.get("encryptionKey", "")
 
 
 class CurrentGameParticipant(CassiopeiaDto):
     def __init__(self, dictionary):
-        # boolean # Flag indicating whether or not this participant is a bot
-        self.bot = dictionary["bot"]
+        # bool # Flag indicating whether or not this participant is a bot
+        self.bot = dictionary.get("bot", False)
 
-        # long # The ID of the champion played by this participant
-        self.championId = dictionary["championId"]
+        # int # The ID of the champion played by this participant
+        self.championId = dictionary.get("championId", 0)
 
         # list<Mastery> # The masteries used by this participant
-        self.masteries = [Mastery(mastery) if not isinstance(mastery, Mastery) else mastery for mastery in dictionary["masteries"]]
+        self.masteries = [Mastery(mastery) if not isinstance(mastery, Mastery) else mastery for mastery in dictionary.get("masteries", [])]
 
-        # long # The ID of the profile icon used by this participant
-        self.profileIconId = dictionary["profileIconId"]
+        # int # The ID of the profile icon used by this participant
+        self.profileIconId = dictionary.get("profileIconId", 0)
 
         # list<Rune> # The runes used by this participant
-        self.runes = [Rune(rune) if not isinstance(rune, Rune) else rune for rune in dictionary["runes"]]
+        self.runes = [Rune(rune) if not isinstance(rune, Rune) else rune for rune in dictionary.get("runes", [])]
 
-        # long # The ID of the first summoner spell used by this participant
-        self.spell1Id = dictionary["spell1Id"]
+        # int # The ID of the first summoner spell used by this participant
+        self.spell1Id = dictionary.get("spell1Id", 0)
 
-        # long # The ID of the second summoner spell used by this participant
-        self.spell2Id = dictionary["spell2Id"]
+        # int # The ID of the second summoner spell used by this participant
+        self.spell2Id = dictionary.get("spell2Id", 0)
 
-        # long # The summoner ID of this participant
-        self.summonerId = dictionary["summonerId"]
+        # int # The summoner ID of this participant
+        self.summonerId = dictionary.get("summonerId", 0)
 
-        # string # The summoner name of this participant
-        self.summonerName = dictionary["summonerName"]
+        # str # The summoner name of this participant
+        self.summonerName = dictionary.get("summonerName", "")
 
-        # long # The team ID of this participant, indicating the participant's team
-        self.teamId = dictionary["teamId"]
+        # int # The team ID of this participant, indicating the participant's team
+        self.teamId = dictionary.get("teamId", 0)
 
 
 class BannedChampion(CassiopeiaDto):
     def __init__(self, dictionary):
-        # long # The ID of the banned champion
-        self.championId = dictionary["championId"]
+        # int # The ID of the banned champion
+        self.championId = dictionary.get("championId", 0)
 
         # int # The turn during which the champion was banned
-        self.pickTurn = dictionary["pickTurn"]
+        self.pickTurn = dictionary.get("pickTurn", 0)
 
-        # long # The ID of the team that banned the champion
-        self.teamId = dictionary["teamId"]
+        # int # The ID of the team that banned the champion
+        self.teamId = dictionary.get("teamId", 0)
 
 
 class CurrentGameInfo(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<BannedChampion> # Banned champion information
-        self.bannedChampions = [BannedChampion(ban) if not isinstance(ban, BannedChampion) else ban for ban in dictionary["bannedChampions"]]
+        self.bannedChampions = [BannedChampion(ban) if not isinstance(ban, BannedChampion) else ban for ban in dictionary.get("bannedChampions", [])]
 
-        # long # The ID of the game
-        self.gameId = dictionary["gameId"]
+        # int # The ID of the game
+        self.gameId = dictionary.get("gameId", 0)
 
-        # long # The amount of time in seconds that has passed since the game started
-        self.gameLength = dictionary["gameLength"]
+        # int # The amount of time in seconds that has passed since the game started
+        self.gameLength = dictionary.get("gameLength", 0)
 
-        # string # The game mode (Legal values: CLASSIC, ODIN, ARAM, TUTORIAL, ONEFORALL, ASCENSION, FIRSTBLOOD, KINGPORO)
-        self.gameMode = dictionary["gameMode"]
+        # str # The game mode (Legal values: CLASSIC, ODIN, ARAM, TUTORIAL, ONEFORALL, ASCENSION, FIRSTBLOOD, KINGPORO)
+        self.gameMode = dictionary.get("gameMode", "")
 
-        # long # The queue type (queue types are documented on the Game Constants page)
-        self.gameQueueConfigId = dictionary["gameQueueConfigId"]
+        # int # The queue type (queue types are documented on the Game Constants page)
+        self.gameQueueConfigId = dictionary.get("gameQueueConfigId", 0)
 
-        # long # The game start time represented in epoch milliseconds
-        self.gameStartTime = dictionary["gameStartTime"]
+        # int # The game start time represented in epoch milliseconds
+        self.gameStartTime = dictionary.get("gameStartTime", 0)
 
-        # string # The game type (Legal values: CUSTOM_GAME, MATCHED_GAME, TUTORIAL_GAME)
-        self.gameType = dictionary["gameType"]
+        # str # The game type (Legal values: CUSTOM_GAME, MATCHED_GAME, TUTORIAL_GAME)
+        self.gameType = dictionary.get("gameType", "")
 
-        # long # The ID of the map
-        self.mapId = dictionary["mapId"]
+        # int # The ID of the map
+        self.mapId = dictionary.get("mapId", 0)
 
         # Observer # The observer information
-        self.observers = Observer(dictionary["observers"]) if not isinstance(dictionary["observers"], Observer) else dictionary["observers"]
+        val = dictionary.get("observers", None)
+        self.observers = Observer(val) if val and not isinstance(val, Observer) else val
 
         # list<CurrentGameParticipant> # The participant information
-        self.participants = [CurrentGameParticipant(participant) if not isinstance(participant, CurrentGameParticipant) else participant for participant in dictionary["participants"]]
+        self.participants = [CurrentGameParticipant(participant) if not isinstance(participant, CurrentGameParticipant) else participant for participant in dictionary.get("participants", [])]
 
-        # string # The ID of the platform on which the game is being played
-        self.platformId = dictionary["platformId"]
+        # str # The ID of the platform on which the game is being played
+        self.platformId = dictionary.get("platformId", "")
