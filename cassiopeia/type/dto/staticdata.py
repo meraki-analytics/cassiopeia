@@ -7,340 +7,348 @@ from cassiopeia.type.dto.common import CassiopeiaDto
 class BlockItem(CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Item count
-        self.count = dictionary["count"]
+        self.count = dictionary.get("count",0)
 
         # int # Item ID
-        self.id = dictionary["id"]
+        self.id = dictionary.get("id",0)
 
 
 class Block(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<BlockItem> # The items
-        self.items = [BlockItem(item) if not isinstance(item, BlockItem) else item for item in dictionary["items"]]
+        self.items = [BlockItem(item) if not isinstance(item, BlockItem) else item for item in dictionary.get("items",[])]
 
         # boolean # RecMath
-        self.recMath = dictionary["recMath"]
+        self.recMath = dictionary.get("recMath",False)
 
         # string # Type
-        self.type = dictionary["type"]
+        self.type = dictionary.get("type",'')
 
 
 class SpellVars(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<double> # Coefficients
-        self.coeff = dictionary["coeff"]
+        self.coeff = dictionary.get("coeff",[])
 
         # string # Dyn
-        self.dyn = dictionary["dyn"]
+        self.dyn = dictionary.get("dyn",'')
 
         # string # Key
-        self.key = dictionary["key"]
+        self.key = dictionary.get("key",'')
 
         # string # Link
-        self.link = dictionary["link"]
+        self.link = dictionary.get("link",'')
 
         # string # Ranks with
-        self.ranksWith = dictionary["ranksWith"]
+        self.ranksWith = dictionary.get("ranksWith",'')
 
 
 class LevelTip(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<string> # effects
-        self.effect = dictionary["effect"]
+        self.effect = dictionary.get("effect",[])
 
         # list<string> # labels
-        self.label = dictionary["label"]
+        self.label = dictionary.get("label",[])
 
 
 class Stats(CassiopeiaDto):
     def __init__(self, dictionary):
         # double # Armor
-        self.armor = dictionary["armor"]
+        self.armor = dictionary.get("armor",0.)
 
         # double # Armor per level 
-        self.armorperlevel = dictionary["armorperlevel"]
+        self.armorperlevel = dictionary.get("armorperlevel",0.)
 
         # double # Attack damage
-        self.attackdamage = dictionary["attackdamage"]
+        self.attackdamage = dictionary.get("attackdamage",0.)
 
         # double # Attack damage per level
-        self.attackdamageperlevel = dictionary["attackdamageperlevel"]
+        self.attackdamageperlevel = dictionary.get("attackdamageperlevel",0.)
 
         # double # Attack range
-        self.attackrange = dictionary["attackrange"]
+        self.attackrange = dictionary.get("attackrange",0.)
 
         # double # Attack speed offset
-        self.attackspeedoffset = dictionary["attackspeedoffset"]
+        self.attackspeedoffset = dictionary.get("attackspeedoffset",0.)
 
         # double # Attack speed per level
-        self.attackspeedperlevel = dictionary["attackspeedperlevel"]
+        self.attackspeedperlevel = dictionary.get("attackspeedperlevel",0.)
 
         # double # Crit chance
-        self.crit = dictionary["crit"]
+        self.crit = dictionary.get("crit",0.)
 
         # double # Crit change per level
-        self.critperlevel = dictionary["critperlevel"]
+        self.critperlevel = dictionary.get("critperlevel",0.)
 
         # double # Health
-        self.hp = dictionary["hp"]
+        self.hp = dictionary.get("hp",0.)
 
         # double # Health per level
-        self.hpperlevel = dictionary["hpperlevel"]
+        self.hpperlevel = dictionary.get("hpperlevel",0.)
 
         # double # Health regen
-        self.hpregen = dictionary["hpregen"]
+        self.hpregen = dictionary.get("hpregen",0.)
 
         # double # Health regen per level
-        self.hpregenperlevel = dictionary["hpregenperlevel"]
+        self.hpregenperlevel = dictionary.get("hpregenperlevel",0.)
 
         # double # Movespeed
-        self.movespeed = dictionary["movespeed"]
+        self.movespeed = dictionary.get("movespeed",0.)
 
         # double # Mana
-        self.mp = dictionary["mp"]
+        self.mp = dictionary.get("mp",0.)
 
         # double # Mana per level
-        self.mpperlevel = dictionary["mpperlevel"]
+        self.mpperlevel = dictionary.get("mpperlevel",0.)
 
         # double # Mana regen
-        self.mpregen = dictionary["mpregen"]
+        self.mpregen = dictionary.get("mpregen",0.)
 
         # double # Mana regen per level
-        self.mpregenperlevel = dictionary["mpregenperlevel"]
+        self.mpregenperlevel = dictionary.get("mpregenperlevel",0.)
 
         # double # Magic resist
-        self.spellblock = dictionary["spellblock"]
+        self.spellblock = dictionary.get("spellblock",0.)
 
         # double # Magic resist per level
-        self.spellblockperlevel = dictionary["spellblockperlevel"]
+        self.spellblockperlevel = dictionary.get("spellblockperlevel",0.)
 
 
 class Skin(CassiopeiaDto):
     def __init__(self, dictionary):
         # int # ID
-        self.id = dictionary["id"]
+        self.id = dictionary.get("id",0)
 
         # string # Name
-        self.name = dictionary["name"]
+        self.name = dictionary.get("name",'')
 
         # int # Number
-        self.num = dictionary["num"]
+        self.num = dictionary.get("num",0)
 
 
 class Recommended(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<Block> # Blocks
-        self.blocks = [Block(block) if not isinstance(block, Block) else block for block in dictionary["blocks"]]
+        self.blocks = [Block(block) if not isinstance(block, Block) else block for block in dictionary.get("blocks",[])]
 
         # string # Champion
-        self.champion = dictionary["champion"]
+        self.champion = dictionary.get("champion",'')
 
         # string # Map
-        self.map = dictionary["map"]
+        self.map = dictionary.get("map",'')
 
         # string # Mode
-        self.mode = dictionary["mode"]
+        self.mode = dictionary.get("mode",'')
 
         # boolean # Priority
-        self.priority = dictionary["priority"]
+        self.priority = dictionary.get("priority",False)
 
         # string # Title
-        self.title = dictionary["title"]
+        self.title = dictionary.get("title",'')
 
         # string # Type
-        self.type = dictionary["type"]
+        self.type = dictionary.get("type",'')
 
 
 class Image(CassiopeiaDto):
     def __init__(self, dictionary):
         # string # Full link
-        self.full = dictionary["full"]
+        self.full = dictionary.get("full",'')
 
         # string # Group
-        self.group = dictionary["group"]
+        self.group = dictionary.get("group",'')
 
         # int # H
-        self.h = dictionary["h"]
+        self.h = dictionary.get("h",0)
 
         # string # Sprite
-        self.sprite = dictionary["sprite"]
+        self.sprite = dictionary.get("sprite",'')
 
         # int # W
-        self.w = dictionary["w"]
+        self.w = dictionary.get("w",0)
 
         # int # X
-        self.x = dictionary["x"]
+        self.x = dictionary.get("x",0)
 
         # int # Y
-        self.y = dictionary["y"]
+        self.y = dictionary.get("y",0)
 
 
 class Passive(CassiopeiaDto):
     def __init__(self, dictionary):
         # string # Description
-        self.description = dictionary["description"]
+        self.description = dictionary.get("description",'')
 
         # Image # Image
-        self.image = Image(dictionary["image"]) if not isinstance(dictionary["image"], Image) else dictionary["image"]
+        val = dictionary.get("image", None)
+        self.image = Image(val) if val and not isinstance(val, Image) else val
 
         # string # Name
-        self.name = dictionary["name"]
+        self.name = dictionary.get("name",'')
 
         # string # Sanitized description
-        self.sanitizedDescription = dictionary["sanitizedDescription"]
+        self.sanitizedDescription = dictionary.get("sanitizedDescription",'')
 
 
 class Info(CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Attack rating
-        self.attack = dictionary["attack"]
+        self.attack = dictionary.get("attack",0)
 
         # int # Defense rating
-        self.defense = dictionary["defense"]
+        self.defense = dictionary.get("defense",0)
 
         # int # Difficulty rating
-        self.difficulty = dictionary["difficulty"]
+        self.difficulty = dictionary.get("difficulty",0)
 
         # int # Magic rating
-        self.magic = dictionary["magic"]
+        self.magic = dictionary.get("magic",0)
 
 
 class ChampionSpell(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<Image> # Alternate images
-        self.altimages = [Image(image) if not isinstance(image, Image) else image for image in dictionary["altimages"]]
+        val = dictionary.get("altimages", None)
+        self.altimages = Image(val) if val and not isinstance(val, Image) else val
 
         # list<double> # Cooldown
-        self.cooldown = dictionary["cooldown"]
+        self.cooldown = dictionary.get("cooldown",[])
 
         # string # Cooldown burn
-        self.cooldownBurn = dictionary["cooldownBurn"]
+        self.cooldownBurn = dictionary.get("cooldownBurn",'')
 
-        # List<int> # Cost
-        self.cost = dictionary["cost"]
+        # list<int> # Cost
+        self.cost = dictionary.get("cost",[])
 
         # string # Cost burn
-        self.costBurn = dictionary["costBurn"]
+        self.costBurn = dictionary.get("costBurn",'')
 
         # string # Cost type
-        self.costType = dictionary["costType"]
+        self.costType = dictionary.get("costType",'')
 
         # string # Description
-        self.description = dictionary["description"]
+        self.description = dictionary.get("description",'')
 
         # list<list<double>> # Effects
-        self.effect = dictionary["effect"]
+        self.effect = dictionary.get("effect",[])
 
         # list<string> # Effect burn
-        self.effectBurn = dictionary["effectBurn"]
+        self.effectBurn = dictionary.get("effectBurn",[])
 
         # Image # Image
-        self.image = Image(dictionary["image"]) if not isinstance(dictionary["image"], Image) else dictionary["image"]
+        val = dictionary.get("image", None)
+        self.image = Image(val) if val and not isinstance(val, Image) else val
 
         # string # Key
-        self.key = dictionary["key"]
+        self.key = dictionary.get("key",'')
 
         # LevelTip # Level tip
-        self.leveltip = LevelTip(dictionary["leveltip"]) if not isinstance(dictionary["leveltip"], LevelTip) else dictionary["leveltip"]
+        val = dictionary.get("leveltip", None)
+        self.leveltip = LevelTip(val) if val and not isinstance(val, LevelTip) else val
 
         # int # Max rank
-        self.maxrank = dictionary["maxrank"]
+        self.maxrank = dictionary.get("maxrank",0)
 
         # string # Name
-        self.name = dictionary["name"]
+        self.name = dictionary.get("name",'')
 
         # list<int> or 'self' # Range
-        self.range = dictionary["range"]
+        self.range = dictionary.get("range",[])
 
         # string # Range burn
-        self.rangeBurn = dictionary["rangeBurn"]
+        self.rangeBurn = dictionary.get("rangeBurn",'')
 
         # string # Resource
-        self.resource = dictionary["resource"]
+        self.resource = dictionary.get("resource",'')
 
         # string # Sanitized description
-        self.sanitizedDescription = dictionary["sanitizedDescription"]
+        self.sanitizedDescription = dictionary.get("sanitizedDescription",'')
 
         # string # Sanitized tooltip
-        self.sanitizedTooltip = dictionary["sanitizedTooltip"]
+        self.sanitizedTooltip = dictionary.get("sanitizedTooltip",'')
 
         # string # Tooltip
-        self.tooltip = dictionary["tooltip"]
+        self.tooltip = dictionary.get("tooltip",'')
 
         # list<SpellVars> # Vars
-        self.vars = [SpellVars(svars) if not isinstance(svars, SpellVars) else svars for svars in dictionary["vars"]]
+        self.vars = [SpellVars(svars) if not isinstance(svars, SpellVars) else svars for svars in dictionary.get("vars",[])]
 
 
 class Champion(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<string> # Ally tips
-        self.allytips = dictionary["allytips"]
+        self.allytips = dictionary.get("allytips",[])
 
         # string # Blurb
-        self.blurb = dictionary["blurb"]
+        self.blurb = dictionary.get("blurb",'')
 
         # list<string> # Enemy tips
-        self.enemytips = dictionary["enemytips"]
+        self.enemytips = dictionary.get("enemytips",[])
 
         # int # ID
-        self.id = dictionary["id"]
+        self.id = dictionary.get("id",0)
 
         # Image # Image
-        self.image = Image(dictionary["image"]) if not isinstance(dictionary["image"], Image) else dictionary["image"]
+        val = dictionary.get("image", None)
+        self.image = Image(val) if val and not isinstance(val, Image) else val
 
         # Info # Info
-        self.info = Info(dictionary["info"]) if not isinstance(dictionary["info"], Info) else dictionary["info"]
+        val = dictionary.get("info", None)
+        self.info = Info(val) if val and not isinstance(val, Info) else val
 
         # string # Key
-        self.key = dictionary["key"]
+        self.key = dictionary.get("key",'')
 
         # string # Lore
-        self.lore = dictionary["lore"]
+        self.lore = dictionary.get("lore",'')
 
         # string # Name
-        self.name = dictionary["name"]
+        self.name = dictionary.get("name",'')
 
         # string # Partype
-        self.partype = dictionary["partype"]
+        self.partype = dictionary.get("partype",'')
 
         # Passive # Passive
-        self.passive = Passive(dictionary["passive"]) if not isinstance(dictionary["passive"], Passive) else dictionary["passive"]
+        val = dictionary.get("passive", None)
+        self.passive = Passive(val) if val and not isinstance(val, Passive) else val
 
         # list<Recommended> # Recommended
-        self.recommended = [Recommended(rec) if not isinstance(rec, Recommended) else rec for rec in dictionary["recommended"]]
+        self.recommended = [Recommended(rec) if not isinstance(rec, Recommended) else rec for rec in dictionary.get("recommended",[])]
 
-        # List<Skin> # Skins
-        self.skins = [Skin(skin) if not isinstance(skin, Skin) else skin for skin in dictionary["skins"]]
+        # list<Skin> # Skins
+        self.skins = [Skin(skin) if val and not isinstance(skin, Skin) else skin for skin in dictionary.get("skins",[])]
 
-        # List<ChampionSpell> # Spells
-        self.spells = [ChampionSpell(spell) if not isinstance(spell, ChampionSpell) else spell for spell in dictionary["spells"]]
+        # list<ChampionSpell> # Spells
+        self.spells = [ChampionSpell(spell) if not isinstance(spell, ChampionSpell) else spell for spell in dictionary.get("spells",[])]
 
         # Stats # Stats
-        self.stats = Stats(dictionary["stats"]) if not isinstance(dictionary["stats"], Stats) else dictionary["stats"]
+        val = dictionary.get("stats", None)
+        self.stats = Stats(val) if val and not isinstance(val, Stats) else val
 
         # list<string> # Tags
-        self.tags = dictionary["tags"]
+        self.tags = dictionary.get("tags",[])
 
         # string # Title
-        self.title = dictionary["title"]
+        self.title = dictionary.get("title",'')
 
 
 class ChampionList(CassiopeiaDto):
     def __init__(self, dictionary):
         # dict<string, Champion> # Champion data
-        self.data = {name: Champion(champ) if not isinstance(champ, Champion) else champ for name, champ in dictionary["data"]}
+        self.data = {name: Champion(champ) if not isinstance(champ, Champion) else champ for name, champ in dictionary.get("data",{})}
 
         # string # Format
-        self.format = dictionary["format"]
+        self.format = dictionary.get("format",'')
 
         # dict<string, string> # Keys
-        self.keys = dictionary["keys"]
+        self.keys = dictionary.get("keys",{})
 
         # string # Type
-        self.type = dictionary["type"]
+        self.type = dictionary.get("type",'')
 
         # string # version
-        self.version = dictionary["version"]
+        self.version = dictionary.get("version",'')
 
 ##################
 # Item Endpoints #
@@ -349,409 +357,418 @@ class ChampionList(CassiopeiaDto):
 class MetaData(CassiopeiaDto):
     def __init__(self, dictionary):
         # boolean # Is a rune
-        self.isRune = dictionary["isRune"]
+        self.isRune = dictionary.get("isRune",False)
 
         # string # Tier
-        self.tier = dictionary["tier"]
+        self.tier = dictionary.get("tier",'')
 
         # string # Type
-        self.type = dictionary["type"]
+        self.type = dictionary.get("type",'')
 
 
 class Gold(CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Base price
-        self.base = dictionary["base"]
+        self.base = dictionary.get("base",0)
 
         # boolean # Is purchasable
-        self.purchasable = dictionary["purchasable"]
+        self.purchasable = dictionary.get("purchasable",False)
 
         # int # Sell price
-        self.sell = dictionary["sell"]
+        self.sell = dictionary.get("sell",0)
 
         # int # Total price
-        self.total = dictionary["total"]
+        self.total = dictionary.get("total",0)
 
 
 class BasicDataStats(CassiopeiaDto):
     def __init__(self, dictionary):
         # double # The FlatArmorMod
-        self.FlatArmorMod = dictionary["FlatArmorMod"]
+        self.FlatArmorMod = dictionary.get("FlatArmorMod",0.)
 
         # double # The FlatAttackSpeedMod
-        self.FlatAttackSpeedMod = dictionary["FlatAttackSpeedMod"]
+        self.FlatAttackSpeedMod = dictionary.get("FlatAttackSpeedMod",0.)
 
         # double # The FlatBlockMod
-        self.FlatBlockMod = dictionary["FlatBlockMod"]
+        self.FlatBlockMod = dictionary.get("FlatBlockMod",0.)
 
         # double # The FlatCritChanceMod
-        self.FlatCritChanceMod = dictionary["FlatCritChanceMod"]
+        self.FlatCritChanceMod = dictionary.get("FlatCritChanceMod",0.)
 
         # double # The FlatCritDamageMod
-        self.FlatCritDamageMod = dictionary["FlatCritDamageMod"]
+        self.FlatCritDamageMod = dictionary.get("FlatCritDamageMod",0.)
 
         # double # The FlatEXPBonus
-        self.FlatEXPBonus = dictionary["FlatEXPBonus"]
+        self.FlatEXPBonus = dictionary.get("FlatEXPBonus",0.)
 
         # double # The FlatEnergyPoolMod
-        self.FlatEnergyPoolMod = dictionary["FlatEnergyPoolMod"]
+        self.FlatEnergyPoolMod = dictionary.get("FlatEnergyPoolMod",0.)
 
         # double # The FlatEnergyRegenMod
-        self.FlatEnergyRegenMod = dictionary["FlatEnergyRegenMod"]
+        self.FlatEnergyRegenMod = dictionary.get("FlatEnergyRegenMod",0.)
 
         # double # The FlatHPPoolMod
-        self.FlatHPPoolMod = dictionary["FlatHPPoolMod"]
+        self.FlatHPPoolMod = dictionary.get("FlatHPPoolMod",0.)
 
         # double # The FlatHPRegenMod
-        self.FlatHPRegenMod = dictionary["FlatHPRegenMod"]
+        self.FlatHPRegenMod = dictionary.get("FlatHPRegenMod",0.)
 
         # double # The FlatMPPoolMod
-        self.FlatMPPoolMod = dictionary["FlatMPPoolMod"]
+        self.FlatMPPoolMod = dictionary.get("FlatMPPoolMod",0.)
 
         # double # The FlatMPRegenMod
-        self.FlatMPRegenMod = dictionary["FlatMPRegenMod"]
+        self.FlatMPRegenMod = dictionary.get("FlatMPRegenMod",0.)
 
         # double # The FlatMagicDamageMod
-        self.FlatMagicDamageMod = dictionary["FlatMagicDamageMod"]
+        self.FlatMagicDamageMod = dictionary.get("FlatMagicDamageMod",0.)
 
         # double # The FlatMovementSpeedMod
-        self.FlatMovementSpeedMod = dictionary["FlatMovementSpeedMod"]
+        self.FlatMovementSpeedMod = dictionary.get("FlatMovementSpeedMod",0.)
 
         # double # The FlatPhysicalDamageMod
-        self.FlatPhysicalDamageMod = dictionary["FlatPhysicalDamageMod"]
+        self.FlatPhysicalDamageMod = dictionary.get("FlatPhysicalDamageMod",0.)
 
         # double # The FlatSpellBlockMod
-        self.FlatSpellBlockMod = dictionary["FlatSpellBlockMod"]
+        self.FlatSpellBlockMod = dictionary.get("FlatSpellBlockMod",0.)
 
         # double # The PercentArmorMod
-        self.PercentArmorMod = dictionary["PercentArmorMod"]
+        self.PercentArmorMod = dictionary.get("PercentArmorMod",0.)
 
         # double # The PercentAttackSpeedMod
-        self.PercentAttackSpeedMod = dictionary["PercentAttackSpeedMod"]
+        self.PercentAttackSpeedMod = dictionary.get("PercentAttackSpeedMod",0.)
 
         # double # The PercentBlockMod
-        self.PercentBlockMod = dictionary["PercentBlockMod"]
+        self.PercentBlockMod = dictionary.get("PercentBlockMod",0.)
 
         # double # The PercentCritChanceMod
-        self.PercentCritChanceMod = dictionary["PercentCritChanceMod"]
+        self.PercentCritChanceMod = dictionary.get("PercentCritChanceMod",0.)
 
         # double # The PercentCritDamageMod
-        self.PercentCritDamageMod = dictionary["PercentCritDamageMod"]
+        self.PercentCritDamageMod = dictionary.get("PercentCritDamageMod",0.)
 
         # double # The PercentDodgeMod
-        self.PercentDodgeMod = dictionary["PercentDodgeMod"]
+        self.PercentDodgeMod = dictionary.get("PercentDodgeMod",0.)
 
         # double # The PercentEXPBonus
-        self.PercentEXPBonus = dictionary["PercentEXPBonus"]
+        self.PercentEXPBonus = dictionary.get("PercentEXPBonus",0.)
 
         # double # The PercentHPPoolMod
-        self.PercentHPPoolMod = dictionary["PercentHPPoolMod"]
+        self.PercentHPPoolMod = dictionary.get("PercentHPPoolMod",0.)
 
         # double # The PercentHPRegenMod
-        self.PercentHPRegenMod = dictionary["PercentHPRegenMod"]
+        self.PercentHPRegenMod = dictionary.get("PercentHPRegenMod",0.)
 
         # double # The PercentLifeStealMod
-        self.PercentLifeStealMod = dictionary["PercentLifeStealMod"]
+        self.PercentLifeStealMod = dictionary.get("PercentLifeStealMod",0.)
 
         # double # The PercentMPPoolMod
-        self.PercentMPPoolMod = dictionary["PercentMPPoolMod"]
+        self.PercentMPPoolMod = dictionary.get("PercentMPPoolMod",0.)
 
         # double # The PercentMPRegenMod
-        self.PercentMPRegenMod = dictionary["PercentMPRegenMod"]
+        self.PercentMPRegenMod = dictionary.get("PercentMPRegenMod",0.)
 
         # double # The PercentMagicDamageMod
-        self.PercentMagicDamageMod = dictionary["PercentMagicDamageMod"]
+        self.PercentMagicDamageMod = dictionary.get("PercentMagicDamageMod",0.)
 
         # double # The PercentMovementSpeedMod
-        self.PercentMovementSpeedMod = dictionary["PercentMovementSpeedMod"]
+        self.PercentMovementSpeedMod = dictionary.get("PercentMovementSpeedMod",0.)
 
         # double # The PercentPhysicalDamageMod
-        self.PercentPhysicalDamageMod = dictionary["PercentPhysicalDamageMod"]
+        self.PercentPhysicalDamageMod = dictionary.get("PercentPhysicalDamageMod",0.)
 
         # double # The PercentSpellBlockMod
-        self.PercentSpellBlockMod = dictionary["PercentSpellBlockMod"]
+        self.PercentSpellBlockMod = dictionary.get("PercentSpellBlockMod",0.)
 
         # double # The PercentSpellVampMod
-        self.PercentSpellVampMod = dictionary["PercentSpellVampMod"]
+        self.PercentSpellVampMod = dictionary.get("PercentSpellVampMod",0.)
 
         # double # The rFlatArmorModPerLevel
-        self.rFlatArmorModPerLevel = dictionary["rFlatArmorModPerLevel"]
+        self.rFlatArmorModPerLevel = dictionary.get("rFlatArmorModPerLevel",0.)
 
         # double # The rFlatArmorPenetrationMod
-        self.rFlatArmorPenetrationMod = dictionary["rFlatArmorPenetrationMod"]
+        self.rFlatArmorPenetrationMod = dictionary.get("rFlatArmorPenetrationMod",0.)
 
         # double # The rFlatArmorPenetrationModPerLevel
-        self.rFlatArmorPenetrationModPerLevel = dictionary["rFlatArmorPenetrationModPerLevel"]
+        self.rFlatArmorPenetrationModPerLevel = dictionary.get("rFlatArmorPenetrationModPerLevel",0.)
 
         # double # The rFlatCritChanceModPerLevel
-        self.rFlatCritChanceModPerLevel = dictionary["rFlatCritChanceModPerLevel"]
+        self.rFlatCritChanceModPerLevel = dictionary.get("rFlatCritChanceModPerLevel",0.)
 
         # double # The rFlatCritDamageModPerLevel
-        self.rFlatCritDamageModPerLevel = dictionary["rFlatCritDamageModPerLevel"]
+        self.rFlatCritDamageModPerLevel = dictionary.get("rFlatCritDamageModPerLevel",0.)
 
         # double # The rFlatDodgeMod
-        self.rFlatDodgeMod = dictionary["rFlatDodgeMod"]
+        self.rFlatDodgeMod = dictionary.get("rFlatDodgeMod",0.)
 
         # double # The rFlatDodgeModPerLevel
-        self.rFlatDodgeModPerLevel = dictionary["rFlatDodgeModPerLevel"]
+        self.rFlatDodgeModPerLevel = dictionary.get("rFlatDodgeModPerLevel",0.)
 
         # double # The rFlatEnergyModPerLevel
-        self.rFlatEnergyModPerLevel = dictionary["rFlatEnergyModPerLevel"]
+        self.rFlatEnergyModPerLevel = dictionary.get("rFlatEnergyModPerLevel",0.)
 
         # double # The rFlatEnergyRegenModPerLevel
-        self.rFlatEnergyRegenModPerLevel = dictionary["rFlatEnergyRegenModPerLevel"]
+        self.rFlatEnergyRegenModPerLevel = dictionary.get("rFlatEnergyRegenModPerLevel",0.)
 
         # double # The rFlatGoldPer10Mod
-        self.rFlatGoldPer10Mod = dictionary["rFlatGoldPer10Mod"]
+        self.rFlatGoldPer10Mod = dictionary.get("rFlatGoldPer10Mod",0.)
 
         # double # The rFlatHPModPerLevel
-        self.rFlatHPModPerLevel = dictionary["rFlatHPModPerLevel"]
+        self.rFlatHPModPerLevel = dictionary.get("rFlatHPModPerLevel",0.)
 
         # double # The rFlatHPRegenModPerLevel
-        self.rFlatHPRegenModPerLevel = dictionary["rFlatHPRegenModPerLevel"]
+        self.rFlatHPRegenModPerLevel = dictionary.get("rFlatHPRegenModPerLevel",0.)
 
         # double # The rFlatMPModPerLevel
-        self.rFlatMPModPerLevel = dictionary["rFlatMPModPerLevel"]
+        self.rFlatMPModPerLevel = dictionary.get("rFlatMPModPerLevel",0.)
 
         # double # The rFlatMPRegenModPerLevel
-        self.rFlatMPRegenModPerLevel = dictionary["rFlatMPRegenModPerLevel"]
+        self.rFlatMPRegenModPerLevel = dictionary.get("rFlatMPRegenModPerLevel",0.)
 
         # double # The rFlatMagicDamageModPerLevel
-        self.rFlatMagicDamageModPerLevel = dictionary["rFlatMagicDamageModPerLevel"]
+        self.rFlatMagicDamageModPerLevel = dictionary.get("rFlatMagicDamageModPerLevel",0.)
 
         # double # The rFlatMagicPenetrationMod
-        self.rFlatMagicPenetrationMod = dictionary["rFlatMagicPenetrationMod"]
+        self.rFlatMagicPenetrationMod = dictionary.get("rFlatMagicPenetrationMod",0.)
 
         # double # The rFlatMagicPenetrationModPerLevel
-        self.rFlatMagicPenetrationModPerLevel = dictionary["rFlatMagicPenetrationModPerLevel"]
+        self.rFlatMagicPenetrationModPerLevel = dictionary.get("rFlatMagicPenetrationModPerLevel",0.)
 
         # double # The rFlatMovementSpeedModPerLevel
-        self.rFlatMovementSpeedModPerLevel = dictionary["rFlatMovementSpeedModPerLevel"]
+        self.rFlatMovementSpeedModPerLevel = dictionary.get("rFlatMovementSpeedModPerLevel",0.)
 
         # double # The rFlatPhysicalDamageModPerLevel
-        self.rFlatPhysicalDamageModPerLevel = dictionary["rFlatPhysicalDamageModPerLevel"]
+        self.rFlatPhysicalDamageModPerLevel = dictionary.get("rFlatPhysicalDamageModPerLevel",0.)
 
         # double # The rFlatSpellBlockModPerLevel
-        self.rFlatSpellBlockModPerLevel = dictionary["rFlatSpellBlockModPerLevel"]
+        self.rFlatSpellBlockModPerLevel = dictionary.get("rFlatSpellBlockModPerLevel",0.)
 
         # double # The rFlatTimeDeadMod
-        self.rFlatTimeDeadMod = dictionary["rFlatTimeDeadMod"]
+        self.rFlatTimeDeadMod = dictionary.get("rFlatTimeDeadMod",0.)
 
         # double # The rFlatTimeDeadModPerLevel
-        self.rFlatTimeDeadModPerLevel = dictionary["rFlatTimeDeadModPerLevel"]
+        self.rFlatTimeDeadModPerLevel = dictionary.get("rFlatTimeDeadModPerLevel",0.)
 
         # double # The rPercentArmorPenetrationMod
-        self.rPercentArmorPenetrationMod = dictionary["rPercentArmorPenetrationMod"]
+        self.rPercentArmorPenetrationMod = dictionary.get("rPercentArmorPenetrationMod",0.)
 
         # double # The rPercentArmorPenetrationModPerLevel
-        self.rPercentArmorPenetrationModPerLevel = dictionary["rPercentArmorPenetrationModPerLevel"]
+        self.rPercentArmorPenetrationModPerLevel = dictionary.get("rPercentArmorPenetrationModPerLevel",0.)
 
         # double # The rPercentAttackSpeedModPerLevel
-        self.rPercentAttackSpeedModPerLevel = dictionary["rPercentAttackSpeedModPerLevel"]
+        self.rPercentAttackSpeedModPerLevel = dictionary.get("rPercentAttackSpeedModPerLevel",0.)
 
         # double # The rPercentCooldownMod
-        self.rPercentCooldownMod = dictionary["rPercentCooldownMod"]
+        self.rPercentCooldownMod = dictionary.get("rPercentCooldownMod",0.)
 
         # double # The rPercentCooldownModPerLevel
-        self.rPercentCooldownModPerLevel = dictionary["rPercentCooldownModPerLevel"]
+        self.rPercentCooldownModPerLevel = dictionary.get("rPercentCooldownModPerLevel",0.)
 
         # double # The rPercentMagicPenetrationMod
-        self.rPercentMagicPenetrationMod = dictionary["rPercentMagicPenetrationMod"]
+        self.rPercentMagicPenetrationMod = dictionary.get("rPercentMagicPenetrationMod",0.)
 
         # double # The rPercentMagicPenetrationModPerLevel
-        self.rPercentMagicPenetrationModPerLevel = dictionary["rPercentMagicPenetrationModPerLevel"]
+        self.rPercentMagicPenetrationModPerLevel = dictionary.get("rPercentMagicPenetrationModPerLevel",0.)
 
         # double # The rPercentMovementSpeedModPerLevel
-        self.rPercentMovementSpeedModPerLevel = dictionary["rPercentMovementSpeedModPerLevel"]
+        self.rPercentMovementSpeedModPerLevel = dictionary.get("rPercentMovementSpeedModPerLevel",0.)
 
         # double # The rPercentTimeDeadMod
-        self.rPercentTimeDeadMod = dictionary["rPercentTimeDeadMod"]
+        self.rPercentTimeDeadMod = dictionary.get("rPercentTimeDeadMod",0.)
 
         # double # The rPercentTimeDeadModPerLevel
-        self.rPercentTimeDeadModPerLevel = dictionary["rPercentTimeDeadModPerLevel"]
+        self.rPercentTimeDeadModPerLevel = dictionary.get("rPercentTimeDeadModPerLevel",0.)
 
 
 class ItemTree(CassiopeiaDto):
     def __init__(self, dictionary):
         # string # The header
-        self.header = dictionary["header"]
+        self.header = dictionary.get("header",'')
 
-        # List[string] # Tags
-        self.tags = dictionary["tags"]
+        # list[string] # Tags
+        self.tags = dictionary.get("tags",[])
 
 
 class Item(CassiopeiaDto):
     def __init__(self, dictionary):
         # string # Colloq
-        self.colloq = dictionary["colloq"]
+        self.colloq = dictionary.get("colloq",'')
 
         # boolean # Consume on full
-        self.consumeOnFull = dictionary["consumeOnFull"]
+        self.consumeOnFull = dictionary.get("consumeOnFull",False)
 
         # boolean # Consumed
-        self.consumed = dictionary["consumed"]
+        self.consumed = dictionary.get("consumed",False)
 
         # int # Depth
-        self.depth = dictionary["depth"]
+        self.depth = dictionary.get("depth",0)
 
         # string # Description
-        self.description = dictionary["description"]
+        self.description = dictionary.get("description",'')
 
         # list<string> # From
-        self.from_ = dictionary["from"]
+        self.from_ = dictionary.get("from",[])
 
         # Gold # Data Dragon includes the gold field for basic data, which is shared by both rune and item. However, only items have a gold field on them, representing their gold cost in the store. Since runes are not sold in the store, they have no gold cost.
-        self.gold = Gold(dictionary["gold"]) if not isinstance(dictionary["gold"], Gold) else dictionary["gold"]
+        val = dictionary.get("gold", None)
+        self.gold = Gold(val) if val and not isinstance(val, Gold) else val
 
         # string # Group
-        self.group = dictionary["group"]
+        self.group = dictionary.get("group",'')
 
         # boolean # Hide from all
-        self.hideFromAll = dictionary["hideFromAll"]
+        self.hideFromAll = dictionary.get("hideFromAll",False)
 
         # int # ID
-        self.id = dictionary["id"]
+        self.id = dictionary.get("id",0)
 
         # Image # Image
-        self.image = Image(dictionary["image"]) if not isinstance(dictionary["image"], Image) else dictionary["image"]
+        val = dictionary.get("image", None)
+        self.image = Image(val) if val and not isinstance(val, Image) else val
 
         # boolean # In store
-        self.inStore = dictionary["inStore"]
+        self.inStore = dictionary.get("inStore",False)
 
-        # list<string> # Into
-        self.into = dictionary["into"]
+        # list<string> # into
+        self.into = dictionary.get("into",0)
 
-        # map<string, boolean> # Maps
-        self.maps = dictionary["maps"]
+        # dict<string, boolean> # Maps
+        self.maps = dictionary.get("maps",{})
 
         # string # Name
-        self.name = dictionary["name"]
+        self.name = dictionary.get("name",'')
 
         # string # Plain text
-        self.plaintext = dictionary["plaintext"]
+        self.plaintext = dictionary.get("plaintext",'')
 
         # string # Required champion
-        self.requiredChampion = dictionary["requiredChampion"]
+        self.requiredChampion = dictionary.get("requiredChampion",'')
 
         # MetaData # Rune
-        self.rune = MetaData(dictionary["rune"]) if not isinstance(dictionary["rune"], MetaData) else dictionary["rune"]
+        val = dictionary.get("rune", None)
+        self.rune = MetaData(val) if val and not isinstance(val, MetaData) else val
 
         # string # Sanitized description
-        self.sanitizedDescription = dictionary["sanitizedDescription"]
+        self.sanitizedDescription = dictionary.get("sanitizedDescription",'')
 
         # int # Special recipe
-        self.specialRecipe = dictionary["specialRecipe"]
+        self.specialRecipe = dictionary.get("specialRecipe",0)
 
         # int # Stacks
-        self.stacks = dictionary["stacks"]
+        self.stacks = dictionary.get("stacks",0)
 
         # BasicDataStats # Stats
-        self.stats = BasicDataStats(dictionary["stats"]) if not isinstance(dictionary["stats"], BasicDataStats) else dictionary["stats"]
+        val = dictionary.get("stats", None)
+        self.stats = BasicDataStats(val) if val and not isinstance(val, BasicDataStats) else val
 
         # list<string> # Tags
-        self.tags = dictionary["tags"]
+        self.tags = dictionary.get("tags",[])
 
 
 class Group(CassiopeiaDto):
     def __init__(self, dictionary):
         # string # Max ownable of group
-        self.MaxGroupOwnable = dictionary["MaxGroupOwnable"]
+        self.MaxGroupOwnable = dictionary.get("MaxGroupOwnable",'')
 
         # string # Key
-        self.key = dictionary["key"]
+        self.key = dictionary.get("key",'')
 
 
 class BasicData(CassiopeiaDto):
     def __init__(self, dictionary):
         # string # Colloq
-        self.colloq = dictionary["colloq"]
+        self.colloq = dictionary.get("colloq",'')
 
         # boolean # Consume on full
-        self.consumeOnFull = dictionary["consumeOnFull"]
+        self.consumeOnFull = dictionary.get("consumeOnFull",False)
 
         # boolean # Consumed
-        self.consumed = dictionary["consumed"]
+        self.consumed = dictionary.get("consumed",False)
 
         # int # Depth
-        self.depth = dictionary["depth"]
+        self.depth = dictionary.get("depth",0)
 
         # string # Description
-        self.description = dictionary["description"]
+        self.description = dictionary.get("description",'')
 
         # list<string> # From
-        self.from_ = dictionary["from"]
+        self.from_ = dictionary.get("from",[])
 
         # Gold # Data Dragon includes the gold field for basic data, which is shared by both rune and item. However, only items have a gold field on them, representing their gold cost in the store. Since runes are not sold in the store, they have no gold cost.
-        self.gold = Gold(dictionary["gold"]) if not isinstance(dictionary["gold"], Gold) else dictionary["gold"]
+        val = dictionary.get("gold", None)
+        self.gold = Gold(val) if val and not isinstance(val, Gold) else val
 
         # string # Group
-        self.group = dictionary["group"]
+        self.group = dictionary.get("group",'')
 
         # boolean # Hide from all
-        self.hideFromAll = dictionary["hideFromAll"]
+        self.hideFromAll = dictionary.get("hideFromAll",False)
 
         # int # ID
-        self.id = dictionary["id"]
+        self.id = dictionary.get("id",0)
 
         # Image # Image
-        self.image = Image(dictionary["image"]) if not isinstance(dictionary["image"], Image) else dictionary["image"]
+        val = dictionary.get("image", None)
+        self.image = Image(val) if val and not isinstance(val, Image) else val
 
         # boolean # In store
-        self.inStore = dictionary["inStore"]
+        self.inStore = dictionary.get("inStore",False)
 
-        # list<string> # Into
-        self.into = dictionary["into"]
+        # list<string> # into
+        self.into = dictionary.get("into",0)
 
         # dict<string, boolean> # Maps
-        self.maps = dictionary["maps"]
+        self.maps = dictionary.get("maps",{})
 
         # string # Name
-        self.name = dictionary["name"]
+        self.name = dictionary.get("name",'')
 
         # string # Plain text
-        self.plaintext = dictionary["plaintext"]
+        self.plaintext = dictionary.get("plaintext",'')
 
         # string # Required champion
-        self.requiredChampion = dictionary["requiredChampion"]
+        self.requiredChampion = dictionary.get("requiredChampion",'')
 
         # MetaData # Rune
-        self.rune = MetaData(dictionary["rune"]) if not isinstance(dictionary["rune"], MetaData) else dictionary["rune"]
+        val = dictionary.get("rune", None)
+        self.rune = MetaData(val) if val and not isinstance(val, MetaData) else val
 
         # string # Sanitized description
-        self.sanitizedDescription = dictionary["sanitizedDescription"]
+        self.sanitizedDescription = dictionary.get("sanitizedDescription",'')
 
         # int # Special recipe
-        self.specialRecipe = dictionary["specialRecipe"]
+        self.specialRecipe = dictionary.get("specialRecipe",0)
 
         # int # Stacks
-        self.stacks = dictionary["stacks"]
+        self.stacks = dictionary.get("stacks",0)
 
         # BasicDataStats # Stats
-        self.stats = BasicDataStats(dictionary["stats"]) if not isinstance(dictionary["stats"], BasicDataStats) else dictionary["stats"]
+        val = dictionary.get("stats", None)
+        self.stats = BasicDataStats(val) if val and not isinstance(val, BasicDataStats) else val
 
-        # List[string] # Tags
-        self.tags = dictionary["tags"]
+        # list[string] # Tags
+        self.tags = dictionary.get("tags",[])
 
 
 class ItemList(CassiopeiaDto):
     def __init__(self, dictionary):
     # BasicData # Basic data
-    self.basic = BasicData(dictionary["basic"]) if not isinstance(dictionary["basic"], BasicData) else dictionary["basic"]
+    val = dictionary.get("basic", None)
+    self.basic = BasicData(val) if val and not isinstance(val, BasicData) else val
 
     # dict<string, Item> # Item data
-    self.data = {id_: Item(item) if not isinstance(item, Item) else item for id_, item in dictionary["data"]}
+    self.data = {id_: Item(item) if not isinstance(item, Item) else item for id_, item in dictionary.get("data",{})}
 
     # list<Group> # Groups
-    self.groups = [Group(group) if not isinstance(group, Group) else group for group in dictionary["groups"]]
+    self.groups = [Group(group) if not isinstance(group, Group) else group for group in dictionary.get("groups",[])]
 
     # list<ItemTree> # Item tree
-    self.tree = [ItemTree(tree) if not isinstance(tree, ItemTree) else tree for tree in dictionary["tree"]]
+    self.tree = [ItemTree(tree) if not isinstance(tree, ItemTree) else tree for tree in dictionary.get("tree",[])]
 
     # string # Type
-    self.type = dictionary["type"]
+    self.type = dictionary.get("type",'')
 
     # string # Version
-    self.version = dictionary["version"]
+    self.version = dictionary.get("version",'')
 
 ######################
 # Language Endpoints #
@@ -760,13 +777,13 @@ class ItemList(CassiopeiaDto):
 class LanguageStrings(CassiopeiaDto):
     def __init__(self, dictionary):
         # dict<string, string> # Language string data
-        self.data = dictionary["data"]
+        self.data = dictionary.get("data",{})
 
         # string # Type
-        self.type = dictionary["type"]
+        self.type = dictionary.get("type",'')
 
         # string # Version
-        self.version = dictionary["version"]
+        self.version = dictionary.get("version",'')
 
 ################
 # Map Endpoint #
@@ -775,28 +792,29 @@ class LanguageStrings(CassiopeiaDto):
 class MapDetails(CassiopeiaDto):
     def __init__(self, dictionary):
         # Image # Image
-        self.image = Image(dictionary["image"]) if not isinstance(dictionary["image"], Image) else dictionary["image"]
+        val = dictionary.get("image", None)
+        self.image = Image(val) if val and not isinstance(val, Image) else val
 
         # long # ID
-        self.mapId = dictionary["mapId"]
+        self.mapId = dictionary.get("mapId",0)
 
         # string # Name
-        self.mapName = dictionary["mapName"]
+        self.mapName = dictionary.get("mapName",'')
 
         # list<long> # Items that can't be purchased on this map (IDs)
-        self.unpurchasableItemList = dictionary["unpurchasableItemList"]
+        self.unpurchasableItemList = dictionary.get("unpurchasableItemList",[])
 
 
 class MapData(CassiopeiaDto):
     def __init__(self, dictionary):
         # dict<string, MapDetails> # Map data
-        self.data = {id_: MapDetails(map_) if not isinstance(map_, MapDetails) else map_ for id_, map_ in dictionary["data"]}
+        self.data = {id_: MapDetails(map_) if not isinstance(map_, MapDetails) else map_ for id_, map_ in dictionary.get("data",{})}
 
         # string # Type
-        self.type = dictionary["type"]
+        self.type = dictionary.get("type",'')
 
         # string # Version
-        self.version = dictionary["version"]
+        self.version = dictionary.get("version",'')
 
 #####################
 # Mastery Endpoints #
@@ -805,70 +823,72 @@ class MapData(CassiopeiaDto):
 class MasteryTreeItem(CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Mastery ID
-        self.masteryId = dictionary["masteryId"]
+        self.masteryId = dictionary.get("masteryId",0)
 
         # string # Prerequisites
-        self.prereq = dictionary["prereq"]
+        self.prereq = dictionary.get("prereq",'')
 
 
 class MasteryTreeList(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<MasteryTreeItem> # Mastery tree items
-        self.masteryTreeItems = [MasteryTreeItem(item) if not isinstance(item, MasteryTreeItem) else item for item in dictionary["masteryTreeItems"]]
+        self.masteryTreeItems = [MasteryTreeItem(item) if not isinstance(item, MasteryTreeItem) else item for item in dictionary.get("masteryTreeItems",[])]
 
 
 class MasteryTree(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<MasteryTreeList> # Defense tree
-        self.Defense = [MasteryTreeList(list_) if not isinstance(list_, MasteryTreeList) else list_ for list_ in dictionary["Defense"]]
+        self.Defense = [MasteryTreeList(list_) if not isinstance(list_, MasteryTreeList) else list_ for list_ in dictionary.get("Defense",[])]
 
         # list<MasteryTreeList> # Offense tree
-        self.Offense = [MasteryTreeList(list_) if not isinstance(list_, MasteryTreeList) else list_ for list_ in dictionary["Offense"]]
+        self.Offense = [MasteryTreeList(list_) if not isinstance(list_, MasteryTreeList) else list_ for list_ in dictionary.get("Offense",[])]
 
         # list<MasteryTreeList> # Utility tree
-        self.Utility = [MasteryTreeList(list_) if not isinstance(list_, MasteryTreeList) else list_ for list_ in dictionary["Utility"]]
+        self.Utility = [MasteryTreeList(list_) if not isinstance(list_, MasteryTreeList) else list_ for list_ in dictionary.get("Utility",[])]
 
 
 class Mastery(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<string> # Description
-        self.description = dictionary["description"]
+        self.description = dictionary.get("description",[])
 
         # int # ID
-        self.id = dictionary["id"]
+        self.id = dictionary.get("id",0)
 
         # Image # Image
-        self.image = Image(dictionary["image"]) if not isinstance(dictionary["image"], Image) else dictionary["image"]
+        val = dictionary.get("image", None)
+        self.image = Image(val) if val and not isinstance(val, Image) else val
 
         # string # Legal values: Defense, Offense, Utility
-        self.masteryTree = dictionary["masteryTree"]
+        self.masteryTree = dictionary.get("masteryTree",'')
 
         # string # Name
-        self.name = dictionary["name"]
+        self.name = dictionary.get("name",'')
 
         # string # Prerequisites
-        self.prereq = dictionary["prereq"]
+        self.prereq = dictionary.get("prereq",'')
 
         # int # Ranks
-        self.ranks = dictionary["ranks"]
+        self.ranks = dictionary.get("ranks",0)
 
         # list<string> # Sanitized description
-        self.sanitizedDescription = dictionary["sanitizedDescription"]
+        self.sanitizedDescription = dictionary.get("sanitizedDescription",[])
 
 
 class MasteryList(CassiopeiaDto):
     def __init__(self, dictionary):
         # dict<string, Mastery> # Mastery data
-        self.data = {id_: Mastery(mastery) if not isinstance(mastery, Mastery) else mastery for id_, mastery in dictionary["data"]}
+        self.data = {id_: Mastery(mastery) if not isinstance(mastery, Mastery) else mastery for id_, mastery in dictionary.get("data",{})}
 
         # MasteryTree # Mastery tree
-        self.tree = MasteryTree(dictionary["tree"]) if not isinstance(dictionary["tree"], MasteryTree) else dictionary["tree"]
+        val = dictionary.get("tree", None)
+        self.tree = MasteryTree(val) if val and not isinstance(val, MasteryTree) else val
 
         # string # Type
-        self.type = dictionary["type"]
+        self.type = dictionary.get("type",'')
 
         # string # Version
-        self.version = dictionary["version"]
+        self.version = dictionary.get("version",'')
 
 ##################
 # Realm Endpoint #
@@ -877,31 +897,31 @@ class MasteryList(CassiopeiaDto):
 class Realm(CassiopeiaDto):
     def __init__(self, dictionary):
         # string # The base CDN url.
-        self.cdn = dictionary["cdn"]
+        self.cdn = dictionary.get("cdn",'')
 
         # string # Latest changed version of Dragon Magic's css file.
-        self.css = dictionary["css"]
+        self.css = dictionary.get("css",'')
 
         # string # Latest changed version of Dragon Magic.
-        self.dd = dictionary["dd"]
+        self.dd = dictionary.get("dd",'')
 
         # string # Default language for this realm.
-        self.l = dictionary["l"]
+        self.l = dictionary.get("l",'')
 
         # string # Legacy script mode for IE6 or older.
-        self.lg = dictionary["lg"]
+        self.lg = dictionary.get("lg",'')
 
         # dict<string, string> # Latest changed version for each data type listed.
-        self.n = dictionary["n"]
+        self.n = dictionary.get("n",{})
 
         # int # Special behavior number identifying the largest profileicon id that can be used under 500. Any profileicon that is requested between this number and 500 should be mapped to 0.
-        self.profileiconmax = dictionary["profileiconmax"]
+        self.profileiconmax = dictionary.get("profileiconmax",0)
 
         # string # Additional api data drawn from other sources that may be related to data dragon functionality.
-        self.store = dictionary["store"]
+        self.store = dictionary.get("store",'')
 
         # string # Current version of this file for this realm.
-        self.v = dictionary["v"]
+        self.v = dictionary.get("v",'')
 
 ##################
 # Rune Endpoints #
@@ -910,85 +930,89 @@ class Realm(CassiopeiaDto):
 class Rune(CassiopeiaDto):
     def __init__(self, dictionary):
         # string # Colloq
-        self.colloq = dictionary["colloq"]
+        self.colloq = dictionary.get("colloq",'')
 
         # boolean # Consume on full
-        self.consumeOnFull = dictionary["consumeOnFull"]
+        self.consumeOnFull = dictionary.get("consumeOnFull",False)
 
         # boolean # Consumed
-        self.consumed = dictionary["consumed"]
+        self.consumed = dictionary.get("consumed",False)
 
         # int # Depth
-        self.depth = dictionary["depth"]
+        self.depth = dictionary.get("depth",0)
 
         # string # Description
-        self.description = dictionary["description"]
+        self.description = dictionary.get("description",'')
 
         # list<string> # From
-        self.from_ = dictionary["from"]
+        self.from_ = dictionary.get("from",[])
 
         # string # Group
-        self.group = dictionary["group"]
+        self.group = dictionary.get("group",'')
 
         # boolean # Hide from all
-        self.hideFromAll = dictionary["hideFromAll"]
+        self.hideFromAll = dictionary.get("hideFromAll",False)
 
         # int # ID
-        self.id = dictionary["id"]
+        self.id = dictionary.get("id",0)
 
         # Image # Image
-        self.image = Image(dictionary["image"]) if not isinstance(dictionary["image"], Image) else dictionary["image"]
+        val = dictionary.get("image", None)
+        self.image = Image(val) if val and not isinstance(val, Image) else val
 
         # boolean # In store
-        self.inStore = dictionary["inStore"]
+        self.inStore = dictionary.get("inStore",False)
 
-        # list<string> # Into
-        self.into = dictionary["into"]
+        # list<string> # into
+        self.into = dictionary.get("into",0)
 
         # dict<string, boolean> # Maps
-        self.maps = dictionary["maps"]
+        self.maps = dictionary.get("maps",{})
 
         # string # Name
-        self.name = dictionary["name"]
+        self.name = dictionary.get("name",'')
 
         # string # Plain text
-        self.plaintext = dictionary["plaintext"]
+        self.plaintext = dictionary.get("plaintext",'')
 
         # string # Required champion
-        self.requiredChampion = dictionary["requiredChampion"]
+        self.requiredChampion = dictionary.get("requiredChampion",'')
 
         # MetaData # Rune
-        self.rune = MetaData(dictionary["rune"]) if not isinstance(dictionary["rune"], MetaData) else dictionary["rune"]
+        val = dictionary.get("rune", None)
+        self.rune = MetaData(val) if val and not isinstance(val, MetaData) else val
 
         # string # Sanitized description
-        self.sanitizedDescription = dictionary["sanitizedDescription"]
+        self.sanitizedDescription = dictionary.get("sanitizedDescription",'')
 
         # int # Special recipe
-        self.specialRecipe = dictionary["specialRecipe"]
+        self.specialRecipe = dictionary.get("specialRecipe",0)
 
         # int # Stacks
-        self.stacks = dictionary["stacks"]
+        self.stacks = dictionary.get("stacks",0)
 
         # BasicDataStats # Stats
-        self.stats = BasicDataStats(dictionary["stats"]) if not isinstance(dictionary["stats"], BasicDataStats) else dictionary["stats"]
+        val = dictionary.get("stats", None)
+        self.stats = BasicDataStats(val) if val and not isinstance(val, BasicDataStats) else val
 
         # list<string> # Tags
-        self.tags = dictionary["tags"]
+        self.tags = dictionary.get("tags",[])
 
 
 class RuneList(CassiopeiaDto):
     def __init__(self, dictionary):
         # BasicData # Basic data
-        self.basic = BasicData(dictionary["basic"]) if not isinstance(dictionary["basic"], BasicData) else dictionary["basic"]
+        val = dictionary.get("basic", None)
+        self.basic = BasicData(val) if val and not isinstance(val, BasicData) else val
 
         # dict<string, Rune> # Rune data
-        self.data = {id_: Rune(rune) if not isinstance(rune, Rune) else rune for id_, rune in dictionary["data"]}
+        self.data = {id_: Rune(rune) if not isinstance(rune, Rune) else rune for id_, rune in dictionary.get("data",{})}
 
         # string # Type
-        self.type = dictionary["type"]
+        self.type = dictionary.get("type",'')
 
         # string # Version
-        self.version = dictionary["version"]
+        self.version = dictionary.get("version",'')
 
 ############################
 # Summoner Spell Endpoints #
@@ -997,82 +1021,84 @@ class RuneList(CassiopeiaDto):
 class SummonerSpell(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<double> # Cooldown
-        self.cooldown = dictionary["cooldown"]
+        self.cooldown = dictionary.get("cooldown",[])
 
         # string # Cooldown burn
-        self.cooldownBurn = dictionary["cooldownBurn"]
+        self.cooldownBurn = dictionary.get("cooldownBurn",'')
 
         # list<int> # Cost
-        self.cost = dictionary["cost"]
+        self.cost = dictionary.get("cost",[])
 
         # string # Cost burn
-        self.costBurn = dictionary["costBurn"]
+        self.costBurn = dictionary.get("costBurn",'')
 
         # string # Cost type
-        self.costType = dictionary["costType"]
+        self.costType = dictionary.get("costType",'')
 
         # string # Description
-        self.description = dictionary["description"]
+        self.description = dictionary.get("description",'')
 
         # list<list<double>> # Effects
-        self.effect = dictionary["effect"]
+        self.effect = dictionary.get("effect",[])
 
         # list<string> # Effect burn 
-        self.effectBurn = dictionary["effectBurn"]
+        self.effectBurn = dictionary.get("effectBurn",[])
 
         # int # ID
-        self.id = dictionary["id"]
+        self.id = dictionary.get("id",0)
 
         # Image # Image
-        self.image = Image(dictionary["image"]) if not isinstance(dictionary["image"], Image) else dictionary["image"]
+        val = dictionary.get("image", None)
+        self.image = Image(val) if val and not isinstance(val, Image) else val
 
         # string # Key
-        self.key = dictionary["key"]
+        self.key = dictionary.get("key",'')
 
         # LevelTip # Level tip
-        self.leveltip = LevelTip(dictionary["leveltip"]) if not isinstance(dictionary["leveltip"], LevelTip) else dictionary["leveltip"]
+        val = dictionary.get("leveltip", None)
+        self.leveltip = LevelTip(val) if val and not isinstance(val, LevelTip) else val
 
         # int # Max rank
-        self.maxrank = dictionary["maxrank"]
+        self.maxrank = dictionary.get("maxrank",0)
 
         # list<string> # Modes
-        self.modes = dictionary["modes"]
+        self.modes = dictionary.get("modes",[])
 
         # string # Name
-        self.name = dictionary["name"]
+        self.name = dictionary.get("name",'')
 
         # list<int> or 'self' # Range
-        self.range = dictionary["range"]
+        self.range = dictionary.get("range",[])
 
         # string # Range burn
-        self.rangeBurn = dictionary["rangeBurn"]
+        self.rangeBurn = dictionary.get("rangeBurn",'')
 
         # string # Resource
-        self.resource = dictionary["resource"]
+        self.resource = dictionary.get("resource",'')
 
         # string # Sanitized description
-        self.sanitizedDescription = dictionary["sanitizedDescription"]
+        self.sanitizedDescription = dictionary.get("sanitizedDescription",'')
 
         # string # Sanitized tooltip
-        self.sanitizedTooltip = dictionary["sanitizedTooltip"]
+        self.sanitizedTooltip = dictionary.get("sanitizedTooltip",'')
 
         # int # Summoner level
-        self.summonerLevel = dictionary["summonerLevel"]
+        self.summonerLevel = dictionary.get("summonerLevel",0)
 
         # string # Tooltip
-        self.tooltip = dictionary["tooltip"]
+        self.tooltip = dictionary.get("tooltip",'')
 
         # list<SpellVars> # Spell vars
-        self.vars = [SpellVars(svars) if not isinstance(svars, SpellVars) else svars for svars in dictionary["vars"]]
+        self.vars = [SpellVars(svars) if not isinstance(svars, SpellVars) else svars for svars in dictionary.get("vars",[])]
 
 
 class SummonerSpellList(CassiopeiaDto):
     def __init__(self, dictionary):
         # dict<string, SummonerSpell> # Summoner spell data
-        self.data = {id_: SummonerSpell(spell) if not isinstance(spell, SummonerSpell) else spell for id_, spell in dictionary["data"]}
+        self.data = {id_: SummonerSpell(spell) if not isinstance(spell, SummonerSpell) else spell for id_, spell in dictionary.get("data",{})}
 
         # string # Type
-        self.type = dictionary["type"]
+        self.type = dictionary.get("type",'')
 
         # string # Version
-        self.version = dictionary["version"]
+        self.version = dictionary.get("version",'')
