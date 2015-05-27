@@ -336,13 +336,13 @@ class Champion(CassiopeiaDto):
 class ChampionList(CassiopeiaDto):
     def __init__(self, dictionary):
         # dict<string, Champion> # Champion data
-        self.data = {name: Champion(champ) if not isinstance(champ, Champion) else champ for name, champ in dictionary.get("data",{})}
+        self.data = {name: Champion(champ) if not isinstance(champ, Champion) else champ for name, champ in dictionary.get("data",{}).iteritems()}
 
         # string # Format
         self.format = dictionary.get("format",'')
 
         # dict<string, string> # Keys
-        self.keys = dictionary.get("keys",{})
+        self.keys = dictionary.get("keys",{}).items()
 
         # string # Type
         self.type = dictionary.get("type",'')
@@ -632,7 +632,7 @@ class Item(CassiopeiaDto):
         self.into = dictionary.get("into",0)
 
         # dict<string, boolean> # Maps
-        self.maps = dictionary.get("maps",{})
+        self.maps = dictionary.get("maps",{}).items()
 
         # string # Name
         self.name = dictionary.get("name",'')
@@ -717,7 +717,7 @@ class BasicData(CassiopeiaDto):
         self.into = dictionary.get("into",0)
 
         # dict<string, boolean> # Maps
-        self.maps = dictionary.get("maps",{})
+        self.maps = dictionary.get("maps",{}).items()
 
         # string # Name
         self.name = dictionary.get("name",'')
@@ -756,7 +756,7 @@ class ItemList(CassiopeiaDto):
     self.basic = BasicData(val) if val and not isinstance(val, BasicData) else val
 
     # dict<string, Item> # Item data
-    self.data = {id_: Item(item) if not isinstance(item, Item) else item for id_, item in dictionary.get("data",{})}
+    self.data = {id_: Item(item) if not isinstance(item, Item) else item for id_, item in dictionary.get("data",{}).iteritems()}
 
     # list<Group> # Groups
     self.groups = [Group(group) if not isinstance(group, Group) else group for group in dictionary.get("groups",[])]
@@ -777,7 +777,7 @@ class ItemList(CassiopeiaDto):
 class LanguageStrings(CassiopeiaDto):
     def __init__(self, dictionary):
         # dict<string, string> # Language string data
-        self.data = dictionary.get("data",{})
+        self.data = dictionary.get("data",{}).items()
 
         # string # Type
         self.type = dictionary.get("type",'')
@@ -808,7 +808,7 @@ class MapDetails(CassiopeiaDto):
 class MapData(CassiopeiaDto):
     def __init__(self, dictionary):
         # dict<string, MapDetails> # Map data
-        self.data = {id_: MapDetails(map_) if not isinstance(map_, MapDetails) else map_ for id_, map_ in dictionary.get("data",{})}
+        self.data = {id_: MapDetails(map_) if not isinstance(map_, MapDetails) else map_ for id_, map_ in dictionary.get("data",{}).iteritems()}
 
         # string # Type
         self.type = dictionary.get("type",'')
@@ -878,7 +878,7 @@ class Mastery(CassiopeiaDto):
 class MasteryList(CassiopeiaDto):
     def __init__(self, dictionary):
         # dict<string, Mastery> # Mastery data
-        self.data = {id_: Mastery(mastery) if not isinstance(mastery, Mastery) else mastery for id_, mastery in dictionary.get("data",{})}
+        self.data = {id_: Mastery(mastery) if not isinstance(mastery, Mastery) else mastery for id_, mastery in dictionary.get("data",{}).iteritems()}
 
         # MasteryTree # Mastery tree
         val = dictionary.get("tree", None)
@@ -912,7 +912,7 @@ class Realm(CassiopeiaDto):
         self.lg = dictionary.get("lg",'')
 
         # dict<string, string> # Latest changed version for each data type listed.
-        self.n = dictionary.get("n",{})
+        self.n = dictionary.get("n",{}).items()
 
         # int # Special behavior number identifying the largest profileicon id that can be used under 500. Any profileicon that is requested between this number and 500 should be mapped to 0.
         self.profileiconmax = dictionary.get("profileiconmax",0)
@@ -967,7 +967,7 @@ class Rune(CassiopeiaDto):
         self.into = dictionary.get("into",0)
 
         # dict<string, boolean> # Maps
-        self.maps = dictionary.get("maps",{})
+        self.maps = dictionary.get("maps",{}).items()
 
         # string # Name
         self.name = dictionary.get("name",'')
@@ -1006,7 +1006,7 @@ class RuneList(CassiopeiaDto):
         self.basic = BasicData(val) if val and not isinstance(val, BasicData) else val
 
         # dict<string, Rune> # Rune data
-        self.data = {id_: Rune(rune) if not isinstance(rune, Rune) else rune for id_, rune in dictionary.get("data",{})}
+        self.data = {id_: Rune(rune) if not isinstance(rune, Rune) else rune for id_, rune in dictionary.get("data",{}).iteritems()}
 
         # string # Type
         self.type = dictionary.get("type",'')
@@ -1095,7 +1095,7 @@ class SummonerSpell(CassiopeiaDto):
 class SummonerSpellList(CassiopeiaDto):
     def __init__(self, dictionary):
         # dict<string, SummonerSpell> # Summoner spell data
-        self.data = {id_: SummonerSpell(spell) if not isinstance(spell, SummonerSpell) else spell for id_, spell in dictionary.get("data",{})}
+        self.data = {id_: SummonerSpell(spell) if not isinstance(spell, SummonerSpell) else spell for id_, spell in dictionary.get("data",{}).iteritems()}
 
         # string # Type
         self.type = dictionary.get("type",'')
