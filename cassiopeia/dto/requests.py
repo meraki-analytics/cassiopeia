@@ -7,7 +7,7 @@ api_versions = {
     "league": "v2.5"
 }
 
-api_key = "f1a5a360-a8e6-4788-8fc5-284769430480"
+api_key = ""
 region = "NA"
 mirror = "NA"
 printCalls = False
