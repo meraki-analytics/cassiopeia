@@ -102,7 +102,7 @@ class RawStatsDto(CassiopeiaDto):
         self.neutralMinionsKilledYourJungle = dictionary.get("neutralMinionsKilledYourJungle", 0)
 
         # bool # Flag specifying if the summoner got the killing blow on the nexus.
-        self.nexusKilled = dictionary.get("nexusKilled", 0)
+        self.nexusKilled = dictionary.get("nexusKilled", False)
 
         # int # Number of nodes captured
         self.nodeCapture = dictionary.get("nodeCapture", 0)

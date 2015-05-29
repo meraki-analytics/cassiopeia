@@ -253,8 +253,8 @@ class ChampionSpell(CassiopeiaDto):
         # str # Name
         self.name = dictionary.get("name", "")
 
-        # list<int> or 'self' # Range
-        self.range = dictionary.get("range", [])
+        # list<int> or "self" # Range
+        self.range = dictionary.get("range", "self")
 
         # str # Range burn
         self.rangeBurn = dictionary.get("rangeBurn", "")
@@ -629,7 +629,7 @@ class Item(CassiopeiaDto):
         self.inStore = dictionary.get("inStore", False)
 
         # list<str> # into
-        self.into = dictionary.get("into", 0)
+        self.into = dictionary.get("into", [])
 
         # dict<str, bool> # Maps
         self.maps = dictionary.get("maps", {})
@@ -714,7 +714,7 @@ class BasicData(CassiopeiaDto):
         self.inStore = dictionary.get("inStore", False)
 
         # list<str> # into
-        self.into = dictionary.get("into", 0)
+        self.into = dictionary.get("into", [])
 
         # dict<str, bool> # Maps
         self.maps = dictionary.get("maps", {})
@@ -801,7 +801,7 @@ class MapDetails(CassiopeiaDto):
         # str # Name
         self.mapName = dictionary.get("mapName", "")
 
-        # list<long> # Items that can't be purchased on this map (IDs)
+        # list<int> # Items that can't be purchased on this map (IDs)
         self.unpurchasableItemList = dictionary.get("unpurchasableItemList", [])
 
 
@@ -964,7 +964,7 @@ class Rune(CassiopeiaDto):
         self.inStore = dictionary.get("inStore", False)
 
         # list<str> # into
-        self.into = dictionary.get("into", 0)
+        self.into = dictionary.get("into", [])
 
         # dict<str, bool> # Maps
         self.maps = dictionary.get("maps", {})
@@ -1067,8 +1067,8 @@ class SummonerSpell(CassiopeiaDto):
         # str # Name
         self.name = dictionary.get("name", "")
 
-        # list<int> or 'self' # Range
-        self.range = dictionary.get("range", [])
+        # list<int> or "self" # Range
+        self.range = dictionary.get("range", "self")
 
         # str # Range burn
         self.rangeBurn = dictionary.get("rangeBurn", "")
