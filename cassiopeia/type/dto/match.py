@@ -497,7 +497,7 @@ class Frame(CassiopeiaDto):
         self.events = [Event(e) if not isinstance(e, Event) else e for e in dictionary.get("events", [])]
 
         # dict<str, ParticipantFrame> # Map of each participant ID to the participant's information for the frame.
-        self.participantFrames = {i: ParticipantFrame(pf) if not isinstance(pf, ParticipantFrame) else pf for i, pf in dictionary.get("participantFrames", {}).iteritems()}
+        self.participantFrames = {i: ParticipantFrame(pf) if not isinstance(pf, ParticipantFrame) else pf for i, pf in dictionary.get("participantFrames", {}).items()}
 
         # int # Represents how many milliseconds into the game the frame occurred.
         self.timestamp = dictionary.get("timestamp", 0)

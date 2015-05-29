@@ -336,7 +336,7 @@ class Champion(CassiopeiaDto):
 class ChampionList(CassiopeiaDto):
     def __init__(self, dictionary):
         # dict<str, Champion> # Champion data
-        self.data = {name: Champion(champ) if not isinstance(champ, Champion) else champ for name, champ in dictionary.get("data", {}).iteritems()}
+        self.data = {name: Champion(champ) if not isinstance(champ, Champion) else champ for name, champ in dictionary.get("data", {}).items()}
 
         # str # Format
         self.format = dictionary.get("format", "")
@@ -756,7 +756,7 @@ class ItemList(CassiopeiaDto):
     self.basic = BasicData(val) if val and not isinstance(val, BasicData) else val
 
     # dict<str, Item> # Item data
-    self.data = {id_: Item(item) if not isinstance(item, Item) else item for id_, item in dictionary.get("data", {}).iteritems()}
+    self.data = {id_: Item(item) if not isinstance(item, Item) else item for id_, item in dictionary.get("data", {}).items()}
 
     # list<Group> # Groups
     self.groups = [Group(group) if not isinstance(group, Group) else group for group in dictionary.get("groups", [])]
@@ -808,7 +808,7 @@ class MapDetails(CassiopeiaDto):
 class MapData(CassiopeiaDto):
     def __init__(self, dictionary):
         # dict<str, MapDetails> # Map data
-        self.data = {id_: MapDetails(map_) if not isinstance(map_, MapDetails) else map_ for id_, map_ in dictionary.get("data", {}).iteritems()}
+        self.data = {id_: MapDetails(map_) if not isinstance(map_, MapDetails) else map_ for id_, map_ in dictionary.get("data", {}).items()}
 
         # str # Type
         self.type = dictionary.get("type", "")
@@ -878,7 +878,7 @@ class Mastery(CassiopeiaDto):
 class MasteryList(CassiopeiaDto):
     def __init__(self, dictionary):
         # dict<str, Mastery> # Mastery data
-        self.data = {id_: Mastery(mastery) if not isinstance(mastery, Mastery) else mastery for id_, mastery in dictionary.get("data", {}).iteritems()}
+        self.data = {id_: Mastery(mastery) if not isinstance(mastery, Mastery) else mastery for id_, mastery in dictionary.get("data", {}).items()}
 
         # MasteryTree # Mastery tree
         val = dictionary.get("tree", None)
@@ -1006,7 +1006,7 @@ class RuneList(CassiopeiaDto):
         self.basic = BasicData(val) if val and not isinstance(val, BasicData) else val
 
         # dict<str, Rune> # Rune data
-        self.data = {id_: Rune(rune) if not isinstance(rune, Rune) else rune for id_, rune in dictionary.get("data", {}).iteritems()}
+        self.data = {id_: Rune(rune) if not isinstance(rune, Rune) else rune for id_, rune in dictionary.get("data", {}).items()}
 
         # str # Type
         self.type = dictionary.get("type", "")
@@ -1095,7 +1095,7 @@ class SummonerSpell(CassiopeiaDto):
 class SummonerSpellList(CassiopeiaDto):
     def __init__(self, dictionary):
         # dict<str, SummonerSpell> # Summoner spell data
-        self.data = {id_: SummonerSpell(spell) if not isinstance(spell, SummonerSpell) else spell for id_, spell in dictionary.get("data", {}).iteritems()}
+        self.data = {id_: SummonerSpell(spell) if not isinstance(spell, SummonerSpell) else spell for id_, spell in dictionary.get("data", {}).items()}
 
         # str # Type
         self.type = dictionary.get("type", "")
