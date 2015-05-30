@@ -45,7 +45,7 @@ class BannedChampion(CassiopeiaDto):
 class FeaturedGameInfo(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<BannedChampion> # Banned champion information
-        self.bannedChampions = [BannedChampion(ban) if not isinstance(ban, BannedChampion) else ban for ban in dictionary.get("bannedChampions", [])]
+        self.bannedChampions = [(BannedChampion(ban) if not isinstance(ban, BannedChampion) else ban) for ban in dictionary.get("bannedChampions", []) if ban]
 
         # int # The ID of the game
         self.gameId = dictionary.get("gameId", 0)
@@ -73,7 +73,7 @@ class FeaturedGameInfo(CassiopeiaDto):
         self.observers = Observer(val) if val and not isinstance(val, Observer) else val
 
         # list<Participant> # The participant information
-        self.participants = [Participant(participant) if not isinstance(participant, BannedChampion) else participant for participant in dictionary.get("participants", [])]
+        self.participants = [(Participant(participant) if not isinstance(participant, BannedChampion) else participant) for participant in dictionary.get("participants", []) if participant]
 
         # str # The ID of the platform on which the game is being played
         self.platformId = dictionary.get("platformId", "")
@@ -85,4 +85,4 @@ class FeaturedGames(CassiopeiaDto):
         self.clientRefreshInterval = dictionary.get("clientRefreshInterval", 0)
 
         # list<FeaturedGameInfo> # The list of featured games
-        self.gameList = [FeaturedGameInfo(game) if not isinstance(game, FeaturedGameInfo) else game for game in dictionary.get("gameList", [])]
+        self.gameList = [(FeaturedGameInfo(game) if not isinstance(game, FeaturedGameInfo) else game) for game in dictionary.get("gameList", []) if game]

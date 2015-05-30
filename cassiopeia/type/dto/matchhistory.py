@@ -3,7 +3,7 @@ from cassiopeia.type.dto.common import CassiopeiaDto
 class PlayerHistory(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<MatchSummary> # List of matches for the player
-        self.matches = [MatchSummary(match) if not isinstance(match, MatchSummary) else match for match in dictionary.get("matches", [])]
+        self.matches = [(MatchSummary(match) if not isinstance(match, MatchSummary) else match) for match in dictionary.get("matches", []) if match]
 
 
 class MatchSummary(CassiopeiaDto):
@@ -30,10 +30,10 @@ class MatchSummary(CassiopeiaDto):
         self.matchVersion = dictionary.get("matchVersion", "")
 
         # list<ParticipantIdentity> # Participant identity information
-        self.participantIdentities = [ParticipantIdentity(pi) if not isinstance(pi, ParticipantIdentity) else pi for pi in dictionary.get("participantIdentities", [])]
+        self.participantIdentities = [(ParticipantIdentity(pi) if not isinstance(pi, ParticipantIdentity) else pi) for pi in dictionary.get("participantIdentities", []) if pi]
 
         # list<Participant> # Participant information
-        self.participants = [Participant(p) if not isinstance(p, Participant) else p for p in dictionary.get("participants", [])]
+        self.participants = [(Participant(p) if not isinstance(p, Participant) else p) for p in dictionary.get("participants", []) if p]
 
         # str # Platform ID of the match
         self.platformId = dictionary.get("platformId", "")
@@ -57,13 +57,13 @@ class Participant(CassiopeiaDto):
         self.highestAchievedSeasonTier = dictionary.get("highestAchievedSeasonTier", "")
 
         # list<Mastery> # List of mastery information
-        self.masteries = [Mastery(m) if not isinstance(m, Mastery) else m for m in dictionary.get("masteries", [])]
+        self.masteries = [(Mastery(m) if not isinstance(m, Mastery) else m) for m in dictionary.get("masteries", []) if m]
 
         # int # Participant ID
         self.participantId = dictionary.get("participantId", 0)
 
         # list<Rune> # List of rune information
-        self.runes = [Rune(r) if not isinstance(r, Rune) else r for r in dictionary.get("runes", [])]
+        self.runes = [(Rune(r) if not isinstance(r, Rune) else r) for r in dictionary.get("runes", []) if r]
 
         # int # First summoner spell ID
         self.spell1Id = dictionary.get("spell1Id", 0)

@@ -258,7 +258,7 @@ class Game(CassiopeiaDto):
         self.createDate = dictionary.get("createDate", 0)
 
         # list<Player> # Other players associated with the game.
-        self.fellowPlayers = [Player(player) if not isinstance(player, Player) else player for player in dictionary.get("fellowPlayers", [])]
+        self.fellowPlayers = [(Player(player) if not isinstance(player, Player) else player) for player in dictionary.get("fellowPlayers", []) if player]
 
         # int # Game ID.
         self.gameId = dictionary.get("gameId", 0)
@@ -301,7 +301,7 @@ class Game(CassiopeiaDto):
 class RecentGames(CassiopeiaDto):
     def __init__(self, dictionary):
         # set<Game> # Collection of recent games played (max 10).
-        self.games = {Game(game) if not isinstance(game, Game) else game for game in dictionary.get("games", [])}
+        self.games = {(Game(game) if not isinstance(game, Game) else game) for game in dictionary.get("games", []) if game}
 
         # int # Summoner ID.
         self.summonerId = dictionary.get("summonerId", 0)

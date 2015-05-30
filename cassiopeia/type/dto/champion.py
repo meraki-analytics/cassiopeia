@@ -24,4 +24,4 @@ class Champion(CassiopeiaDto):
 class ChampionList(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<Champion> # The collection of champion information.
-        self.champions = [Champion(champ) if not isinstance(champ, Champion) else champ for champ in dictionary.get("champions", [])]
+        self.champions = [(Champion(champ) if not isinstance(champ, Champion) else champ) for champ in dictionary.get("champions", []) if champ]

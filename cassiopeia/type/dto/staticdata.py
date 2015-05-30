@@ -16,7 +16,7 @@ class BlockItem(CassiopeiaDto):
 class Block(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<BlockItem> # The items
-        self.items = [BlockItem(item) if not isinstance(item, BlockItem) else item for item in dictionary.get("items", [])]
+        self.items = [(BlockItem(item) if not isinstance(item, BlockItem) else item) for item in dictionary.get("items", []) if item]
 
         # bool # RecMath
         self.recMath = dictionary.get("recMath", False)
@@ -130,7 +130,7 @@ class Skin(CassiopeiaDto):
 class Recommended(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<Block> # Blocks
-        self.blocks = [Block(block) if not isinstance(block, Block) else block for block in dictionary.get("blocks", [])]
+        self.blocks = [(Block(block) if not isinstance(block, Block) else block) for block in dictionary.get("blocks", []) if block]
 
         # str # Champion
         self.champion = dictionary.get("champion", "")
@@ -209,8 +209,7 @@ class Info(CassiopeiaDto):
 class ChampionSpell(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<Image> # Alternate images
-        val = dictionary.get("altimages", None)
-        self.altimages = Image(val) if val and not isinstance(val, Image) else val
+        self.altimages = [(Image(img) if not isinstance(img, Image) else img) for img in dictionary.get("altimages", []) if img]
 
         # list<float> # Cooldown
         self.cooldown = dictionary.get("cooldown", [])
@@ -272,7 +271,7 @@ class ChampionSpell(CassiopeiaDto):
         self.tooltip = dictionary.get("tooltip", "")
 
         # list<SpellVars> # Vars
-        self.vars = [SpellVars(svars) if not isinstance(svars, SpellVars) else svars for svars in dictionary.get("vars", [])]
+        self.vars = [(SpellVars(svars) if not isinstance(svars, SpellVars) else svars) for svars in dictionary.get("vars", []) if svars]
 
 
 class Champion(CassiopeiaDto):
@@ -314,13 +313,13 @@ class Champion(CassiopeiaDto):
         self.passive = Passive(val) if val and not isinstance(val, Passive) else val
 
         # list<Recommended> # Recommended
-        self.recommended = [Recommended(rec) if not isinstance(rec, Recommended) else rec for rec in dictionary.get("recommended", [])]
+        self.recommended = [(Recommended(rec) if not isinstance(rec, Recommended) else rec) for rec in dictionary.get("recommended", []) if rec]
 
         # list<Skin> # Skins
-        self.skins = [Skin(skin) if val and not isinstance(skin, Skin) else skin for skin in dictionary.get("skins", [])]
+        self.skins = [(Skin(skin) if val and not isinstance(skin, Skin) else skin) for skin in dictionary.get("skins", []) if skin]
 
         # list<ChampionSpell> # Spells
-        self.spells = [ChampionSpell(spell) if not isinstance(spell, ChampionSpell) else spell for spell in dictionary.get("spells", [])]
+        self.spells = [(ChampionSpell(spell) if not isinstance(spell, ChampionSpell) else spell) for spell in dictionary.get("spells", []) if spell]
 
         # Stats # Stats
         val = dictionary.get("stats", None)
@@ -751,24 +750,24 @@ class BasicData(CassiopeiaDto):
 
 class ItemList(CassiopeiaDto):
     def __init__(self, dictionary):
-    # BasicData # Basic data
-    val = dictionary.get("basic", None)
-    self.basic = BasicData(val) if val and not isinstance(val, BasicData) else val
+        # BasicData # Basic data
+        val = dictionary.get("basic", None)
+        self.basic = BasicData(val) if val and not isinstance(val, BasicData) else val
 
-    # dict<str, Item> # Item data
-    self.data = {id_: Item(item) if not isinstance(item, Item) else item for id_, item in dictionary.get("data", {}).items()}
+        # dict<str, Item> # Item data
+        self.data = {id_: Item(item) if not isinstance(item, Item) else item for id_, item in dictionary.get("data", {}).items()}
 
-    # list<Group> # Groups
-    self.groups = [Group(group) if not isinstance(group, Group) else group for group in dictionary.get("groups", [])]
+        # list<Group> # Groups
+        self.groups = [(Group(group) if not isinstance(group, Group) else group) for group in dictionary.get("groups", []) if group]
 
-    # list<ItemTree> # Item tree
-    self.tree = [ItemTree(tree) if not isinstance(tree, ItemTree) else tree for tree in dictionary.get("tree", [])]
+        # list<ItemTree> # Item tree
+        self.tree = [(ItemTree(tree) if not isinstance(tree, ItemTree) else tree) for tree in dictionary.get("tree", []) if tree]
 
-    # str # Type
-    self.type = dictionary.get("type", "")
+        # str # Type
+        self.type = dictionary.get("type", "")
 
-    # str # Version
-    self.version = dictionary.get("version", "")
+        # str # Version
+        self.version = dictionary.get("version", "")
 
 ######################
 # Language Endpoints #
@@ -832,19 +831,19 @@ class MasteryTreeItem(CassiopeiaDto):
 class MasteryTreeList(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<MasteryTreeItem> # Mastery tree items
-        self.masteryTreeItems = [MasteryTreeItem(item) if not isinstance(item, MasteryTreeItem) else item for item in dictionary.get("masteryTreeItems", [])]
+        self.masteryTreeItems = [(MasteryTreeItem(item) if not isinstance(item, MasteryTreeItem) else item) for item in dictionary.get("masteryTreeItems", []) if item]
 
 
 class MasteryTree(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<MasteryTreeList> # Defense tree
-        self.Defense = [MasteryTreeList(list_) if not isinstance(list_, MasteryTreeList) else list_ for list_ in dictionary.get("Defense", [])]
+        self.Defense = [(MasteryTreeList(list_) if not isinstance(list_, MasteryTreeList) else list_) for list_ in dictionary.get("Defense", []) if list_]
 
         # list<MasteryTreeList> # Offense tree
-        self.Offense = [MasteryTreeList(list_) if not isinstance(list_, MasteryTreeList) else list_ for list_ in dictionary.get("Offense", [])]
+        self.Offense = [(MasteryTreeList(list_) if not isinstance(list_, MasteryTreeList) else list_) for list_ in dictionary.get("Offense", []) if list_]
 
         # list<MasteryTreeList> # Utility tree
-        self.Utility = [MasteryTreeList(list_) if not isinstance(list_, MasteryTreeList) else list_ for list_ in dictionary.get("Utility", [])]
+        self.Utility = [(MasteryTreeList(list_) if not isinstance(list_, MasteryTreeList) else list_) for list_ in dictionary.get("Utility", []) if list_]
 
 
 class Mastery(CassiopeiaDto):
@@ -1089,7 +1088,7 @@ class SummonerSpell(CassiopeiaDto):
         self.tooltip = dictionary.get("tooltip", "")
 
         # list<SpellVars> # Spell vars
-        self.vars = [SpellVars(svars) if not isinstance(svars, SpellVars) else svars for svars in dictionary.get("vars", [])]
+        self.vars = [(SpellVars(svars) if not isinstance(svars, SpellVars) else svars) for svars in dictionary.get("vars", []) if svars]
 
 
 class SummonerSpellList(CassiopeiaDto):

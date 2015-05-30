@@ -55,7 +55,7 @@ class LeagueEntry(CassiopeiaDto):
 class League(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<LeagueEntry> # The requested league entries.
-        self.entries = [LeagueEntry(entry) if not isinstance(entry, LeagueEntry) else entry for entry in dictionary.get("entries", [])]
+        self.entries = [(LeagueEntry(entry) if not isinstance(entry, LeagueEntry) else entry) for entry in dictionary.get("entries", []) if entry]
 
         # str # This name is an internal place-holder name only. Display and localization of names in the game client are handled client-side.
         self.name = dictionary.get("name", "")
