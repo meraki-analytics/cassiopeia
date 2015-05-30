@@ -8,7 +8,7 @@ def get_leagues_by_summoner(summoner_ids):
     if(isinstance(summoner_ids, list) and len(summoner_ids > 10)):
         raise ValueError("Can only get leagues for up to 10 summoners at once.")
 
-    id_string = id_string = str(summoner_ids).replace(" ", "")[1:-1] if isinstance(summoner_ids, list) else str(summoner_ids)
+    id_string = ",".join(str(x) for x in summoner_ids) if isinstance(summoner_ids, list) else str(summoner_ids)
 
     # Get JSON response
     request = "{version}/league/by-summoner/{ids}".format(version=requests.api_versions["league"], ids=id_string)
@@ -28,7 +28,7 @@ def get_league_entries_by_summoner(summoner_ids):
     if(isinstance(summoner_ids, list) and len(summoner_ids > 10)):
         raise ValueError("Can only get leagues for up to 10 summoners at once.")
 
-    id_string = id_string = str(summoner_ids).replace(" ", "")[1:-1] if isinstance(summoner_ids, list) else str(summoner_ids)
+    id_string = ",".join(str(x) for x in summoner_ids) if isinstance(summoner_ids, list) else str(summoner_ids)
 
     # Get JSON response
     request = "{version}/league/by-summoner/{ids}/entry".format(version=requests.api_versions["league"], ids=id_string)
@@ -48,7 +48,7 @@ def get_leagues_by_team(team_ids):
     if(isinstance(team_ids, list) and len(team_ids > 10)):
         raise ValueError("Can only get leagues for up to 10 summoners at once.")
 
-    id_string = id_string = str(team_ids).replace(" ", "")[1:-1] if isinstance(team_ids, list) else str(team_ids)
+    id_string = ",".join(team_ids) if isinstance(team_ids, list) else str(team_ids)
 
     # Get JSON response
     request = "{version}/league/by-team/{ids}".format(version=requests.api_versions["league"], ids=id_string)
@@ -68,7 +68,7 @@ def get_league_entries_by_team(team_ids):
     if(isinstance(team_ids, list) and len(team_ids > 10)):
         raise ValueError("Can only get leagues for up to 10 summoners at once.")
 
-    id_string = id_string = str(team_ids).replace(" ", "")[1:-1] if isinstance(team_ids, list) else str(team_ids)
+    id_string = ",".join(team_ids) if isinstance(team_ids, list) else str(team_ids)
 
     # Get JSON response
     request = "{version}/league/by-team/{ids}/entry".format(version=requests.api_versions["league"], ids=id_string)

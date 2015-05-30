@@ -8,7 +8,7 @@ def get_summoners_by_name(summoner_names):
     if(isinstance(summoner_names, list) and len(summoner_names > 40)):
         raise ValueError("Can only get up to 40 summoners at once.")
 
-    name_string = name_string = str(summoner_names).replace(" ", "")[1:-1] if isinstance(summoner_names, list) else str(summoner_names)
+    name_string = name_string = ",".join(str(x) for x in summoner_names) if isinstance(summoner_names, list) else str(summoner_names)
 
     # Get JSON response
     request = "{version}/summoner/by-name/{names}".format(version=requests.api_versions["summoner"], names=name_string)
@@ -27,7 +27,7 @@ def get_summoners_by_id(summoner_ids):
     if(isinstance(summoner_ids, list) and len(summoner_ids > 40)):
         raise ValueError("Can only get up to 40 summoners at once.")
 
-    id_string = id_string = str(summoner_ids).replace(" ", "")[1:-1] if isinstance(summoner_ids, list) else str(summoner_ids)
+    id_string = ",".join(str(x) for x in summoner_ids) if isinstance(summoner_ids, list) else str(summoner_ids)
 
     # Get JSON response
     request = "{version}/summoner/{ids}".format(version=requests.api_versions["summoner"], ids=id_string)
@@ -46,7 +46,7 @@ def get_summoner_masteries(summoner_ids):
     if(isinstance(summoner_ids, list) and len(summoner_ids > 40)):
         raise ValueError("Can only get masteries for up to 40 summoners at once.")
 
-    id_string = id_string = str(summoner_ids).replace(" ", "")[1:-1] if isinstance(summoner_ids, list) else str(summoner_ids)
+    id_string = ",".join(str(x) for x in summoner_ids) if isinstance(summoner_ids, list) else str(summoner_ids)
 
     # Get JSON response
     request = "{version}/summoner/{ids}/masteries".format(version=requests.api_versions["summoner"], ids=id_string)
@@ -65,7 +65,7 @@ def get_summoner_names(summoner_ids):
     if(isinstance(summoner_ids, list) and len(summoner_ids > 40)):
         raise ValueError("Can only get names for up to 40 summoners at once.")
 
-    id_string = id_string = str(summoner_ids).replace(" ", "")[1:-1] if isinstance(summoner_ids, list) else str(summoner_ids)
+    id_string = ",".join(str(x) for x in summoner_ids) if isinstance(summoner_ids, list) else str(summoner_ids)
 
     # Get JSON response
     request = "{version}/summoner/{ids}/name".format(version=requests.api_versions["summoner"], ids=id_string)
@@ -78,7 +78,7 @@ def get_summoner_runes(summoner_ids):
     if(isinstance(summoner_ids, list) and len(summoner_ids > 40)):
         raise ValueError("Can only get runes for up to 40 summoners at once.")
 
-    id_string = id_string = str(summoner_ids).replace(" ", "")[1:-1] if isinstance(summoner_ids, list) else str(summoner_ids)
+    id_string = ",".join(str(x) for x in summoner_ids) if isinstance(summoner_ids, list) else str(summoner_ids)
 
     # Get JSON response
     request = "{version}/summoner/{ids}/runes".format(version=requests.api_versions["summoner"], ids=id_string)
