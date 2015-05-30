@@ -587,7 +587,6 @@ class Event(CassiopeiaDto):
 
 class ParticipantFrame(CassiopeiaDto):
     def __init__(self, dictionary):
-        print(dictionary)
         # int # Participant's current gold
         self.currentGold = dictionary.get("currentGold", 0)
 
