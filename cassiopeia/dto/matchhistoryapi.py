@@ -14,8 +14,8 @@ def get_match_history(summoner_id, begin_index=0, champion_ids=None, ranked_queu
         "endIndex": begin_index + 15
     }
     if(champion_ids):
-        params["championIds"] = str(champion_ids).replace(" ", "")[1:-1] if isinstance(champion_ids, list) else str(champion_ids)
+        params["championIds"] = ",".join(champion_ids) if isinstance(champion_ids, list) else str(champion_ids)
     if(ranked_queues):
-        params["rankedQueues"] = str(ranked_queues).replace(" ", "")[1:-1] if isinstance(ranked_queues, list) else str(ranked_queues)
+        params["rankedQueues"] = ",".join(ranked_queues) if isinstance(ranked_queues, list) else str(ranked_queues)
 
     return PlayerHistory(requests.get(request, params))
