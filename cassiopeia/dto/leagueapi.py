@@ -1,19 +1,14 @@
-from cassiopeia.dto import requests
+from cassiopeia import requests
 from cassiopeia.type.dto.league import *
 
 # @param summoner_ids # list<int> or int # A list of summoner IDs to get leagues for or a single ID
 # @return # dict<str, list<League>> # A mapping of summoner IDs to the leagues the summoner is in
 def get_leagues_by_summoner(summoner_ids):
-    # Get the ID string to send with the API query
-    if(isinstance(summoner_ids, list)):
-        # Can only have 10 summoners max if it's a list
-        if(len(summoner_ids) > 10):
-            raise ValueError("Can only get leagues for up to 10 summoners at once.")
+    # Can only have 10 summoners max if it's a list
+    if(isinstance(summoner_ids, list) and len(summoner_ids > 10)):
+        raise ValueError("Can only get leagues for up to 10 summoners at once.")
 
-        id_string = str(summoner_ids).replace(" ", "")[1:-1]
-    else:
-        # Single ID is allowed as well
-        id_string = str(summoner_ids)
+    id_string = id_string = str(summoner_ids).replace(" ", "")[1:-1] if isinstance(summoner_ids, list) else str(summoner_ids)
 
     # Get JSON response
     request = "{version}/league/by-summoner/{ids}".format(version=requests.api_versions["league"], ids=id_string)
@@ -29,16 +24,11 @@ def get_leagues_by_summoner(summoner_ids):
 # @param summoner_ids # list<int> or int # A list of summoner IDs to get leagues for or a single ID
 # @return # dict<str, list<League>> # A mapping of summoner IDs to the leagues the summoner is in (only including the summoner's own entries)
 def get_league_entries_by_summoner(summoner_ids):
-    # Get the ID string to send with the API query
-    if(isinstance(summoner_ids, list)):
-        # Can only have 10 summoners max if it's a list
-        if(len(summoner_ids) > 10):
-            raise ValueError("Can only get leagues for up to 10 summoners at once.")
+    # Can only have 10 summoners max if it's a list
+    if(isinstance(summoner_ids, list) and len(summoner_ids > 10)):
+        raise ValueError("Can only get leagues for up to 10 summoners at once.")
 
-        id_string = str(summoner_ids).replace(" ", "")[1:-1]
-    else:
-        # Single ID is allowed as well
-        id_string = str(summoner_ids)
+    id_string = id_string = str(summoner_ids).replace(" ", "")[1:-1] if isinstance(summoner_ids, list) else str(summoner_ids)
 
     # Get JSON response
     request = "{version}/league/by-summoner/{ids}/entry".format(version=requests.api_versions["league"], ids=id_string)
@@ -54,16 +44,11 @@ def get_league_entries_by_summoner(summoner_ids):
 # @param team_ids # list<str> or str # A list of team IDs to get leagues for or a single ID
 # @return # dict<str, list<League>> # A mapping of team IDs to the leagues the team is in
 def get_leagues_by_team(team_ids):
-    # Get the ID string to send with the API query
-    if(isinstance(team_ids, list)):
-        # Can only have 10 teams max if it's a list
-        if(len(team_ids) > 10):
-            raise ValueError("Can only get leagues for up to 10 teams at once.")
+    # Can only have 10 teams max if it's a list
+    if(isinstance(team_ids, list) and len(team_ids > 10)):
+        raise ValueError("Can only get leagues for up to 10 summoners at once.")
 
-        id_string = str(team_ids).replace(" ", "")[1:-1]
-    else:
-        # Single ID is allowed as well
-        id_string = str(team_ids)
+    id_string = id_string = str(team_ids).replace(" ", "")[1:-1] if isinstance(team_ids, list) else str(team_ids)
 
     # Get JSON response
     request = "{version}/league/by-team/{ids}".format(version=requests.api_versions["league"], ids=id_string)
@@ -79,16 +64,11 @@ def get_leagues_by_team(team_ids):
 # @param team_ids # list<str> or str # A list of team IDs to get leagues for or a single ID
 # @return # dict<str, list<League>> # A mapping of team IDs to the leagues the team is in (only including the team's own entries)
 def get_league_entries_by_team(team_ids):
-    # Get the ID string to send with the API query
-    if(isinstance(team_ids, list)):
-        # Can only have 10 teams max if it's a list
-        if(len(team_ids) > 10):
-            raise ValueError("Can only get leagues for up to 10 teams at once.")
+    # Can only have 10 teams max if it's a list
+    if(isinstance(team_ids, list) and len(team_ids > 10)):
+        raise ValueError("Can only get leagues for up to 10 summoners at once.")
 
-        id_string = str(team_ids).replace(" ", "")[1:-1]
-    else:
-        # Single ID is allowed as well
-        id_string = str(team_ids)
+    id_string = id_string = str(team_ids).replace(" ", "")[1:-1] if isinstance(team_ids, list) else str(team_ids)
 
     # Get JSON response
     request = "{version}/league/by-team/{ids}/entry".format(version=requests.api_versions["league"], ids=id_string)

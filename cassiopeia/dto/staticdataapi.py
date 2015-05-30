@@ -1,4 +1,4 @@
-from cassiopeia.dto import requests
+from cassiopeia import requests
 from cassiopeia.type.dto.staticdata import *
 
 locale = None
@@ -9,7 +9,7 @@ def get_champion(id_):
     request = "{version}/champion/{id_}".format(version=requests.api_versions["staticdata"], id_=id_)
 
     params = {"champData": "all"}
-    if(locale is not None):
+    if(locale):
         params["locale"] = locale
 
     return Champion(requests.get(request, params, True))
@@ -19,7 +19,7 @@ def get_champions():
     request = "{version}/champion".format(version=requests.api_versions["staticdata"])
 
     params = {"champData": "all"}
-    if(locale is not None):
+    if(locale):
         params["locale"] = locale
 
     return ChampionList(requests.get(request, params, True))
@@ -30,7 +30,7 @@ def get_item(id_):
     request = "{version}/item/{id_}".format(version=requests.api_versions["staticdata"], id_=id_)
 
     params = {"itemData": "all"}
-    if(locale is not None):
+    if(locale):
         params["locale"] = locale
 
     return Item(requests.get(request, params, True))
@@ -40,7 +40,7 @@ def get_items():
     request = "{version}/item".format(version=requests.api_versions["staticdata"])
 
     params = {"itemListData": "all"}
-    if(locale is not None):
+    if(locale):
         params["locale"] = locale
 
     return ChampionList(requests.get(request, params, True))
@@ -50,7 +50,7 @@ def get_language_strings():
     request = "{version}/language-strings".format(version=requests.api_versions["staticdata"])
 
     params = {}
-    if(locale is not None):
+    if(locale):
         params["locale"] = locale
 
     return LanguageStrings(requests.get(request, params, True))
@@ -65,7 +65,7 @@ def get_maps():
     request = "{version}/map".format(version=requests.api_versions["staticdata"])
 
     params = {}
-    if(locale is not None):
+    if(locale):
         params["locale"] = locale
 
     return MapData(requests.get(request, params, True))
@@ -76,7 +76,7 @@ def get_mastery(id_):
     request = "{version}/mastery/{id_}".format(version=requests.api_versions["staticdata"], id_=id_)
 
     params = {"masteryData": "all"}
-    if(locale is not None):
+    if(locale):
         params["locale"] = locale
 
     return Mastery(requests.get(request, params, True))
@@ -86,7 +86,7 @@ def get_masteries():
     request = "{version}/mastery".format(version=requests.api_versions["staticdata"])
 
     params = {"masteryListData": "all"}
-    if(locale is not None):
+    if(locale):
         params["locale"] = locale
 
     return MasteryList(requests.get(request, params, True))
@@ -102,7 +102,7 @@ def get_rune(id_):
     request = "{version}/rune/{id_}".format(version=requests.api_versions["staticdata"], id_=id_)
 
     params = {"runeData": "all"}
-    if(locale is not None):
+    if(locale):
         params["locale"] = locale
 
     return Rune(requests.get(request, params, True))
@@ -112,7 +112,7 @@ def get_runes():
     request = "{version}/rune".format(version=requests.api_versions["staticdata"])
 
     params = {"runeListData": "all"}
-    if(locale is not None):
+    if(locale):
         params["locale"] = locale
 
     return RuneList(requests.get(request, params, True))
@@ -123,7 +123,7 @@ def get_summoner_spell(id_):
     request = "{version}/summoner-spell/{id_}".format(version=requests.api_versions["staticdata"], id_=id_)
 
     params = {"spellData": "all"}
-    if(locale is not None):
+    if(locale):
         params["locale"] = locale
 
     return SummonerSpell(requests.get(request, params, True))
@@ -133,7 +133,7 @@ def get_summoner_spells():
     request = "{version}/summoner-spell".format(version=requests.api_versions["staticdata"])
 
     params = {"spellData": "all"}
-    if(locale is not None):
+    if(locale):
         params["locale"] = locale
 
     return SummonerSpellList(requests.get(request, params, True))

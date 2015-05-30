@@ -1,4 +1,4 @@
-from cassiopeia.dto import requests
+from cassiopeia import requests
 from cassiopeia.type.dto.champion import *
 
 # @param id # int # The ID of the champion to look up

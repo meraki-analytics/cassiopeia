@@ -300,8 +300,8 @@ class Game(CassiopeiaDto):
 
 class RecentGames(CassiopeiaDto):
     def __init__(self, dictionary):
-        # set<Game> # Collection of recent games played (max 10).
-        self.games = {(Game(game) if not isinstance(game, Game) else game) for game in dictionary.get("games", []) if game}
+        # list<Game> # Collection of recent games played (max 10).
+        self.games = [(Game(game) if not isinstance(game, Game) else game) for game in dictionary.get("games", []) if game]
 
         # int # Summoner ID.
         self.summonerId = dictionary.get("summonerId", 0)
