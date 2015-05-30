@@ -24,10 +24,10 @@ class MatchDetail(CassiopeiaDto):
         self.matchVersion = dictionary.get("matchVersion", "")
 
         # list<ParticipantIdentity> # Participant identity information
-        self.participantIdentities = [ParticipantIdentity(pi) if not isinstance(pi, ParticipantIdentity) else pi for pi in dictionary.get("participantIdentities", [])]
+        self.participantIdentities = [(ParticipantIdentity(pi) if not isinstance(pi, ParticipantIdentity) else pi) for pi in dictionary.get("participantIdentities", []) if pi]
 
         # list<Participant> # Participant information
-        self.participants = [Participant(p) if not isinstance(p, Participant) else p for p in dictionary.get("participants", [])]
+        self.participants = [(Participant(p) if not isinstance(p, Participant) else p) for p in dictionary.get("participants", []) if p]
 
         # str # Platform ID of the match
         self.platformId = dictionary.get("platformId", "")
@@ -42,7 +42,7 @@ class MatchDetail(CassiopeiaDto):
         self.season = dictionary.get("season", "")
 
         # list<Team> # Team information
-        self.teams = [Team(t) if not isinstance(t, Team) else t for t in dictionary.get("teams", [])]
+        self.teams = [(Team(t) if not isinstance(t, Team) else t) for t in dictionary.get("teams", []) if t]
 
         # Timeline # Match timeline data (not included by default)
         val = dictionary.get("timeline", None)
@@ -58,13 +58,13 @@ class Participant(CassiopeiaDto):
         self.highestAchievedSeasonTier = dictionary.get("highestAchievedSeasonTier", "")
 
         # list<Mastery> # List of mastery information
-        self.masteries = [Mastery(m) if not isinstance(m, Mastery) else m for m in dictionary.get("masteries", [])]
+        self.masteries = [(Mastery(m) if not isinstance(m, Mastery) else m) for m in dictionary.get("masteries", []) if m]
 
         # int # Participant ID
         self.participantId = dictionary.get("participantId", 0)
 
         # list<Rune> # List of rune information
-        self.runes = [Rune(r) if not isinstance(r, Rune) else r for r in dictionary.get("runes", [])]
+        self.runes = [(Rune(r) if not isinstance(r, Rune) else r) for r in dictionary.get("runes", []) if r]
 
         # int # First summoner spell ID
         self.spell1Id = dictionary.get("spell1Id", 0)
@@ -97,7 +97,7 @@ class ParticipantIdentity(CassiopeiaDto):
 class Team(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<BannedChampion> # If game was draft mode, contains banned champion data, otherwise null
-        self.bans = [BannedChampion(c) if not isinstance(c, BannedChampion) else c for c in dictionary.get("bans", [])]
+        self.bans = [(BannedChampion(c) if not isinstance(c, BannedChampion) else c) for c in dictionary.get("bans", []) if c]
 
         # int # Number of times the team killed baron
         self.baronKills = dictionary.get("baronKills", 0)
@@ -145,7 +145,7 @@ class Timeline(CassiopeiaDto):
         self.frameInterval = dictionary.get("frameInterval", 0)
 
         # list<Frame> # List of timeline frames for the game.
-        self.frames = [Frame(f) if not isinstance(f, Frame) else f for f in dictionary.get("frames", [])]
+        self.frames = [(Frame(f) if not isinstance(f, Frame) else f) for f in dictionary.get("frames", []) if f]
 
 
 class Mastery(CassiopeiaDto):
@@ -494,7 +494,7 @@ class BannedChampion(CassiopeiaDto):
 class Frame(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<Event> # List of events for this frame.
-        self.events = [Event(e) if not isinstance(e, Event) else e for e in dictionary.get("events", [])]
+        self.events = [(Event(e) if not isinstance(e, Event) else e) for e in dictionary.get("events", []) if e]
 
         # dict<str, ParticipantFrame> # Map of each participant ID to the participant's information for the frame.
         self.participantFrames = {i: ParticipantFrame(pf) if not isinstance(pf, ParticipantFrame) else pf for i, pf in dictionary.get("participantFrames", {}).items()}

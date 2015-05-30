@@ -3,7 +3,7 @@ from cassiopeia.type.dto.common import CassiopeiaDto
 class PlayerStatsSummaryList(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<PlayerStatsSummary> # Collection of player stats summaries associated with the summoner.
-        self.playerStatSummaries = [PlayerStatsSummary(pss) if not isinstance(pss, PlayerStatsSummary) else pss for pss in dictionary.get("playerStatSummaries", None)]
+        self.playerStatSummaries = [(PlayerStatsSummary(pss) if not isinstance(pss, PlayerStatsSummary) else pss) for pss in dictionary.get("playerStatSummaries", None) if pss]
 
         # int # Summoner ID.
         self.summonerId = dictionary.get("summonerId", 0)
@@ -202,7 +202,7 @@ class AggregatedStats(CassiopeiaDto):
 class RankedStats(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<ChampionStats> # Collection of aggregated stats summarized by champion.
-        self.champions = [ChampionStats(c) if not isinstance(c, ChampionStats) else c for c in dictionary.get("champions", [])]
+        self.champions = [(ChampionStats(c) if not isinstance(c, ChampionStats) else c) for c in dictionary.get("champions", []) if c]
 
         # int # Date stats were last modified specified as epoch milliseconds.
         self.modifyDate = dictionary.get("modifyDate", 0)

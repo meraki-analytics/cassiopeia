@@ -3,7 +3,7 @@ from cassiopeia.type.dto.common import CassiopeiaDto
 class RunePages(CassiopeiaDto):
     def __init__(self, dictionary):
         # set<RunePage> # Collection of rune pages associated with the summoner.
-        self.pages = {RunePage(p) if not isinstance(p, RunePage) else p for p in dictionary.get("pages", [])}
+        self.pages = {(RunePage(p) if not isinstance(p, RunePage) else p) for p in dictionary.get("pages", []) if p}
 
         # int # Summoner ID.
         self.summonerId = dictionary.get("summonerId", 0)
@@ -21,7 +21,7 @@ class RunePage(CassiopeiaDto):
         self.name = dictionary.get("name", "")
 
         # set<RuneSlot> # Collection of rune slots associated with the rune page.
-        self.slots = {RuneSlot(s) if not isinstance(s, RuneSlot) else s for s in dictionary.get("slots", [])}
+        self.slots = {(RuneSlot(s) if not isinstance(s, RuneSlot) else s) for s in dictionary.get("slots", []) if s}
 
 
 class RuneSlot(CassiopeiaDto):
@@ -36,7 +36,7 @@ class RuneSlot(CassiopeiaDto):
 class MasteryPages(CassiopeiaDto):
     def __init__(self, dictionary):
         # set<MasteryPage> # Collection of mastery pages associated with the summoner.
-        self.pages = {MasteryPage(p) if not isinstance(p, MasteryPage) else p for p in dictionary.get("pages", [])}
+        self.pages = {(MasteryPage(p) if not isinstance(p, MasteryPage) else p) for p in dictionary.get("pages", []) if p}
 
         # int # Summoner ID.
         self.summonerId = dictionary.get("summonerId", 0)

@@ -33,13 +33,13 @@ class CurrentGameParticipant(CassiopeiaDto):
         self.championId = dictionary.get("championId", 0)
 
         # list<Mastery> # The masteries used by this participant
-        self.masteries = [Mastery(mastery) if not isinstance(mastery, Mastery) else mastery for mastery in dictionary.get("masteries", [])]
+        self.masteries = [(Mastery(mastery) if not isinstance(mastery, Mastery) else mastery) for mastery in dictionary.get("masteries", []) if mastery]
 
         # int # The ID of the profile icon used by this participant
         self.profileIconId = dictionary.get("profileIconId", 0)
 
         # list<Rune> # The runes used by this participant
-        self.runes = [Rune(rune) if not isinstance(rune, Rune) else rune for rune in dictionary.get("runes", [])]
+        self.runes = [(Rune(rune) if not isinstance(rune, Rune) else rune) for rune in dictionary.get("runes", []) if rune]
 
         # int # The ID of the first summoner spell used by this participant
         self.spell1Id = dictionary.get("spell1Id", 0)
@@ -72,7 +72,7 @@ class BannedChampion(CassiopeiaDto):
 class CurrentGameInfo(CassiopeiaDto):
     def __init__(self, dictionary):
         # list<BannedChampion> # Banned champion information
-        self.bannedChampions = [BannedChampion(ban) if not isinstance(ban, BannedChampion) else ban for ban in dictionary.get("bannedChampions", [])]
+        self.bannedChampions = [(BannedChampion(ban) if not isinstance(ban, BannedChampion) else ban) for ban in dictionary.get("bannedChampions", []) if ban]
 
         # int # The ID of the game
         self.gameId = dictionary.get("gameId", 0)
@@ -100,7 +100,7 @@ class CurrentGameInfo(CassiopeiaDto):
         self.observers = Observer(val) if val and not isinstance(val, Observer) else val
 
         # list<CurrentGameParticipant> # The participant information
-        self.participants = [CurrentGameParticipant(participant) if not isinstance(participant, CurrentGameParticipant) else participant for participant in dictionary.get("participants", [])]
+        self.participants = [(CurrentGameParticipant(participant) if not isinstance(participant, CurrentGameParticipant) else participant) for participant in dictionary.get("participants", []) if participant]
 
         # str # The ID of the platform on which the game is being played
         self.platformId = dictionary.get("platformId", "")
