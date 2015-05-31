@@ -3,7 +3,7 @@ import urllib.request
 from urllib.error import HTTPError
 import json
 
-from cassiopeia.type.api.exception import CassiopeiaError, APIError
+from cassiopeia.type.api.exception import CassiopeiaException, APIError
 from cassiopeia.type.api.rates import MultiRateLimiter
 
 api_versions = {
@@ -27,11 +27,11 @@ rate_limiter = MultiRateLimiter([(10, 10), (500, 600)])
 # @param static # bool # Whether this is a call to a static (non-rate-limited) API
 def get(request, params={}, static=False):
     if(not api_key):
-        raise CassiopeiaError("API Key must be set before the API can be queried.")
+        raise CassiopeiaException("API Key must be set before the API can be queried.")
     if(not region):
-        raise CassiopeiaError("Region must be set before the API can be queried.")
+        raise CassiopeiaException("Region must be set before the API can be queried.")
     if(not mirror):
-        raise CassiopeiaError("Mirror must be set before the API can be queried.")
+        raise CassiopeiaException("Mirror must be set before the API can be queried.")
 
     # Set server and rgn
     server = "global" if static else mirror.lower()
