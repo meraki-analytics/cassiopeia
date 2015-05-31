@@ -1,5 +1,5 @@
-class CassiopeiaError(Exception):
+class CassiopeiaException(Exception):
     pass
 
-class APIError(CassiopeiaError):
+class APIError(Exception):
     pass
