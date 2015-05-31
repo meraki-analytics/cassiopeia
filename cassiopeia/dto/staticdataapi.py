@@ -47,7 +47,7 @@ def get_items():
     if(_locale):
         params["locale"] = _locale
 
-    return ChampionList(requests.get(request, params, True))
+    return ItemList(requests.get(request, params, True))
 
 # @return # LanguageStrings # The locale-based string replacements for various game constants
 def get_language_strings():
