@@ -1,6 +1,6 @@
 import threading
 
-class SingleRateLimiter():
+class SingleRateLimiter:
     # @param calls_per_epoch # int # Number of calls allowed in each epoch
     # @param seconds_per_epoch # int # Number of seconds per epoch
     def __init__(self, calls_per_epoch, seconds_per_epoch):
@@ -70,7 +70,7 @@ class SingleRateLimiter():
         self.resetter.daemon = True
         self.resetter.start()
 
-class MultiRateLimiter():
+class MultiRateLimiter:
     # @param limits # list<tuple> # A list of rate limit pairs. A rate limit is (calls_per_epoch, seconds_per_epoch)
     def __init__(self, limits):
         self.limits = []
