@@ -1,0 +1,1318 @@
+from cassiopeia import riotapi
+from cassiopeia.type.core.common import CassiopeiaObject, Map, lazyproperty
+
+######################
+# Champion Endpoints #
+######################
+
+class BlockItem(CassiopeiaObject):
+    def __str__(self):
+        return "{item} ({count})".format(item=self.item, count=self.count)
+
+    @property
+    def count(self):
+        return self.data.count
+
+    @lazyproperty
+    def item(self):
+        return riotapi.get_item(self.data.id)
+
+
+class Block(CassiopeiaObject):
+    def __str__(self):
+        return "Block Item"
+
+    def __iter__(self):
+        return iter(self.items)
+
+    @lazyproperty
+    def items(self):
+        return [BlockItem(item) for item in self.data.items]
+
+    @property
+    def rec_math(self):
+        return self.data.recMath
+
+    @property
+    def type(self):
+        return self.data.type
+
+
+class SpellVariables(CassiopeiaObject):
+    def __str__(self):
+        return "Spell Variables"
+
+    @property
+    def coefficients(self):
+        return self.data.coeff
+
+    @property
+    def dynamic(self):
+        return self.data.dyn
+
+    @property
+    def key(self):
+        return self.data.key
+
+    @property
+    def link(self):
+        return self.data.link
+
+    @property
+    def ranks_ith(self):
+        return self.data.ranksWith
+
+
+class LevelTip(CassiopeiaObject):
+    def __str__(self):
+        return "Level Tip"
+
+    @property
+    def effects(self):
+        return self.data.effect
+
+    @property
+    def labels(self):
+        return self.data.label
+
+
+class ChampionStats(CassiopeiaObject):
+    def __str__(self):
+        return "Champion Stats"
+
+    # float # Armor
+    @property
+    def armor(self):
+        return self.data.armor
+
+    # float # Armor per level 
+    @property
+    def armor_per_level(self):
+        return self.data.armorperlevel
+
+    # float # Attack damage
+    @property
+    def attack_damage(self):
+        return self.data.attackdamage
+
+    # float # Attack damage per level
+    @property
+    def attack_damage_per_level(self):
+        return self.data.attackdamageperlevel
+
+    # float # Attack range
+    @property
+    def attack_range(self):
+        return self.data.attackrange
+
+    # float # Attack speed offset
+    @property
+    def attack_speed(self):
+        return self.data.attackspeedoffset
+
+    # float # Attack speed per level
+    @property
+    def attack_speed_per_level(self):
+        return self.data.attackspeedperlevel
+
+    # float # Crit chance
+    @property
+    def crit(self):
+        return self.data.crit
+
+    # float # Crit change per level
+    @property
+    def crit_per_level(self):
+        return self.data.critperlevel
+
+    # float # Health
+    @property
+    def health(self):
+        return self.data.hp
+
+    # float # Health per level
+    @property
+    def health_per_level(self):
+        return self.data.hpperlevel
+
+    # float # Health regen
+    @property
+    def health_regen(self):
+        return self.data.hpregen
+
+    # float # Health regen per level
+    @property
+    def health_regen_per_level(self):
+        return self.data.hpregenperlevel
+
+    # float # Movespeed
+    @property
+    def movespeed(self):
+        return self.data.movespeed
+
+    # float # Mana
+    @property
+    def mana(self):
+        return self.data.mp
+
+    # float # Mana per level
+    @property
+    def mana_per_level(self):
+        return self.data.mpperlevel
+
+    # float # Mana regen
+    @property
+    def mpana_regen(self):
+        return self.data.mpregen
+
+    # float # Mana regen per level
+    @property
+    def mana_regen_per_level(self):
+        return self.data.mpregenperlevel
+
+    # float # Magic resist
+    @property
+    def magic_resist(self):
+        return self.data.spellblock
+
+    # float # Magic resist per level
+    @property
+    def magic_resist_per_level(self):
+        return self.data.spellblockperlevel
+
+
+class Skin(CassiopeiaObject):
+    def __str__(self):
+        return self.name
+
+    @property
+    def id(self):
+        return self.data.id
+
+    @property
+    def name(self):
+        return self.data.name
+
+    @property
+    def number(self):
+        return self.data.num
+
+
+class RecommendedItems(CassiopeiaObject):
+    def __str__(self):
+        "Recommended Items for {champion} on {mode}".format(champion=self.data.champion, mode=self.mode)
+
+    def __iter__(self):
+        return iter(self.blocks)
+
+    @lazyproperty
+    def blocks(self):
+        return [Block(block) for block in self.data.blocks]
+
+    @lazyproperty
+    def champion(self):
+        return riotapi.get_champion_by_name(self.data.champion) if self.data.champion else None
+
+    @property
+    def map(self):
+        return self.data.map
+
+    @property
+    def mode(self):
+        return self.data.mode
+
+    @property
+    def priority(self):
+        return self.data.priority
+
+    @property
+    def title(self):
+        return self.data.title
+
+    @property
+    def type(self):
+        return self.data.type
+
+
+class Image(CassiopeiaObject):
+    def __str__(self):
+        return "Image ({link})".format(link=self.link)
+
+    # str # Full link
+    @property
+    def link(self):
+        return self.data.full
+
+    # str # Group
+    @property
+    def group(self):
+        return self.data.group
+
+    # int # H
+    @property
+    def h(self):
+        return self.data.h
+
+    # str # Sprite
+    @property
+    def sprite(self):
+        return self.data.sprite
+
+    # int # W
+    @property
+    def w(self):
+        return self.data.w
+
+    # int # X
+    @property
+    def x(self):
+        return self.data.x
+
+    # int # Y
+    @property
+    def y(self):
+        return self.data.y
+
+
+class Passive(CassiopeiaObject):
+    def __str__(self):
+        return self.name
+
+    @property
+    def description(self):
+        return self.data.description
+
+    @lazyproperty
+    def image(self):
+        return Image(self.data.image) if self.data.image else None
+
+    @property
+    def name(self):
+        return self.data.name
+
+    @property
+    def sanitized_description(self):
+        return self.data.sanitizedDescription
+
+
+class ChampionInfo(CassiopeiaObject):
+    def __str__(self):
+        return "Champion Information"
+
+    # int # Attack rating
+    @property
+    def physical(self):
+        return self.data.attack
+
+    # int # Defense rating
+    @property
+    def defense(self):
+        return self.data.defense
+
+    # int # Difficulty rating
+    @property
+    def difficulty(self):
+        return self.data.difficulty
+
+    # int # Magic rating
+    @property
+    def magic(self):
+        return self.data.magic
+
+
+class Spell(CassiopeiaObject):
+    def __str__(self):
+        return self.name
+
+    # list<Image> # Alternate images
+    @lazyproperty
+    def alternate_images(self):
+        return [Image(img) for img in self.data.altimages]
+
+    # list<float> # Cooldown
+    @property
+    def cooldowns(self):
+        return self.data.cooldown
+
+    # str # Cooldown burn
+    @property
+    def cooldown_burn(self):
+        return self.data.cooldownBurn
+
+    # list<int> # Cost
+    @property
+    def costs(self):
+        return self.data.cost
+
+    # str # Cost burn
+    @property
+    def cost_burn(self):
+        return self.data.costBurn
+
+    # str # Cost type
+    @property
+    def cost_type(self):
+        return self.data.costType
+
+    # str # Description
+    @property
+    def description(self):
+        return self.data.description
+
+    # list<list<float>> # Effects
+    @property
+    def effects(self):
+        return self.data.effect
+
+    # list<str> # Effect burn
+    @property
+    def effect_burn(self):
+        return self.data.effectBurn
+
+    # Image # Image
+    @lazyproperty
+    def image(self):
+        return Image(self.data.image) if self.data.image else None
+
+    # str # Key
+    @property
+    def key(self):
+        return self.data.key
+
+    # LevelTip # Level tip
+    @lazyproperty
+    def level_tip(self):
+        return LevelTip(self.data.leveltip) if self.data.leveltip else None
+
+    # int # Max rank
+    @property
+    def max_rank(self):
+        return self.data.maxrank
+
+    # str # Name
+    @property
+    def name(self):
+        return self.data.name
+
+    # list<int> or "self" # Range
+    @property
+    def range(self):
+        return self.data.range
+
+    # str # Range burn
+    @property
+    def range_burn(self):
+        return self.data.rangeBurn
+
+    # str # Resource
+    @property
+    def resource(self):
+        return self.data.resource
+
+    # str # Sanitized description
+    @property
+    def sanitized_description(self):
+        return self.data.sanitizedDescription
+
+    # str # Sanitized tooltip
+    @property
+    def sanitized_tooltip(self):
+        return self.data.sanitizedTooltip
+
+    # str # Tooltip
+    @property
+    def tooltip(self):
+        return self.data.tooltip
+
+    # list<SpellVariables> # Vars
+    @lazyproperty
+    def variables(self):
+        return [SpelVariables(svars) for svars in self.data.vars]
+
+
+class Champion(CassiopeiaObject):
+    def __str__(self):
+        return self.name
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __ne__(self, other):
+        return self.id != other.id
+
+    @property
+    def ally_tips(self):
+        return self.data.allytips
+
+    @property
+    def blurb(self):
+        return self.data.blurb
+
+    @property
+    def enemy_tips(self):
+        return self.data.enemytips
+
+    @property
+    def id(self):
+        return self.data.id
+
+    @lazyproperty
+    def image(self):
+        return Image(self.data.image) if self.data.image else None
+
+    @lazyproperty
+    def info(self):
+        return ChampionInfo(self.data.info) if self.data.info else None
+
+    @property
+    def key(self):
+        return self.data.key
+
+    @property
+    def lore(self):
+        return self.data.lore
+
+    @property
+    def name(self):
+        return self.data.name
+
+    @property
+    def resource(self):
+        return self.data.partype
+
+    @lazyproperty
+    def passive(self):
+        return Passive(self.data.passive) if self.data.passive else None
+
+    @lazyproperty
+    def recommended_items(self):
+        return [RecommendedItems(rec) for rec in self.data.recommended]
+
+    @lazyproperty
+    def skins(self):
+        return [Skin(skin) for skin in self.data.skins]
+
+    @lazyproperty
+    def spells(self):
+        return [Spell(spell) for spell in self.data.spells]
+
+    @lazyproperty
+    def stats(self):
+        return ChampionStats(self.data.stats) if self.data.stats else None
+
+    @property
+    def tags(self):
+        return self.data.tags
+
+    @property
+    def title(self):
+        return self.data.title
+
+##################
+# Item Endpoints #
+##################
+
+class MetaData(CassiopeiaObject):
+    def __str__(self):
+        return "Meta Data"
+
+    # bool # Is a rune
+    @property
+    def rune(self):
+        return self.data.isRune
+
+    # str # Tier
+    @property
+    def tier(self):
+        return self.data.tier
+
+    # str # Type
+    @property
+    def type(self):
+        return self.data.type
+
+
+class Gold(CassiopeiaObject):
+    def __str__(self):
+        return "{price} gold".format(price=self.total)
+
+    # int # Base price
+    @property
+    def base(self):
+        return self.data.base
+
+    # bool # Is purchasable
+    @property
+    def purchasable(self):
+        return self.data.purchasable
+
+    # int # Sell price
+    @property
+    def sell(self):
+        return self.data.sell
+
+    # int # Total price
+    @property
+    def total(self):
+        return self.data.total
+
+
+class ItemStats(CassiopeiaObject):
+    def __str__(self):
+        return "Item Stats"
+
+    @property
+    def armor(self):
+        return self.data.FlatArmorMod
+
+    @property
+    def attack_speed(self):
+        return self.data.FlatAttackSpeedMod
+
+    @property
+    def block(self):
+        return self.data.FlatBlockMod
+
+    @property
+    def crit_chance(self):
+        return self.data.FlatCritChanceMod
+
+    @property
+    def crit_damage(self):
+        return self.data.FlatCritDamageMod
+
+    @property
+    def xp_bonus(self):
+        return self.data.FlatEXPBonus
+
+    @property
+    def energy(self):
+        return self.data.FlatEnergyPoolMod
+
+    @property
+    def energy_regen(self):
+        return self.data.FlatEnergyRegenMod
+
+    @property
+    def health(self):
+        return self.data.FlatHPPoolMod
+
+    @property
+    def health_regen(self):
+        return self.data.FlatHPRegenMod
+
+    @property
+    def mana(self):
+        return self.data.FlatMPPoolMod
+
+    @property
+    def mana_regen(self):
+        return self.data.FlatMPRegenMod
+
+    @property
+    def ability_power(self):
+        return self.data.FlatMagicDamageMod
+
+    @property
+    def movespeed(self):
+        return self.data.FlatMovementSpeedMod
+
+    @property
+    def attack_damage(self):
+        return self.data.FlatPhysicalDamageMod
+
+    @property
+    def magic_resist(self):
+        return self.data.FlatSpellBlockMod
+
+    @property
+    def percent_armor(self):
+        return self.data.PercentArmorMod
+
+    @property
+    def percent_attack_speed(self):
+        return self.data.PercentAttackSpeedMod
+
+    @property
+    def percent_block(self):
+        return self.data.PercentBlockMod
+
+    @property
+    def percent_crit_chance(self):
+        return self.data.PercentCritChanceMod
+
+    @property
+    def percent_crit_damage(self):
+        return self.data.PercentCritDamageMod
+
+    @property
+    def percent_dodge(self):
+        return self.data.PercentDodgeMod
+
+    @property
+    def percent_xp_bonus(self):
+        return self.data.PercentEXPBonus
+
+    @property
+    def percent_health(self):
+        return self.data.PercentHPPoolMod
+
+    @property
+    def percent_health_regen(self):
+        return self.data.PercentHPRegenMod
+
+    @property
+    def life_steal(self):
+        return self.data.PercentLifeStealMod
+
+    @property
+    def percent_mana(self):
+        return self.data.PercentMPPoolMod
+
+    @property
+    def percent_mana_regen(self):
+        return self.data.PercentMPRegenMod
+
+    @property
+    def percent_ability_power(self):
+        return self.data.PercentMagicDamageMod
+
+    @property
+    def percent_movespeed(self):
+        return self.data.PercentMovementSpeedMod
+
+    @property
+    def percent_attack_damage(self):
+        return self.data.PercentPhysicalDamageMod
+
+    @property
+    def percent_magic_resist(self):
+        return self.data.PercentSpellBlockMod
+
+    @property
+    def spell_vamp(self):
+        return self.data.PercentSpellVampMod
+
+    @property
+    def r_armor_per_level(self):
+        return self.data.rFlatArmorModPerLevel
+
+    @property
+    def r_armor_pen(self):
+        return self.data.rFlatArmorPenetrationMod
+
+    @property
+    def r_armor_pen_per_level(self):
+        return self.data.rFlatArmorPenetrationModPerLevel
+
+    @property
+    def r_crit_chance_per_level(self):
+        return self.data.rFlatCritChanceModPerLevel
+
+    @property
+    def r_crit_damage_per_level(self):
+        return self.data.rFlatCritDamageModPerLevel
+
+    @property
+    def r_dodge(self):
+        return self.data.rFlatDodgeMod
+
+    @property
+    def r_dodge_per_level(self):
+        return self.data.rFlatDodgeModPerLevel
+
+    @property
+    def r_energy_per_level(self):
+        return self.data.rFlatEnergyModPerLevel
+
+    @property
+    def r_energy_regen_per_level(self):
+        return self.data.rFlatEnergyRegenModPerLevel
+
+    @property
+    def r_gold_per_ten(self):
+        return self.data.rFlatGoldPer10Mod
+
+    @property
+    def r_health_per_level(self):
+        return self.data.rFlatHPModPerLevel
+
+    @property
+    def r_health_regen_per_level(self):
+        return self.data.rFlatHPRegenModPerLevel
+
+    @property
+    def r_mana_per_level(self):
+        return self.data.rFlatMPModPerLevel
+
+    @property
+    def r_mana_regen_per_level(self):
+        return self.data.rFlatMPRegenModPerLevel
+
+    @property
+    def r_ability_power_per_level(self):
+        return self.data.rFlatMagicDamageModPerLevel
+
+    @property
+    def r_magic_pen(self):
+        return self.data.rFlatMagicPenetrationMod
+
+    @property
+    def r_magic_pen_per_level(self):
+        return self.data.rFlatMagicPenetrationModPerLevel
+
+    @property
+    def r_movespeed_per_level(self):
+        return self.data.rFlatMovementSpeedModPerLevel
+
+    @property
+    def r_attack_damage_per_level(self):
+        return self.data.rFlatPhysicalDamageModPerLevel
+
+    @property
+    def r_magic_resist_per_level(self):
+        return self.data.rFlatSpellBlockModPerLevel
+
+    @property
+    def r_time_dead(self):
+        return self.data.rFlatTimeDeadMod
+
+    @property
+    def r_time_dead_per_level(self):
+        return self.data.rFlatTimeDeadModPerLevel
+
+    @property
+    def r_percent_armor_pen(self):
+        return self.data.rPercentArmorPenetrationMod
+
+    @property
+    def r_percent_armor_pen_per_level(self):
+        return self.data.rPercentArmorPenetrationModPerLevel
+
+    @property
+    def r_percent_attack_speed_per_level(self):
+        return self.data.rPercentAttackSpeedModPerLevel
+
+    @property
+    def r_coooldown_reduction(self):
+        return self.data.rPercentCooldownMod
+
+    @property
+    def r_cooldown_reduction_per_level(self):
+        return self.data.rPercentCooldownModPerLevel
+
+    @property
+    def r_percent_magic_pen(self):
+        return self.data.rPercentMagicPenetrationMod
+
+    @property
+    def r_percent_magic_pen_per_level(self):
+        return self.data.rPercentMagicPenetrationModPerLevel
+
+    @property
+    def r_percent_movespeed_per_level(self):
+        return self.data.rPercentMovementSpeedModPerLevel
+
+    @property
+    def r_percent_time_dead(self):
+        return self.data.rPercentTimeDeadMod
+
+    @property
+    def r_percent_time_dead_per_level(self):
+        return self.data.rPercentTimeDeadModPerLevel
+
+
+class Item(CassiopeiaObject):
+    def __str__(self):
+        return self.name
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __ne__(self, other):
+        return self.id != other.id
+
+    @property
+    def colloq(self):
+        return self.data.colloq
+
+    @property
+    def consume_on_full(self):
+        return self.data.consumeOnFull
+
+    @property
+    def consumed(self):
+        return self.data.consumed
+
+    @property
+    def depth(self):
+        return self.data.depth
+
+    @property
+    def description(self):
+        return self.data.description
+
+    @property
+    def components(self):
+        return self.data.from_
+
+    @lazyproperty
+    def gold(self):
+        return Gold(self.data.gold) if self.data.gold else None
+
+    @property
+    def group(self):
+        return self.data.group
+
+    @property
+    def hide_from_all(self):
+        return self.data.hide_from_all
+
+    @property
+    def id(self):
+        return self.data.id
+
+    @lazyproperty
+    def image(self):
+        return Image(self.data.image) if self.data.image else None
+
+    @property
+    def in_store(self):
+        return self.data.inStore
+
+    @property
+    def component_for(self):
+        return self.data.into
+
+    @property
+    def maps(self):
+        return self.data.maps
+
+    @property
+    def name(self):
+        return self.data.name
+
+    @property
+    def plaintext(self):
+        return self.data.plaintext
+
+    @lazyproperty
+    def required_champion(self):
+        return riotapi.get_champion_by_name(self.data.requiredChampion) if self.data.requiredChampion else None
+
+    @lazyproperty
+    def meta_data(self):
+        return MetaData(self.data.rune) if self.data.rune else None
+
+    @property
+    def sanitized_description(self):
+        return self.data.sanitizedDescription
+
+    @property
+    def special_recipe(self):
+        return self.data.specialRecipe
+
+    @property
+    def stacks(self):
+        return self.data.stacks
+
+    @lazyproperty
+    def stats(self):
+        return ItemStats(self.data.stats) if self.data.stats else None
+
+    @property
+    def tags(self):
+        return self.data.tags
+
+
+class Group(CassiopeiaObject):
+    def __str__(self):
+        return "Group ({key})".format(key=self.key)
+
+    @property
+    def max_ownable(self):
+        return self.data.MaxGroupOwnable
+
+    @property
+    def key(self):
+        return self.data.key
+
+################
+# Map Endpoint #
+################
+
+class MapDetails(CassiopeiaObject):
+    def __str__(self):
+        return self.data.name
+
+    @lazyproperty
+    def image(self):
+        return Image(self.data.image) if self.data.image else None
+
+    @property
+    def map(self):
+        return Map(self.data.mapId) if self.data.mapId else None
+
+    @lazyproperty
+    def unpurchasable_items(self):
+        return riotapi.get_items(self.data.unpurchasableItemList)
+
+#####################
+# Mastery Endpoints #
+#####################
+
+class Mastery(CassiopeiaObject):
+    def __str__(self):
+        return self.name
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __ne__(self, other):
+        return self.id != other.id
+
+    # list<str> # Description
+    @property
+    def description(self):
+        return self.data.description
+
+    # int # ID
+    @property
+    def id(self):
+        return self.data.id
+
+    # Image # Image
+    @lazyproperty
+    def image(self):
+        return Image(self.data.image) if self.data.image else None
+
+    # str # Legal values: Defense, Offense, Utility
+    @property
+    def tree(self):
+        return self.data.masteryTree
+
+    # str # Name
+    @property
+    def name(self):
+        return self.data.name
+
+    # str # Prerequisites
+    @property
+    def prerequisites(self):
+        return self.data.prereq
+
+    # int # Ranks
+    @property
+    def ranks(self):
+        return self.data.ranks
+
+    # list<str> # Sanitized description
+    @property
+    def sanitized_description(self):
+        return self.data.sanitizedDescription
+
+##################
+# Realm Endpoint #
+##################
+
+class Realm(CassiopeiaObject):
+    def __str__(self):
+        return "Realm"
+
+    # str # The base CDN url.
+    @property
+    def cdn(self):
+        return self.data.cdn
+
+    # str # Latest changed version of Dragon Magic's css file.
+    @property
+    def css(self):
+        return self.data.css
+
+    # str # Latest changed version of Dragon Magic.
+    @property
+    def dragon_magic(self):
+        return self.data.dd
+
+    # str # Default language for this realm.
+    @property
+    def language(self):
+        return self.data.l
+
+    # str # Legacy script mode for IE6 or older.
+    @property
+    def legacy(self):
+        return self.data.lg
+
+    # dict<str, str> # Latest changed version for each data type listed.
+    @property
+    def data_type_versions(self):
+        return self.data.n
+
+    # int # Special behavior number identifying the largest profileicon id that can be used under 500.0 Any profileicon that is requested between this number and 500 should be mapped to 0.0
+    @property
+    def profile_icon_id_max(self):
+        return self.data.profileiconmax
+
+    # str # Additional api data drawn from other sources that may be related to data dragon functionality.
+    @property
+    def store(self):
+        return self.data.store
+
+    # str # Current version of this file for this realm.
+    @property
+    def version(self):
+        return self.data.v
+
+##################
+# Rune Endpoints #
+##################
+
+class Rune(CassiopeiaObject):
+    def __str__(self):
+        return self.name
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __ne__(self, other):
+        return self.id != other.id
+
+    # str # Colloq
+    @property
+    def colloq(self):
+        return self.data.colloq
+
+    # bool # Consume on full
+    @property
+    def consume_on_full(self):
+        return self.data.consumeOnFull
+
+    # bool # Consumed
+    @property
+    def consumed(self):
+        return self.data.consumed
+
+    # int # Depth
+    @property
+    def depth(self):
+        return self.data.depth
+
+    # str # Description
+    @property
+    def description(self):
+        return self.data.description
+
+    # list<str> # From
+    @property
+    def components(self):
+        return self.data.from_
+
+    # str # Group
+    @property
+    def group(self):
+        return self.data.group
+
+    # bool # Hide from all
+    @property
+    def hide_from_all(self):
+        return self.data.hideFromAll
+
+    # int # ID
+    @property
+    def id(self):
+        return self.data.id
+
+    # Image # Image
+    @lazyproperty
+    def image(self):
+        return Image(self.data.image) if self.data.image else None
+
+    # bool # In store
+    @property
+    def in_store(self):
+        return self.data.inStore
+
+    # list<str> # into
+    @property
+    def component_for(self):
+        return self.data.into
+
+    # dict<str, bool> # Maps
+    @property
+    def maps(self):
+        return self.data.maps
+
+    # str # Name
+    @property
+    def name(self):
+        return self.data.name
+
+    # str # Plain text
+    @property
+    def plaintext(self):
+        return self.data.plaintext
+
+    # Champion # Required champion
+    @lazyproperty
+    def required_champion(self):
+        return riotapi.get_champion_by_name(self.data.requiredChampion) if self.data.requiredChampion else None
+
+    # MetaData # Meta Data
+    @lazyproperty
+    def meta_data(self):
+        return MetaData(self.data.rune) if self.data.rune else None
+
+    # str # Sanitized description
+    @property
+    def sanitized_description(self):
+        return self.data.sanitizedDescription
+
+    # int # Special recipe
+    @property
+    def special_recipe(self):
+        return self.data.specialRecipe
+
+    # int # Stacks
+    @property
+    def stacks(self):
+        return self.data.stacks
+
+    # ItemStats # Stats
+    @lazyproperty
+    def stats(self):
+        return ItemStats(self.data.stats) if self.data.stats else None
+
+    # list<str> # Tags
+    @property
+    def tags(self):
+        return self.data.tags
+
+############################
+# Summoner Spell Endpoints #
+############################
+
+class SummonerSpell(CassiopeiaObject):
+    def __str__(self):
+        return self.name
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __ne__(self, other):
+        return self.id != other.id
+
+    # list<float> # Cooldown
+    @property
+    def cooldowns(self):
+        return self.data.cooldown
+
+    # str # Cooldown burn
+    @property
+    def cooldown_burn(self):
+        return self.data.cooldownBurn
+
+    # list<int> # Cost
+    @property
+    def costs(self):
+        return self.data.cost
+
+    # str # Cost burn
+    @property
+    def cost_burn(self):
+        return self.data.costBurn
+
+    # str # Cost type
+    @property
+    def cost_type(self):
+        return self.data.costType
+
+    # str # Description
+    @property
+    def description(self):
+        return self.data.description
+
+    # list<list<float>> # Effects
+    @property
+    def effects(self):
+        return self.data.effect
+
+    # list<str> # Effect burn 
+    @property
+    def effect_burn(self):
+        return self.data.effectBurn
+
+    # int # ID
+    @property
+    def id(self):
+        return self.data.id
+
+    # Image # Image
+    @lazyproperty
+    def image(self):
+        return Image(self.data.image) if self.data.image else None
+
+    # str # Key
+    @property
+    def key(self):
+        return self.data.key
+
+    # LevelTip # Level tip
+    @lazyproperty
+    def leveltip(self):
+        return LevelTip(self.data.leveltip) if self.data.leveltip else None
+
+    # int # Max rank
+    @property
+    def max_rank(self):
+        return self.data.maxrank
+
+    # list<str> # Modes
+    @property
+    def modes(self):
+        return self.data.modes
+
+    # str # Name
+    @property
+    def name(self):
+        return self.data.name
+
+    # list<int> or "self" # Range
+    @property
+    def range(self):
+        return self.data.range
+
+    # str # Range burn
+    @property
+    def range_burn(self):
+        return self.data.rangeBurn
+
+    # str # Resource
+    @property
+    def resource(self):
+        return self.data.resource
+
+    # str # Sanitized description
+    @property
+    def sanitized_description(self):
+        return self.data.sanitizedDescription
+
+    # str # Sanitized tooltip
+    @property
+    def sanitized_tooltip(self):
+        return self.data.sanitizedTooltip
+
+    # int # Summoner level
+    @property
+    def summoner_level(self):
+        return self.data.summonerLevel
+
+    # str # Tooltip
+    @property
+    def tooltip(self):
+        return self.data.tooltip
+
+    # list<SpellVariables> # Vars
+    @lazyproperty
+    def variables(self):
+        return [SpelVariables(svars) for svars in self.data.vars]

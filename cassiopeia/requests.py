@@ -17,8 +17,8 @@ api_versions = {
 }
 
 api_key = ""
-region = ""
-mirror = ""
+region = "NA"
+mirror = "NA"
 print_calls = False
 rate_limiter = MultiRateLimiter([(10, 10), (500, 600)])
 
