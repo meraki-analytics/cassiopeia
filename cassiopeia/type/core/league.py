@@ -1,3 +1,4 @@
+from cassiopeia import riotapi
 from cassiopeia.type.core.common import CassiopeiaObject, Queue, Tier, Divison, lazyproperty
 
 class Series(CassiopeiaObject):
@@ -69,22 +70,23 @@ class Entry(CassiopeiaObject):
     def series(self):
         return Series(self.data.miniSeries) if self.data.miniSeries else None
 
-    # int # The ID of the summoner represented by this entry. 0 if this entry is for a team.
-    @property
-    def player_id(self):
+    # Summoner # The summoner represented by this entry. None if this entry is for a team.
+    @lazyproperty
+    def player(self):
         try:
-            return int(self.data.playerOrTeamId)
+            id_ = int(self.data.playerOrTeamId)
+            return riotapi.get_summoner_by_id(id_)
         except(ValueError):
-            return 0
+            return None
 
-    # str # The ID of the team represented by this entry. "" if this entry is for a summoner.
-    @property
-    def team_id(self):
+    # Team # The team represented by this entry. None if this entry is for a summoner.
+    @lazyproperty
+    def team(self):
         try:
             int(self.data.playerOrTeamId)
-            return ""
+            return None
         except(ValueError):
-            return self.data.playerOrTeamId
+            return riotapi.get_team_by_id(self.data.playerOrTeamId)
 
     # str # The name of the summoner represented by this entry. "" if this entry is for a team. 
     @property
@@ -127,22 +129,31 @@ class League(CassiopeiaObject):
     def name(self):
         return self.data.name
 
-    # int # Specifies the relevant summoner that is a member of this league. Only present when full league is requested so that participant's entry can be identified. 0 when individual entry is requested or the participant is a team.
-    @property
-    def player_id(self):
-        try:
-            return int(self.data.participantId)
-        except(ValueError):
-            return 0
+    # Entry # The entry for the relevant team or summoner that is a member of this league. Only present when full league is requested so that participant's entry can be identified. None when individual entry is requested.
+    @lazyproperty
+    def participant_entry(self):
+        for entry in self.entries:
+            if(entry.data.playerOrTeamId == self.data.participantId):
+                return entry
+        return None
 
-    # str # Specifies the relevant team that is a member of this league. Only present when full league is requested so that participant's entry can be identified. "" when individual entry is requested or the participant is a summoner.
-    @property
-    def team_id(self):
+    # Summoner # The relevant summoner that is a member of this league. Only present when full league is requested so that participant's entry can be identified. None when individual entry is requested or the participant is a team.
+    @lazyproperty
+    def player(self):
+        try:
+            id_ = int(self.data.participantId)
+            return riotapi.get_summoner_by_id(id_)
+        except(ValueError):
+            return None
+
+    # Team # The relevant team that is a member of this league. Only present when full league is requested so that participant's entry can be identified. None when individual entry is requested or the participant is a summoner.
+    @lazyproperty
+    def team(self):
         try:
             int(self.data.participantId)
-            return ""
+            return None
         except(ValueError):
-            return self.data.participantId
+            return riotapi.get_team_by_id(self.data.participantId)
 
     # Queue # The league's queue type.
     @property
