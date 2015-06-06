@@ -1,6 +1,6 @@
-from cassiopeia.type.dto.common import CassiopeiaDto
+import cassiopeia.type.dto.common
 
-class Champion(CassiopeiaDto):
+class Champion(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # bool # Indicates if the champion is active.
         self.active = dictionary.get("active", False)
@@ -21,7 +21,7 @@ class Champion(CassiopeiaDto):
         self.rankedPlayEnabled = dictionary.get("rankedPlayEnabled", False)
 
 
-class ChampionList(CassiopeiaDto):
+class ChampionList(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<Champion> # The collection of champion information.
         self.champions = [(Champion(champ) if not isinstance(champ, Champion) else champ) for champ in dictionary.get("champions", []) if champ]

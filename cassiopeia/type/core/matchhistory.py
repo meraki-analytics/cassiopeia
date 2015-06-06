@@ -1,10 +1,10 @@
-from datetime import datetime, timedelta
+import datetime
 
-from cassiopeia import riotapi
-from cassiopeia.type.dto.common import CassiopeiaDto
-from cassiopeia.type.core.common import CassiopeiaObject, Map, GameMode, GameType, Queue, Region, Platform, Season, Side, Lane, Role, Tier, lazyproperty
+import cassiopeia.riotapi
+import cassiopeia.type.dto.common
+import cassiopeia.type.core.common
 
-class MatchSummary(CassiopeiaObject):
+class MatchSummary(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Match {id} Summary".format(id=self.id)
 
@@ -19,15 +19,15 @@ class MatchSummary(CassiopeiaObject):
 
     @property
     def map(self):
-        return Map(self.data.mapId) if self.data.mapId else None
+        return cassiopeia.type.core.common.Map(self.data.mapId) if self.data.mapId else None
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def creation(self):
-        return datetime.utcfromtimestamp(self.data.matchCreation) if self.data.matchCreation else None
+        return datetime.datetime.utcfromtimestamp(self.data.matchCreation) if self.data.matchCreation else None
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def duration(self):
-        return timedelta(seconds=self.data.matchDuration) if self.data.matchDuration else None
+        return datetime.timedelta(seconds=self.data.matchDuration) if self.data.matchDuration else None
 
     @property
     def id(self):
@@ -35,17 +35,17 @@ class MatchSummary(CassiopeiaObject):
 
     @property
     def mode(self):
-        return GameMode(self.data.matchMode) if self.data.matchMode else None
+        return cassiopeia.type.core.common.GameMode(self.data.matchMode) if self.data.matchMode else None
 
     @property
     def type(self):
-        return GameType(self.data.matchType) if self.data.matchType else None
+        return cassiopeia.type.core.common.GameType(self.data.matchType) if self.data.matchType else None
 
     @property
     def version(self):
         return self.data.matchVersion
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def participants(self):
         participants = []
         for i in range(len(self.data.participants)):
@@ -55,68 +55,77 @@ class MatchSummary(CassiopeiaObject):
 
     @property
     def platform(self):
-        return Platform(self.data.platformId) if self.data.platformId else None
+        return cassiopeia.type.core.common.Platform(self.data.platformId) if self.data.platformId else None
 
     @property
     def queue(self):
-        return Queue(self.data.queueType) if self.data.queueType else None
+        return cassiopeia.type.core.common.Queue(self.data.queueType) if self.data.queueType else None
 
     @property
     def region(self):
-        return Region(self.data.region) if self.data.region else None
+        return cassiopeia.type.core.common.Region(self.data.region) if self.data.region else None
 
     @property
     def season(self):
-        return Season(self.data.season) if self.data.season else None
+        return cassiopeia.type.core.common.Season(self.data.season) if self.data.season else None
 
 
-class CombinedParticipant(CassiopeiaDto):
+class CombinedParticipant(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, participant, identity):
         self.participant = participant
         self.identity = identity
 
 
-class Participant(CassiopeiaObject):
+class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "{player} ({champ})".format(player=self.summoner, champ=self.champion)
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def champion(self):
-        return riotapi.get_champion_by_id(self.data.participant.championId) if self.data.championId else None
+        return cassiopeia.riotapi.get_champion_by_id(self.data.participant.championId) if self.data.championId else None
 
     @property
     def previous_season_tier(self):
-        return Tier(self.data.participant.highestAchievedSeasonTier) if self.data.participant.highestAchievedSeasonTier else None
+        return cassiopeia.type.core.common.Tier(self.data.participant.highestAchievedSeasonTier) if self.data.participant.highestAchievedSeasonTier else None
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def masteries(self):
-        return [ParticipantMastery(mastery) for mastery in self.data.participant.masteries]
+        masteries = []
+        ranks = []
+        for mastery in self.data.masteries:
+            masteries.append(mastery.masteryId)
+            ranks.append(mastery.rank)
+        return zip(cassiopeia.riotapi.get_masteries(masteries), ranks)
 
     @property
     def id(self):
         return self.data.participant.participantId
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def runes(self):
-        return [ParticipantRune(rune) for rune in self.data.participant.runes]
+        runes = []
+        for rune in self.data.runes:
+            for _ in range(rune.rank):
+                runes.append(rune.runeId)
+        return cassiopeia.riotapi.get_runes(runes)
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def summoner_spell_d(self):
-        riotapi.get_summoner_spell(self.data.participant.spell1Id) if self.data.spell1Id else None
+        cassiopeia.riotapi.get_summoner_spell(self.data.participant.spell1Id) if self.data.spell1Id else None
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def summoner_spell_f(self):
-        riotapi.get_summoner_spell(self.data.participant.spell2Id) if self.data.spell2Id else None
+        cassiopeia.riotapi.get_summoner_spell(self.data.participant.spell2Id) if self.data.spell2Id else None
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def stats(self):
         return ParticipantStats(self.data.participant.stats) if self.data.participant.stats else None
 
     @property
     def side(self):
-        return Side(self.data.participant.teamId) if self.data.participant.teamId else None
+        return cassiopeia.type.core.common.Side(self.data.participant.teamId) if self.data.participant.teamId else None
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def timeline(self):
         return ParticipantTimeline(self.data.participant.timeline) if self.data.participant.timeline else None
 
@@ -124,25 +133,12 @@ class Participant(CassiopeiaObject):
     def match_history_uri(self):
         return self.data.identity.player.matchHistoryUri
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def summoner(self):
-        return riotapi.get_summoner_by_id(self.data.identity.player.summonerId) if self.data.identity.player.summonerId else None
+        return cassiopeia.riotapi.get_summoner_by_id(self.data.identity.player.summonerId) if self.data.identity.player.summonerId else None
 
 
-class ParticipantMastery(CassiopeiaObject):
-    def __str__(self):
-        return "{mastery} (Rank {rank})".format(mastery=self.mastery, rank=self.rank)
-
-    @lazyproperty
-    def mastery(self):
-        return riotapi.get_mastery(self.data.masteryId) if self.data.masteryId else None
-
-    @property
-    def rank(self):
-        return self.data.rank
-
-
-class ParticipantStats(CassiopeiaObject):
+class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Participant Stats"
 
@@ -217,39 +213,39 @@ class ParticipantStats(CassiopeiaObject):
         return self.data.inhibitorKills
 
     # Item # First item
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def item0(self):
-        return riotapi.get_item(self.data.item0) if self.data.item0 else None
+        return cassiopeia.riotapi.get_item(self.data.item0) if self.data.item0 else None
 
     # Item # Second item
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def item1(self):
-        return riotapi.get_item(self.data.item1) if self.data.item1 else None
+        return cassiopeia.riotapi.get_item(self.data.item1) if self.data.item1 else None
 
     # Item # Third item
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def item2(self):
-        return riotapi.get_item(self.data.item2) if self.data.item2 else None
+        return cassiopeia.riotapi.get_item(self.data.item2) if self.data.item2 else None
 
     # Item # Fourth item
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def item3(self):
-        return riotapi.get_item(self.data.item3) if self.data.item3 else None
+        return cassiopeia.riotapi.get_item(self.data.item3) if self.data.item3 else None
 
     # Item # Fifth item
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def item4(self):
-        return riotapi.get_item(self.data.item4) if self.data.item4 else None
+        return cassiopeia.riotapi.get_item(self.data.item4) if self.data.item4 else None
 
     # Item # Sixth item
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def item5(self):
-        return riotapi.get_item(self.data.item5) if self.data.item5 else None
+        return cassiopeia.riotapi.get_item(self.data.item5) if self.data.item5 else None
 
     # Item # Seventh item
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def item6(self):
-        return riotapi.get_item(self.data.item6) if self.data.item6 else None
+        return cassiopeia.riotapi.get_item(self.data.item6) if self.data.item6 else None
 
     # int # Number of killing sprees
     @property
@@ -462,92 +458,92 @@ class ParticipantStats(CassiopeiaObject):
         return self.data.winner
 
 
-class ParticipantTimeline(CassiopeiaObject):
+class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Participant Timeline"
 
     # ParticipantTimelineData # Ancient golem assists per minute timeline counts
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def ancient_golem_assists_per_min_counts(self):
         return ParticipantTimelineData(self.data.ancientGolemAssistsPerMinCounts) if self.data.ancientGolemAssistsPerMinCounts else None
 
     # ParticipantTimelineData # Ancient golem kills per minute timeline counts
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def ancient_golem_kills_per_min_counts(self):
         return ParticipantTimelineData(self.data.ancientGolemKillsPerMinCounts) if self.data.ancientGolemKillsPerMinCounts else None
 
     # ParticipantTimelineData # Assisted lane deaths per minute timeline data
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def assisted_lane_deaths_per_min_deltas(self):
         return ParticipantTimelineData(self.data.assistedLaneDeathsPerMinDeltas) if self.data.assistedLaneDeathsPerMinDeltas else None
 
     # ParticipantTimelineData # Assisted lane kills per minute timeline data
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def assisted_lane_kills_per_min_deltas(self):
         return ParticipantTimelineData(self.data.assistedLaneKillsPerMinDeltas) if self.data.assistedLaneKillsPerMinDeltas else None
 
     # ParticipantTimelineData # Baron assists per minute timeline counts
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def baron_assists_per_min_counts(self):
         return ParticipantTimelineData(self.data.baronAssistsPerMinCounts) if self.data.baronAssistsPerMinCounts else None
 
     # ParticipantTimelineData # Baron kills per minute timeline counts
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def baron_kills_per_min_counts(self):
         return ParticipantTimelineData(self.data.baronKillsPerMinCounts) if self.data.baronKillsPerMinCounts else None
 
     # ParticipantTimelineData # Creeps per minute timeline data
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def creeps_per_min_deltas(self):
         return ParticipantTimelineData(self.data.creepsPerMinDeltas) if self.data.creepsPerMinDeltas else None
 
     # ParticipantTimelineData # Creep score difference per minute timeline data
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def cs_diff_per_min_deltas(self):
         return ParticipantTimelineData(self.data.csDiffPerMinDeltas) if self.data.csDiffPerMinDeltas else None
 
     # ParticipantTimelineData # Damage taken difference per minute timeline data
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def damage_taken_diff_per_min_deltas(self):
         return ParticipantTimelineData(self.data.damageTakenDiffPerMinDeltas) if self.data.damageTakenDiffPerMinDeltas else None
 
     # ParticipantTimelineData # Damage taken per minute timeline data
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def damage_taken_per_min_deltas(self):
         return ParticipantTimelineData(self.data.damageTakenPerMinDeltas) if self.data.damageTakenPerMinDeltas else None
 
     # ParticipantTimelineData # Dragon assists per minute timeline counts
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def dragon_assists_per_min_counts(self):
         return ParticipantTimelineData(self.data.dragonAssistsPerMinCounts) if self.data.dragonAssistsPerMinCounts else None
 
     # ParticipantTimelineData # Dragon kills per minute timeline counts
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def dragon_kills_per_min_counts(self):
         return ParticipantTimelineData(self.data.dragonKillsPerMinCounts) if self.data.dragonKillsPerMinCounts else None
 
     # ParticipantTimelineData # Elder lizard assists per minute timeline counts
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def elder_lizard_assists_per_min_counts(self):
         return ParticipantTimelineData(self.data.elderLizardAssistsPerMinCounts) if self.data.elderLizardAssistsPerMinCounts else None
 
     # ParticipantTimelineData # Elder lizard kills per minute timeline counts
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def elder_lizard_kills_per_min_counts(self):
         return ParticipantTimelineData(self.data.elderLizardKillsPerMinCounts) if self.data.elderLizardKillsPerMinCounts else None
 
     # ParticipantTimelineData # Gold per minute timeline data
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def gold_per_min_deltas(self):
         return ParticipantTimelineData(self.data.goldPerMinDeltas) if self.data.goldPerMinDeltas else None
 
     # ParticipantTimelineData # Inhibitor assists per minute timeline counts
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def inhibitor_assists_per_min_counts(self):
         return ParticipantTimelineData(self.data.inhibitorAssistsPerMinCounts) if self.data.inhibitorAssistsPerMinCounts else None
 
     # ParticipantTimelineData # Inhibitor kills per minute timeline counts
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def inhibitor_kills_per_min_counts(self):
         return ParticipantTimelineData(self.data.inhibitorKillsPerMinCounts) if self.data.inhibitorKillsPerMinCounts else None
 
@@ -557,67 +553,55 @@ class ParticipantTimeline(CassiopeiaObject):
         lane = self.data.lane
         lane = "MIDDLE" if lane == "MID" else lane
         lane = "BOTTOM" if lane == "BOT" else lane
-        return Lane(lane) if lane else None
+        return cassiopeia.type.core.common.Lane(lane) if lane else None
 
     # str # Participant's role
     @property
     def role(self):
-        return Role(self.data.role) if self.data.role else None
+        return cassiopeia.type.core.common.Role(self.data.role) if self.data.role else None
 
     # ParticipantTimelineData # Tower assists per minute timeline counts
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def turret_assists_per_min_counts(self):
         return ParticipantTimelineData(self.data.towerAssistsPerMinCounts) if self.data.towerAssistsPerMinCounts else None
 
     # ParticipantTimelineData # Tower kills per minute timeline counts
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def turret_kills_per_min_counts(self):
         return ParticipantTimelineData(self.data.towerKillsPerMinCounts) if self.data.towerKillsPerMinCounts else None
 
     # ParticipantTimelineData # Tower kills per minute timeline data
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def turret_Kills_per_min_deltas(self):
         return ParticipantTimelineData(self.data.towerKillsPerMinDeltas) if self.data.towerKillsPerMinDeltas else None
 
     # ParticipantTimelineData # Vilemaw assists per minute timeline counts
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def spider_assists_per_min_counts(self):
         return ParticipantTimelineData(self.data.vilemawAssistsPerMinCounts) if self.data.vilemawAssistsPerMinCounts else None
 
     # ParticipantTimelineData # Vilemaw kills per minute timeline counts
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def spider_kills_per_min_counts(self):
         return ParticipantTimelineData(self.data.vilemawKillsPerMinCounts) if self.data.vilemawKillsPerMinCounts else None
 
     # ParticipantTimelineData # Wards placed per minute timeline data
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def wards_per_min_deltas(self):
         return ParticipantTimelineData(self.data.wardsPerMinDeltas) if self.data.wardsPerMinDeltas else None
 
     # ParticipantTimelineData # Experience difference per minute timeline data
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def xp_diff_per_min_deltas(self):
         return ParticipantTimelineData(self.data.xpDiffPerMinDeltas) if self.data.xpDiffPerMinDeltas else None
 
     # ParticipantTimelineData # Experience per minute timeline data
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def xp_per_min_deltas(self):
         return ParticipantTimelineData(self.data.xpPerMinDeltas) if self.data.xpPerMinDeltas else None
+        
 
-
-class ParticipantRune(CassiopeiaObject):
-    def __str__(self):
-        return "{rune} ({count})".format(rune=self.rune, count=self.count)
-
-    @property
-    def count(self):
-        return self.data.rank
-
-    @lazyproperty
-    def rune(self):
-        return riotapi.get_rune(self.data.runeId) if self.data.runeId else None
-
-class ParticipantTimelineData(CassiopeiaObject):
+class ParticipantTimelineData(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Participant Timeline Data"
 

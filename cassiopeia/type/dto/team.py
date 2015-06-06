@@ -1,6 +1,6 @@
-from cassiopeia.type.dto.common import CassiopeiaDto
+import cassiopeia.type.dto.common
 
-class Team(CassiopeiaDto):
+class Team(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Date that team was created specified as epoch milliseconds.
         self.createDate = dictionary.get("createDate", 0)
@@ -46,7 +46,7 @@ class Team(CassiopeiaDto):
         self.thirdLastJoinDate = dictionary.get("thirdLastJoinDate", 0)
 
 
-class MatchHistorySummary(CassiopeiaDto):
+class MatchHistorySummary(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Assists
         self.assists = dictionary.get("assists", 0)
@@ -82,7 +82,7 @@ class MatchHistorySummary(CassiopeiaDto):
         self.win = dictionary.get("win", False)
 
 
-class Roster(CassiopeiaDto):
+class Roster(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<TeamMemberInfo> # MemberList
         self.memberList = [(TeamStatDetail(ts) if not isinstance(ts, TeamStatDetail) else ts) for ts in dictionary.get("memberList", []) if ts]
@@ -91,7 +91,7 @@ class Roster(CassiopeiaDto):
         self.ownerId = dictionary.get("ownerId", 0)
 
 
-class TeamStatDetail(CassiopeiaDto):
+class TeamStatDetail(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # AverageGamesPlayed
         self.averageGamesPlayed = dictionary.get("averageGamesPlayed", 0)
@@ -106,7 +106,7 @@ class TeamStatDetail(CassiopeiaDto):
         self.wins = dictionary.get("wins", 0)
 
 
-class TeamMemberInfo(CassiopeiaDto):
+class TeamMemberInfo(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Date that team member was invited to team specified as epoch milliseconds.
         self.inviteDate = dictionary.get("inviteDate", 0)

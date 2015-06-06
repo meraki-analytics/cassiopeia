@@ -1,6 +1,6 @@
-from cassiopeia.type.dto.common import CassiopeiaDto
+import cassiopeia.type.dto.common
 
-class Rune(CassiopeiaDto):
+class Rune(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # The count of this rune used by the participant
         self.count = dictionary.get("count", 0)
@@ -9,7 +9,7 @@ class Rune(CassiopeiaDto):
         self.runeId = dictionary.get("runeId", 0)
 
 
-class Mastery(CassiopeiaDto):
+class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # The ID of the mastery
         self.masteryId = dictionary.get("masteryId", 0)
@@ -18,13 +18,13 @@ class Mastery(CassiopeiaDto):
         self.rank = dictionary.get("rank", 0)
 
 
-class Observer(CassiopeiaDto):
+class Observer(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # str # Key used to decrypt the spectator grid game data for playback
         self.encryptionKey = dictionary.get("encryptionKey", "")
 
 
-class CurrentGameParticipant(CassiopeiaDto):
+class CurrentGameParticipant(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # bool # Flag indicating whether or not this participant is a bot
         self.bot = dictionary.get("bot", False)
@@ -57,7 +57,7 @@ class CurrentGameParticipant(CassiopeiaDto):
         self.teamId = dictionary.get("teamId", 0)
 
 
-class BannedChampion(CassiopeiaDto):
+class BannedChampion(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # The ID of the banned champion
         self.championId = dictionary.get("championId", 0)
@@ -69,7 +69,7 @@ class BannedChampion(CassiopeiaDto):
         self.teamId = dictionary.get("teamId", 0)
 
 
-class CurrentGameInfo(CassiopeiaDto):
+class CurrentGameInfo(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<BannedChampion> # Banned champion information
         self.bannedChampions = [(BannedChampion(ban) if not isinstance(ban, BannedChampion) else ban) for ban in dictionary.get("bannedChampions", []) if ban]

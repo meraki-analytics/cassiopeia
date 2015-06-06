@@ -1,12 +1,12 @@
-from cassiopeia.type.dto.common import CassiopeiaDto
+import cassiopeia.type.dto.common
 
-class PlayerHistory(CassiopeiaDto):
+class PlayerHistory(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<MatchSummary> # List of matches for the player
         self.matches = [(MatchSummary(match) if not isinstance(match, MatchSummary) else match) for match in dictionary.get("matches", []) if match]
 
 
-class MatchSummary(CassiopeiaDto):
+class MatchSummary(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Match map ID
         self.mapId = dictionary.get("mapId", 0)
@@ -48,7 +48,7 @@ class MatchSummary(CassiopeiaDto):
         self.season = dictionary.get("season", "")
 
 
-class Participant(CassiopeiaDto):
+class Participant(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Champion ID
         self.championId = dictionary.get("championId", 0)
@@ -83,7 +83,7 @@ class Participant(CassiopeiaDto):
         self.timeline = ParticipantTimeline(val) if val and not isinstance(val, ParticipantTimeline) else val
 
 
-class ParticipantIdentity(CassiopeiaDto):
+class ParticipantIdentity(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Participant ID
         self.participantId = dictionary.get("participantId", 0)
@@ -93,7 +93,7 @@ class ParticipantIdentity(CassiopeiaDto):
         self.player = Player(val) if val and not isinstance(val, Player) else val
 
 
-class Mastery(CassiopeiaDto):
+class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Mastery ID
         self.masteryId = dictionary.get("masteryId", 0)
@@ -102,7 +102,7 @@ class Mastery(CassiopeiaDto):
         self.rank = dictionary.get("rank", 0)
 
 
-class ParticipantStats(CassiopeiaDto):
+class ParticipantStats(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Number of assists
         self.assists = dictionary.get("assists", 0)
@@ -294,7 +294,7 @@ class ParticipantStats(CassiopeiaDto):
         self.winner = dictionary.get("winner", False)
 
 
-class ParticipantTimeline(CassiopeiaDto):
+class ParticipantTimeline(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # ParticipantTimelineData # Ancient golem assists per minute timeline counts
         val = dictionary.get("ancientGolemAssistsPerMinCounts", None)
@@ -403,7 +403,7 @@ class ParticipantTimeline(CassiopeiaDto):
         self.xpPerMinDeltas = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
 
 
-class Rune(CassiopeiaDto):
+class Rune(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Rune rank
         self.rank = dictionary.get("rank", 0)
@@ -412,7 +412,7 @@ class Rune(CassiopeiaDto):
         self.runeId = dictionary.get("runeId", 0)
 
 
-class Player(CassiopeiaDto):
+class Player(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # str # Match history URI
         self.matchHistoryUri = dictionary.get("matchHistoryUri", "")
@@ -427,7 +427,7 @@ class Player(CassiopeiaDto):
         self.summonerName = dictionary.get("summonerName", "")
 
 
-class ParticipantTimelineData(CassiopeiaDto):
+class ParticipantTimelineData(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # float # Value per minute from 10 min to 20 min
         self.tenToTwenty = dictionary.get("tenToTwenty", 0.0)
