@@ -1,10 +1,10 @@
-from cassiopeia.type.dto.common import CassiopeiaDto
+import cassiopeia.type.dto.common
 
 ######################
 # Champion Endpoints #
 ######################
 
-class BlockItem(CassiopeiaDto):
+class BlockItem(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Item count
         self.count = dictionary.get("count", 0)
@@ -13,7 +13,7 @@ class BlockItem(CassiopeiaDto):
         self.id = dictionary.get("id", 0)
 
 
-class Block(CassiopeiaDto):
+class Block(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<BlockItem> # The items
         self.items = [(BlockItem(item) if not isinstance(item, BlockItem) else item) for item in dictionary.get("items", []) if item]
@@ -25,7 +25,7 @@ class Block(CassiopeiaDto):
         self.type = dictionary.get("type", "")
 
 
-class SpellVars(CassiopeiaDto):
+class SpellVars(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<float> # Coefficients
         self.coeff = dictionary.get("coeff", [])
@@ -43,7 +43,7 @@ class SpellVars(CassiopeiaDto):
         self.ranksWith = dictionary.get("ranksWith", "")
 
 
-class LevelTip(CassiopeiaDto):
+class LevelTip(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<str> # effects
         self.effect = dictionary.get("effect", [])
@@ -52,7 +52,7 @@ class LevelTip(CassiopeiaDto):
         self.label = dictionary.get("label", [])
 
 
-class Stats(CassiopeiaDto):
+class Stats(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # float # Armor
         self.armor = dictionary.get("armor", 0.0)
@@ -115,7 +115,7 @@ class Stats(CassiopeiaDto):
         self.spellblockperlevel = dictionary.get("spellblockperlevel", 0.0)
 
 
-class Skin(CassiopeiaDto):
+class Skin(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # ID
         self.id = dictionary.get("id", 0)
@@ -127,7 +127,7 @@ class Skin(CassiopeiaDto):
         self.num = dictionary.get("num", 0)
 
 
-class Recommended(CassiopeiaDto):
+class Recommended(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<Block> # Blocks
         self.blocks = [(Block(block) if not isinstance(block, Block) else block) for block in dictionary.get("blocks", []) if block]
@@ -151,7 +151,7 @@ class Recommended(CassiopeiaDto):
         self.type = dictionary.get("type", "")
 
 
-class Image(CassiopeiaDto):
+class Image(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # str # Full link
         self.full = dictionary.get("full", "")
@@ -175,7 +175,7 @@ class Image(CassiopeiaDto):
         self.y = dictionary.get("y", 0)
 
 
-class Passive(CassiopeiaDto):
+class Passive(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # str # Description
         self.description = dictionary.get("description", "")
@@ -191,7 +191,7 @@ class Passive(CassiopeiaDto):
         self.sanitizedDescription = dictionary.get("sanitizedDescription", "")
 
 
-class Info(CassiopeiaDto):
+class Info(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Attack rating
         self.attack = dictionary.get("attack", 0)
@@ -206,7 +206,7 @@ class Info(CassiopeiaDto):
         self.magic = dictionary.get("magic", 0)
 
 
-class ChampionSpell(CassiopeiaDto):
+class ChampionSpell(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<Image> # Alternate images
         self.altimages = [(Image(img) if not isinstance(img, Image) else img) for img in dictionary.get("altimages", []) if img]
@@ -274,7 +274,7 @@ class ChampionSpell(CassiopeiaDto):
         self.vars = [(SpellVars(svars) if not isinstance(svars, SpellVars) else svars) for svars in dictionary.get("vars", []) if svars]
 
 
-class Champion(CassiopeiaDto):
+class Champion(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<str> # Ally tips
         self.allytips = dictionary.get("allytips", [])
@@ -332,7 +332,7 @@ class Champion(CassiopeiaDto):
         self.title = dictionary.get("title", "")
 
 
-class ChampionList(CassiopeiaDto):
+class ChampionList(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # dict<str, Champion> # Champion data
         self.data = {name: Champion(champ) if not isinstance(champ, Champion) else champ for name, champ in dictionary.get("data", {}).items()}
@@ -353,7 +353,7 @@ class ChampionList(CassiopeiaDto):
 # Item Endpoints #
 ##################
 
-class MetaData(CassiopeiaDto):
+class MetaData(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # bool # Is a rune
         self.isRune = dictionary.get("isRune", False)
@@ -365,7 +365,7 @@ class MetaData(CassiopeiaDto):
         self.type = dictionary.get("type", "")
 
 
-class Gold(CassiopeiaDto):
+class Gold(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Base price
         self.base = dictionary.get("base", 0)
@@ -380,7 +380,7 @@ class Gold(CassiopeiaDto):
         self.total = dictionary.get("total", 0)
 
 
-class BasicDataStats(CassiopeiaDto):
+class BasicDataStats(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # float # The FlatArmorMod
         self.FlatArmorMod = dictionary.get("FlatArmorMod", 0.0)
@@ -578,7 +578,7 @@ class BasicDataStats(CassiopeiaDto):
         self.rPercentTimeDeadModPerLevel = dictionary.get("rPercentTimeDeadModPerLevel", 0.0)
 
 
-class ItemTree(CassiopeiaDto):
+class ItemTree(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # str # The header
         self.header = dictionary.get("header", "")
@@ -587,7 +587,7 @@ class ItemTree(CassiopeiaDto):
         self.tags = dictionary.get("tags", [])
 
 
-class Item(CassiopeiaDto):
+class Item(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # str # Colloq
         self.colloq = dictionary.get("colloq", "")
@@ -663,7 +663,7 @@ class Item(CassiopeiaDto):
         self.tags = dictionary.get("tags", [])
 
 
-class Group(CassiopeiaDto):
+class Group(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # str # Max ownable of group
         self.MaxGroupOwnable = dictionary.get("MaxGroupOwnable", "")
@@ -672,7 +672,7 @@ class Group(CassiopeiaDto):
         self.key = dictionary.get("key", "")
 
 
-class BasicData(CassiopeiaDto):
+class BasicData(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # str # Colloq
         self.colloq = dictionary.get("colloq", "")
@@ -748,7 +748,7 @@ class BasicData(CassiopeiaDto):
         self.tags = dictionary.get("tags", [])
 
 
-class ItemList(CassiopeiaDto):
+class ItemList(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # BasicData # Basic data
         val = dictionary.get("basic", None)
@@ -773,7 +773,7 @@ class ItemList(CassiopeiaDto):
 # Language Endpoints #
 ######################
 
-class LanguageStrings(CassiopeiaDto):
+class LanguageStrings(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # dict<str, str> # Language str data
         self.data = dictionary.get("data", {})
@@ -788,7 +788,7 @@ class LanguageStrings(CassiopeiaDto):
 # Map Endpoint #
 ################
 
-class MapDetails(CassiopeiaDto):
+class MapDetails(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # Image # Image
         val = dictionary.get("image", None)
@@ -804,7 +804,7 @@ class MapDetails(CassiopeiaDto):
         self.unpurchasableItemList = dictionary.get("unpurchasableItemList", [])
 
 
-class MapData(CassiopeiaDto):
+class MapData(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # dict<str, MapDetails> # Map data
         self.data = {id_: MapDetails(map_) if not isinstance(map_, MapDetails) else map_ for id_, map_ in dictionary.get("data", {}).items()}
@@ -819,7 +819,7 @@ class MapData(CassiopeiaDto):
 # Mastery Endpoints #
 #####################
 
-class MasteryTreeItem(CassiopeiaDto):
+class MasteryTreeItem(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Mastery ID
         self.masteryId = dictionary.get("masteryId", 0)
@@ -828,13 +828,13 @@ class MasteryTreeItem(CassiopeiaDto):
         self.prereq = dictionary.get("prereq", "")
 
 
-class MasteryTreeList(CassiopeiaDto):
+class MasteryTreeList(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<MasteryTreeItem> # Mastery tree items
         self.masteryTreeItems = [(MasteryTreeItem(item) if not isinstance(item, MasteryTreeItem) else item) for item in dictionary.get("masteryTreeItems", []) if item]
 
 
-class MasteryTree(CassiopeiaDto):
+class MasteryTree(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<MasteryTreeList> # Defense tree
         self.Defense = [(MasteryTreeList(list_) if not isinstance(list_, MasteryTreeList) else list_) for list_ in dictionary.get("Defense", []) if list_]
@@ -846,7 +846,7 @@ class MasteryTree(CassiopeiaDto):
         self.Utility = [(MasteryTreeList(list_) if not isinstance(list_, MasteryTreeList) else list_) for list_ in dictionary.get("Utility", []) if list_]
 
 
-class Mastery(CassiopeiaDto):
+class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<str> # Description
         self.description = dictionary.get("description", [])
@@ -874,7 +874,7 @@ class Mastery(CassiopeiaDto):
         self.sanitizedDescription = dictionary.get("sanitizedDescription", [])
 
 
-class MasteryList(CassiopeiaDto):
+class MasteryList(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # dict<str, Mastery> # Mastery data
         self.data = {id_: Mastery(mastery) if not isinstance(mastery, Mastery) else mastery for id_, mastery in dictionary.get("data", {}).items()}
@@ -893,7 +893,7 @@ class MasteryList(CassiopeiaDto):
 # Realm Endpoint #
 ##################
 
-class Realm(CassiopeiaDto):
+class Realm(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # str # The base CDN url.
         self.cdn = dictionary.get("cdn", "")
@@ -926,7 +926,7 @@ class Realm(CassiopeiaDto):
 # Rune Endpoints #
 ##################
 
-class Rune(CassiopeiaDto):
+class Rune(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # str # Colloq
         self.colloq = dictionary.get("colloq", "")
@@ -998,7 +998,7 @@ class Rune(CassiopeiaDto):
         self.tags = dictionary.get("tags", [])
 
 
-class RuneList(CassiopeiaDto):
+class RuneList(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # BasicData # Basic data
         val = dictionary.get("basic", None)
@@ -1017,7 +1017,7 @@ class RuneList(CassiopeiaDto):
 # Summoner Spell Endpoints #
 ############################
 
-class SummonerSpell(CassiopeiaDto):
+class SummonerSpell(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<float> # Cooldown
         self.cooldown = dictionary.get("cooldown", [])
@@ -1091,7 +1091,7 @@ class SummonerSpell(CassiopeiaDto):
         self.vars = [(SpellVars(svars) if not isinstance(svars, SpellVars) else svars) for svars in dictionary.get("vars", []) if svars]
 
 
-class SummonerSpellList(CassiopeiaDto):
+class SummonerSpellList(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # dict<str, SummonerSpell> # Summoner spell data
         self.data = {id_: SummonerSpell(spell) if not isinstance(spell, SummonerSpell) else spell for id_, spell in dictionary.get("data", {}).items()}

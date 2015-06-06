@@ -1,6 +1,6 @@
-from cassiopeia.type.dto.common import CassiopeiaDto
+import cassiopeia.type.dto.common
 
-class PlayerStatsSummaryList(CassiopeiaDto):
+class PlayerStatsSummaryList(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<PlayerStatsSummary> # Collection of player stats summaries associated with the summoner.
         self.playerStatSummaries = [(PlayerStatsSummary(pss) if not isinstance(pss, PlayerStatsSummary) else pss) for pss in dictionary.get("playerStatSummaries", None) if pss]
@@ -9,7 +9,7 @@ class PlayerStatsSummaryList(CassiopeiaDto):
         self.summonerId = dictionary.get("summonerId", 0)
 
 
-class PlayerStatsSummary(CassiopeiaDto):
+class PlayerStatsSummary(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # AggregatedStats # Aggregated stats.
         val = dictionary.get("aggregatedStats", None)
@@ -28,7 +28,7 @@ class PlayerStatsSummary(CassiopeiaDto):
         self.wins = dictionary.get("wins", 0)
 
 
-class AggregatedStats(CassiopeiaDto):
+class AggregatedStats(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Dominion only.
         self.averageAssists = dictionary.get("averageAssists", 0)
@@ -199,7 +199,7 @@ class AggregatedStats(CassiopeiaDto):
         self.totalUnrealKills = dictionary.get("totalUnrealKills", 0)
 
 
-class RankedStats(CassiopeiaDto):
+class RankedStats(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<ChampionStats> # Collection of aggregated stats summarized by champion.
         self.champions = [(ChampionStats(c) if not isinstance(c, ChampionStats) else c) for c in dictionary.get("champions", []) if c]
@@ -211,7 +211,7 @@ class RankedStats(CassiopeiaDto):
         self.summonerId = dictionary.get("summonerId", 0)
 
 
-class ChampionStats(CassiopeiaDto):
+class ChampionStats(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Champion ID. Note that champion ID 0 represents the combined stats for all champions. For static information correlating to champion IDs, please refer to the LoL Static Data API.
         self.id = dictionary.get("id", 0)

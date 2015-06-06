@@ -1,6 +1,6 @@
-from cassiopeia.type.dto.common import CassiopeiaDto
+import cassiopeia.type.dto.common
 
-class Participant(CassiopeiaDto):
+class Participant(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # bool # Flag indicating whether or not this participant is a bot
         self.bot = dictionary.get("bot", False)
@@ -24,13 +24,13 @@ class Participant(CassiopeiaDto):
         self.teamId = dictionary.get("teamId", 0)
 
 
-class Observer(CassiopeiaDto):
+class Observer(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # str # Key used to decrypt the spectator grid game data for playback
         self.encryptionKey = dictionary.get("encryptionKey", "")
 
 
-class BannedChampion(CassiopeiaDto):
+class BannedChampion(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # The ID of the banned champion
         self.championId = dictionary.get("championId", 0)
@@ -42,7 +42,7 @@ class BannedChampion(CassiopeiaDto):
         self.teamId = dictionary.get("teamId", 0)
 
 
-class FeaturedGameInfo(CassiopeiaDto):
+class FeaturedGameInfo(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<BannedChampion> # Banned champion information
         self.bannedChampions = [(BannedChampion(ban) if not isinstance(ban, BannedChampion) else ban) for ban in dictionary.get("bannedChampions", []) if ban]
@@ -79,7 +79,7 @@ class FeaturedGameInfo(CassiopeiaDto):
         self.platformId = dictionary.get("platformId", "")
 
 
-class FeaturedGames(CassiopeiaDto):
+class FeaturedGames(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # The suggested interval to wait before requesting FeaturedGames again
         self.clientRefreshInterval = dictionary.get("clientRefreshInterval", 0)

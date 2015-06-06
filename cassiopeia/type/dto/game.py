@@ -1,6 +1,6 @@
-from cassiopeia.type.dto.common import CassiopeiaDto
+import cassiopeia.type.dto.common
 
-class RawStatsDto(CassiopeiaDto):
+class RawStatsDto(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Number of assists
         self.assists = dictionary.get("assists", 0)
@@ -237,7 +237,7 @@ class RawStatsDto(CassiopeiaDto):
         self.win = dictionary.get("win", False)
 
 
-class Player(CassiopeiaDto):
+class Player(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Champion id associated with player.
         self.championId = dictionary.get("championId", 0)
@@ -249,7 +249,7 @@ class Player(CassiopeiaDto):
         self.teamId = dictionary.get("teamId", 0)
 
 
-class Game(CassiopeiaDto):
+class Game(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Champion ID associated with game.
         self.championId = dictionary.get("championId", 0)
@@ -298,7 +298,7 @@ class Game(CassiopeiaDto):
         self.teamId = dictionary.get("teamId", 0)
 
 
-class RecentGames(CassiopeiaDto):
+class RecentGames(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<Game> # Collection of recent games played (max 10).
         self.games = [(Game(game) if not isinstance(game, Game) else game) for game in dictionary.get("games", []) if game]

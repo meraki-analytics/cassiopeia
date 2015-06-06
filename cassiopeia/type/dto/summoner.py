@@ -1,6 +1,6 @@
-from cassiopeia.type.dto.common import CassiopeiaDto
+import cassiopeia.type.dto.common
 
-class RunePages(CassiopeiaDto):
+class RunePages(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<RunePage> # Collection of rune pages associated with the summoner.
         self.pages = [(RunePage(p) if not isinstance(p, RunePage) else p) for p in dictionary.get("pages", []) if p]
@@ -9,7 +9,7 @@ class RunePages(CassiopeiaDto):
         self.summonerId = dictionary.get("summonerId", 0)
 
 
-class RunePage(CassiopeiaDto):
+class RunePage(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # bool # Indicates if the page is the current page.
         self.current = dictionary.get("current", False)
@@ -24,7 +24,7 @@ class RunePage(CassiopeiaDto):
         self.slots = [(RuneSlot(s) if not isinstance(s, RuneSlot) else s) for s in dictionary.get("slots", []) if s]
 
 
-class RuneSlot(CassiopeiaDto):
+class RuneSlot(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Rune ID associated with the rune slot. For static information correlating to rune IDs, please refer to the LoL Static Data API.
         self.runeId = dictionary.get("runeId", 0)
@@ -33,7 +33,7 @@ class RuneSlot(CassiopeiaDto):
         self.runeSlotId = dictionary.get("runeSlotId", 0)
 
 
-class MasteryPages(CassiopeiaDto):
+class MasteryPages(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<MasteryPage> # Collection of mastery pages associated with the summoner.
         self.pages = [(MasteryPage(p) if not isinstance(p, MasteryPage) else p) for p in dictionary.get("pages", []) if p]
@@ -42,7 +42,7 @@ class MasteryPages(CassiopeiaDto):
         self.summonerId = dictionary.get("summonerId", 0)
 
 
-class MasteryPage(CassiopeiaDto):
+class MasteryPage(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # bool # Indicates if the mastery page is the current mastery page.
         self.current = dictionary.get("current", False)
@@ -57,7 +57,7 @@ class MasteryPage(CassiopeiaDto):
         self.name = dictionary.get("name", "")
 
 
-class Mastery(CassiopeiaDto):
+class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Mastery ID. For static information correlating to masteries, please refer to the LoL Static Data API.
         self.id = dictionary.get("id", 0)
@@ -66,7 +66,7 @@ class Mastery(CassiopeiaDto):
         self.rank = dictionary.get("rank", 0)
 
 
-class Summoner(CassiopeiaDto):
+class Summoner(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Summoner ID.
         self.id = dictionary.get("id", 0)

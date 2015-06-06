@@ -1,6 +1,6 @@
-from cassiopeia.type.dto.common import CassiopeiaDto
+import cassiopeia.type.dto.common
 
-class Shard(CassiopeiaDto):
+class Shard(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # str # Hostname
         self.hostname = dictionary.get("hostname", "")
@@ -18,7 +18,7 @@ class Shard(CassiopeiaDto):
         self.slug = dictionary.get("slug", "")
 
 
-class Translation(CassiopeiaDto):
+class Translation(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # str # Content
         self.content = dictionary.get("content", "")
@@ -30,7 +30,7 @@ class Translation(CassiopeiaDto):
         self.updated_at = dictionary.get("updated_at", "")
 
 
-class Message(CassiopeiaDto):
+class Message(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # str # Author
         self.author = dictionary.get("author", "")
@@ -54,7 +54,7 @@ class Message(CassiopeiaDto):
         self.updated_at = dictionary.get("updated_at", "")
 
 
-class Incident(CassiopeiaDto):
+class Incident(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # bool # Active
         self.active = dictionary.get("active", False)
@@ -69,7 +69,7 @@ class Incident(CassiopeiaDto):
         self.updates = [(Message(msg) if not isinstance(msg, Message) else msg) for msg in dictionary.get("updates", []) if msg]
 
 
-class Service(CassiopeiaDto):
+class Service(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<Incident> # Incidents
         self.incidents = [(Incident(inc) if not isinstance(inc, Incident) else inc) for inc in dictionary.get("incidents", []) if inc]
@@ -84,7 +84,7 @@ class Service(CassiopeiaDto):
         self.status = dictionary.get("status", "")
 
 
-class ShardStatus(CassiopeiaDto):
+class ShardStatus(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # str # Hostname
         self.hostname = dictionary.get("hostname", "")

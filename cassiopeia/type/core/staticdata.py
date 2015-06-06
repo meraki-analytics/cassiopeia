@@ -1,11 +1,11 @@
-from cassiopeia import riotapi
-from cassiopeia.type.core.common import CassiopeiaObject, Map, lazyproperty
+import cassiopeia.riotapi
+import cassiopeia.type.core.common
 
 ######################
 # Champion Endpoints #
 ######################
 
-class BlockItem(CassiopeiaObject):
+class BlockItem(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "{item} ({count})".format(item=self.item, count=self.count)
 
@@ -13,19 +13,19 @@ class BlockItem(CassiopeiaObject):
     def count(self):
         return self.data.count
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def item(self):
-        return riotapi.get_item(self.data.id)
+        return cassiopeia.riotapi.get_item(self.data.id)
 
 
-class Block(CassiopeiaObject):
+class Block(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Block Item"
 
     def __iter__(self):
         return iter(self.items)
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def items(self):
         return [BlockItem(item) for item in self.data.items]
 
@@ -38,7 +38,7 @@ class Block(CassiopeiaObject):
         return self.data.type
 
 
-class SpellVariables(CassiopeiaObject):
+class SpellVariables(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Spell Variables"
 
@@ -63,7 +63,7 @@ class SpellVariables(CassiopeiaObject):
         return self.data.ranksWith
 
 
-class LevelTip(CassiopeiaObject):
+class LevelTip(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Level Tip"
 
@@ -76,7 +76,7 @@ class LevelTip(CassiopeiaObject):
         return self.data.label
 
 
-class ChampionStats(CassiopeiaObject):
+class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Champion Stats"
 
@@ -181,7 +181,7 @@ class ChampionStats(CassiopeiaObject):
         return self.data.spellblockperlevel
 
 
-class Skin(CassiopeiaObject):
+class Skin(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return self.name
 
@@ -198,20 +198,20 @@ class Skin(CassiopeiaObject):
         return self.data.num
 
 
-class RecommendedItems(CassiopeiaObject):
+class RecommendedItems(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         "Recommended Items for {champion} on {mode}".format(champion=self.data.champion, mode=self.mode)
 
     def __iter__(self):
         return iter(self.blocks)
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def blocks(self):
         return [Block(block) for block in self.data.blocks]
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def champion(self):
-        return riotapi.get_champion_by_name(self.data.champion) if self.data.champion else None
+        return cassiopeia.riotapi.get_champion_by_name(self.data.champion) if self.data.champion else None
 
     @property
     def map(self):
@@ -234,7 +234,7 @@ class RecommendedItems(CassiopeiaObject):
         return self.data.type
 
 
-class Image(CassiopeiaObject):
+class Image(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Image ({link})".format(link=self.link)
 
@@ -274,7 +274,7 @@ class Image(CassiopeiaObject):
         return self.data.y
 
 
-class Passive(CassiopeiaObject):
+class Passive(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return self.name
 
@@ -282,7 +282,7 @@ class Passive(CassiopeiaObject):
     def description(self):
         return self.data.description
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def image(self):
         return Image(self.data.image) if self.data.image else None
 
@@ -295,7 +295,7 @@ class Passive(CassiopeiaObject):
         return self.data.sanitizedDescription
 
 
-class ChampionInfo(CassiopeiaObject):
+class ChampionInfo(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Champion Information"
 
@@ -320,12 +320,12 @@ class ChampionInfo(CassiopeiaObject):
         return self.data.magic
 
 
-class Spell(CassiopeiaObject):
+class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return self.name
 
     # list<Image> # Alternate images
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def alternate_images(self):
         return [Image(img) for img in self.data.altimages]
 
@@ -370,7 +370,7 @@ class Spell(CassiopeiaObject):
         return self.data.effectBurn
 
     # Image # Image
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def image(self):
         return Image(self.data.image) if self.data.image else None
 
@@ -380,7 +380,7 @@ class Spell(CassiopeiaObject):
         return self.data.key
 
     # LevelTip # Level tip
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def level_tip(self):
         return LevelTip(self.data.leveltip) if self.data.leveltip else None
 
@@ -425,12 +425,12 @@ class Spell(CassiopeiaObject):
         return self.data.tooltip
 
     # list<SpellVariables> # Vars
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def variables(self):
-        return [SpelVariables(svars) for svars in self.data.vars]
+        return [SpellVariables(svars) for svars in self.data.vars]
 
 
-class Champion(CassiopeiaObject):
+class Champion(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return self.name
 
@@ -456,11 +456,11 @@ class Champion(CassiopeiaObject):
     def id(self):
         return self.data.id
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def image(self):
         return Image(self.data.image) if self.data.image else None
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def info(self):
         return ChampionInfo(self.data.info) if self.data.info else None
 
@@ -480,23 +480,23 @@ class Champion(CassiopeiaObject):
     def resource(self):
         return self.data.partype
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def passive(self):
         return Passive(self.data.passive) if self.data.passive else None
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def recommended_items(self):
         return [RecommendedItems(rec) for rec in self.data.recommended]
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def skins(self):
         return [Skin(skin) for skin in self.data.skins]
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def spells(self):
         return [Spell(spell) for spell in self.data.spells]
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def stats(self):
         return ChampionStats(self.data.stats) if self.data.stats else None
 
@@ -512,7 +512,7 @@ class Champion(CassiopeiaObject):
 # Item Endpoints #
 ##################
 
-class MetaData(CassiopeiaObject):
+class MetaData(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Meta Data"
 
@@ -532,7 +532,7 @@ class MetaData(CassiopeiaObject):
         return self.data.type
 
 
-class Gold(CassiopeiaObject):
+class Gold(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "{price} gold".format(price=self.total)
 
@@ -557,7 +557,7 @@ class Gold(CassiopeiaObject):
         return self.data.total
 
 
-class ItemStats(CassiopeiaObject):
+class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Item Stats"
 
@@ -822,7 +822,7 @@ class ItemStats(CassiopeiaObject):
         return self.data.rPercentTimeDeadModPerLevel
 
 
-class Item(CassiopeiaObject):
+class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return self.name
 
@@ -856,7 +856,7 @@ class Item(CassiopeiaObject):
     def components(self):
         return self.data.from_
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def gold(self):
         return Gold(self.data.gold) if self.data.gold else None
 
@@ -872,7 +872,7 @@ class Item(CassiopeiaObject):
     def id(self):
         return self.data.id
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def image(self):
         return Image(self.data.image) if self.data.image else None
 
@@ -896,11 +896,11 @@ class Item(CassiopeiaObject):
     def plaintext(self):
         return self.data.plaintext
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def required_champion(self):
-        return riotapi.get_champion_by_name(self.data.requiredChampion) if self.data.requiredChampion else None
+        return cassiopeia.riotapi.get_champion_by_name(self.data.requiredChampion) if self.data.requiredChampion else None
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def meta_data(self):
         return MetaData(self.data.rune) if self.data.rune else None
 
@@ -916,7 +916,7 @@ class Item(CassiopeiaObject):
     def stacks(self):
         return self.data.stacks
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def stats(self):
         return ItemStats(self.data.stats) if self.data.stats else None
 
@@ -925,7 +925,7 @@ class Item(CassiopeiaObject):
         return self.data.tags
 
 
-class Group(CassiopeiaObject):
+class Group(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Group ({key})".format(key=self.key)
 
@@ -941,27 +941,27 @@ class Group(CassiopeiaObject):
 # Map Endpoint #
 ################
 
-class MapDetails(CassiopeiaObject):
+class MapDetails(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return self.data.name
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def image(self):
         return Image(self.data.image) if self.data.image else None
 
     @property
     def map(self):
-        return Map(self.data.mapId) if self.data.mapId else None
+        return cassiopeia.type.core.common.Map(self.data.mapId) if self.data.mapId else None
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def unpurchasable_items(self):
-        return riotapi.get_items(self.data.unpurchasableItemList)
+        return cassiopeia.riotapi.get_items(self.data.unpurchasableItemList)
 
 #####################
 # Mastery Endpoints #
 #####################
 
-class Mastery(CassiopeiaObject):
+class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return self.name
 
@@ -982,7 +982,7 @@ class Mastery(CassiopeiaObject):
         return self.data.id
 
     # Image # Image
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def image(self):
         return Image(self.data.image) if self.data.image else None
 
@@ -1015,7 +1015,7 @@ class Mastery(CassiopeiaObject):
 # Realm Endpoint #
 ##################
 
-class Realm(CassiopeiaObject):
+class Realm(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Realm"
 
@@ -1068,7 +1068,7 @@ class Realm(CassiopeiaObject):
 # Rune Endpoints #
 ##################
 
-class Rune(CassiopeiaObject):
+class Rune(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return self.name
 
@@ -1124,7 +1124,7 @@ class Rune(CassiopeiaObject):
         return self.data.id
 
     # Image # Image
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def image(self):
         return Image(self.data.image) if self.data.image else None
 
@@ -1154,12 +1154,12 @@ class Rune(CassiopeiaObject):
         return self.data.plaintext
 
     # Champion # Required champion
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def required_champion(self):
-        return riotapi.get_champion_by_name(self.data.requiredChampion) if self.data.requiredChampion else None
+        return cassiopeia.riotapi.get_champion_by_name(self.data.requiredChampion) if self.data.requiredChampion else None
 
     # MetaData # Meta Data
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def meta_data(self):
         return MetaData(self.data.rune) if self.data.rune else None
 
@@ -1179,7 +1179,7 @@ class Rune(CassiopeiaObject):
         return self.data.stacks
 
     # ItemStats # Stats
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def stats(self):
         return ItemStats(self.data.stats) if self.data.stats else None
 
@@ -1192,7 +1192,7 @@ class Rune(CassiopeiaObject):
 # Summoner Spell Endpoints #
 ############################
 
-class SummonerSpell(CassiopeiaObject):
+class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return self.name
 
@@ -1248,7 +1248,7 @@ class SummonerSpell(CassiopeiaObject):
         return self.data.id
 
     # Image # Image
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def image(self):
         return Image(self.data.image) if self.data.image else None
 
@@ -1258,7 +1258,7 @@ class SummonerSpell(CassiopeiaObject):
         return self.data.key
 
     # LevelTip # Level tip
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def leveltip(self):
         return LevelTip(self.data.leveltip) if self.data.leveltip else None
 
@@ -1313,6 +1313,6 @@ class SummonerSpell(CassiopeiaObject):
         return self.data.tooltip
 
     # list<SpellVariables> # Vars
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def variables(self):
-        return [SpelVariables(svars) for svars in self.data.vars]
+        return [SpellVariables(svars) for svars in self.data.vars]

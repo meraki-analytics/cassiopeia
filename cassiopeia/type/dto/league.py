@@ -1,6 +1,6 @@
-from cassiopeia.type.dto.common import CassiopeiaDto
+import cassiopeia.type.dto.common
 
-class MiniSeries(CassiopeiaDto):
+class MiniSeries(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Number of current losses in the mini series.
         self.losses = dictionary.get("losses", 0)
@@ -15,7 +15,7 @@ class MiniSeries(CassiopeiaDto):
         self.wins = dictionary.get("wins", 0)
 
 
-class LeagueEntry(CassiopeiaDto):
+class LeagueEntry(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # str # The league division of the participant.
         self.division = dictionary.get("division", "")
@@ -52,7 +52,7 @@ class LeagueEntry(CassiopeiaDto):
         self.wins = dictionary.get("wins", 0)
 
 
-class League(CassiopeiaDto):
+class League(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<LeagueEntry> # The requested league entries.
         self.entries = [(LeagueEntry(entry) if not isinstance(entry, LeagueEntry) else entry) for entry in dictionary.get("entries", []) if entry]
@@ -68,3 +68,41 @@ class League(CassiopeiaDto):
 
         # str # The league's tier. (Legal values: CHALLENGER, MASTER, DIAMOND, PLATINUM, GOLD, SILVER, BRONZE)
         self.tier = dictionary.get("tier", "")
+
+    @property
+    def summoner_ids(self):
+        ids = set()
+
+        if(self.data.participantId): 
+            try:
+                id_ = int(self.data.participantId)
+                ids.add(id_)
+            except(ValueError):
+                pass
+
+        for entry in self.entries:
+            if(entry.data.playerOrTeamId): 
+                try:
+                    id_ = int(entry.data.playerOrTeamId)
+                    ids.add(id_)
+                except(ValueError):
+                    pass
+        return ids
+
+    @property
+    def team_ids(self):
+        ids = set()
+
+        if(self.data.participantId): 
+            try:
+                int(self.data.participantId)
+            except(ValueError):
+                ids.add(self.data.participantId)
+
+        for entry in self.entries:
+            if(entry.data.playerOrTeamId):
+                try:
+                    int(entry.data.playerOrTeamId)
+                except(ValueError):
+                    ids.add(entry.data.playerOrTeamId)
+        return ids

@@ -1,13 +1,12 @@
-from datetime import datetime
+import datetime
 
-from cassiopeia import riotapi
-from cassiopeia.type.core.common import CassiopeiaObject, StatSummaryType, lazyproperty
+import cassiopeia.type.core.common
 
-class StatsSummary(CassiopeiaObject):
+class StatsSummary(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Stats Summary"
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def stats(self):
         return AggregatedStats(self.data.aggregatedStats) if self.data.aggregatedStats else None
 
@@ -15,20 +14,20 @@ class StatsSummary(CassiopeiaObject):
     def losses(self):
         return self.data.losses
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def modify_date(self):
-        return datetime.utcfromtimestamp(self.data.modifyDate) if self.data.modifyDate else None
+        return datetime.datetime.utcfromtimestamp(self.data.modifyDate) if self.data.modifyDate else None
 
     @property
     def type(self):
-        return StatSummaryType(self.data.playerStatSummaryType) if self.data.playerStatSummaryType else None
+        return cassiopeia.type.core.common.StatSummaryType(self.data.playerStatSummaryType) if self.data.playerStatSummaryType else None
 
     @property
     def wins(self):
         return self.data.wins
 
 
-class AggregatedStats(CassiopeiaObject):
+class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Aggregated Stats"
 

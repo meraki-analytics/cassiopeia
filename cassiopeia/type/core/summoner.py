@@ -1,9 +1,9 @@
-from datetime import datetime
+import datetime
 
-from cassiopeia import riotapi
-from cassiopeia.type.core.common import CassiopeiaObject, lazyproperty
+import cassiopeia.riotapi
+import cassiopeia.type.core.common
 
-class RunePage(CassiopeiaObject):
+class RunePage(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Rune Page ({name})".format(name=self.name)
 
@@ -28,12 +28,12 @@ class RunePage(CassiopeiaObject):
     def name(self):
         return self.dict.name
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def runes(self):
-        return riotapi.get_runes([slot.runeId for slot in self.data.slots])
+        return cassiopeia.riotapi.get_runes([slot.runeId for slot in self.data.slots])
 
 
-class MasteryPage(CassiopeiaObject):
+class MasteryPage(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Mastery Page ({name})".format(name=self.name)
 
@@ -54,21 +54,21 @@ class MasteryPage(CassiopeiaObject):
     def id(self):
         return self.dict.id
 
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def masteries(self):
         masteries = []
         ranks = []
         for mastery in self.data.masteries:
             masteries.append(mastery.id)
             ranks.append(mastery.rank)
-        return zip(riotapi.get_masteries(masteries), ranks)
+        return zip(cassiopeia.riotapi.get_masteries(masteries), ranks)
 
     @property
     def name(self):
         return self.dict.name
 
 
-class Summoner(CassiopeiaObject):
+class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return self.name
 
@@ -94,9 +94,9 @@ class Summoner(CassiopeiaObject):
         return self.data.profileIconId
 
     # int # Date summoner was last modified specified as epoch milliseconds. The following events will update this timestamp: profile icon change, playing the tutorial or advanced tutorial, finishing a game, summoner name change
-    @lazyproperty
+    @cassiopeia.type.core.common.lazyproperty
     def modify_date(self):
-        return datetime.utcfromtimestamp(self.data.revisionDate) if self.data.revisionDate else None
+        return datetime.datetime.utcfromtimestamp(self.data.revisionDate) if self.data.revisionDate else None
 
     # int # Summoner level associated with the summoner.
     @property

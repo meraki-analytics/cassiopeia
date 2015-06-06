@@ -1,4 +1,4 @@
-from enum import Enum
+import enum
 
 class CassiopeiaObject:
     # @param data # CassiopeiaDto # The underlying DTO object with the data for this type
@@ -31,14 +31,19 @@ class lazyproperty(property):
             return self.value
 
 
-class Lane(Enum):
+class LoadPolicy(enum.Enum):
+    lazy = "LAZY"
+    eager = "EAGER"
+
+
+class Lane(enum.Enum):
     top_lane = "TOP"
     jungle = "JUNGLE"
     mid_lane = "MIDDLE"
     bot_lane = "BOTTOM"
 
 
-class Role(Enum):
+class Role(enum.Enum):
     none = "NONE"
     solo = "SOLO"
     duo = "DUO"
@@ -46,12 +51,12 @@ class Role(Enum):
     support = "DUO_SUPPORT"
 
 
-class Side(Enum):
+class Side(enum.Enum):
     blue = 100
     red = 200
 
 
-class Queue(Enum):
+class Queue(enum.Enum):
     custom = "CUSTOM"
     normal_blind_fives = "NORMAL_5x5_BLIND"
     bot_fives = "BOT_5x5"
@@ -84,8 +89,10 @@ class Queue(Enum):
     poro_king = "KING_PORO_5x5"
     nemesis_draft = "COUNTER_PICK"
 
+ranked_queues = {Queue.ranked_solo, Queue.ranked_threes, Queue.ranked_fives}
 
-class Tier(Enum):
+
+class Tier(enum.Enum):
     challenger = "CHALLENGER"
     master = "MASTER"
     diamond = "DIAMOND"
@@ -95,7 +102,7 @@ class Tier(Enum):
     bronze = "BRONZE"
 
 
-class Division(Enum):
+class Division(enum.Enum):
     one = "I"
     two = "II"
     three = "III"
@@ -103,7 +110,7 @@ class Division(Enum):
     five = "V"
 
 
-class Season(Enum):
+class Season(enum.Enum):
     preseason_3 = "PRESEASON3"
     season_3 = "SEASON3"
     preseason_4 = "PRESEASON2014"
@@ -111,7 +118,7 @@ class Season(Enum):
     preseason_5 = "PRESEASON2015"
     season_5 = "SEASON2015"
 
-class Region(Enum):
+class Region(enum.Enum):
     brazil = "BR"
     europe_north_east = "EUNE"
     europe_west = "EUW"
@@ -124,7 +131,7 @@ class Region(Enum):
     turkey = "TR"
 
 
-class Platform(Enum):
+class Platform(enum.Enum):
     brazil = "BR1"
     europe_north_east = "EUN1"
     europe_west = "EUW1"
@@ -137,7 +144,7 @@ class Platform(Enum):
     turkey = "TR1"
 
 
-class Map(Enum):
+class Map(enum.Enum):
     summoners_rift_summer = 1
     summoners_rift_autumn = 2
     the_proving_grounds = 3
@@ -148,7 +155,7 @@ class Map(Enum):
     howling_abyss = 12
 
 
-class GameMode(Enum):
+class GameMode(enum.Enum):
     aram = "ARAM"
     ascension = "ASCENSION"
     classic = "CLASSIC"
@@ -159,13 +166,13 @@ class GameMode(Enum):
     tutorial = "TUTORIAL"
 
 
-class GameType(Enum):
+class GameType(enum.Enum):
     custom = "CUSTOM_GAME"
     tutorial = "TUTORIAL_GAME"
     matched = "MATCHED_GAME"
 
 
-class SubType(Enum):
+class SubType(enum.Enum):
     custom = "NONE"
     normal_fives = "NORMAL"
     normal_threes = "NORMAL_3x3"
@@ -190,7 +197,7 @@ class SubType(Enum):
     nemesis_draft = "COUNTER_PICK"
 
 
-class StatSummaryType(Enum):
+class StatSummaryType(enum.Enum):
     normal_fives = "Unranked"
     normal_threes = "Unranked3x3"
     dominion = "OdinUnranked"
@@ -214,18 +221,18 @@ class StatSummaryType(Enum):
     nemesis_draft = "CounterPick"
 
 
-class Ascended(Enum):
+class Ascended(enum.Enum):
     player = "CHAMPION_ASCENDED"
     death = "CLEAR_ASCENDED"
     npc = "MINION_ASCENDED"
 
 
-class Building(Enum):
+class Building(enum.Enum):
     inhibitor = "INHIBITOR_BUILDING"
     turret = "TOWER_BUILDING"
 
 
-class EventType(Enum):
+class EventType(enum.Enum):
     ascension = "ASCENDED_EVENT"
     building_kill = "BUILDING_KILL"
     point_capture = "CAPTURE_POINT"
@@ -241,18 +248,18 @@ class EventType(Enum):
     ward_placement = "WARD_PLACED"
 
 
-class LaneType(Enum):
+class LaneType(enum.Enum):
     top_lane = "TOP_LANE"
     mid_lane = "MID_LANE"
     bot_lane = "BOT_LANE"
 
 
-class LevelUp(Enum):
+class LevelUp(enum.Enum):
     evolution = "EVOLVE"
     normal = "NORMAL"
 
 
-class Monster(Enum):
+class Monster(enum.Enum):
     baron = "BARON_NASHOR"
     dragon = "DRAGON"
     blue = "BLUE_GOLEM"
@@ -260,7 +267,7 @@ class Monster(Enum):
     spider = "VILEMAW"
 
 
-class Point(Enum):
+class Point(enum.Enum):
     windmill = "POINT_C"
     drill = "POINT_D"
     boneyard = "POINT_E"
@@ -268,7 +275,7 @@ class Point(Enum):
     refinery = "POINT_B"
 
 
-class Turret(Enum):
+class Turret(enum.Enum):
     outer = "OUTER_TURRET"
     inner = "INNER_TURRET"
     inhibitor = "BASE_TURRET"
@@ -277,7 +284,7 @@ class Turret(Enum):
     undefined = "UNDEFINED_TURRET"
 
 
-class Ward(Enum):
+class Ward(enum.Enum):
     sight = "SIGHT_WARD"
     vision = "VISION_WARD"
     trinket = "YELLOW_TRINKET"
