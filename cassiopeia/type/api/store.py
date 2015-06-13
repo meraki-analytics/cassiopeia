@@ -1,4 +1,4 @@
-class Cache:
+class Cache(object):
     def __init__(self):
         self.cache = {}
 

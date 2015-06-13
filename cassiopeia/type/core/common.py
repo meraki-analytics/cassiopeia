@@ -1,6 +1,6 @@
 import enum
 
-class CassiopeiaObject:
+class CassiopeiaObject(object):
     # @param data # CassiopeiaDto # The underlying DTO object with the data for this type
     def __init__(self, data):
         self.data = data

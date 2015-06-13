@@ -11,6 +11,12 @@ class MatchSummary(cassiopeia.type.core.common.CassiopeiaObject):
     def __iter__(self):
         return iter(self.participants)
 
+    def __len__(self):
+        return len(self.participants)
+
+    def __getitem__(self, index):
+        return self.participants[index]
+
     def __eq__(self, other):
         return self.id == other.id
 
@@ -103,10 +109,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def runes(self):
-        runes = []
-        for rune in self.data.runes:
-            for _ in range(rune.rank):
-                runes.append(rune.runeId)
+        runes = [rune.runeId for _ in range(rune.rank) for rune in self.data.participant.runes]
         return cassiopeia.riotapi.get_runes(runes)
 
     @cassiopeia.type.core.common.lazyproperty

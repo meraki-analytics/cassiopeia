@@ -128,6 +128,12 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
     def __iter__(self):
         return iter(self.entries)
 
+    def __len__(self):
+        return len(self.entries)
+
+    def __getitem__(self, index):
+        return self.entries[index]
+
     # list<Entry> # The requested league entries, sorted by LP.
     @cassiopeia.type.core.common.lazyproperty
     def entries(self):

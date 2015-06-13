@@ -10,6 +10,12 @@ class RunePage(cassiopeia.type.core.common.CassiopeiaObject):
     def __iter__(self):
         return iter(self.runes)
 
+    def __len__(self):
+        return len(self.runes)
+
+    def __getitem__(self, index):
+        return self.runes[index]
+
     def __eq__(self, other):
         return self.id == other.id
 
@@ -39,6 +45,12 @@ class MasteryPage(cassiopeia.type.core.common.CassiopeiaObject):
 
     def __iter__(self):
         return iter(self.masteries)
+
+    def __len__(self):
+        return len(self.masteries)
+
+    def __getitem__(self, index):
+        return self.masteries[index]
 
     def __eq__(self, other):
         return self.id == other.id
