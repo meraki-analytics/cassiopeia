@@ -25,6 +25,12 @@ class Block(cassiopeia.type.core.common.CassiopeiaObject):
     def __iter__(self):
         return iter(self.items)
 
+    def __len__(self):
+        return len(self.items)
+
+    def __getitem__(self, index):
+        return self.items[index]
+
     @cassiopeia.type.core.common.lazyproperty
     def items(self):
         return [BlockItem(item) for item in self.data.items]
@@ -204,6 +210,12 @@ class RecommendedItems(cassiopeia.type.core.common.CassiopeiaObject):
 
     def __iter__(self):
         return iter(self.blocks)
+
+    def __len__(self):
+        return len(self.blocks)
+
+    def __getitem__(self, index):
+        return self.blocks[index]
 
     @cassiopeia.type.core.common.lazyproperty
     def blocks(self):

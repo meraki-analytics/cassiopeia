@@ -11,6 +11,12 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def __iter__(self):
         return iter(self.participants)
 
+    def __len__(self):
+        return len(self.participants)
+
+    def __getitem__(self, index):
+        return self.participants[index]
+
     def __eq__(self, other):
         return self.id == other.id
 
@@ -121,10 +127,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def runes(self):
-        runes = []
-        for rune in self.data.participant.runes:
-            for _ in range(rune.rank):
-                runes.append(rune.runeId)
+        runes = [rune.runeId for _ in range(rune.rank) for rune in self.data.participant.runes]
         return cassiopeia.riotapi.get_runes(runes)
 
     @cassiopeia.type.core.common.lazyproperty
@@ -228,13 +231,19 @@ class Timeline(cassiopeia.type.core.common.CassiopeiaObject):
     def __iter__(self):
         return iter(self.frames)
 
+    def __len__(self):
+        return len(self.frames)
+
+    def __getitem__(self, index):
+        return self.frames[index]
+
     @cassiopeia.type.core.common.lazyproperty
     def frame_interval(self):
         return datetime.timedelta(milliseconds=self.data.frameInterval)
 
     @cassiopeia.type.core.common.lazyproperty
     def frames(self):
-        participants = {id_: participant for participant in self.__participants}
+        participants = {participant.id: participant for participant in self.__participants}
         value = [Frame(frame, participants) for frame in self.data.frames]
         del self.__participants
         return value
@@ -730,6 +739,12 @@ class Frame(cassiopeia.type.core.common.CassiopeiaObject):
     def __iter__(self):
         return iter(self.events)
 
+    def __len__(self):
+        return len(self.events)
+
+    def __getitem__(self, index):
+        return self.events[index]
+
     def __count_participant(self):
         self.__counter += 1
         if(self.__counter >= __participant_quota):
@@ -797,7 +812,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def assists(self):
-        value = [participants[i] for i in self.data.assistingParticipantIds]
+        value = [self.__participants[i] for i in self.data.assistingParticipantIds]
         self.__count_participant()
         return value
 
