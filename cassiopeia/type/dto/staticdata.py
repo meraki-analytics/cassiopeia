@@ -331,6 +331,15 @@ class Champion(cassiopeia.type.dto.common.CassiopeiaDto):
         # str # Title
         self.title = dictionary.get("title", "")
 
+    @property
+    def item_ids(self):
+        ids = set()
+        for r in self.recommended:
+            for b in r.blocks:
+                for i in b.items:
+                    ids.add(i.id)
+        return ids
+
 
 class ChampionList(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
@@ -348,6 +357,13 @@ class ChampionList(cassiopeia.type.dto.common.CassiopeiaDto):
 
         # str # version
         self.version = dictionary.get("version", "")
+
+    @property
+    def item_ids(self):
+        ids = set()
+        for c in self.data.items:
+            ids = ids | c.value.item_ids
+        return ids
 
 ##################
 # Item Endpoints #

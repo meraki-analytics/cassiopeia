@@ -5,7 +5,7 @@ import cassiopeia.type.dto.summoner
 # @return # dict<str, Summoner> # The requested summoners
 def get_summoners_by_name(summoner_names):
     # Can only have 40 summoners max if it's a list
-    if(isinstance(summoner_names, list) and len(summoner_names > 40)):
+    if(isinstance(summoner_names, list) and len(summoner_names) > 40):
         raise ValueError("Can only get up to 40 summoners at once.")
 
     name_string = ",".join(str(x) for x in summoner_names) if isinstance(summoner_names, list) else str(summoner_names)
@@ -24,7 +24,7 @@ def get_summoners_by_name(summoner_names):
 # @return # dict<str, Summoner> # The requested summoners
 def get_summoners_by_id(summoner_ids):
     # Can only have 40 summoners max if it's a list
-    if(isinstance(summoner_ids, list) and len(summoner_ids > 40)):
+    if(isinstance(summoner_ids, list) and len(summoner_ids) > 40):
         raise ValueError("Can only get up to 40 summoners at once.")
 
     id_string = ",".join(str(x) for x in summoner_ids) if isinstance(summoner_ids, list) else str(summoner_ids)
@@ -43,7 +43,7 @@ def get_summoners_by_id(summoner_ids):
 # @return # dict<str, MasteryPages> # The cassiopeia.dto.requests summoners' mastery pages
 def get_summoner_masteries(summoner_ids):
     # Can only have 40 summoners max if it's a list
-    if(isinstance(summoner_ids, list) and len(summoner_ids > 40)):
+    if(isinstance(summoner_ids, list) and len(summoner_ids) > 40):
         raise ValueError("Can only get masteries for up to 40 summoners at once.")
 
     id_string = ",".join(str(x) for x in summoner_ids) if isinstance(summoner_ids, list) else str(summoner_ids)
@@ -62,7 +62,7 @@ def get_summoner_masteries(summoner_ids):
 # @return # dict<str, str> # The names of the requested summoners
 def get_summoner_names(summoner_ids):
     # Can only have 40 summoners max if it's a list
-    if(isinstance(summoner_ids, list) and len(summoner_ids > 40)):
+    if(isinstance(summoner_ids, list) and len(summoner_ids) > 40):
         raise ValueError("Can only get names for up to 40 summoners at once.")
 
     id_string = ",".join(str(x) for x in summoner_ids) if isinstance(summoner_ids, list) else str(summoner_ids)
@@ -75,7 +75,7 @@ def get_summoner_names(summoner_ids):
 # @return # dict<str, RunePages> # The cassiopeia.dto.requests summoners' rune pages
 def get_summoner_runes(summoner_ids):
     # Can only have 40 summoners max if it's a list
-    if(isinstance(summoner_ids, list) and len(summoner_ids > 40)):
+    if(isinstance(summoner_ids, list) and len(summoner_ids) > 40):
         raise ValueError("Can only get runes for up to 40 summoners at once.")
 
     id_string = ",".join(str(x) for x in summoner_ids) if isinstance(summoner_ids, list) else str(summoner_ids)

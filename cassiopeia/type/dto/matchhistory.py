@@ -5,6 +5,48 @@ class PlayerHistory(cassiopeia.type.dto.common.CassiopeiaDto):
         # list<MatchSummary> # List of matches for the player
         self.matches = [(MatchSummary(match) if not isinstance(match, MatchSummary) else match) for match in dictionary.get("matches", []) if match]
 
+    @property
+    def champion_ids(self):
+        ids = set()
+        for m in self.matches:
+            ids = ids | match.champion_ids
+        return ids
+
+    @property
+    def item_ids(self):
+        ids = set()
+        for m in self.matches:
+            ids = ids | match.item_ids
+        return ids
+
+    @property
+    def mastery_ids(self):
+        ids = set()
+        for m in self.matches:
+            ids = ids | match.mastery_ids
+        return ids
+
+    @property
+    def rune_ids(self):
+        ids = set()
+        for m in self.matches:
+            ids = ids | match.rune_ids
+        return ids
+
+    @property
+    def summoner_ids(self):
+        ids = set()
+        for m in self.matches:
+            ids = ids | match.summoner_ids
+        return ids
+
+    @property
+    def summoner_spell_ids(self):
+        ids = set()
+        for m in self.matches:
+            ids = ids | match.summoner_spell_ids
+        return ids
+
 
 class MatchSummary(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
@@ -46,6 +88,71 @@ class MatchSummary(cassiopeia.type.dto.common.CassiopeiaDto):
 
         # str # Season match was played (Legal values: PRESEASON3, SEASON3, PRESEASON2014, SEASON2014, PRESEASON2015, SEASON2015)
         self.season = dictionary.get("season", "")
+
+    @property
+    def item_ids(self):
+        ids = set()
+        for p in self.participants:
+            s = p.stats
+            if(s.item0):
+                ids.add(s.item0)
+            if(s.item1):
+                ids.add(s.item1)
+            if(s.item2):
+                ids.add(s.item2)
+            if(s.item3):
+                ids.add(s.item3)
+            if(s.item4):
+                ids.add(s.item4)
+            if(s.item5):
+                ids.add(s.item5)
+            if(s.item6):
+                ids.add(s.item6)
+        return ids
+
+    @property
+    def champion_ids(self):
+        ids = set()
+        for p in self.participants:
+            if(p.championId):
+                ids.add(p.championId)
+        return ids
+
+    @property
+    def mastery_ids(self):
+        ids = set()
+        for p in self.participants:
+            for m in p.masteries:
+                if(m.masteryId):
+                    ids.add(m.masteryId)
+        return ids
+
+    @property
+    def rune_ids(self):
+        ids = set()
+        for p in self.participants:
+            for r in p.runes:
+                if(r.runeId):
+                    ids.add(r.runeId)
+        return ids
+
+    @property
+    def summoner_ids(self):
+        ids = set()
+        for p in self.participantIdentities:
+            if(p.player and p.player.summonerId):
+                ids.add(p.player.summonerId)
+        return ids
+
+    @property
+    def summoner_spell_ids(self):
+        ids = set()
+        for p in self.participants:
+            if(p.spell1Id):
+                ids.add(p.spell1Id)
+            if(p.spell2Id):
+                ids.add(p.spell2Id)
+        return ids
 
 
 class Participant(cassiopeia.type.dto.common.CassiopeiaDto):

@@ -118,6 +118,9 @@ class Season(enum.Enum):
     preseason_5 = "PRESEASON2015"
     season_5 = "SEASON2015"
 
+stats_seasons = {Season.season_3, Season.season_4, Season.season_5}
+
+
 class Region(enum.Enum):
     brazil = "BR"
     europe_north_east = "EUNE"
