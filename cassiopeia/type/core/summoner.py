@@ -24,15 +24,15 @@ class RunePage(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def current(self):
-        return self.dict.current
+        return self.data.current
 
     @property
     def id(self):
-        return self.dict.id
+        return self.data.id
 
     @property
     def name(self):
-        return self.dict.name
+        return self.data.name
 
     @cassiopeia.type.core.common.lazyproperty
     def runes(self):
@@ -60,24 +60,24 @@ class MasteryPage(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def current(self):
-        return self.dict.current
+        return self.data.current
 
     @property
     def id(self):
-        return self.dict.id
+        return self.data.id
 
     @cassiopeia.type.core.common.lazyproperty
     def masteries(self):
         masteries = []
         ranks = []
-        for mastery in self.data.masteries:
-            masteries.append(mastery.id)
-            ranks.append(mastery.rank)
-        return zip(cassiopeia.riotapi.get_masteries(masteries), ranks)
+        for mastery in self.data.masteries.items():
+            masteries.append(mastery[0])
+            ranks.append(mastery[1])
+        return list(zip(cassiopeia.riotapi.get_masteries(masteries), ranks))
 
     @property
     def name(self):
-        return self.dict.name
+        return self.data.name
 
 
 class Summoner(cassiopeia.type.core.common.CassiopeiaObject):

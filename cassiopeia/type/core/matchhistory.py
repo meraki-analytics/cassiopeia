@@ -101,7 +101,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
         for mastery in self.data.masteries:
             masteries.append(mastery.masteryId)
             ranks.append(mastery.rank)
-        return zip(cassiopeia.riotapi.get_masteries(masteries), ranks)
+        return list(zip(cassiopeia.riotapi.get_masteries(masteries), ranks))
 
     @property
     def id(self):
@@ -109,7 +109,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def runes(self):
-        runes = [rune.runeId for _ in range(rune.rank) for rune in self.data.participant.runes]
+        runes = [rune.runeId for rune in self.data.participant.runes for _ in range(rune.rank)]
         return cassiopeia.riotapi.get_runes(runes)
 
     @cassiopeia.type.core.common.lazyproperty

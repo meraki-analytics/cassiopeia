@@ -17,8 +17,8 @@ api_versions = {
 }
 
 api_key = ""
-region = "NA"
-print_calls = False
+region = ""
+do_print_calls = False
 rate_limiter = cassiopeia.type.api.rates.MultiRateLimiter([(10, 10), (500, 600)])
 
 # @param request # str # The request string which follows /api/lol/{region}/
@@ -55,7 +55,7 @@ def get(request, params={}, static=False):
 # @param url # str # The full URL to send a GET request to
 # @return # str # The content returned by the server
 def executeRequest(url):
-    if(print_calls):
+    if(do_print_calls):
         print(url)
 
     response = None
@@ -77,7 +77,7 @@ def set_region(region):
 
 # @param on # bool # Whether to print calls as they are made to the API
 def print_calls(on):
-    print_calls = on
+    do_print_calls = on
 
 # @param calls_per_epoch # int # Number of calls allowed in each epoch
 # @param seconds_per_epoch # int # Number of seconds per epoch

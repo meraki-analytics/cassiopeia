@@ -210,6 +210,14 @@ class RankedStats(cassiopeia.type.dto.common.CassiopeiaDto):
         # int # Summoner ID.
         self.summonerId = dictionary.get("summonerId", 0)
 
+    @property
+    def champion_ids(self):
+        ids = set()
+        for s in self.champions:
+            if(s.id):
+                ids.add(s.id)
+        return ids
+
 
 class ChampionStats(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):

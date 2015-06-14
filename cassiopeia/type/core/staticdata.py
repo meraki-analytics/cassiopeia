@@ -452,6 +452,9 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
     def __ne__(self, other):
         return self.id != other.id
 
+    def __hash__(self):
+        return self.id
+
     @property
     def ally_tips(self):
         return self.data.allytips
@@ -967,7 +970,7 @@ class MapDetails(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def unpurchasable_items(self):
-        return cassiopeia.riotapi.get_items(self.data.unpurchasableItemList)
+        return list(filter(None, cassiopeia.riotapi.get_items(self.data.unpurchasableItemList)))
 
 #####################
 # Mastery Endpoints #

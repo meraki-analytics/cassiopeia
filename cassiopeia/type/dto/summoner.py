@@ -8,6 +8,13 @@ class RunePages(cassiopeia.type.dto.common.CassiopeiaDto):
         # int # Summoner ID.
         self.summonerId = dictionary.get("summonerId", 0)
 
+    @property
+    def rune_ids(self):
+        ids = set()
+        for p in self.pages:
+            ids = ids | p.rune_ids
+        return ids
+
 
 class RunePage(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
@@ -22,6 +29,14 @@ class RunePage(cassiopeia.type.dto.common.CassiopeiaDto):
 
         # list<RuneSlot> # Collection of rune slots associated with the rune page.
         self.slots = [(RuneSlot(s) if not isinstance(s, RuneSlot) else s) for s in dictionary.get("slots", []) if s]
+
+    @property
+    def rune_ids(self):
+        ids = set()
+        for s in self.slots:
+            if(s.runeId):
+                ids = ids.add(s.runeId)
+        return ids
 
 
 class RuneSlot(cassiopeia.type.dto.common.CassiopeiaDto):
@@ -41,6 +56,13 @@ class MasteryPages(cassiopeia.type.dto.common.CassiopeiaDto):
         # int # Summoner ID.
         self.summonerId = dictionary.get("summonerId", 0)
 
+    @property
+    def mastery_ids(self):
+        ids = set()
+        for p in self.pages:
+            ids = ids | p.mastery_ids
+        return ids
+
 
 class MasteryPage(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
@@ -55,6 +77,14 @@ class MasteryPage(cassiopeia.type.dto.common.CassiopeiaDto):
 
         # str # Mastery page name.
         self.name = dictionary.get("name", "")
+
+    @property
+    def mastery_ids(self):
+        ids = set()
+        for m in self.masteries:
+            if(m.id):
+                ids.add(m.id)
+        return ids
 
 
 class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
