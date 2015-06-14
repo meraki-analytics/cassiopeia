@@ -9,42 +9,42 @@ class PlayerHistory(cassiopeia.type.dto.common.CassiopeiaDto):
     def champion_ids(self):
         ids = set()
         for m in self.matches:
-            ids = ids | match.champion_ids
+            ids = ids | m.champion_ids
         return ids
 
     @property
     def item_ids(self):
         ids = set()
         for m in self.matches:
-            ids = ids | match.item_ids
+            ids = ids | m.item_ids
         return ids
 
     @property
     def mastery_ids(self):
         ids = set()
         for m in self.matches:
-            ids = ids | match.mastery_ids
+            ids = ids | m.mastery_ids
         return ids
 
     @property
     def rune_ids(self):
         ids = set()
         for m in self.matches:
-            ids = ids | match.rune_ids
+            ids = ids | m.rune_ids
         return ids
 
     @property
     def summoner_ids(self):
         ids = set()
         for m in self.matches:
-            ids = ids | match.summoner_ids
+            ids = ids | m.summoner_ids
         return ids
 
     @property
     def summoner_spell_ids(self):
         ids = set()
         for m in self.matches:
-            ids = ids | match.summoner_spell_ids
+            ids = ids | m.summoner_spell_ids
         return ids
 
 
