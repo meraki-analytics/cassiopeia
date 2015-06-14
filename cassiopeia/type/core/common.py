@@ -1,4 +1,5 @@
 import enum
+import json
 
 class CassiopeiaObject(object):
     # @param data # CassiopeiaDto # The underlying DTO object with the data for this type
@@ -17,18 +18,22 @@ class CassiopeiaObject(object):
     def __ne__(self, other):
         return self.data != other.data
 
+    def __hash__(self):
+        return id(self)
+
 
 class lazyproperty(property):
     # @param method # function # The method to make a lazy property out of
     def __init__(self, method):
         self.method = method
+        self.values = {}
 
     def __get__(self, instance, owner):
         try:
-            return self.value
-        except(AttributeError):
-            self.value = self.method(instance)
-            return self.value
+            return self.values[instance]
+        except(KeyError):
+            self.values[instance] = self.method(instance)
+            return self.values[instance]
 
 
 class LoadPolicy(enum.Enum):

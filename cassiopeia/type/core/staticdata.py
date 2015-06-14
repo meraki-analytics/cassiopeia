@@ -453,7 +453,7 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
         return self.id != other.id
 
     def __hash__(self):
-        return self.id
+        return hash(self.id)
 
     @property
     def ally_tips(self):
@@ -847,6 +847,9 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def __ne__(self, other):
         return self.id != other.id
 
+    def __hash__(self):
+        return hash(self.id)
+
     @property
     def colloq(self):
         return self.data.colloq
@@ -986,6 +989,9 @@ class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
     def __ne__(self, other):
         return self.id != other.id
 
+    def __hash__(self):
+        return hash(self.id)
+
     # list<str> # Description
     @property
     def description(self):
@@ -1092,6 +1098,9 @@ class Rune(cassiopeia.type.core.common.CassiopeiaObject):
 
     def __ne__(self, other):
         return self.id != other.id
+
+    def __hash__(self):
+        return hash(self.id)
 
     # str # Colloq
     @property
@@ -1216,6 +1225,9 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
 
     def __ne__(self, other):
         return self.id != other.id
+
+    def __hash__(self):
+        return hash(self.id)
 
     # list<float> # Cooldown
     @property

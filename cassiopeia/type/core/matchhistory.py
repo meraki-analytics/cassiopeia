@@ -23,6 +23,9 @@ class MatchSummary(cassiopeia.type.core.common.CassiopeiaObject):
     def __ne__(self, other):
         return self.id != other.id
 
+    def __hash__(self):
+        return hash(self.id)
+
     @property
     def map(self):
         return cassiopeia.type.core.common.Map(self.data.mapId) if self.data.mapId else None

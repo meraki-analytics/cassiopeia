@@ -1,4 +1,6 @@
 import cassiopeia.dto.requests
+import cassiopeia.type.api.rates
+import cassiopeia.dto.staticdataapi
 import cassiopeia.core.requests
 from cassiopeia.core.leagueapi import *
 from cassiopeia.core.matchapi import *
