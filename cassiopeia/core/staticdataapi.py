@@ -1,4 +1,4 @@
-from cassiopeia.dto.staticdataapi import set_locale, get_languages, get_versions
+from cassiopeia.dto.staticdataapi import get_languages, get_versions
 import cassiopeia.riotapi
 import cassiopeia.dto.staticdataapi
 import cassiopeia.core.requests
