@@ -18,7 +18,7 @@ api_versions = {
 
 api_key = ""
 region = ""
-do_print_calls = False
+print_calls = False
 rate_limiter = cassiopeia.type.api.rates.MultiRateLimiter([(10, 10), (500, 600)])
 
 # @param request # str # The request string which follows /api/lol/{region}/
@@ -55,7 +55,7 @@ def get(request, params={}, static=False):
 # @param url # str # The full URL to send a GET request to
 # @return # str # The content returned by the server
 def executeRequest(url):
-    if(do_print_calls):
+    if(print_calls):
         print(url)
 
     response = None
@@ -66,34 +66,3 @@ def executeRequest(url):
     finally:
         if(response): 
             response.close()
-
-# @param key # str # The API key to use
-def set_api_key(key):
-    api_key = key
-
-# @param region # str # The region to access with the API
-def set_region(region):
-    region = region
-
-# @param on # bool # Whether to print calls as they are made to the API
-def print_calls(on):
-    do_print_calls = on
-
-# @param calls_per_epoch # int # Number of calls allowed in each epoch
-# @param seconds_per_epoch # int # Number of seconds per epoch
-def set_rate_limit(calls_per_epoch, seconds_per_epoch):
-    rate_limiter = cassiopeia.type.api.rates.SingleRateLimiter(calls_per_epoch, seconds_per_epoch)
-
-# @param limits # list<tuple> # A list of rate limit pairs. A rate limit is (calls_per_epoch, seconds_per_epoch)
-def set_rate_limits(limits):
-    rate_limiter = cassiopeia.type.api.rates.MultiRateLimiter(limits)
-
-# @param url # str # The URL to use as a proxy (without port number or protocol)
-# @param port # int # The port to connect to
-def set_proxy(url, port=80):
-    if(url):
-        proxy = urllib.request.ProxyHandler({"https": "https://{url}:{port}".format(url=url, port=port)})
-        urllib.request.install_opener(urllib.request.build_opener(proxy))
-    else:
-        proxy = urllib.request.ProxyHandler({})
-        urllib.request.install_opener(urllib.request.build_opener(proxy))

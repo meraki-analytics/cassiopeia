@@ -3,10 +3,6 @@ import cassiopeia.type.dto.staticdata
 
 _locale = None
 
-# @param locale # str # The locale to use for returned text. Use get_languages() to find valid locales.
-def set_locale(locale):
-    _locale = locale
-
 # @param id_ # int # The ID of the champion to get
 # @return # Champion # The champion
 def get_champion(id_):
