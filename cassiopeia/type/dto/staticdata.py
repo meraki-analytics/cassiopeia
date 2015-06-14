@@ -361,8 +361,8 @@ class ChampionList(cassiopeia.type.dto.common.CassiopeiaDto):
     @property
     def item_ids(self):
         ids = set()
-        for c in self.data.items:
-            ids = ids | c.value.item_ids
+        for c in self.data.items():
+            ids = ids | c[1].item_ids
         return ids
 
 ##################
