@@ -117,9 +117,29 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
     # int # Date summoner was last modified specified as epoch milliseconds. The following events will update this timestamp: profile icon change, playing the tutorial or advanced tutorial, finishing a game, summoner name change
     @cassiopeia.type.core.common.lazyproperty
     def modify_date(self):
-        return datetime.datetime.utcfromtimestamp(self.data.revisionDate) if self.data.revisionDate else None
+        return datetime.datetime.utcfromtimestamp(self.data.revisionDate / 1000) if self.data.revisionDate else None
 
     # int # Summoner level associated with the summoner.
     @property
     def level(self):
         return self.data.summonerLevel
+
+    @cassiopeia.type.core.common.immutablemethod
+    def leagues(self):
+        return cassiopeia.riotapi.get_leagues_by_summoner(self)
+
+    @cassiopeia.type.core.common.immutablemethod
+    def league_entries(self):
+        return cassiopeia.riotapi.get_league_entries_by_summoner(self)
+
+    @cassiopeia.type.core.common.immutablemethod
+    def match_history(self, begin_index=0, champions=None, ranked_queues=None):
+        return cassiopeia.riotapi.get_match_history(self, begin_index, champions, ranked_queues)
+
+    @cassiopeia.type.core.common.immutablemethod
+    def ranked_stats(self, season=None):
+        return cassiopeia.riotapi.get_ranked_stats(self, season)
+
+    @cassiopeia.type.core.common.immutablemethod
+    def stats(self, season=None):
+        return cassiopeia.riotapi.get_stats(self, season)

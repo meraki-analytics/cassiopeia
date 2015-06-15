@@ -16,7 +16,7 @@ class StatsSummary(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def modify_date(self):
-        return datetime.datetime.utcfromtimestamp(self.data.modifyDate) if self.data.modifyDate else None
+        return datetime.datetime.utcfromtimestamp(self.data.modifyDate / 1000) if self.data.modifyDate else None
 
     @property
     def type(self):
@@ -30,6 +30,10 @@ class StatsSummary(cassiopeia.type.core.common.CassiopeiaObject):
 class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Aggregated Stats"
+
+    @property
+    def kda(self):
+        return (self.data.totalChampionKills + self.data.totalAssists) / (self.data.totalDeathsPerSession if self.data.totalDeathsPerSession else 1)
 
     # int # Dominion only.
     @property

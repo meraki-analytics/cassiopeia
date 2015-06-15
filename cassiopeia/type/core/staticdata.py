@@ -13,7 +13,7 @@ class BlockItem(cassiopeia.type.core.common.CassiopeiaObject):
     def count(self):
         return self.data.count
 
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def item(self):
         return cassiopeia.riotapi.get_item(self.data.id)
 
@@ -221,7 +221,7 @@ class RecommendedItems(cassiopeia.type.core.common.CassiopeiaObject):
     def blocks(self):
         return [Block(block) for block in self.data.blocks]
 
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def champion(self):
         return cassiopeia.riotapi.get_champion_by_name(self.data.champion) if self.data.champion else None
 
@@ -914,7 +914,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def plaintext(self):
         return self.data.plaintext
 
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def required_champion(self):
         return cassiopeia.riotapi.get_champion_by_name(self.data.requiredChampion) if self.data.requiredChampion else None
 
@@ -1178,7 +1178,7 @@ class Rune(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.plaintext
 
     # Champion # Required champion
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def required_champion(self):
         return cassiopeia.riotapi.get_champion_by_name(self.data.requiredChampion) if self.data.requiredChampion else None
 

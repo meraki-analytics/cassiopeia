@@ -19,21 +19,44 @@ class CassiopeiaObject(object):
         return self.data != other.data
 
     def __hash__(self):
-        return id(self)
+        return hash(id(self))
 
 
-class lazyproperty(property):
+class lazyproperty(object):
     # @param method # function # The method to make a lazy property out of
     def __init__(self, method):
         self.method = method
         self.values = {}
 
-    def __get__(self, instance, owner):
+    def __set__(self, obj, value):
+        raise AttributeError("can't set attribute")
+
+    def __delete__(self, obj):
+        raise AttributeError("can't delete attribute")
+
+    def __get__(self, obj, type=None):
         try:
-            return self.values[instance]
+            return self.values[obj]
         except(KeyError):
-            self.values[instance] = self.method(instance)
-            return self.values[instance]
+            self.values[obj] = self.method(obj)
+            return self.values[obj]
+
+
+class immutablemethod(object):
+    # @param method # function # The method to make immutable
+    def __init__(self, method):
+        self.method = method
+
+    def __set__(self, obj, value):
+        raise AttributeError("can't set method")
+
+    def __delete__(self, obj):
+        raise AttributeError("can't delete method")
+
+    def __get__(self, obj, type=None):
+        def curried(*args):
+            return self.method(obj, *args)
+        return curried
 
 
 class LoadPolicy(enum.Enum):

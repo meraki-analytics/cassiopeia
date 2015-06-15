@@ -27,12 +27,16 @@ class MatchSummary(cassiopeia.type.core.common.CassiopeiaObject):
         return hash(self.id)
 
     @property
+    def match(self):
+        return cassiopeia.riotapi.get_match(self.id)
+
+    @property
     def map(self):
         return cassiopeia.type.core.common.Map(self.data.mapId) if self.data.mapId else None
 
     @cassiopeia.type.core.common.lazyproperty
     def creation(self):
-        return datetime.datetime.utcfromtimestamp(self.data.matchCreation) if self.data.matchCreation else None
+        return datetime.datetime.utcfromtimestamp(self.data.matchCreation / 1000) if self.data.matchCreation else None
 
     @cassiopeia.type.core.common.lazyproperty
     def duration(self):
@@ -89,9 +93,9 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "{player} ({champ})".format(player=self.summoner, champ=self.champion)
 
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def champion(self):
-        return cassiopeia.riotapi.get_champion_by_id(self.data.participant.championId) if self.data.championId else None
+        return cassiopeia.riotapi.get_champion_by_id(self.data.participant.championId) if self.data.participant.championId else None
 
     @property
     def previous_season_tier(self):
@@ -101,7 +105,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def masteries(self):
         masteries = []
         ranks = []
-        for mastery in self.data.masteries:
+        for mastery in self.data.participant.masteries:
             masteries.append(mastery.masteryId)
             ranks.append(mastery.rank)
         return list(zip(cassiopeia.riotapi.get_masteries(masteries), ranks))
@@ -115,15 +119,15 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
         runes = [rune.runeId for rune in self.data.participant.runes for _ in range(rune.rank)]
         return cassiopeia.riotapi.get_runes(runes)
 
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def summoner_spell_d(self):
-        cassiopeia.riotapi.get_summoner_spell(self.data.participant.spell1Id) if self.data.spell1Id else None
+        return cassiopeia.riotapi.get_summoner_spell(self.data.participant.spell1Id) if self.data.participant.spell1Id else None
 
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def summoner_spell_f(self):
-        cassiopeia.riotapi.get_summoner_spell(self.data.participant.spell2Id) if self.data.spell2Id else None
+        return cassiopeia.riotapi.get_summoner_spell(self.data.participant.spell2Id) if self.data.participant.spell2Id else None
 
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def stats(self):
         return ParticipantStats(self.data.participant.stats) if self.data.participant.stats else None
 
@@ -139,14 +143,18 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def match_history_uri(self):
         return self.data.identity.player.matchHistoryUri
 
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def summoner(self):
-        return cassiopeia.riotapi.get_summoner_by_id(self.data.identity.player.summonerId) if self.data.identity.player.summonerId else None
+        return cassiopeia.riotapi.get_summoner_by_id(self.data.identity.player.summonerId) if self.data.identity.player and self.data.identity.player.summonerId else None
 
 
 class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Participant Stats"
+
+    @property
+    def kda(self):
+        return (self.data.kills + self.data.assists) / self.data.deaths
 
     # int # Number of assists
     @property
@@ -219,37 +227,37 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.inhibitorKills
 
     # Item # First item
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def item0(self):
         return cassiopeia.riotapi.get_item(self.data.item0) if self.data.item0 else None
 
     # Item # Second item
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def item1(self):
         return cassiopeia.riotapi.get_item(self.data.item1) if self.data.item1 else None
 
     # Item # Third item
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def item2(self):
         return cassiopeia.riotapi.get_item(self.data.item2) if self.data.item2 else None
 
     # Item # Fourth item
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def item3(self):
         return cassiopeia.riotapi.get_item(self.data.item3) if self.data.item3 else None
 
     # Item # Fifth item
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def item4(self):
         return cassiopeia.riotapi.get_item(self.data.item4) if self.data.item4 else None
 
     # Item # Sixth item
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def item5(self):
         return cassiopeia.riotapi.get_item(self.data.item5) if self.data.item5 else None
 
     # Item # Seventh item
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def item6(self):
         return cassiopeia.riotapi.get_item(self.data.item6) if self.data.item6 else None
 

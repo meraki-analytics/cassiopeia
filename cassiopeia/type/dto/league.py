@@ -73,7 +73,7 @@ class League(cassiopeia.type.dto.common.CassiopeiaDto):
     def summoner_ids(self):
         ids = set()
 
-        if(self.data.participantId): 
+        if(self.participantId): 
             try:
                 id_ = int(self.data.participantId)
                 ids.add(id_)
@@ -81,9 +81,9 @@ class League(cassiopeia.type.dto.common.CassiopeiaDto):
                 pass
 
         for entry in self.entries:
-            if(entry.data.playerOrTeamId): 
+            if(entry.playerOrTeamId): 
                 try:
-                    id_ = int(entry.data.playerOrTeamId)
+                    id_ = int(entry.playerOrTeamId)
                     ids.add(id_)
                 except(ValueError):
                     pass
@@ -93,16 +93,16 @@ class League(cassiopeia.type.dto.common.CassiopeiaDto):
     def team_ids(self):
         ids = set()
 
-        if(self.data.participantId): 
+        if(self.participantId): 
             try:
-                int(self.data.participantId)
+                int(self.participantId)
             except(ValueError):
-                ids.add(self.data.participantId)
+                ids.add(self.participantId)
 
         for entry in self.entries:
-            if(entry.data.playerOrTeamId):
+            if(entry.playerOrTeamId):
                 try:
-                    int(entry.data.playerOrTeamId)
+                    int(entry.playerOrTeamId)
                 except(ValueError):
-                    ids.add(entry.data.playerOrTeamId)
+                    ids.add(entry.playerOrTeamId)
         return ids
