@@ -71,7 +71,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
         return Series(self.data.miniSeries) if self.data.miniSeries else None
 
     # Summoner # The summoner represented by this entry. None if this entry is for a team.
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def player(self):
         if(not self.data.playerOrTeamId):
             return None
@@ -83,7 +83,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
             return None
 
     # Team # The team represented by this entry. None if this entry is for a summoner.
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def team(self):
         if(not self.data.playerOrTeamId):
             return None
@@ -153,7 +153,7 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
         return None
 
     # Summoner # The relevant summoner that is a member of this league. Only present when full league is requested so that participant's entry can be identified. None when individual entry is requested or the participant is a team.
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def player(self):
         if(not self.data.participantId):
             return None
@@ -165,7 +165,7 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
             return None
 
     # Team # The relevant team that is a member of this league. Only present when full league is requested so that participant's entry can be identified. None when individual entry is requested or the participant is a summoner.
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def team(self):
         if(not self.data.participantId):
             return None

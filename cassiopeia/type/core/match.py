@@ -32,7 +32,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def creation(self):
-        return datetime.datetime.utcfromtimestamp(self.data.matchCreation) if self.data.matchCreation else None
+        return datetime.datetime.utcfromtimestamp(self.data.matchCreation / 1000) if self.data.matchCreation else None
 
     @cassiopeia.type.core.common.lazyproperty
     def duration(self):
@@ -107,9 +107,9 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "{player} ({champ})".format(player=self.summoner, champ=self.champion)
 
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def champion(self):
-        return cassiopeia.riotapi.get_champion_by_id(self.data.participant.championId) if self.data.championId else None
+        return cassiopeia.riotapi.get_champion_by_id(self.data.participant.championId) if self.data.participant.championId else None
 
     @property
     def previous_season_tier(self):
@@ -133,13 +133,13 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
         runes = [rune.runeId for rune in self.data.participant.runes for _ in range(rune.rank)]
         return cassiopeia.riotapi.get_runes(runes)
 
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def summoner_spell_d(self):
-        cassiopeia.riotapi.get_summoner_spell(self.data.participant.spell1Id) if self.data.spell1Id else None
+        return cassiopeia.riotapi.get_summoner_spell(self.data.participant.spell1Id) if self.data.participant.spell1Id else None
 
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def summoner_spell_f(self):
-        cassiopeia.riotapi.get_summoner_spell(self.data.participant.spell2Id) if self.data.spell2Id else None
+        return cassiopeia.riotapi.get_summoner_spell(self.data.participant.spell2Id) if self.data.participant.spell2Id else None
 
     @cassiopeia.type.core.common.lazyproperty
     def stats(self):
@@ -157,7 +157,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def match_history_uri(self):
         return self.data.identity.player.matchHistoryUri
 
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def summoner(self):
         return cassiopeia.riotapi.get_summoner_by_id(self.data.identity.player.summonerId) if self.data.identity.player and self.data.identity.player.summonerId else None
 
@@ -208,7 +208,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def side(self):
-        return cassiopeia.type.core.common.Side(self.data.participant.teamId) if self.data.teamId else None
+        return cassiopeia.type.core.common.Side(self.data.participant.teamId) if self.data.participant.teamId else None
 
     @property
     def turret_kills(self):
@@ -255,6 +255,10 @@ class Timeline(cassiopeia.type.core.common.CassiopeiaObject):
 class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Participant Stats"
+
+    @property
+    def kda(self):
+        return (self.data.kills + self.data.assists) / (self.data.deaths if self.data.deaths else 1)
 
     # int # Number of assists
     @property
@@ -327,37 +331,37 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.inhibitorKills
 
     # Item # First item
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def item0(self):
         return cassiopeia.riotapi.get_item(self.data.item0) if self.data.item0 else None
 
     # Item # Second item
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def item1(self):
         return cassiopeia.riotapi.get_item(self.data.item1) if self.data.item1 else None
 
     # Item # Third item
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def item2(self):
         return cassiopeia.riotapi.get_item(self.data.item2) if self.data.item2 else None
 
     # Item # Fourth item
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def item3(self):
         return cassiopeia.riotapi.get_item(self.data.item3) if self.data.item3 else None
 
     # Item # Fifth item
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def item4(self):
         return cassiopeia.riotapi.get_item(self.data.item4) if self.data.item4 else None
 
     # Item # Sixth item
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def item5(self):
         return cassiopeia.riotapi.get_item(self.data.item5) if self.data.item5 else None
 
     # Item # Seventh item
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def item6(self):
         return cassiopeia.riotapi.get_item(self.data.item6) if self.data.item6 else None
 
@@ -719,7 +723,7 @@ class Ban(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return str(champion)
 
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def champion(self):
         return cassiopeia.riotapi.get_champion_by_id(self.data.championId) if self.data.championId else None
 
@@ -750,13 +754,13 @@ class Frame(cassiopeia.type.core.common.CassiopeiaObject):
 
     def __count_participant(self):
         self.__counter += 1
-        if(self.__counter >= __participant_quota):
+        if(self.__counter >= Frame.__participant_quota):
             del self.__counter
             del self.__participants
 
     @cassiopeia.type.core.common.lazyproperty
     def events(self):
-        value = [Event(event, participants) for event in self.data.events]
+        value = [Event(event, self.__participants) for event in self.data.events]
         self.__count_participant()
         return value
 
@@ -805,7 +809,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
 
     def __count_participant(self):
         self.__counter += 1
-        if(self.__counter >= __participant_quota):
+        if(self.__counter >= Event.__participant_quota):
             del self.__counter
             del self.__participants
 
@@ -825,7 +829,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def creator(self):
-        value = participants[self.data.creatorId] if self.data.creatorId else None
+        value = self.__participants[self.data.creatorId] if self.data.creatorId else None
         self.__count_participant()
         return value
 
@@ -833,21 +837,21 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def type(self):
         return cassiopeia.type.core.common.EventType(self.data.eventType) if self.data.eventType else None
 
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def item_after(self):
         return cassiopeia.riotapi.get_item(self.data.itemAfter) if self.data.itemAfter else None
 
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def item_before(self):
         return cassiopeia.riotapi.get_item(self.data.itemBefore) if self.data.itemBefore else None
 
-    @cassiopeia.type.core.common.lazyproperty
+    @property
     def item(self):
         return cassiopeia.riotapi.get_item(self.data.itemId) if self.data.itemId else None
 
     @cassiopeia.type.core.common.lazyproperty
     def killer(self):
-        value = participants[self.data.killerId] if self.data.killerId else None
+        value = self.__participants[self.data.killerId] if self.data.killerId else None
         self.__count_participant()
         return value
 
@@ -865,7 +869,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def participant(self):
-        value = participants[self.data.participantId] if self.data.participantId else None
+        value = self.__participants[self.data.participantId] if self.data.participantId else None
         self.__count_participant()
         return value
 
@@ -895,7 +899,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def victim(self):
-        value = participants[self.data.victimId] if self.data.victimId else None
+        value = self.__participants[self.data.victimId] if self.data.victimId else None
         self.__count_participant()
         return value
 
