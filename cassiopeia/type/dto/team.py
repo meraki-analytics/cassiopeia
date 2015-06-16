@@ -37,7 +37,7 @@ class Team(cassiopeia.type.dto.common.CassiopeiaDto):
         self.status = dictionary.get("status", "")
 
         # str # Tag
-         self.tag = dictionary.get("tag", "")
+        self.tag = dictionary.get("tag", "")
 
         # list<TeamStatDetail> # Stat details
         self.teamStatDetails = [(TeamStatDetail(ts) if not isinstance(ts, TeamStatDetail) else ts) for ts in dictionary.get("teamStatDetails", []) if ts]
