@@ -1,6 +1,10 @@
 import json
 
 class CassiopeiaDto(object):
+    def __init__(self, dictionary):
+        for k,v in dictionary.items():
+            setattr(self, k, v)
+
     def to_json(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
