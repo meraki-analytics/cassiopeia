@@ -168,7 +168,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
 
     # float # Mana regen
     @property
-    def mpana_regen(self):
+    def mana_regen(self):
         return self.data.mpregen
 
     # float # Mana regen per level
