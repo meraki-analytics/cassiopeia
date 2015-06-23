@@ -1,3 +1,5 @@
+import re
+
 import cassiopeia.riotapi
 import cassiopeia.type.core.common
 
@@ -441,6 +443,43 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def variables(self):
         return [SpellVariables(svars) for svars in self.data.vars]
 
+    def __replace_variables(self, text, level, rank):
+        if(level < 1 or level > 18):
+            raise ValueError("Not a valid champion level")
+        if(rank < 1 or rank > self.max_rank):
+            raise ValueError("Not a valid spell rank")
+
+        i = 1
+        for effect in self.effects:
+            if(effect):
+                text = text.replace("{{{{ e{i} }}}}".format(i=i), str(effect[rank - 1]))
+                i += 1
+
+        for svar in self.variables:
+            val = svar.coefficients[0]
+            if(len(svar.coefficients) == self.max_rank):
+                val = svar.coefficients[rank - 1]
+            elif(svar.coefficients == 18):
+                val = svar.coefficients[level - 1]
+            replacement = str(val)
+
+            if(svar.link == "attackdamage"):
+                replacement = replacement + " AD"
+            elif(svar.link == "spelldamage"):
+                replacement = replacement + " AP"
+
+            text = text.replace("{{{{ {key} }}}}".format(key=svar.key), replacement)
+
+        return text
+
+    @cassiopeia.type.core.common.immutablemethod
+    def tooltip_for_level(self, level, rank):
+        return self.__replace_variables(self.tooltip, level, rank)
+
+    @cassiopeia.type.core.common.immutablemethod
+    def sanitized_tooltip_for_level(self, level, rank):
+        return self.__replace_variables(self.sanitized_tooltip, level, rank)
+
 
 class Champion(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
@@ -573,6 +612,10 @@ class Gold(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
+    def __init__(self, data, scraped_stats):
+        super().__init__(data)
+        self.__scraped_stats = scraped_stats
+
     def __str__(self):
         return "Item Stats"
 
@@ -589,8 +632,12 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.FlatBlockMod
 
     @property
+    def percent_block(self):
+        return self.data.PercentBlockMod
+
+    @property
     def crit_chance(self):
-        return self.data.FlatCritChanceMod
+        return self.data.FlatCritChanceMod + self.data.PercentCritChanceMod
 
     @property
     def crit_damage(self):
@@ -649,20 +696,8 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.PercentAttackSpeedMod
 
     @property
-    def percent_block(self):
-        return self.data.PercentBlockMod
-
-    @property
-    def percent_crit_chance(self):
-        return self.data.PercentCritChanceMod
-
-    @property
     def percent_crit_damage(self):
         return self.data.PercentCritDamageMod
-
-    @property
-    def percent_dodge(self):
-        return self.data.PercentDodgeMod
 
     @property
     def percent_xp_bonus(self):
@@ -690,7 +725,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def percent_ability_power(self):
-        return self.data.PercentMagicDamageMod
+        return self.data.PercentMagicDamageMod + self.__scraped_stats.get("percent_ability_power", 0.0)
 
     @property
     def percent_movespeed(self):
@@ -709,135 +744,145 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.PercentSpellVampMod
 
     @property
-    def r_armor_per_level(self):
+    def armor_per_level(self):
         return self.data.rFlatArmorModPerLevel
 
     @property
-    def r_armor_pen(self):
-        return self.data.rFlatArmorPenetrationMod
+    def armor_pen(self):
+        return self.data.rFlatArmorPenetrationMod + self.__scraped_stats.get("armor_pen", 0.0)
 
     @property
-    def r_armor_pen_per_level(self):
+    def armor_pen_per_level(self):
         return self.data.rFlatArmorPenetrationModPerLevel
 
     @property
-    def r_crit_chance_per_level(self):
+    def crit_chance_per_level(self):
         return self.data.rFlatCritChanceModPerLevel
 
     @property
-    def r_crit_damage_per_level(self):
+    def crit_damage_per_level(self):
         return self.data.rFlatCritDamageModPerLevel
 
     @property
-    def r_dodge(self):
-        return self.data.rFlatDodgeMod
+    def dodge(self):
+        return self.data.rFlatDodgeMod + self.data.PercentDodgeMod
 
     @property
-    def r_dodge_per_level(self):
+    def dodge_per_level(self):
         return self.data.rFlatDodgeModPerLevel
 
     @property
-    def r_energy_per_level(self):
+    def energy_per_level(self):
         return self.data.rFlatEnergyModPerLevel
 
     @property
-    def r_energy_regen_per_level(self):
+    def energy_regen_per_level(self):
         return self.data.rFlatEnergyRegenModPerLevel
 
     @property
-    def r_gold_per_ten(self):
-        return self.data.rFlatGoldPer10Mod
+    def gold_per_ten(self):
+        return self.data.rFlatGoldPer10Mod + self.__scraped_stats.get("gold_per_ten", 0.0)
 
     @property
-    def r_health_per_level(self):
+    def health_per_level(self):
         return self.data.rFlatHPModPerLevel
 
     @property
-    def r_health_regen_per_level(self):
+    def health_regen_per_level(self):
         return self.data.rFlatHPRegenModPerLevel
 
     @property
-    def r_mana_per_level(self):
+    def mana_per_level(self):
         return self.data.rFlatMPModPerLevel
 
     @property
-    def r_mana_regen_per_level(self):
+    def mana_regen_per_level(self):
         return self.data.rFlatMPRegenModPerLevel
 
     @property
-    def r_ability_power_per_level(self):
+    def ability_power_per_level(self):
         return self.data.rFlatMagicDamageModPerLevel
 
     @property
-    def r_magic_pen(self):
-        return self.data.rFlatMagicPenetrationMod
+    def magic_pen(self):
+        return self.data.rFlatMagicPenetrationMod + self.__scraped_stats.get("magic_pen", 0.0)
 
     @property
-    def r_magic_pen_per_level(self):
+    def magic_pen_per_level(self):
         return self.data.rFlatMagicPenetrationModPerLevel
 
     @property
-    def r_movespeed_per_level(self):
+    def movespeed_per_level(self):
         return self.data.rFlatMovementSpeedModPerLevel
 
     @property
-    def r_attack_damage_per_level(self):
+    def attack_damage_per_level(self):
         return self.data.rFlatPhysicalDamageModPerLevel
 
     @property
-    def r_magic_resist_per_level(self):
+    def magic_resist_per_level(self):
         return self.data.rFlatSpellBlockModPerLevel
 
     @property
-    def r_time_dead(self):
+    def time_dead(self):
         return self.data.rFlatTimeDeadMod
 
     @property
-    def r_time_dead_per_level(self):
+    def time_dead_per_level(self):
         return self.data.rFlatTimeDeadModPerLevel
 
     @property
-    def r_percent_armor_pen(self):
-        return self.data.rPercentArmorPenetrationMod
+    def percent_armor_pen(self):
+        return self.data.rPercentArmorPenetrationMod + self.__scraped_stats.get("percent_armor_pen", 0.0)
 
     @property
-    def r_percent_armor_pen_per_level(self):
+    def percent_armor_pen_per_level(self):
         return self.data.rPercentArmorPenetrationModPerLevel
 
     @property
-    def r_percent_attack_speed_per_level(self):
+    def percent_attack_speed_per_level(self):
         return self.data.rPercentAttackSpeedModPerLevel
 
     @property
-    def r_coooldown_reduction(self):
-        return self.data.rPercentCooldownMod
+    def cooldown_reduction(self):
+        return self.data.rPercentCooldownMod + self.__scraped_stats.get("percent_cooldown_reduction", 0.0)
 
     @property
-    def r_cooldown_reduction_per_level(self):
+    def cooldown_reduction_per_level(self):
         return self.data.rPercentCooldownModPerLevel
 
     @property
-    def r_percent_magic_pen(self):
-        return self.data.rPercentMagicPenetrationMod
+    def percent_magic_pen(self):
+        return self.data.rPercentMagicPenetrationMod + self.__scraped_stats.get("percent_magic_pen", 0.0)
 
     @property
-    def r_percent_magic_pen_per_level(self):
+    def percent_magic_pen_per_level(self):
         return self.data.rPercentMagicPenetrationModPerLevel
 
     @property
-    def r_percent_movespeed_per_level(self):
+    def percent_movespeed_per_level(self):
         return self.data.rPercentMovementSpeedModPerLevel
 
     @property
-    def r_percent_time_dead(self):
+    def percent_time_dead(self):
         return self.data.rPercentTimeDeadMod
 
     @property
-    def r_percent_time_dead_per_level(self):
+    def percent_time_dead_per_level(self):
         return self.data.rPercentTimeDeadModPerLevel
 
 
 class Item(cassiopeia.type.core.common.CassiopeiaObject):
+    __stat_patterns = {
+        "percent_cooldown_reduction": "\\+(\\d+) *% Cooldown Reduction *(<br>|</stats>|</passive>|$)",
+        "armor_pen": "\\+(\\d+) *Armor Penetration *(<br>|</stats>|</passive>|$)",
+        "percent_armor_pen": "ignores (\\d+)% of the target's Armor",
+        "magic_pen": "\\+(\\d+) *Magic Penetration *(<br>|</stats>|</passive>|$)",
+        "percent_magic_pen": "ignores (\\d+)% of the target's Magic Resist",
+        "gold_per_ten": "\\+(\\d+) *Gold per 10 seconds *(<br>|</stats>|</passive>|$)",
+        "percent_ability_power": "Increases Ability Power by (\\d+)%"
+    }
+
     def __str__(self):
         return self.name
 
@@ -936,7 +981,12 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def stats(self):
-        return ItemStats(self.data.stats) if self.data.stats else None
+        scraped_stats = {}
+        for stat, regex in Item.__stat_patterns.items():
+            match = re.search(regex, self.description)
+            if(match):
+                scraped_stats[stat] = float(match.group(1))
+        return ItemStats(self.data.stats, scraped_stats) if self.data.stats else None
 
     @property
     def tags(self):
@@ -1343,3 +1393,22 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     @cassiopeia.type.core.common.lazyproperty
     def variables(self):
         return [SpellVariables(svars) for svars in self.data.vars]
+
+    def __replace_variables(self, text, level):
+        if(level < 1 or level > 18):
+            raise ValueError("Not a valid champion level")
+
+        for svar in self.variables:
+            val = svar.coefficients[level - 1] if svar.link == "@player.level" else svar.coefficients[0]
+            print("REPLACING " + "{{{{{key}}}}}".format(key=svar.key) + " WITH " + str(val))
+            text = text.replace("{{{{ {key} }}}}".format(key=svar.key), str(val))
+
+        return text
+
+    @cassiopeia.type.core.common.immutablemethod
+    def tooltip_for_level(self, level):
+        return self.__replace_variables(self.tooltip, level)
+
+    @cassiopeia.type.core.common.immutablemethod
+    def sanitized_tooltip_for_level(self, level):
+        return self.__replace_variables(self.sanitized_tooltip, level)
