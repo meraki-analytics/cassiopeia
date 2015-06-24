@@ -39,8 +39,15 @@ class RunePage(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def runes(self):
-        return cassiopeia.riotapi.get_runes([slot.runeId for slot in self.data.slots])
+        runes = {}
+        for slot in self.data.slots:
+            try:
+                runes[slot.runeId] += 1
+            except(KeyError):
+                runes[slot.runeId] = 1
 
+        fetched = cassiopeia.riotapi.get_runes(list(runes.keys()))
+        return {rune: runes[rune.id] for rune in fetched}
 
 class MasteryPage(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
@@ -79,7 +86,7 @@ class MasteryPage(cassiopeia.type.core.common.CassiopeiaObject):
         for mastery in self.data.masteries.items():
             masteries.append(mastery[0])
             ranks.append(mastery[1])
-        return list(zip(cassiopeia.riotapi.get_masteries(masteries), ranks))
+        return dict(zip(cassiopeia.riotapi.get_masteries(masteries), ranks))
 
     @property
     def name(self):
@@ -123,6 +130,14 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def level(self):
         return self.data.summonerLevel
+
+    @cassiopeia.type.core.common.immutablemethod
+    def rune_pages(self):
+        return cassiopeia.riotapi.get_rune_pages(self)
+
+    @cassiopeia.type.core.common.immutablemethod
+    def mastery_pages(self):
+        return cassiopeia.riotapi.get_mastery_pages(self)
 
     @cassiopeia.type.core.common.immutablemethod
     def leagues(self):
