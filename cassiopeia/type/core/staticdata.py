@@ -612,7 +612,7 @@ class Gold(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
-    def __init__(self, data, scraped_stats):
+    def __init__(self, data, scraped_stats={}):
         super().__init__(data)
         self.__scraped_stats = scraped_stats
 
