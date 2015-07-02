@@ -1,6 +1,15 @@
+import sqlalchemy
+import sqlalchemy.orm
+
 import cassiopeia.type.dto.common
 
-class Rune(cassiopeia.type.dto.common.CassiopeiaDto):
+class Rune(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "CurrentGameRune"
+    count = sqlalchemy.Column(sqlalchemy.Integer)
+    runeId = sqlalchemy.Column(sqlalchemy.Integer)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("CurrentGameParticipant._id"))
+
     def __init__(self, dictionary):
         # int # The count of this rune used by the participant
         self.count = dictionary.get("count", 0)
@@ -9,7 +18,13 @@ class Rune(cassiopeia.type.dto.common.CassiopeiaDto):
         self.runeId = dictionary.get("runeId", 0)
 
 
-class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
+class Mastery(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "CurrentGameMastery"
+    masteryId = sqlalchemy.Column(sqlalchemy.Integer)
+    rank = sqlalchemy.Column(sqlalchemy.Integer)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("CurrentGameParticipant._id"))
+
     def __init__(self, dictionary):
         # int # The ID of the mastery
         self.masteryId = dictionary.get("masteryId", 0)
@@ -18,13 +33,32 @@ class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
         self.rank = dictionary.get("rank", 0)
 
 
-class Observer(cassiopeia.type.dto.common.CassiopeiaDto):
+class Observer(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "CurrentGameObserver"
+    encryptionKey = sqlalchemy.Column(sqlalchemy.String)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("CurrentGameInfo.gameId"))
+
     def __init__(self, dictionary):
         # str # Key used to decrypt the spectator grid game data for playback
         self.encryptionKey = dictionary.get("encryptionKey", "")
 
 
-class CurrentGameParticipant(cassiopeia.type.dto.common.CassiopeiaDto):
+class CurrentGameParticipant(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "CurrentGameParticipant"
+    bot = sqlalchemy.Column(sqlalchemy.Boolean)
+    championId = sqlalchemy.Column(sqlalchemy.Integer)
+    masteries = sqlalchemy.orm.relationship("Mastery")
+    profileIconId = sqlalchemy.Column(sqlalchemy.Integer)
+    runes = sqlalchemy.orm.relationship("Rune")
+    spell1Id = sqlalchemy.Column(sqlalchemy.Integer)
+    spell2Id = sqlalchemy.Column(sqlalchemy.Integer)
+    summonerId = sqlalchemy.Column(sqlalchemy.Integer)
+    summonerName = sqlalchemy.Column(sqlalchemy.String)
+    teamId = sqlalchemy.Column(sqlalchemy.Integer)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("CurrentGameInfo.gameId"))
+
     def __init__(self, dictionary):
         # bool # Flag indicating whether or not this participant is a bot
         self.bot = dictionary.get("bot", False)
@@ -57,7 +91,14 @@ class CurrentGameParticipant(cassiopeia.type.dto.common.CassiopeiaDto):
         self.teamId = dictionary.get("teamId", 0)
 
 
-class BannedChampion(cassiopeia.type.dto.common.CassiopeiaDto):
+class BannedChampion(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "CurrentGameBannedChampion"
+    championId = sqlalchemy.Column(sqlalchemy.Integer)
+    pickTurn = sqlalchemy.Column(sqlalchemy.Integer)
+    teamId = sqlalchemy.Column(sqlalchemy.Integer)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("CurrentGameInfo.gameId"))
+
     def __init__(self, dictionary):
         # int # The ID of the banned champion
         self.championId = dictionary.get("championId", 0)
@@ -69,7 +110,20 @@ class BannedChampion(cassiopeia.type.dto.common.CassiopeiaDto):
         self.teamId = dictionary.get("teamId", 0)
 
 
-class CurrentGameInfo(cassiopeia.type.dto.common.CassiopeiaDto):
+class CurrentGameInfo(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "CurrentGameInfo"
+    bannedChampions = sqlalchemy.orm.relationship("BannedChampion")
+    gameId = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    gameLength = sqlalchemy.Column(sqlalchemy.Integer)
+    gameMode = sqlalchemy.Column(sqlalchemy.String)
+    gameQueueConfigId = sqlalchemy.Column(sqlalchemy.Integer)
+    gameStartTime = sqlalchemy.Column(sqlalchemy.Integer)
+    gameType = sqlalchemy.Column(sqlalchemy.String)
+    mapId = sqlalchemy.Column(sqlalchemy.Integer)
+    observers = sqlalchemy.orm.relationship("Observer", uselist=False)
+    participants = sqlalchemy.orm.relationship("CurrentGameParticipant")
+    platformId = sqlalchemy.Column(sqlalchemy.String)
+
     def __init__(self, dictionary):
         # list<BannedChampion> # Banned champion information
         self.bannedChampions = [(BannedChampion(ban) if not isinstance(ban, BannedChampion) else ban) for ban in dictionary.get("bannedChampions", []) if ban]
