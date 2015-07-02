@@ -1,4 +1,5 @@
 import json
+import sqlalchemy.ext.declarative
 
 class CassiopeiaDto(object):
     def __init__(self, dictionary):
@@ -6,7 +7,8 @@ class CassiopeiaDto(object):
             setattr(self, k, v)
 
     def to_json(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+        dictionary = {k: v for k,v in self.__dict__.items() if not k.startswith("_")}
+        return json.dumps(dictionary, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
     def __str__(self):
         return self.to_json()
@@ -19,3 +21,9 @@ class CassiopeiaDto(object):
 
     def __ne__(self, other):
         return self.__dict__ != other.__dict__
+
+    def __hash__(self):
+        return hash(id(self))
+
+
+BaseDB = sqlalchemy.ext.declarative.declarative_base()

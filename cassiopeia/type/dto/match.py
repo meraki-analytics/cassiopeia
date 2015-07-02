@@ -1,6 +1,26 @@
+import sqlalchemy
+import sqlalchemy.orm
+
 import cassiopeia.type.dto.common
 
-class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
+class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "Match"
+    mapId = sqlalchemy.Column(sqlalchemy.Integer)
+    matchCreation = sqlalchemy.Column(sqlalchemy.Integer)
+    matchDuration = sqlalchemy.Column(sqlalchemy.Integer)
+    matchId = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    matchMode = sqlalchemy.Column(sqlalchemy.String)
+    matchType = sqlalchemy.Column(sqlalchemy.String)
+    matchVersion = sqlalchemy.Column(sqlalchemy.String)
+    participantIdentities = sqlalchemy.orm.relationship("ParticipantIdentity")
+    participants = sqlalchemy.orm.relationship("Participant")
+    platformId = sqlalchemy.Column(sqlalchemy.String)
+    queueType = sqlalchemy.Column(sqlalchemy.String)
+    region = sqlalchemy.Column(sqlalchemy.String)
+    season = sqlalchemy.Column(sqlalchemy.String)
+    teams = sqlalchemy.orm.relationship("Team")
+    timeline = sqlalchemy.orm.relationship("Timeline", uselist=False)
+
     def __init__(self, dictionary):
         # int # Match map ID
         self.mapId = dictionary.get("mapId", 0)
@@ -117,7 +137,21 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
                 ids.add(p.spell2Id)
         return ids
 
-class Participant(cassiopeia.type.dto.common.CassiopeiaDto):
+class Participant(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "MatchParticipant"
+    championId = sqlalchemy.Column(sqlalchemy.Integer)
+    highestAchievedSeasonTier = sqlalchemy.Column(sqlalchemy.String)
+    masteries = sqlalchemy.orm.relationship("Mastery")
+    participantId = sqlalchemy.Column(sqlalchemy.Integer)
+    runes = sqlalchemy.orm.relationship("Rune")
+    spell1Id = sqlalchemy.Column(sqlalchemy.Integer)
+    spell2Id = sqlalchemy.Column(sqlalchemy.Integer)
+    stats = sqlalchemy.orm.relationship("ParticipantStats", uselist=False)
+    teamId = sqlalchemy.Column(sqlalchemy.Integer)
+    timeline = sqlalchemy.orm.relationship("ParticipantTimeline", uselist=False)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Match.matchId"))
+
     def __init__(self, dictionary):
         # int # Champion ID
         self.championId = dictionary.get("championId", 0)
@@ -152,7 +186,13 @@ class Participant(cassiopeia.type.dto.common.CassiopeiaDto):
         self.timeline = ParticipantTimeline(val) if val and not isinstance(val, ParticipantTimeline) else val
 
 
-class ParticipantIdentity(cassiopeia.type.dto.common.CassiopeiaDto):
+class ParticipantIdentity(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "MatchParticipantIdentity"
+    participantId = sqlalchemy.Column(sqlalchemy.Integer)
+    player = sqlalchemy.orm.relationship("Player", uselist=False)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Match.matchId"))
+
     def __init__(self, dictionary):
         # int # Participant ID
         self.participantId = dictionary.get("participantId", 0)
@@ -162,7 +202,25 @@ class ParticipantIdentity(cassiopeia.type.dto.common.CassiopeiaDto):
         self.player = Player(val) if val and not isinstance(val, Player) else val
 
 
-class Team(cassiopeia.type.dto.common.CassiopeiaDto):
+class Team(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "MatchTeam"
+    bans = sqlalchemy.orm.relationship("BannedChampion")
+    baronKills = sqlalchemy.Column(sqlalchemy.Integer)
+    dominionVictoryScore = sqlalchemy.Column(sqlalchemy.Integer)
+    dragonKills = sqlalchemy.Column(sqlalchemy.Integer)
+    firstBaron = sqlalchemy.Column(sqlalchemy.Boolean)
+    firstBlood = sqlalchemy.Column(sqlalchemy.Boolean)
+    firstDragon = sqlalchemy.Column(sqlalchemy.Boolean)
+    firstInhibitor = sqlalchemy.Column(sqlalchemy.Boolean)
+    firstTower = sqlalchemy.Column(sqlalchemy.Boolean)
+    inhibitorKills = sqlalchemy.Column(sqlalchemy.Integer)
+    teamId = sqlalchemy.Column(sqlalchemy.Integer)
+    towerKills = sqlalchemy.Column(sqlalchemy.Integer)
+    vilemawKills = sqlalchemy.Column(sqlalchemy.Integer)
+    winner = sqlalchemy.Column(sqlalchemy.Boolean)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Match.matchId"))
+
     def __init__(self, dictionary):
         # list<BannedChampion> # If game was draft mode, contains banned champion data, otherwise null
         self.bans = [(BannedChampion(c) if not isinstance(c, BannedChampion) else c) for c in dictionary.get("bans", []) if c]
@@ -207,7 +265,13 @@ class Team(cassiopeia.type.dto.common.CassiopeiaDto):
         self.winner = dictionary.get("winner", False)
 
 
-class Timeline(cassiopeia.type.dto.common.CassiopeiaDto):
+class Timeline(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "MatchTimeline"
+    frameInterval = sqlalchemy.Column(sqlalchemy.Integer)
+    frames = sqlalchemy.orm.relationship("Frame")
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Match.matchId"))
+
     def __init__(self, dictionary):
         # int # Time between each returned frame in milliseconds.
         self.frameInterval = dictionary.get("frameInterval", 0)
@@ -216,7 +280,13 @@ class Timeline(cassiopeia.type.dto.common.CassiopeiaDto):
         self.frames = [(Frame(f) if not isinstance(f, Frame) else f) for f in dictionary.get("frames", []) if f]
 
 
-class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
+class Mastery(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "MatchMastery"
+    masteryId = sqlalchemy.Column(sqlalchemy.Integer)
+    rank = sqlalchemy.Column(sqlalchemy.Integer)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipant._id"))
+
     def __init__(self, dictionary):
         # int # Mastery ID
         self.masteryId = dictionary.get("masteryId", 0)
@@ -225,7 +295,74 @@ class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
         self.rank = dictionary.get("rank", 0)
 
 
-class ParticipantStats(cassiopeia.type.dto.common.CassiopeiaDto):
+class ParticipantStats(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "MatchParticipantStats"
+    assists = sqlalchemy.Column(sqlalchemy.Integer)
+    champLevel = sqlalchemy.Column(sqlalchemy.Integer)
+    combatPlayerScore = sqlalchemy.Column(sqlalchemy.Integer)
+    deaths = sqlalchemy.Column(sqlalchemy.Integer)
+    doubleKills = sqlalchemy.Column(sqlalchemy.Integer)
+    firstBloodAssist = sqlalchemy.Column(sqlalchemy.Boolean)
+    firstBloodKill = sqlalchemy.Column(sqlalchemy.Boolean)
+    firstInhibitorAssist = sqlalchemy.Column(sqlalchemy.Boolean)
+    firstInhibitorKill = sqlalchemy.Column(sqlalchemy.Boolean)
+    firstTowerAssist = sqlalchemy.Column(sqlalchemy.Boolean)
+    firstTowerKill = sqlalchemy.Column(sqlalchemy.Boolean)
+    goldEarned = sqlalchemy.Column(sqlalchemy.Integer)
+    goldSpent = sqlalchemy.Column(sqlalchemy.Integer)
+    inhibitorKills = sqlalchemy.Column(sqlalchemy.Integer)
+    item0 = sqlalchemy.Column(sqlalchemy.Integer)
+    item1 = sqlalchemy.Column(sqlalchemy.Integer)
+    item2 = sqlalchemy.Column(sqlalchemy.Integer)
+    item3 = sqlalchemy.Column(sqlalchemy.Integer)
+    item4 = sqlalchemy.Column(sqlalchemy.Integer)
+    item5 = sqlalchemy.Column(sqlalchemy.Integer)
+    item6 = sqlalchemy.Column(sqlalchemy.Integer)
+    killingSprees = sqlalchemy.Column(sqlalchemy.Integer)
+    kills = sqlalchemy.Column(sqlalchemy.Integer)
+    largestCriticalStrike = sqlalchemy.Column(sqlalchemy.Integer)
+    largestKillingSpree = sqlalchemy.Column(sqlalchemy.Integer)
+    largestMultiKill = sqlalchemy.Column(sqlalchemy.Integer)
+    magicDamageDealt = sqlalchemy.Column(sqlalchemy.Integer)
+    magicDamageDealtToChampions = sqlalchemy.Column(sqlalchemy.Integer)
+    magicDamageTaken = sqlalchemy.Column(sqlalchemy.Integer)
+    minionsKilled = sqlalchemy.Column(sqlalchemy.Integer)
+    neutralMinionsKilled = sqlalchemy.Column(sqlalchemy.Integer)
+    neutralMinionsKilledEnemyJungle = sqlalchemy.Column(sqlalchemy.Integer)
+    neutralMinionsKilledTeamJungle = sqlalchemy.Column(sqlalchemy.Integer)
+    nodeCapture = sqlalchemy.Column(sqlalchemy.Integer)
+    nodeCaptureAssist = sqlalchemy.Column(sqlalchemy.Integer)
+    nodeNeutralize = sqlalchemy.Column(sqlalchemy.Integer)
+    nodeNeutralizeAssist = sqlalchemy.Column(sqlalchemy.Integer)
+    objectivePlayerScore = sqlalchemy.Column(sqlalchemy.Integer)
+    pentaKills = sqlalchemy.Column(sqlalchemy.Integer)
+    physicalDamageDealt = sqlalchemy.Column(sqlalchemy.Integer)
+    physicalDamageDealtToChampions = sqlalchemy.Column(sqlalchemy.Integer)
+    physicalDamageTaken = sqlalchemy.Column(sqlalchemy.Integer)
+    quadraKills = sqlalchemy.Column(sqlalchemy.Integer)
+    sightWardsBoughtInGame = sqlalchemy.Column(sqlalchemy.Integer)
+    teamObjective = sqlalchemy.Column(sqlalchemy.Integer)
+    totalDamageDealt = sqlalchemy.Column(sqlalchemy.Integer)
+    totalDamageDealtToChampions = sqlalchemy.Column(sqlalchemy.Integer)
+    totalDamageTaken = sqlalchemy.Column(sqlalchemy.Integer)
+    totalHeal = sqlalchemy.Column(sqlalchemy.Integer)
+    totalPlayerScore = sqlalchemy.Column(sqlalchemy.Integer)
+    totalScoreRank = sqlalchemy.Column(sqlalchemy.Integer)
+    totalTimeCrowdControlDealt = sqlalchemy.Column(sqlalchemy.Integer)
+    totalUnitsHealed = sqlalchemy.Column(sqlalchemy.Integer)
+    towerKills = sqlalchemy.Column(sqlalchemy.Integer)
+    tripleKills = sqlalchemy.Column(sqlalchemy.Integer)
+    trueDamageDealt = sqlalchemy.Column(sqlalchemy.Integer)
+    trueDamageDealtToChampions = sqlalchemy.Column(sqlalchemy.Integer)
+    trueDamageTaken = sqlalchemy.Column(sqlalchemy.Integer)
+    unrealKills = sqlalchemy.Column(sqlalchemy.Integer)
+    visionWardsBoughtInGame = sqlalchemy.Column(sqlalchemy.Integer)
+    wardsKilled = sqlalchemy.Column(sqlalchemy.Integer)
+    wardsPlaced = sqlalchemy.Column(sqlalchemy.Integer)
+    winner = sqlalchemy.Column(sqlalchemy.Boolean)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipant._id"))
+
     def __init__(self, dictionary):
         # int # Number of assists
         self.assists = dictionary.get("assists", 0)
@@ -417,7 +554,38 @@ class ParticipantStats(cassiopeia.type.dto.common.CassiopeiaDto):
         self.winner = dictionary.get("winner", False)
 
 
-class ParticipantTimeline(cassiopeia.type.dto.common.CassiopeiaDto):
+class ParticipantTimeline(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "MatchParticipantTimeline"
+    ancientGolemAssistsPerMinCounts = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    ancientGolemKillsPerMinCounts = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    assistedLaneDeathsPerMinDeltas = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    assistedLaneKillsPerMinDeltas = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    baronAssistsPerMinCounts = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    baronKillsPerMinCounts = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    creepsPerMinDeltas = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    csDiffPerMinDeltas = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    damageTakenDiffPerMinDeltas = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    damageTakenPerMinDeltas = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    dragonAssistsPerMinCounts = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    dragonKillsPerMinCounts = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    elderLizardAssistsPerMinCounts = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    elderLizardKillsPerMinCounts = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    goldPerMinDeltas = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    inhibitorAssistsPerMinCounts = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    inhibitorKillsPerMinCounts = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    lane = sqlalchemy.Column(sqlalchemy.String)
+    role = sqlalchemy.Column(sqlalchemy.String)
+    towerAssistsPerMinCounts = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    towerKillsPerMinCounts = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    towerKillsPerMinDeltas = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    vilemawAssistsPerMinCounts = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    vilemawKillsPerMinCounts = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    wardsPerMinDeltas = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    xpDiffPerMinDeltas = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    xpPerMinDeltas = sqlalchemy.orm.relationship("ParticipantTimelineData")
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipant._id"))
+
     def __init__(self, dictionary):
         # ParticipantTimelineData # Ancient golem assists per minute timeline counts
         val = dictionary.get("ancientGolemAssistsPerMinCounts", None)
@@ -526,7 +694,13 @@ class ParticipantTimeline(cassiopeia.type.dto.common.CassiopeiaDto):
         self.xpPerMinDeltas = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
 
 
-class Rune(cassiopeia.type.dto.common.CassiopeiaDto):
+class Rune(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "MatchRune"
+    rank = sqlalchemy.Column(sqlalchemy.Integer)
+    runeId = sqlalchemy.Column(sqlalchemy.Integer)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipant._id"))
+
     def __init__(self, dictionary):
         # int # Rune rank
         self.rank = dictionary.get("rank", 0)
@@ -535,7 +709,15 @@ class Rune(cassiopeia.type.dto.common.CassiopeiaDto):
         self.runeId = dictionary.get("runeId", 0)
 
 
-class Player(cassiopeia.type.dto.common.CassiopeiaDto):
+class Player(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "MatchPlayer"
+    matchHistoryUri = sqlalchemy.Column(sqlalchemy.String)
+    profileIcon = sqlalchemy.Column(sqlalchemy.Integer)
+    summonerId = sqlalchemy.Column(sqlalchemy.Integer)
+    summonerName = sqlalchemy.Column(sqlalchemy.String)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipantIdentity._id"))
+
     def __init__(self, dictionary):
         # str # Match history URI
         self.matchHistoryUri = dictionary.get("matchHistoryUri", "")
@@ -550,7 +732,13 @@ class Player(cassiopeia.type.dto.common.CassiopeiaDto):
         self.summonerName = dictionary.get("summonerName", "")
 
 
-class BannedChampion(cassiopeia.type.dto.common.CassiopeiaDto):
+class BannedChampion(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "MatchBannedChampion"
+    championId = sqlalchemy.Column(sqlalchemy.Integer)
+    pickTurn = sqlalchemy.Column(sqlalchemy.Integer)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _team_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchTeam._id"))
+
     def __init__(self, dictionary):
         # int # Banned champion ID
         self.championId = dictionary.get("championId", 0)
@@ -559,7 +747,14 @@ class BannedChampion(cassiopeia.type.dto.common.CassiopeiaDto):
         self.pickTurn = dictionary.get("pickTurn", 0)
 
 
-class Frame(cassiopeia.type.dto.common.CassiopeiaDto):
+class Frame(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "MatchFrame"
+    events = sqlalchemy.orm.relationship("Event")
+    participantFrames = sqlalchemy.Column(sqlalchemy.Integer) # OR I HAVE NO IDEA
+    timestamp = sqlalchemy.Column(sqlalchemy.Integer)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _timeline_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchTimeline._id"))
+
     def __init__(self, dictionary):
         # list<Event> # List of events for this frame.
         self.events = [(Event(e) if not isinstance(e, Event) else e) for e in dictionary.get("events", []) if e]
@@ -571,7 +766,7 @@ class Frame(cassiopeia.type.dto.common.CassiopeiaDto):
         self.timestamp = dictionary.get("timestamp", 0)
 
 
-class ParticipantTimelineData(cassiopeia.type.dto.common.CassiopeiaDto):
+class ParticipantTimelineData(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     def __init__(self, dictionary):
         # float # Value per minute from 10 min to 20 min
         self.tenToTwenty = dictionary.get("tenToTwenty", 0.0)
@@ -586,7 +781,7 @@ class ParticipantTimelineData(cassiopeia.type.dto.common.CassiopeiaDto):
         self.zeroToTen = dictionary.get("zeroToTen", 0.0)
 
 
-class Event(cassiopeia.type.dto.common.CassiopeiaDto):
+class Event(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     def __init__(self, dictionary):
         # str # The ascended type of the event. Only present if relevant. Note that CLEAR_ASCENDED refers to when a participants kills the ascended player. (Legal values: CHAMPION_ASCENDED, CLEAR_ASCENDED, MINION_ASCENDED)
         self.ascendedType = dictionary.get("ascendedType", "")
@@ -653,7 +848,7 @@ class Event(cassiopeia.type.dto.common.CassiopeiaDto):
         self.wardType = dictionary.get("wardType", "")
 
 
-class ParticipantFrame(cassiopeia.type.dto.common.CassiopeiaDto):
+class ParticipantFrame(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     def __init__(self, dictionary):
         # int # Participant's current gold
         self.currentGold = dictionary.get("currentGold", 0)
@@ -687,7 +882,7 @@ class ParticipantFrame(cassiopeia.type.dto.common.CassiopeiaDto):
         self.xp = dictionary.get("xp", 0)
 
 
-class Position(cassiopeia.type.dto.common.CassiopeiaDto):
+class Position(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     def __init__(self, dictionary):
         # int # x position
         self.x = dictionary.get("x", 0)

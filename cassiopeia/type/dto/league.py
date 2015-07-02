@@ -1,6 +1,17 @@
+import sqlalchemy
+import sqlalchemy.orm
+
 import cassiopeia.type.dto.common
 
-class MiniSeries(cassiopeia.type.dto.common.CassiopeiaDto):
+class MiniSeries(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "MiniSeries"
+    losses = sqlalchemy.Column(sqlalchemy.Integer)
+    progress = sqlalchemy.Column(sqlalchemy.String)
+    target = sqlalchemy.Column(sqlalchemy.Integer)
+    wins = sqlalchemy.Column(sqlalchemy.Integer)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _entry_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("LeagueEntry._id"))
+
     def __init__(self, dictionary):
         # int # Number of current losses in the mini series.
         self.losses = dictionary.get("losses", 0)
@@ -15,7 +26,22 @@ class MiniSeries(cassiopeia.type.dto.common.CassiopeiaDto):
         self.wins = dictionary.get("wins", 0)
 
 
-class LeagueEntry(cassiopeia.type.dto.common.CassiopeiaDto):
+class LeagueEntry(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "LeagueEntry"
+    division = sqlalchemy.Column(sqlalchemy.String)
+    isFreshBlood = sqlalchemy.Column(sqlalchemy.Boolean)
+    isHotStreak = sqlalchemy.Column(sqlalchemy.Boolean)
+    isInactive = sqlalchemy.Column(sqlalchemy.Boolean)
+    isVeteran = sqlalchemy.Column(sqlalchemy.Boolean)
+    leaguePoints = sqlalchemy.Column(sqlalchemy.Integer)
+    losses = sqlalchemy.Column(sqlalchemy.Integer)
+    miniSeries = sqlalchemy.orm.relationship("MiniSeries", uselist=False)
+    playerOrTeamId = sqlalchemy.Column(sqlalchemy.String)
+    playerOrTeamName = sqlalchemy.Column(sqlalchemy.String)
+    wins = sqlalchemy.Column(sqlalchemy.Integer)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _league_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("League._id"))
+
     def __init__(self, dictionary):
         # str # The league division of the participant.
         self.division = dictionary.get("division", "")
@@ -52,7 +78,15 @@ class LeagueEntry(cassiopeia.type.dto.common.CassiopeiaDto):
         self.wins = dictionary.get("wins", 0)
 
 
-class League(cassiopeia.type.dto.common.CassiopeiaDto):
+class League(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "League"
+    entries = sqlalchemy.orm.relationship("LeagueEntry")
+    name = sqlalchemy.Column(sqlalchemy.String)
+    participantId = sqlalchemy.Column(sqlalchemy.String)
+    queue = sqlalchemy.Column(sqlalchemy.String)
+    tier = sqlalchemy.Column(sqlalchemy.String)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+
     def __init__(self, dictionary):
         # list<LeagueEntry> # The requested league entries.
         self.entries = [(LeagueEntry(entry) if not isinstance(entry, LeagueEntry) else entry) for entry in dictionary.get("entries", []) if entry]

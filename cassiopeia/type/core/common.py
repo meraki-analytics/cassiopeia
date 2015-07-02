@@ -7,7 +7,7 @@ class CassiopeiaObject(object):
         self.data = data
 
     def to_json(self):
-        return json.dumps(self.data, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+        return self.data.to_json()
 
     def __str__(self):
         return str(self.data)
