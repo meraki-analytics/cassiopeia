@@ -345,7 +345,7 @@ class Game(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
     __tablename__ = "Game"
     championId = sqlalchemy.Column(sqlalchemy.Integer)
     createDate = sqlalchemy.Column(sqlalchemy.Integer)
-    fellowPlayers = sqlalchemy.orm.relationship("Player")
+    fellowPlayers = sqlalchemy.orm.relationship("Player", cascade="all, delete-orphan", passive_deletes=True)
     gameId = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     gameMode = sqlalchemy.Column(sqlalchemy.String)
     gameType = sqlalchemy.Column(sqlalchemy.String)

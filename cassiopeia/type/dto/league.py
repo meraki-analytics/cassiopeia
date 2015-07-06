@@ -80,7 +80,7 @@ class LeagueEntry(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.
 
 class League(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "League"
-    entries = sqlalchemy.orm.relationship("LeagueEntry")
+    entries = sqlalchemy.orm.relationship("LeagueEntry", cascade="all, delete-orphan", passive_deletes=True)
     name = sqlalchemy.Column(sqlalchemy.String)
     participantId = sqlalchemy.Column(sqlalchemy.String)
     queue = sqlalchemy.Column(sqlalchemy.String)

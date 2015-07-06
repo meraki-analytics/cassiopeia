@@ -70,7 +70,7 @@ class BannedChampion(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.d
 
 class FeaturedGameInfo(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "FeaturedGameInfo"
-    bannedChampions = sqlalchemy.orm.relationship("BannedChampion")
+    bannedChampions = sqlalchemy.orm.relationship("BannedChampion", cascade="all, delete-orphan", passive_deletes=True)
     gameId = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     gameLength = sqlalchemy.Column(sqlalchemy.Integer)
     gameMode = sqlalchemy.Column(sqlalchemy.String)
@@ -79,7 +79,7 @@ class FeaturedGameInfo(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type
     gameType = sqlalchemy.Column(sqlalchemy.String)
     mapId = sqlalchemy.Column(sqlalchemy.Integer)
     observers = sqlalchemy.orm.relationship("Observer", uselist=False)
-    participants = sqlalchemy.orm.relationship("FeaturedGameParticipant")
+    participants = sqlalchemy.orm.relationship("FeaturedGameParticipant", cascade="all, delete-orphan", passive_deletes=True)
     platformId = sqlalchemy.Column(sqlalchemy.String)
 
     def __init__(self, dictionary):
