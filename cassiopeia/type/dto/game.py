@@ -345,7 +345,7 @@ class Game(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
     __tablename__ = "Game"
     championId = sqlalchemy.Column(sqlalchemy.Integer)
     createDate = sqlalchemy.Column(sqlalchemy.Integer)
-    fellowPlayers = sqlalchemy.orm.relationship("Player", cascade="all, delete-orphan", passive_deletes=True)
+    fellowPlayers = sqlalchemy.orm.relationship("cassiopeia.type.dto.game.Player", cascade="all, delete-orphan", passive_deletes=True)
     gameId = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     gameMode = sqlalchemy.Column(sqlalchemy.String)
     gameType = sqlalchemy.Column(sqlalchemy.String)
@@ -355,7 +355,7 @@ class Game(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
     mapId = sqlalchemy.Column(sqlalchemy.Integer)
     spell1 = sqlalchemy.Column(sqlalchemy.Integer)
     spell2 = sqlalchemy.Column(sqlalchemy.Integer)
-    stats = sqlalchemy.orm.relationship("RawStats", uselist=False)
+    stats = sqlalchemy.orm.relationship("cassiopeia.type.dto.game.RawStats", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     subType = sqlalchemy.Column(sqlalchemy.String)
     teamId = sqlalchemy.Column(sqlalchemy.Integer)
 
