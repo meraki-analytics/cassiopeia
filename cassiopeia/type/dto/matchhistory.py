@@ -1,3 +1,6 @@
+import sqlalchemy
+import sqlalchemy.orm
+
 import cassiopeia.type.dto.common
 
 class PlayerHistory(cassiopeia.type.dto.common.CassiopeiaDto):
@@ -48,7 +51,22 @@ class PlayerHistory(cassiopeia.type.dto.common.CassiopeiaDto):
         return ids
 
 
-class MatchSummary(cassiopeia.type.dto.common.CassiopeiaDto):
+class MatchSummary(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "HistoryMatch"
+    mapId = sqlalchemy.Column(sqlalchemy.Integer)
+    matchCreation = sqlalchemy.Column(sqlalchemy.Integer)
+    matchDuration = sqlalchemy.Column(sqlalchemy.Integer)
+    matchId = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    matchMode = sqlalchemy.Column(sqlalchemy.String)
+    matchType = sqlalchemy.Column(sqlalchemy.String)
+    matchVersion = sqlalchemy.Column(sqlalchemy.String)
+    participantIdentities = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantIdentity", cascade="all, delete-orphan", passive_deletes=True)
+    participants = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.Participant", cascade="all, delete-orphan", passive_deletes=True)
+    platformId = sqlalchemy.Column(sqlalchemy.String)
+    queueType = sqlalchemy.Column(sqlalchemy.String)
+    region = sqlalchemy.Column(sqlalchemy.String)
+    season = sqlalchemy.Column(sqlalchemy.String)
+
     def __init__(self, dictionary):
         # int # Match map ID
         self.mapId = dictionary.get("mapId", 0)
@@ -155,7 +173,21 @@ class MatchSummary(cassiopeia.type.dto.common.CassiopeiaDto):
         return ids
 
 
-class Participant(cassiopeia.type.dto.common.CassiopeiaDto):
+class Participant(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "HistoryParticipant"
+    championId = sqlalchemy.Column(sqlalchemy.Integer)
+    highestAchievedSeasonTier = sqlalchemy.Column(sqlalchemy.String)
+    masteries = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.Mastery", cascade="all, delete-orphan", passive_deletes=True)
+    participantId = sqlalchemy.Column(sqlalchemy.Integer)
+    runes = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.Rune", cascade="all, delete-orphan", passive_deletes=True)
+    spell1Id = sqlalchemy.Column(sqlalchemy.Integer)
+    spell2Id = sqlalchemy.Column(sqlalchemy.Integer)
+    stats = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantStats", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    teamId = sqlalchemy.Column(sqlalchemy.Integer)
+    timeline = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimeline", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("HistoryMatch.matchId"))
+
     def __init__(self, dictionary):
         # int # Champion ID
         self.championId = dictionary.get("championId", 0)
@@ -190,7 +222,13 @@ class Participant(cassiopeia.type.dto.common.CassiopeiaDto):
         self.timeline = ParticipantTimeline(val) if val and not isinstance(val, ParticipantTimeline) else val
 
 
-class ParticipantIdentity(cassiopeia.type.dto.common.CassiopeiaDto):
+class ParticipantIdentity(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "HistoryParticipantIdentity"
+    participantId = sqlalchemy.Column(sqlalchemy.Integer)
+    player = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.Player", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("HistoryMatch.matchId"))
+
     def __init__(self, dictionary):
         # int # Participant ID
         self.participantId = dictionary.get("participantId", 0)
@@ -200,7 +238,13 @@ class ParticipantIdentity(cassiopeia.type.dto.common.CassiopeiaDto):
         self.player = Player(val) if val and not isinstance(val, Player) else val
 
 
-class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
+class Mastery(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "HistoryMastery"
+    masteryId = sqlalchemy.Column(sqlalchemy.Integer)
+    rank = sqlalchemy.Column(sqlalchemy.Integer)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("HistoryParticipant._id"))
+
     def __init__(self, dictionary):
         # int # Mastery ID
         self.masteryId = dictionary.get("masteryId", 0)
@@ -209,7 +253,74 @@ class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
         self.rank = dictionary.get("rank", 0)
 
 
-class ParticipantStats(cassiopeia.type.dto.common.CassiopeiaDto):
+class ParticipantStats(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "HistoryParticipantStats"
+    assists = sqlalchemy.Column(sqlalchemy.Integer)
+    champLevel = sqlalchemy.Column(sqlalchemy.Integer)
+    combatPlayerScore = sqlalchemy.Column(sqlalchemy.Integer)
+    deaths = sqlalchemy.Column(sqlalchemy.Integer)
+    doubleKills = sqlalchemy.Column(sqlalchemy.Integer)
+    firstBloodAssist = sqlalchemy.Column(sqlalchemy.Boolean)
+    firstBloodKill = sqlalchemy.Column(sqlalchemy.Boolean)
+    firstInhibitorAssist = sqlalchemy.Column(sqlalchemy.Boolean)
+    firstInhibitorKill = sqlalchemy.Column(sqlalchemy.Boolean)
+    firstTowerAssist = sqlalchemy.Column(sqlalchemy.Boolean)
+    firstTowerKill = sqlalchemy.Column(sqlalchemy.Boolean)
+    goldEarned = sqlalchemy.Column(sqlalchemy.Integer)
+    goldSpent = sqlalchemy.Column(sqlalchemy.Integer)
+    inhibitorKills = sqlalchemy.Column(sqlalchemy.Integer)
+    item0 = sqlalchemy.Column(sqlalchemy.Integer)
+    item1 = sqlalchemy.Column(sqlalchemy.Integer)
+    item2 = sqlalchemy.Column(sqlalchemy.Integer)
+    item3 = sqlalchemy.Column(sqlalchemy.Integer)
+    item4 = sqlalchemy.Column(sqlalchemy.Integer)
+    item5 = sqlalchemy.Column(sqlalchemy.Integer)
+    item6 = sqlalchemy.Column(sqlalchemy.Integer)
+    killingSprees = sqlalchemy.Column(sqlalchemy.Integer)
+    kills = sqlalchemy.Column(sqlalchemy.Integer)
+    largestCriticalStrike = sqlalchemy.Column(sqlalchemy.Integer)
+    largestKillingSpree = sqlalchemy.Column(sqlalchemy.Integer)
+    largestMultiKill = sqlalchemy.Column(sqlalchemy.Integer)
+    magicDamageDealt = sqlalchemy.Column(sqlalchemy.Integer)
+    magicDamageDealtToChampions = sqlalchemy.Column(sqlalchemy.Integer)
+    magicDamageTaken = sqlalchemy.Column(sqlalchemy.Integer)
+    minionsKilled = sqlalchemy.Column(sqlalchemy.Integer)
+    neutralMinionsKilled = sqlalchemy.Column(sqlalchemy.Integer)
+    neutralMinionsKilledEnemyJungle = sqlalchemy.Column(sqlalchemy.Integer)
+    neutralMinionsKilledTeamJungle = sqlalchemy.Column(sqlalchemy.Integer)
+    nodeCapture = sqlalchemy.Column(sqlalchemy.Integer)
+    nodeCaptureAssist = sqlalchemy.Column(sqlalchemy.Integer)
+    nodeNeutralize = sqlalchemy.Column(sqlalchemy.Integer)
+    nodeNeutralizeAssist = sqlalchemy.Column(sqlalchemy.Integer)
+    objectivePlayerScore = sqlalchemy.Column(sqlalchemy.Integer)
+    pentaKills = sqlalchemy.Column(sqlalchemy.Integer)
+    physicalDamageDealt = sqlalchemy.Column(sqlalchemy.Integer)
+    physicalDamageDealtToChampions = sqlalchemy.Column(sqlalchemy.Integer)
+    physicalDamageTaken = sqlalchemy.Column(sqlalchemy.Integer)
+    quadraKills = sqlalchemy.Column(sqlalchemy.Integer)
+    sightWardsBoughtInGame = sqlalchemy.Column(sqlalchemy.Integer)
+    teamObjective = sqlalchemy.Column(sqlalchemy.Integer)
+    totalDamageDealt = sqlalchemy.Column(sqlalchemy.Integer)
+    totalDamageDealtToChampions = sqlalchemy.Column(sqlalchemy.Integer)
+    totalDamageTaken = sqlalchemy.Column(sqlalchemy.Integer)
+    totalHeal = sqlalchemy.Column(sqlalchemy.Integer)
+    totalPlayerScore = sqlalchemy.Column(sqlalchemy.Integer)
+    totalScoreRank = sqlalchemy.Column(sqlalchemy.Integer)
+    totalTimeCrowdControlDealt = sqlalchemy.Column(sqlalchemy.Integer)
+    totalUnitsHealed = sqlalchemy.Column(sqlalchemy.Integer)
+    towerKills = sqlalchemy.Column(sqlalchemy.Integer)
+    tripleKills = sqlalchemy.Column(sqlalchemy.Integer)
+    trueDamageDealt = sqlalchemy.Column(sqlalchemy.Integer)
+    trueDamageDealtToChampions = sqlalchemy.Column(sqlalchemy.Integer)
+    trueDamageTaken = sqlalchemy.Column(sqlalchemy.Integer)
+    unrealKills = sqlalchemy.Column(sqlalchemy.Integer)
+    visionWardsBoughtInGame = sqlalchemy.Column(sqlalchemy.Integer)
+    wardsKilled = sqlalchemy.Column(sqlalchemy.Integer)
+    wardsPlaced = sqlalchemy.Column(sqlalchemy.Integer)
+    winner = sqlalchemy.Column(sqlalchemy.Boolean)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("HistoryParticipant._id"))
+
     def __init__(self, dictionary):
         # int # Number of assists
         self.assists = dictionary.get("assists", 0)
@@ -401,75 +512,106 @@ class ParticipantStats(cassiopeia.type.dto.common.CassiopeiaDto):
         self.winner = dictionary.get("winner", False)
 
 
-class ParticipantTimeline(cassiopeia.type.dto.common.CassiopeiaDto):
+class ParticipantTimeline(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "HistoryParticipantTimeline"
+    ancientGolemAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='ancientGolemAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    ancientGolemKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='ancientGolemKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    assistedLaneDeathsPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='assistedLaneDeathsPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    assistedLaneKillsPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='assistedLaneKillsPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    baronAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='baronAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    baronKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='baronKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    creepsPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='creepsPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    csDiffPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='csDiffPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    damageTakenDiffPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='damageTakenDiffPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    damageTakenPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='damageTakenPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    dragonAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='dragonAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    dragonKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='dragonKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    elderLizardAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='elderLizardAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    elderLizardKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='elderLizardKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    goldPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='goldPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    inhibitorAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='inhibitorAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    inhibitorKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='inhibitorKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    lane = sqlalchemy.Column(sqlalchemy.String)
+    role = sqlalchemy.Column(sqlalchemy.String)
+    towerAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='towerAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    towerKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='towerKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    towerKillsPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='towerKillsPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    vilemawAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='vilemawAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    vilemawKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='vilemawKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    wardsPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='wardsPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    xpDiffPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='xpDiffPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    xpPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='xpPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("HistoryParticipant._id"))
+
     def __init__(self, dictionary):
         # ParticipantTimelineData # Ancient golem assists per minute timeline counts
         val = dictionary.get("ancientGolemAssistsPerMinCounts", None)
-        self.ancientGolemAssistsPerMinCounts = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.ancientGolemAssistsPerMinCounts = ParticipantTimelineData(val, "ancientGolemAssistsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Ancient golem kills per minute timeline counts
         val = dictionary.get("ancientGolemKillsPerMinCounts", None)
-        self.ancientGolemKillsPerMinCounts = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.ancientGolemKillsPerMinCounts = ParticipantTimelineData(val, "ancientGolemKillsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Assisted lane deaths per minute timeline data
         val = dictionary.get("assistedLaneDeathsPerMinDeltas", None)
-        self.assistedLaneDeathsPerMinDeltas = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.assistedLaneDeathsPerMinDeltas = ParticipantTimelineData(val, "assistedLaneDeathsPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Assisted lane kills per minute timeline data
         val = dictionary.get("assistedLaneKillsPerMinDeltas", None)
-        self.assistedLaneKillsPerMinDeltas = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.assistedLaneKillsPerMinDeltas = ParticipantTimelineData(val, "assistedLaneKillsPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Baron assists per minute timeline counts
         val = dictionary.get("baronAssistsPerMinCounts", None)
-        self.baronAssistsPerMinCounts = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.baronAssistsPerMinCounts = ParticipantTimelineData(val, "baronAssistsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Baron kills per minute timeline counts
         val = dictionary.get("baronKillsPerMinCounts", None)
-        self.baronKillsPerMinCounts = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.baronKillsPerMinCounts = ParticipantTimelineData(val, "baronKillsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Creeps per minute timeline data
         val = dictionary.get("creepsPerMinDeltas", None)
-        self.creepsPerMinDeltas = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.creepsPerMinDeltas = ParticipantTimelineData(val, "creepsPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Creep score difference per minute timeline data
         val = dictionary.get("csDiffPerMinDeltas", None)
-        self.csDiffPerMinDeltas = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.csDiffPerMinDeltas = ParticipantTimelineData(val, "csDiffPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Damage taken difference per minute timeline data
         val = dictionary.get("damageTakenDiffPerMinDeltas", None)
-        self.damageTakenDiffPerMinDeltas = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.damageTakenDiffPerMinDeltas = ParticipantTimelineData(val, "damageTakenDiffPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Damage taken per minute timeline data
         val = dictionary.get("damageTakenPerMinDeltas", None)
-        self.damageTakenPerMinDeltas = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.damageTakenPerMinDeltas = ParticipantTimelineData(val, "damageTakenPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Dragon assists per minute timeline counts
         val = dictionary.get("dragonAssistsPerMinCounts", None)
-        self.dragonAssistsPerMinCounts = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.dragonAssistsPerMinCounts = ParticipantTimelineData(val, "dragonAssistsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Dragon kills per minute timeline counts
         val = dictionary.get("dragonKillsPerMinCounts", None)
-        self.dragonKillsPerMinCounts = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.dragonKillsPerMinCounts = ParticipantTimelineData(val, "dragonKillsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Elder lizard assists per minute timeline counts
         val = dictionary.get("elderLizardAssistsPerMinCounts", None)
-        self.elderLizardAssistsPerMinCounts = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.elderLizardAssistsPerMinCounts = ParticipantTimelineData(val, "elderLizardAssistsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Elder lizard kills per minute timeline counts
         val = dictionary.get("elderLizardKillsPerMinCounts", None)
-        self.elderLizardKillsPerMinCounts = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.elderLizardKillsPerMinCounts = ParticipantTimelineData(val, "elderLizardKillsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Gold per minute timeline data
         val = dictionary.get("goldPerMinDeltas", None)
-        self.goldPerMinDeltas = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.goldPerMinDeltas = ParticipantTimelineData(val, "goldPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Inhibitor assists per minute timeline counts
         val = dictionary.get("inhibitorAssistsPerMinCounts", None)
-        self.inhibitorAssistsPerMinCounts = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.inhibitorAssistsPerMinCounts = ParticipantTimelineData(val, "inhibitorAssistsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Inhibitor kills per minute timeline counts
         val = dictionary.get("inhibitorKillsPerMinCounts", None)
-        self.inhibitorKillsPerMinCounts = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.inhibitorKillsPerMinCounts = ParticipantTimelineData(val, "inhibitorKillsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # str # Participant's lane (Legal values: MID, MIDDLE, TOP, JUNGLE, BOT, BOTTOM)
         self.lane = dictionary.get("lane", "")
@@ -479,38 +621,44 @@ class ParticipantTimeline(cassiopeia.type.dto.common.CassiopeiaDto):
 
         # ParticipantTimelineData # Tower assists per minute timeline counts
         val = dictionary.get("towerAssistsPerMinCounts", None)
-        self.towerAssistsPerMinCounts = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.towerAssistsPerMinCounts = ParticipantTimelineData(val, "towerAssistsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Tower kills per minute timeline counts
         val = dictionary.get("towerKillsPerMinCounts", None)
-        self.towerKillsPerMinCounts = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.towerKillsPerMinCounts = ParticipantTimelineData(val, "towerKillsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Tower kills per minute timeline data
         val = dictionary.get("towerKillsPerMinDeltas", None)
-        self.towerKillsPerMinDeltas = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.towerKillsPerMinDeltas = ParticipantTimelineData(val, "towerKillsPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Vilemaw assists per minute timeline counts
         val = dictionary.get("vilemawAssistsPerMinCounts", None)
-        self.vilemawAssistsPerMinCounts = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.vilemawAssistsPerMinCounts = ParticipantTimelineData(val, "vilemawAssistsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Vilemaw kills per minute timeline counts
         val = dictionary.get("vilemawKillsPerMinCounts", None)
-        self.vilemawKillsPerMinCounts = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.vilemawKillsPerMinCounts = ParticipantTimelineData(val, "vilemawKillsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Wards placed per minute timeline data
         val = dictionary.get("wardsPerMinDeltas", None)
-        self.wardsPerMinDeltas = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.wardsPerMinDeltas = ParticipantTimelineData(val, "wardsPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Experience difference per minute timeline data
         val = dictionary.get("xpDiffPerMinDeltas", None)
-        self.xpDiffPerMinDeltas = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.xpDiffPerMinDeltas = ParticipantTimelineData(val, "xpDiffPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
 
         # ParticipantTimelineData # Experience per minute timeline data
         val = dictionary.get("xpPerMinDeltas", None)
-        self.xpPerMinDeltas = ParticipantTimelineData(val) if val and not isinstance(val, ParticipantTimelineData) else val
+        self.xpPerMinDeltas = ParticipantTimelineData(val, "xpPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
 
 
-class Rune(cassiopeia.type.dto.common.CassiopeiaDto):
+class Rune(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "HistoryRune"
+    rank = sqlalchemy.Column(sqlalchemy.Integer)
+    runeId = sqlalchemy.Column(sqlalchemy.Integer)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("HistoryParticipant._id"))
+
     def __init__(self, dictionary):
         # int # Rune rank
         self.rank = dictionary.get("rank", 0)
@@ -519,7 +667,15 @@ class Rune(cassiopeia.type.dto.common.CassiopeiaDto):
         self.runeId = dictionary.get("runeId", 0)
 
 
-class Player(cassiopeia.type.dto.common.CassiopeiaDto):
+class Player(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "HistoryPlayer"
+    matchHistoryUri = sqlalchemy.Column(sqlalchemy.String)
+    profileIcon = sqlalchemy.Column(sqlalchemy.Integer)
+    summonerId = sqlalchemy.Column(sqlalchemy.Integer)
+    summonerName = sqlalchemy.Column(sqlalchemy.String)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("HistoryParticipantIdentity._id"))
+
     def __init__(self, dictionary):
         # str # Match history URI
         self.matchHistoryUri = dictionary.get("matchHistoryUri", "")
@@ -534,8 +690,17 @@ class Player(cassiopeia.type.dto.common.CassiopeiaDto):
         self.summonerName = dictionary.get("summonerName", "")
 
 
-class ParticipantTimelineData(cassiopeia.type.dto.common.CassiopeiaDto):
-    def __init__(self, dictionary):
+class ParticipantTimelineData(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "HistoryParticipantTimelineData"
+    tenToTwenty = sqlalchemy.Column(sqlalchemy.Float)
+    thirtyToEnd = sqlalchemy.Column(sqlalchemy.Float)
+    twentyToThirty = sqlalchemy.Column(sqlalchemy.Float)
+    zeroToTen = sqlalchemy.Column(sqlalchemy.Float)
+    _type = sqlalchemy.Column(sqlalchemy.String)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _timeline_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("HistoryParticipantTimeline._id"))
+
+    def __init__(self, dictionary, type_):
         # float # Value per minute from 10 min to 20 min
         self.tenToTwenty = dictionary.get("tenToTwenty", 0.0)
 
@@ -547,3 +712,5 @@ class ParticipantTimelineData(cassiopeia.type.dto.common.CassiopeiaDto):
 
         # float # Value per minute from the beginning of the game to 10 min
         self.zeroToTen = dictionary.get("zeroToTen", 0.0)
+
+        self._type = type_
