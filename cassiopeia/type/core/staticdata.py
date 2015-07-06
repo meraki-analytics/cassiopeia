@@ -825,11 +825,11 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def time_dead(self):
-        return self.data.rFlatTimeDeadMod
+        return abs(self.data.rFlatTimeDeadMod)
 
     @property
     def time_dead_per_level(self):
-        return self.data.rFlatTimeDeadModPerLevel
+        return abs(self.data.rFlatTimeDeadModPerLevel)
 
     @property
     def percent_armor_pen(self):
@@ -845,11 +845,11 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def cooldown_reduction(self):
-        return self.data.rPercentCooldownMod + self.__scraped_stats.get("percent_cooldown_reduction", 0.0)
+        return abs(self.data.rPercentCooldownMod + self.__scraped_stats.get("percent_cooldown_reduction", 0.0))
 
     @property
     def cooldown_reduction_per_level(self):
-        return self.data.rPercentCooldownModPerLevel
+        return abs(self.data.rPercentCooldownModPerLevel)
 
     @property
     def percent_magic_pen(self):
@@ -865,11 +865,11 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def percent_time_dead(self):
-        return self.data.rPercentTimeDeadMod
+        return abs(self.data.rPercentTimeDeadMod)
 
     @property
     def percent_time_dead_per_level(self):
-        return self.data.rPercentTimeDeadModPerLevel
+        return abs(self.data.rPercentTimeDeadModPerLevel)
 
 
 class Item(cassiopeia.type.core.common.CassiopeiaObject):
@@ -1065,7 +1065,7 @@ class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
     # str # Name
     @property
     def name(self):
-        return self.data.name
+        return self.data.name.strip()
 
     # str # Prerequisites
     @property
