@@ -878,7 +878,7 @@ class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
         self.masteryTree = dictionary.get("masteryTree", "")
 
         # str # Name
-        self.name = dictionary.get("name", "").strip()
+        self.name = dictionary.get("name", "")
 
         # str # Prerequisites
         self.prereq = dictionary.get("prereq", "")
