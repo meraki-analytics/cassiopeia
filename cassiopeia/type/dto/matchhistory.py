@@ -700,7 +700,7 @@ class ParticipantTimelineData(cassiopeia.type.dto.common.CassiopeiaDto, cassiope
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     _timeline_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("HistoryParticipantTimeline._id"))
 
-    def __init__(self, dictionary, type_):
+    def __init__(self, dictionary, type_=None):
         # float # Value per minute from 10 min to 20 min
         self.tenToTwenty = dictionary.get("tenToTwenty", 0.0)
 

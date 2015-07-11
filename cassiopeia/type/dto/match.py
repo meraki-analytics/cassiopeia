@@ -1,7 +1,6 @@
 import sqlalchemy
 import sqlalchemy.orm
 import sqlalchemy.orm.collections
-import sqlalchemy_utils
 
 import cassiopeia.type.dto.common
 
@@ -778,7 +777,7 @@ class ParticipantTimelineData(cassiopeia.type.dto.common.CassiopeiaDto, cassiope
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     _timeline_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipantTimeline._id"))
 
-    def __init__(self, dictionary, type_):
+    def __init__(self, dictionary, type_=None):
         # float # Value per minute from 10 min to 20 min
         self.tenToTwenty = dictionary.get("tenToTwenty", 0.0)
 
@@ -797,7 +796,7 @@ class ParticipantTimelineData(cassiopeia.type.dto.common.CassiopeiaDto, cassiope
 class Event(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "MatchEvent"
     ascendedType = sqlalchemy.Column(sqlalchemy.String)
-    assistingParticipantIds = sqlalchemy.Column(sqlalchemy_utils.ScalarListType(int))
+    assistingParticipantIds = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
     buildingType = sqlalchemy.Column(sqlalchemy.String)
     creatorId = sqlalchemy.Column(sqlalchemy.Integer)
     eventType = sqlalchemy.Column(sqlalchemy.String)
