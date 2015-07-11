@@ -1,4 +1,6 @@
 import json
+import sqlalchemy
+import sqlalchemy.types
 import sqlalchemy.ext.declarative
 
 class CassiopeiaDto(object):
@@ -27,3 +29,17 @@ class CassiopeiaDto(object):
 
 
 BaseDB = sqlalchemy.ext.declarative.declarative_base()
+
+
+class JSONEncoded(sqlalchemy.types.TypeDecorator):
+    impl = sqlalchemy.String
+
+    def process_bind_param(self, value, dialect):
+        if value is not None:
+            value = json.dumps(value)
+        return value
+
+    def process_result_value(self, value, dialect):
+        if value is not None:
+            value = json.loads(value)
+        return value

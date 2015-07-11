@@ -193,6 +193,15 @@ class Skin(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return self.name
 
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __ne__(self, other):
+        return self.id != other.id
+
+    def __hash__(self):
+        return hash(self.id)
+
     @property
     def id(self):
         return self.data.id
@@ -337,6 +346,15 @@ class ChampionInfo(cassiopeia.type.core.common.CassiopeiaObject):
 class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return self.name
+
+    def __eq__(self, other):
+        return self.key == other.key
+
+    def __ne__(self, other):
+        return self.key != other.key
+
+    def __hash__(self):
+        return hash(self.key)
 
     # list<Image> # Alternate images
     @cassiopeia.type.core.common.lazyproperty
@@ -992,19 +1010,6 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def tags(self):
         return self.data.tags
 
-
-class Group(cassiopeia.type.core.common.CassiopeiaObject):
-    def __str__(self):
-        return "Group ({key})".format(key=self.key)
-
-    @property
-    def max_ownable(self):
-        return self.data.MaxGroupOwnable
-
-    @property
-    def key(self):
-        return self.data.key
-
 ################
 # Map Endpoint #
 ################
@@ -1012,6 +1017,15 @@ class Group(cassiopeia.type.core.common.CassiopeiaObject):
 class MapDetails(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return self.data.name
+
+    def __eq__(self, other):
+        return self.mapId == other.mapId
+
+    def __ne__(self, other):
+        return self.mapId != other.mapId
+
+    def __hash__(self):
+        return hash(self.mapId)
 
     @cassiopeia.type.core.common.lazyproperty
     def image(self):
@@ -1089,6 +1103,15 @@ class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
 class Realm(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Realm"
+
+    def __eq__(self, other):
+        return self.cdn == other.cdn
+
+    def __ne__(self, other):
+        return self.cdn != other.cdn
+
+    def __hash__(self):
+        return hash(self.cdn)
 
     # str # The base CDN url.
     @property
