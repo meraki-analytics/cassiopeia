@@ -1,3 +1,6 @@
+import sqlalchemy
+import sqlalchemy.orm
+
 import cassiopeia.type.dto.common
 
 class RunePages(cassiopeia.type.dto.common.CassiopeiaDto):
@@ -16,7 +19,13 @@ class RunePages(cassiopeia.type.dto.common.CassiopeiaDto):
         return ids
 
 
-class RunePage(cassiopeia.type.dto.common.CassiopeiaDto):
+class RunePage(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "RunePage"
+    current = sqlalchemy.Column(sqlalchemy.Boolean)
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    name = sqlalchemy.Column(sqlalchemy.String)
+    slots = sqlalchemy.orm.relationship("cassiopeia.type.dto.summoner.RuneSlot", cascade="all, delete-orphan", passive_deletes=True)
+
     def __init__(self, dictionary):
         # bool # Indicates if the page is the current page.
         self.current = dictionary.get("current", False)
@@ -39,7 +48,13 @@ class RunePage(cassiopeia.type.dto.common.CassiopeiaDto):
         return ids
 
 
-class RuneSlot(cassiopeia.type.dto.common.CassiopeiaDto):
+class RuneSlot(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "RuneSlot"
+    runeId = sqlalchemy.Column(sqlalchemy.Integer)
+    runeSlotId = sqlalchemy.Column(sqlalchemy.Integer)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _page_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("RunePage.id"))
+
     def __init__(self, dictionary):
         # int # Rune ID associated with the rune slot. For static information correlating to rune IDs, please refer to the LoL Static Data API.
         self.runeId = dictionary.get("runeId", 0)
@@ -64,7 +79,13 @@ class MasteryPages(cassiopeia.type.dto.common.CassiopeiaDto):
         return ids
 
 
-class MasteryPage(cassiopeia.type.dto.common.CassiopeiaDto):
+class MasteryPage(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "MasteryPage"
+    current = sqlalchemy.Column(sqlalchemy.Boolean)
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    masteries = sqlalchemy.orm.relationship("cassiopeia.type.dto.summoner.Mastery", cascade="all, delete-orphan", passive_deletes=True)
+    name = sqlalchemy.Column(sqlalchemy.String)
+
     def __init__(self, dictionary):
         # bool # Indicates if the mastery page is the current mastery page.
         self.current = dictionary.get("current", False)
@@ -73,7 +94,7 @@ class MasteryPage(cassiopeia.type.dto.common.CassiopeiaDto):
         self.id = dictionary.get("id", 0)
 
         # list<MasteryDto> # Collection of masteries associated with the mastery page.
-        self.masteries = dictionary.get("masteries", [])
+        self.masteries = [(Mastery(s) if not isinstance(s, Mastery) else s) for s in dictionary.get("masteries", []) if s]
 
         # str # Mastery page name.
         self.name = dictionary.get("name", "")
@@ -87,7 +108,13 @@ class MasteryPage(cassiopeia.type.dto.common.CassiopeiaDto):
         return ids
 
 
-class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
+class Mastery(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "MasterySlot"
+    id = sqlalchemy.Column(sqlalchemy.Integer)
+    rank = sqlalchemy.Column(sqlalchemy.Integer)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _page_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MasteryPage.id"))
+
     def __init__(self, dictionary):
         # int # Mastery ID. For static information correlating to masteries, please refer to the LoL Static Data API.
         self.id = dictionary.get("id", 0)
@@ -96,7 +123,14 @@ class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
         self.rank = dictionary.get("rank", 0)
 
 
-class Summoner(cassiopeia.type.dto.common.CassiopeiaDto):
+class Summoner(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "Summoner"
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    name = sqlalchemy.Column(sqlalchemy.String)
+    profileIconId = sqlalchemy.Column(sqlalchemy.Integer)
+    revisionDate = sqlalchemy.Column(sqlalchemy.Integer)
+    summonerLevel = sqlalchemy.Column(sqlalchemy.Integer)
+
     def __init__(self, dictionary):
         # int # Summoner ID.
         self.id = dictionary.get("id", 0)
