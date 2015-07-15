@@ -127,7 +127,7 @@ class Service(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.comm
 
 
 class ShardStatus(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    _tablename__ = "ShardStatus"
+    __tablename__ = "ShardStatus"
     hostname = sqlalchemy.Column(sqlalchemy.String)
     locales = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
     name = sqlalchemy.Column(sqlalchemy.String)
