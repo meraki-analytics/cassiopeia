@@ -32,7 +32,7 @@ BaseDB = sqlalchemy.ext.declarative.declarative_base()
 
 
 class JSONEncoded(sqlalchemy.types.TypeDecorator):
-    impl = sqlalchemy.String
+    impl = sqlalchemy.Text
 
     def process_bind_param(self, value, dialect):
         if value is not None:

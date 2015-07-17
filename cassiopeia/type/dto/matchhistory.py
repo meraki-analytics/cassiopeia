@@ -57,15 +57,15 @@ class MatchSummary(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto
     matchCreation = sqlalchemy.Column(sqlalchemy.Integer)
     matchDuration = sqlalchemy.Column(sqlalchemy.Integer)
     matchId = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    matchMode = sqlalchemy.Column(sqlalchemy.String)
-    matchType = sqlalchemy.Column(sqlalchemy.String)
-    matchVersion = sqlalchemy.Column(sqlalchemy.String)
+    matchMode = sqlalchemy.Column(sqlalchemy.String(30))
+    matchType = sqlalchemy.Column(sqlalchemy.String(30))
+    matchVersion = sqlalchemy.Column(sqlalchemy.String(30))
     participantIdentities = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantIdentity", cascade="all, delete-orphan", passive_deletes=True)
     participants = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.Participant", cascade="all, delete-orphan", passive_deletes=True)
-    platformId = sqlalchemy.Column(sqlalchemy.String)
-    queueType = sqlalchemy.Column(sqlalchemy.String)
-    region = sqlalchemy.Column(sqlalchemy.String)
-    season = sqlalchemy.Column(sqlalchemy.String)
+    platformId = sqlalchemy.Column(sqlalchemy.String(30))
+    queueType = sqlalchemy.Column(sqlalchemy.String(30))
+    region = sqlalchemy.Column(sqlalchemy.String(30))
+    season = sqlalchemy.Column(sqlalchemy.String(30))
 
     def __init__(self, dictionary):
         # int # Match map ID
@@ -176,7 +176,7 @@ class MatchSummary(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto
 class Participant(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "HistoryParticipant"
     championId = sqlalchemy.Column(sqlalchemy.Integer)
-    highestAchievedSeasonTier = sqlalchemy.Column(sqlalchemy.String)
+    highestAchievedSeasonTier = sqlalchemy.Column(sqlalchemy.String(30))
     masteries = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.Mastery", cascade="all, delete-orphan", passive_deletes=True)
     participantId = sqlalchemy.Column(sqlalchemy.Integer)
     runes = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.Rune", cascade="all, delete-orphan", passive_deletes=True)
@@ -531,8 +531,8 @@ class ParticipantTimeline(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.t
     goldPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='goldPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     inhibitorAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='inhibitorAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     inhibitorKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='inhibitorKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    lane = sqlalchemy.Column(sqlalchemy.String)
-    role = sqlalchemy.Column(sqlalchemy.String)
+    lane = sqlalchemy.Column(sqlalchemy.String(30))
+    role = sqlalchemy.Column(sqlalchemy.String(30))
     towerAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='towerAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     towerKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='towerKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     towerKillsPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='towerKillsPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
@@ -669,10 +669,10 @@ class Rune(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
 
 class Player(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "HistoryPlayer"
-    matchHistoryUri = sqlalchemy.Column(sqlalchemy.String)
+    matchHistoryUri = sqlalchemy.Column(sqlalchemy.String(50))
     profileIcon = sqlalchemy.Column(sqlalchemy.Integer)
     summonerId = sqlalchemy.Column(sqlalchemy.Integer)
-    summonerName = sqlalchemy.Column(sqlalchemy.String)
+    summonerName = sqlalchemy.Column(sqlalchemy.String(30))
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("HistoryParticipantIdentity._id"))
 
@@ -696,7 +696,7 @@ class ParticipantTimelineData(cassiopeia.type.dto.common.CassiopeiaDto, cassiope
     thirtyToEnd = sqlalchemy.Column(sqlalchemy.Float)
     twentyToThirty = sqlalchemy.Column(sqlalchemy.Float)
     zeroToTen = sqlalchemy.Column(sqlalchemy.Float)
-    _type = sqlalchemy.Column(sqlalchemy.String)
+    _type = sqlalchemy.Column(sqlalchemy.String(50))
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     _timeline_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("HistoryParticipantTimeline._id"))
 
