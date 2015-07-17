@@ -347,8 +347,8 @@ class Game(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
     createDate = sqlalchemy.Column(sqlalchemy.Integer)
     fellowPlayers = sqlalchemy.orm.relationship("cassiopeia.type.dto.game.Player", cascade="all, delete-orphan", passive_deletes=True)
     gameId = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    gameMode = sqlalchemy.Column(sqlalchemy.String)
-    gameType = sqlalchemy.Column(sqlalchemy.String)
+    gameMode = sqlalchemy.Column(sqlalchemy.String(30))
+    gameType = sqlalchemy.Column(sqlalchemy.String(30))
     invalid = sqlalchemy.Column(sqlalchemy.Boolean)
     ipEarned = sqlalchemy.Column(sqlalchemy.Integer)
     level = sqlalchemy.Column(sqlalchemy.Integer)
@@ -356,7 +356,7 @@ class Game(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
     spell1 = sqlalchemy.Column(sqlalchemy.Integer)
     spell2 = sqlalchemy.Column(sqlalchemy.Integer)
     stats = sqlalchemy.orm.relationship("cassiopeia.type.dto.game.RawStats", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    subType = sqlalchemy.Column(sqlalchemy.String)
+    subType = sqlalchemy.Column(sqlalchemy.String(30))
     teamId = sqlalchemy.Column(sqlalchemy.Integer)
 
     def __init__(self, dictionary):
@@ -403,7 +403,7 @@ class Game(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
         # str # Game sub-type. (Legal values: NONE, NORMAL, BOT, RANKED_SOLO_5x5, RANKED_PREMADE_3x3, RANKED_PREMADE_5x5, ODIN_UNRANKED, RANKED_TEAM_3x3, RANKED_TEAM_5x5, NORMAL_3x3, BOT_3x3, CAP_5x5, ARAM_UNRANKED_5x5, ONEFORALL_5x5, FIRSTBLOOD_1x1, FIRSTBLOOD_2x2, SR_6x6, URF, URF_BOT, NIGHTMARE_BOT, ASCENSION, HEXAKILL, KING_PORO, COUNTER_PICK)
         self.subType = dictionary.get("subType", "")
 
-        # int # Team ID associated with game. Team ID 100 is blue team. Team ID 200 is purple team.
+        # int # Team ID associated with game. Team ID 100 is blue team. Team ID 300 is purple team.
         self.teamId = dictionary.get("teamId", 0)
 
 

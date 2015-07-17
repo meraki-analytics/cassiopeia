@@ -5,11 +5,11 @@ import cassiopeia.type.dto.common
 
 class Shard(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "Shard"
-    hostname = sqlalchemy.Column(sqlalchemy.String)
+    hostname = sqlalchemy.Column(sqlalchemy.String(50))
     locales = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
-    name = sqlalchemy.Column(sqlalchemy.String)
-    region_tag = sqlalchemy.Column(sqlalchemy.String, primary_key=True)
-    slug = sqlalchemy.Column(sqlalchemy.String)
+    name = sqlalchemy.Column(sqlalchemy.String(30))
+    region_tag = sqlalchemy.Column(sqlalchemy.String(30), primary_key=True)
+    slug = sqlalchemy.Column(sqlalchemy.String(30))
 
     def __init__(self, dictionary):
         # str # Hostname
@@ -30,9 +30,9 @@ class Shard(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common
 
 class Translation(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "Translation"
-    content = sqlalchemy.Column(sqlalchemy.String)
-    locale = sqlalchemy.Column(sqlalchemy.String)
-    updated_at = sqlalchemy.Column(sqlalchemy.String)
+    content = sqlalchemy.Column(sqlalchemy.Text)
+    locale = sqlalchemy.Column(sqlalchemy.String(30))
+    updated_at = sqlalchemy.Column(sqlalchemy.String(30))
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     _message_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Message.id"))
 
@@ -49,13 +49,13 @@ class Translation(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.
 
 class Message(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "Message"
-    author = sqlalchemy.Column(sqlalchemy.String)
-    content = sqlalchemy.Column(sqlalchemy.String)
-    created_at = sqlalchemy.Column(sqlalchemy.String)
+    author = sqlalchemy.Column(sqlalchemy.String(30))
+    content = sqlalchemy.Column(sqlalchemy.Text)
+    created_at = sqlalchemy.Column(sqlalchemy.String(30))
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    severity = sqlalchemy.Column(sqlalchemy.String)
+    severity = sqlalchemy.Column(sqlalchemy.String(30))
     translations = sqlalchemy.orm.relationship("cassiopeia.type.dto.status.Translation", cascade="all, delete-orphan", passive_deletes=True)
-    updated_at = sqlalchemy.Column(sqlalchemy.String)
+    updated_at = sqlalchemy.Column(sqlalchemy.String(30))
     _incident_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Incident.id"))
 
     def __init__(self, dictionary):
@@ -84,7 +84,7 @@ class Message(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.comm
 class Incident(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "Incident"
     active = sqlalchemy.Column(sqlalchemy.Boolean)
-    created_at = sqlalchemy.Column(sqlalchemy.String)
+    created_at = sqlalchemy.Column(sqlalchemy.String(30))
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     updates = sqlalchemy.orm.relationship("cassiopeia.type.dto.status.Message", cascade="all, delete-orphan", passive_deletes=True)
     _service_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Service._id"))
@@ -106,9 +106,9 @@ class Incident(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.com
 class Service(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "Service"
     incidents = sqlalchemy.orm.relationship("cassiopeia.type.dto.status.Incident", cascade="all, delete-orphan", passive_deletes=True)
-    name = sqlalchemy.Column(sqlalchemy.String)
-    slug = sqlalchemy.Column(sqlalchemy.String)
-    status = sqlalchemy.Column(sqlalchemy.String)
+    name = sqlalchemy.Column(sqlalchemy.String(30))
+    slug = sqlalchemy.Column(sqlalchemy.String(30))
+    status = sqlalchemy.Column(sqlalchemy.String(30))
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     _shard_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("ShardStatus._id"))
 
@@ -128,12 +128,12 @@ class Service(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.comm
 
 class ShardStatus(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "ShardStatus"
-    hostname = sqlalchemy.Column(sqlalchemy.String)
+    hostname = sqlalchemy.Column(sqlalchemy.String(50))
     locales = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
-    name = sqlalchemy.Column(sqlalchemy.String)
-    region_tag = sqlalchemy.Column(sqlalchemy.String)
+    name = sqlalchemy.Column(sqlalchemy.String(30))
+    region_tag = sqlalchemy.Column(sqlalchemy.String(30))
     services = sqlalchemy.orm.relationship("cassiopeia.type.dto.status.Service", cascade="all, delete-orphan", passive_deletes=True)
-    slug = sqlalchemy.Column(sqlalchemy.String)
+    slug = sqlalchemy.Column(sqlalchemy.String(30))
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
 
     def __init__(self, dictionary):
