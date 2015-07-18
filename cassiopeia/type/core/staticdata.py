@@ -190,6 +190,10 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class Skin(cassiopeia.type.core.common.CassiopeiaObject):
+    def __init__(self, data, name):
+        super().__init__(data)
+        self.splash_url = 'http://ddragon.leagueoflegends.com/cdn/img/champion/splash/{0}_{1}.jpg'.format(name, self.data.num)
+
     def __str__(self):
         return self.name
 
@@ -544,7 +548,7 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def skins(self):
-        return [Skin(skin) for skin in self.data.skins]
+        return [Skin(skin, self.image.link.replace('.png', '')) for skin in self.data.skins]
 
     @cassiopeia.type.core.common.lazyproperty
     def spells(self):
