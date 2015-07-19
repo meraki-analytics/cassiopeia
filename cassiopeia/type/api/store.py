@@ -112,8 +112,11 @@ class SQLAlchemyDB(object):
             
             results = []
             for key in keys:
-                val = from_db[key]
-                results.append(class_(val) if val else None)
+                try:
+                    val = from_db[key]
+                    results.append(class_(val) if val else None)
+                except KeyError:
+                    results.append(None)
             return results
 
     def store(self, objs, keys=None, complete_sets=[]):
@@ -126,7 +129,7 @@ class SQLAlchemyDB(object):
         else:
             class_ = objs[0].data.__class__
             p_key = class_.__mapper__.primary_key[0].name.split("\\.")[-1]
-            to_store = {getattr(obj, p_key): obj.data for obj in objs}
+            to_store = {getattr(obj.data, p_key): obj.data for obj in objs}
 
             for obj in self.session.query(class_).filter(getattr(class_, p_key).in_(to_store.keys())).all():
                 del to_store[getattr(obj, p_key)]
