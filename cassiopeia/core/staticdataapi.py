@@ -12,7 +12,7 @@ _ignore_summoner_spells = {10}
 # @param id_ # int # The ID of the champion to get
 # @return # cassiopeia.type.core.staticdata.Champion # The champion
 def get_champion_by_id(id_):
-    champion = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Champion, id_)
+    champion = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Champion, id_, "id")
     if(champion):
         return champion
 
@@ -54,7 +54,7 @@ def get_champions():
 # @return # list<cassiopeia.type.core.staticdata.Champion> # The champions
 def get_champions_by_id(ids):
     get_champions()
-    return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Champion, ids)
+    return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Champion, ids, "id")
 
 # @param names # list<str> # The names of the champions to get
 # @return # list<cassiopeia.type.core.staticdata.Champion> # The champions
@@ -78,7 +78,7 @@ def get_item(id_):
     if(id_ in _ignore_items):
         return None
 
-    item = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Item, id_)
+    item = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Item, id_, "id")
     if(item):
         return item
 
@@ -93,7 +93,7 @@ def get_item(id_):
 def get_items(ids=None):
     if(ids):
         get_items()
-        return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Item, ids)
+        return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Item, ids, "id")
     else:
         if(cassiopeia.core.requests.data_store.has_all(cassiopeia.type.core.staticdata.Item)):
             return cassiopeia.core.requests.data_store.get_all(cassiopeia.type.core.staticdata.Item)
@@ -115,7 +115,7 @@ def get_map_information():
 # @param id_ # int # The ID of the mastery to get
 # @return # cassiopeia.type.core.staticdata.Mastery # The mastery
 def get_mastery(id_):
-    mastery = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Mastery, id_)
+    mastery = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Mastery, id_, "id")
     if(mastery):
         return mastery
 
@@ -130,7 +130,7 @@ def get_mastery(id_):
 def get_masteries(ids=None):
     if(ids):
         get_masteries()
-        return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Mastery, ids)
+        return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Mastery, ids, "id")
     else:
         if(cassiopeia.core.requests.data_store.has_all(cassiopeia.type.core.staticdata.Mastery)):
             return cassiopeia.core.requests.data_store.get_all(cassiopeia.type.core.staticdata.Mastery)
@@ -151,7 +151,7 @@ def get_rune(id_):
     if(id_ in _ignore_runes):
         return None
 
-    rune = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Rune, id_)
+    rune = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Rune, id_, "id")
     if(rune):
         return rune
 
@@ -166,7 +166,7 @@ def get_rune(id_):
 def get_runes(ids=None):
     if(ids):
         get_runes()
-        return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Rune, ids)
+        return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Rune, ids, "id")
     else:
         if(cassiopeia.core.requests.data_store.has_all(cassiopeia.type.core.staticdata.Rune)):
             return cassiopeia.core.requests.data_store.get_all(cassiopeia.type.core.staticdata.Rune)
@@ -183,7 +183,7 @@ def get_summoner_spell(id_):
     if(id_ in _ignore_summoner_spells):
         return None
 
-    summoner_spell = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.SummonerSpell, id_)
+    summoner_spell = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.SummonerSpell, id_, "id")
     if(summoner_spell):
         return summoner_spell
 
@@ -198,7 +198,7 @@ def get_summoner_spell(id_):
 def get_summoner_spells(ids=None):
     if(ids):
         get_summoner_spells()
-        return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.SummonerSpell, ids)
+        return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.SummonerSpell, ids, "id")
     else:
         if(cassiopeia.core.requests.data_store.has_all(cassiopeia.type.core.staticdata.SummonerSpell)):
             return cassiopeia.core.requests.data_store.get_all(cassiopeia.type.core.staticdata.SummonerSpell)

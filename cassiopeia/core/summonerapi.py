@@ -53,7 +53,7 @@ def get_rune_pages(summoners):
 # @param id_ # int # The ID of the summoner to get
 # @return # cassiopeia.type.core.summoner.Summoner # The summoner
 def get_summoner_by_id(id_):
-    summoner = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, id_)
+    summoner = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, id_, "id")
     if(summoner):
         return summoner
 
@@ -67,7 +67,7 @@ def get_summoner_by_id(id_):
 # @param name # str # The name of the summoner to get
 # @return # cassiopeia.type.core.summoner.Summoner # The summoner
 def get_summoner_by_name(name):
-    summoner = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, name)
+    summoner = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, name, "name")
     if(summoner):
         return summoner
 
@@ -81,7 +81,7 @@ def get_summoner_by_name(name):
 # @param ids # list<int> # The IDs of the summoners to get
 # @return # list<cassiopeia.type.core.summoner.Summoner> # The summoners
 def get_summoners_by_id(ids):
-    summoners = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, ids)
+    summoners = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, ids, "id")
 
     # Find which summoners weren't cached
     missing = []
@@ -108,7 +108,7 @@ def get_summoners_by_id(ids):
 # @param names # list<str> # The names of the summoners to get
 # @return # list<cassiopeia.type.core.summoner.Summoner> # The summoners
 def get_summoners_by_name(names):
-    summoners = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, names)
+    summoners = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, names, "name")
 
     # Find which summoners weren't cached
     missing = []
@@ -135,7 +135,7 @@ def get_summoners_by_name(names):
 # @param id_ # int # The summoner ID to get name for
 # @return # str # The summoner's name
 def get_summoner_name(id_):
-    summoner = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, id_)
+    summoner = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, id_, "id")
     if(summoner):
         return summoner.name
 
@@ -144,7 +144,7 @@ def get_summoner_name(id_):
 # @param ids # list<int> # The summoner IDs to get names for
 # @return # list<str> # The summoners' names
 def get_summoner_names(ids):
-    summoners = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, ids)
+    summoners = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, ids, "id")
     summoners = [summoner.name if summoner else "" for summoner in summoners]
 
     # Find which summoners weren't cached

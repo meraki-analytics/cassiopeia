@@ -1,9 +1,13 @@
 import enum
 import json
 
+import cassiopeia.type.api.exception
+
 class CassiopeiaObject(object):
     # @param data # CassiopeiaDto # The underlying DTO object with the data for this type
     def __init__(self, data):
+        if(data.__class__ is not self.dto_type):
+            raise cassiopeia.type.api.exception.CassiopeiaException("Tried to instantiate a core {class_} with a {dto} dto!".format(class_=self.__class__.__name__, dto=data.__class__.__name__))
         self.data = data
 
     def to_json(self):
