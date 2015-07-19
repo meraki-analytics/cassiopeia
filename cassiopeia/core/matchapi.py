@@ -7,7 +7,7 @@ import cassiopeia.type.core.match
 # @param id_ # int # The match ID to get
 # @return cassiopeia.type.core.match.Match # The match
 def get_match(id_):
-    match = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.match.Match, id_)
+    match = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.match.Match, id_, "matchId")
     if(match):
         return match
 
@@ -29,7 +29,7 @@ def get_match(id_):
 # @param ids # list<int> # The match IDs to get
 # @return # list<cassiopeia.type.core.match.Match> # The matches
 def get_matches(ids):
-    matches = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.match.Match, ids)
+    matches = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.match.Match, ids, "matchId")
 
     # Find which matches weren't cached
     missing = []

@@ -1,7 +1,10 @@
 import cassiopeia.riotapi
 import cassiopeia.type.core.common
+import cassiopeia.type.dto.league
 
 class Series(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.league.MiniSeries
+
     def __str__(self):
         return progress
 
@@ -27,6 +30,8 @@ class Series(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class Entry(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.league.LeagueEntry
+
     def __str__(self):
         return "{player} ({lp} LP)".format(player=self.player_name, lp=self.league_points)
 
@@ -122,6 +127,8 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class League(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.league.League
+    
     def __str__(self):
         return "{name} ({tier})".format(name=self.name, tier=self.tier)
 

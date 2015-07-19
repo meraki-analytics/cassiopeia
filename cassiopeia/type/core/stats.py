@@ -1,8 +1,11 @@
 import datetime
 
 import cassiopeia.type.core.common
+import cassiopeia.type.dto.stats
 
 class StatsSummary(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.stats.PlayerStatsSummary
+
     def __str__(self):
         return "Stats Summary"
 
@@ -28,6 +31,8 @@ class StatsSummary(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.stats.AggregatedStats
+
     def __str__(self):
         return "Aggregated Stats"
 

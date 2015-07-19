@@ -5,20 +5,20 @@ import cassiopeia.type.dto.common
 
 class Team(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "Team"
-    createDate = sqlalchemy.Column(sqlalchemy.Integer)
+    createDate = sqlalchemy.Column(sqlalchemy.BigInteger)
     fullId = sqlalchemy.Column(sqlalchemy.String(50), primary_key=True)
-    lastGameDate = sqlalchemy.Column(sqlalchemy.Integer)
-    lastJoinDate = sqlalchemy.Column(sqlalchemy.Integer)
-    lastJoinedRankedTeamQueueDate = sqlalchemy.Column(sqlalchemy.Integer)
-    matchHistory = sqlalchemy.orm.relationship("cassiopeia.type.dto.team.MatchHistorySummary", cascade="all, delete-orphan", passive_deletes=True)
-    modifyDate = sqlalchemy.Column(sqlalchemy.Integer)
+    lastGameDate = sqlalchemy.Column(sqlalchemy.BigInteger)
+    lastJoinDate = sqlalchemy.Column(sqlalchemy.BigInteger)
+    lastJoinedRankedTeamQueueDate = sqlalchemy.Column(sqlalchemy.BigInteger)
+    matchHistory = sqlalchemy.orm.relationship("cassiopeia.type.dto.team.MatchHistorySummary", cascade="all, delete-orphan, merge", passive_deletes=True)
+    modifyDate = sqlalchemy.Column(sqlalchemy.BigInteger)
     name = sqlalchemy.Column(sqlalchemy.String(30))
-    roster = sqlalchemy.orm.relationship("cassiopeia.type.dto.team.Roster", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    secondLastJoinDate = sqlalchemy.Column(sqlalchemy.Integer)
+    roster = sqlalchemy.orm.relationship("cassiopeia.type.dto.team.Roster", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
+    secondLastJoinDate = sqlalchemy.Column(sqlalchemy.BigInteger)
     status = sqlalchemy.Column(sqlalchemy.String(30))
     tag = sqlalchemy.Column(sqlalchemy.String(30))
-    teamStatDetails = sqlalchemy.orm.relationship("cassiopeia.type.dto.team.TeamStatDetail", cascade="all, delete-orphan", passive_deletes=True)
-    thirdLastJoinDate = sqlalchemy.Column(sqlalchemy.Integer)
+    teamStatDetails = sqlalchemy.orm.relationship("cassiopeia.type.dto.team.TeamStatDetail", cascade="all, delete-orphan, merge", passive_deletes=True)
+    thirdLastJoinDate = sqlalchemy.Column(sqlalchemy.BigInteger)
 
     def __init__(self, dictionary):
         # int # Date that team was created specified as epoch milliseconds.
@@ -68,7 +68,7 @@ class Team(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
 class MatchHistorySummary(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "TeamMatchHistorySummary"
     assists = sqlalchemy.Column(sqlalchemy.Integer)
-    date = sqlalchemy.Column(sqlalchemy.Integer)
+    date = sqlalchemy.Column(sqlalchemy.BigInteger)
     deaths = sqlalchemy.Column(sqlalchemy.Integer)
     gameId = sqlalchemy.Column(sqlalchemy.Integer)
     gameMode = sqlalchemy.Column(sqlalchemy.String(30))
@@ -150,8 +150,8 @@ class TeamStatDetail(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.d
 
 class TeamMemberInfo(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "TeamMemberInfo"
-    inviteDate = sqlalchemy.Column(sqlalchemy.Integer)
-    joinDate = sqlalchemy.Column(sqlalchemy.Integer)
+    inviteDate = sqlalchemy.Column(sqlalchemy.BigInteger)
+    joinDate = sqlalchemy.Column(sqlalchemy.BigInteger)
     playerId = sqlalchemy.Column(sqlalchemy.Integer)
     status = sqlalchemy.Column(sqlalchemy.String(30))
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)

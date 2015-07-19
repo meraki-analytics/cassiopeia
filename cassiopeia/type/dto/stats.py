@@ -14,9 +14,9 @@ class PlayerStatsSummaryList(cassiopeia.type.dto.common.CassiopeiaDto):
 
 class PlayerStatsSummary(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "PlayerStatsSummary"
-    aggregatedStats = sqlalchemy.orm.relationship("cassiopeia.type.dto.stats.AggregatedStats", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    aggregatedStats = sqlalchemy.orm.relationship("cassiopeia.type.dto.stats.AggregatedStats", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
     losses = sqlalchemy.Column(sqlalchemy.Integer)
-    modifyDate = sqlalchemy.Column(sqlalchemy.Integer)
+    modifyDate = sqlalchemy.Column(sqlalchemy.BigInteger)
     playerStatSummaryType = sqlalchemy.Column(sqlalchemy.String(30))
     wins = sqlalchemy.Column(sqlalchemy.Integer)
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)

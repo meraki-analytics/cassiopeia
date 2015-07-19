@@ -2,8 +2,11 @@ import datetime
 
 import cassiopeia.riotapi
 import cassiopeia.type.core.common
+import cassiopeia.type.dto.summoner
 
 class RunePage(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.summoner.RunePage
+
     def __str__(self):
         return "Rune Page ({name})".format(name=self.name)
 
@@ -50,6 +53,8 @@ class RunePage(cassiopeia.type.core.common.CassiopeiaObject):
         return {rune: runes[rune.id] for rune in fetched}
 
 class MasteryPage(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.summoner.MasteryPage
+
     def __str__(self):
         return "Mastery Page ({name})".format(name=self.name)
 
@@ -94,6 +99,8 @@ class MasteryPage(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.summoner.Summoner
+
     def __str__(self):
         return self.name
 

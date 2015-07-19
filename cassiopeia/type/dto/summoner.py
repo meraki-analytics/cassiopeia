@@ -24,7 +24,7 @@ class RunePage(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.com
     current = sqlalchemy.Column(sqlalchemy.Boolean)
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String(50))
-    slots = sqlalchemy.orm.relationship("cassiopeia.type.dto.summoner.RuneSlot", cascade="all, delete-orphan", passive_deletes=True)
+    slots = sqlalchemy.orm.relationship("cassiopeia.type.dto.summoner.RuneSlot", cascade="all, delete-orphan, merge", passive_deletes=True)
 
     def __init__(self, dictionary):
         # bool # Indicates if the page is the current page.
@@ -83,7 +83,7 @@ class MasteryPage(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.
     __tablename__ = "MasteryPage"
     current = sqlalchemy.Column(sqlalchemy.Boolean)
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    masteries = sqlalchemy.orm.relationship("cassiopeia.type.dto.summoner.Mastery", cascade="all, delete-orphan", passive_deletes=True)
+    masteries = sqlalchemy.orm.relationship("cassiopeia.type.dto.summoner.Mastery", cascade="all, delete-orphan, merge", passive_deletes=True)
     name = sqlalchemy.Column(sqlalchemy.String(50))
 
     def __init__(self, dictionary):
@@ -128,7 +128,7 @@ class Summoner(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.com
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String(30))
     profileIconId = sqlalchemy.Column(sqlalchemy.Integer)
-    revisionDate = sqlalchemy.Column(sqlalchemy.Integer)
+    revisionDate = sqlalchemy.Column(sqlalchemy.BigInteger)
     summonerLevel = sqlalchemy.Column(sqlalchemy.Integer)
 
     def __init__(self, dictionary):

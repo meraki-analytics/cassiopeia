@@ -3,8 +3,11 @@ import datetime
 import cassiopeia.riotapi
 import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
+import cassiopeia.type.dto.match
 
 class Match(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.match.MatchDetail
+
     def __str__(self):
         return "Match {id}".format(id=self.id)
 
@@ -104,6 +107,8 @@ class CombinedParticipant(cassiopeia.type.dto.common.CassiopeiaDto):
 
 
 class Participant(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = CombinedParticipant
+
     def __str__(self):
         return "{player} ({champ})".format(player=self.summoner, champ=self.champion)
 
@@ -167,6 +172,8 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class Team(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.match.Team
+
     def __str__(self):
         return "{side} team".format(side=self.side)
 
@@ -228,6 +235,8 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class Timeline(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.match.Timeline
+
     def __init__(self, data, participants):
         super().__init__(data)
         self.__participants = participants
@@ -257,6 +266,8 @@ class Timeline(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.match.ParticipantStats
+
     def __str__(self):
         return "Participant Stats"
 
@@ -581,6 +592,8 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.match.ParticipantTimeline
+
     def __str__(self):
         return "Participant Timeline"
 
@@ -724,6 +737,8 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class Ban(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.match.BannedChampion
+
     def __str__(self):
         return str(champion)
 
@@ -737,6 +752,7 @@ class Ban(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class Frame(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.match.Frame
     __participant_quota = 2
 
     def __init__(self, data, participants):
@@ -780,6 +796,8 @@ class Frame(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class ParticipantTimelineData(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.match.ParticipantTimelineData
+
     def __str__(self):
         return "Participant Timeline Data"
 
@@ -801,6 +819,7 @@ class ParticipantTimelineData(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class Event(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.match.Event
     __participant_quota = 5
 
     def __str__(self):
@@ -913,6 +932,8 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class ParticipantFrame(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.match.ParticipantFrame
+
     def __init__(self, data, participants):
         super().__init__(data)
         self.__participant = participants[self.data.participantId]
@@ -958,6 +979,8 @@ class ParticipantFrame(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class Position(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.match.Position
+
     def __str__(self):
         return "({x}, {y})".format(x=self.x, y=self.y)
 

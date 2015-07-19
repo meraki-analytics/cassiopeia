@@ -3,8 +3,11 @@ import datetime
 import cassiopeia.riotapi
 import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
+import cassiopeia.type.dto.matchhistory
 
 class MatchSummary(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.matchhistory.MatchSummary
+
     def __str__(self):
         return "Match {id} Summary".format(id=self.id)
 
@@ -90,6 +93,8 @@ class CombinedParticipant(cassiopeia.type.dto.common.CassiopeiaDto):
 
 
 class Participant(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = CombinedParticipant
+
     def __str__(self):
         return "{player} ({champ})".format(player=self.summoner, champ=self.champion)
 
@@ -153,6 +158,8 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.matchhistory.ParticipantStats
+
     def __str__(self):
         return "Participant Stats"
 
@@ -477,6 +484,8 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.matchhistory.ParticipantTimeline
+
     def __str__(self):
         return "Participant Timeline"
 
@@ -620,6 +629,8 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
         
 
 class ParticipantTimelineData(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.matchhistory.ParticipantTimelineData
+    
     def __str__(self):
         return "Participant Timeline Data"
 
