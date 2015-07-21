@@ -30,4 +30,6 @@ def get_match_history(summoner, begin_index=0, champions=None, ranked_queues=Non
         cassiopeia.riotapi.get_summoners_by_id(list(history.summoner_ids))
         cassiopeia.riotapi.get_summoner_spells(list(history.summoner_spell_ids))
 
-    return [cassiopeia.type.core.matchhistory.MatchSummary(summary) for summary in history.matches]
+    result = [cassiopeia.type.core.matchhistory.MatchSummary(summary) for summary in history.matches]
+    result.reverse()
+    return result
