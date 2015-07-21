@@ -39,7 +39,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def duration(self):
-        return datetime.timedelta(seconds=self.data.matchDuration) if self.data.matchDuration else None
+        return datetime.timedelta(seconds=self.data.matchDuration)
 
     @property
     def id(self):
@@ -786,13 +786,13 @@ class Frame(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def participant_frames(self):
-        value = {participant: ParticipantFrame(self.data.participantFrames[str(id_)], participants) for id_, participant in self.__participants.items()}
+        value = {participant: ParticipantFrame(self.data.participantFrames[str(id_)], self.__participants) for id_, participant in self.__participants.items()}
         self.__count_participant()
         return value
 
     @cassiopeia.type.core.common.lazyproperty
     def timestamp(self):
-        return datetime.timedelta(milliseconds=self.data.timestamp) if self.data.timestamp else None
+        return datetime.timedelta(milliseconds=self.data.timestamp)
 
 
 class ParticipantTimelineData(cassiopeia.type.core.common.CassiopeiaObject):
@@ -914,7 +914,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def timestamp(self):
-        return datetime.timedelta(milliseconds=self.data.timestamp) if self.data.timestamp else None
+        return datetime.timedelta(milliseconds=self.data.timestamp)
 
     @property
     def side(self):

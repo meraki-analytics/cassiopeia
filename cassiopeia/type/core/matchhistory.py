@@ -43,7 +43,7 @@ class MatchSummary(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def duration(self):
-        return datetime.timedelta(seconds=self.data.matchDuration) if self.data.matchDuration else None
+        return datetime.timedelta(seconds=self.data.matchDuration)
 
     @property
     def id(self):
