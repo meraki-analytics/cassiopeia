@@ -29,7 +29,7 @@ class MatchSummary(cassiopeia.type.core.common.CassiopeiaObject):
     def __hash__(self):
         return hash(self.id)
 
-    @property
+    @cassiopeia.type.core.common.immutablemethod
     def match(self):
         return cassiopeia.riotapi.get_match(self.id)
 
