@@ -118,8 +118,10 @@ class Queue(enum.Enum):
     doom_bots_2 = "NIGHTMARE_BOT_5x5_RANK2"
     doom_bots_5 = "NIGHTMARE_BOT_5x5_RANK5"
     hexakill_twisted_treeline = "HEXAKILL"
+    butchers_bridge = "BILGEWATER_ARAM_5x5"
     poro_king = "KING_PORO_5x5"
     nemesis_draft = "COUNTER_PICK"
+    black_market = "BILGEWATER_5x5"
 
 ranked_queues = {Queue.ranked_solo, Queue.ranked_threes, Queue.ranked_fives}
 
@@ -230,6 +232,7 @@ class SubType(enum.Enum):
     hexakill_twisted_treeline = "HEXAKILL"
     poro_king = "KING_PORO"
     nemesis_draft = "COUNTER_PICK"
+    black_market = "BILGEWATER"
 
 
 class StatSummaryType(enum.Enum):
@@ -254,6 +257,7 @@ class StatSummaryType(enum.Enum):
     hexakill_twisted_treeline = "Hexakill"
     poro_king = "KingPoro"
     nemesis_draft = "CounterPick"
+    black_market = "Bilgewater"
 
 
 class Ascended(enum.Enum):
