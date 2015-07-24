@@ -15,7 +15,7 @@ def get_challenger(queue_type=cassiopeia.type.core.common.Queue.ranked_solo):
     # Load required data if loading policy is eager
     if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
         cassiopeia.riotapi.get_summoners_by_id(list(league.summoner_ids))
-        cassiopeia.riotapi.get_teams(list(league.team_ids))
+        # cassiopeia.riotapi.get_teams(list(league.team_ids))
 
     return cassiopeia.type.core.league.League(league)
 
@@ -30,7 +30,7 @@ def get_master(queue_type=cassiopeia.type.core.common.Queue.ranked_solo):
     # Load required data if loading policy is eager
     if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
         cassiopeia.riotapi.get_summoners_by_id(list(league.summoner_ids))
-        cassiopeia.riotapi.get_teams(list(league.team_ids))
+        # cassiopeia.riotapi.get_teams(list(league.team_ids))
 
     return cassiopeia.type.core.league.League(league)
 
@@ -48,7 +48,7 @@ def _get_leagues_by_summoner_id(ids):
                 summoner_ids = summoner_ids | league.summoner_ids
                 team_ids = team_ids | league.team_ids
         cassiopeia.riotapi.get_summoners_by_id(list(summoner_ids))
-        cassiopeia.riotapi.get_teams(list(team_ids))
+        # cassiopeia.riotapi.get_teams(list(team_ids))
 
     if(not isinstance(ids, list)):
         return [cassiopeia.type.core.league.League(league) for league in leagues[str(ids)]]
@@ -77,7 +77,7 @@ def _get_league_entries_by_summoner_id(ids):
                 summoner_ids = summoner_ids | league.summoner_ids
                 team_ids = team_ids | league.team_ids
         cassiopeia.riotapi.get_summoners_by_id(list(summoner_ids))
-        cassiopeia.riotapi.get_teams(list(team_ids))
+        # cassiopeia.riotapi.get_teams(list(team_ids))
 
 
     if(not isinstance(ids, list)):
@@ -107,7 +107,7 @@ def _get_leagues_by_team_id(ids):
                 summoner_ids = summoner_ids | league.summoner_ids
                 team_ids = team_ids | league.team_ids
         cassiopeia.riotapi.get_summoners_by_id(list(summoner_ids))
-        cassiopeia.riotapi.get_teams(list(team_ids))
+        # cassiopeia.riotapi.get_teams(list(team_ids))
 
     if(not isinstance(ids, list)):
         return [cassiopeia.type.core.league.League(league) for league in leagues[str(ids)]]
@@ -136,7 +136,7 @@ def _get_league_entries_by_team_id(ids):
                 summoner_ids = summoner_ids | league.summoner_ids
                 team_ids = team_ids | league.team_ids
         cassiopeia.riotapi.get_summoners_by_id(list(summoner_ids))
-        cassiopeia.riotapi.get_teams(list(team_ids))
+        # cassiopeia.riotapi.get_teams(list(team_ids))
 
     if(not isinstance(ids, list)):
         return [cassiopeia.type.core.league.League(league) for league in leagues[str(ids)]]

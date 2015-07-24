@@ -15,13 +15,20 @@ class Cache(object):
             return False
 
     def get_all(self, class_):
-        if(self._has_all[class_]):
-            results = []
+        results = []
+        try:
             for obj in self._cache[class_].items():
                 results.append(obj[1])
-            return results
-        else:
-            return []
+        except(KeyError):
+            pass
+
+        return results
+
+    def iterate(self, class_):
+        try:
+            iter(self._cache[class_].values())
+        except(KeyError):
+            return iter([])
 
     def get(self, class_, keys, key_field):
         if(class_ not in self._cache):
@@ -86,6 +93,23 @@ class HasAllStatus(cassiopeia.type.dto.common.BaseDB):
 
 
 class SQLAlchemyDB(object):
+    class Iterator(object):
+        def __init__(self, class_, result):
+            self.class_ = class_
+            self.result = result
+
+        def __next__(self):
+            try:
+                val = self.class_(self.result[self.index])
+                self.index += 1
+                return val
+            except(IndexError):
+                raise StopIteration
+
+        def __iter__(self):
+            self.index = 0
+            return self
+
     def __init__(self, flavor, host, database, username, password):
         self.db = sqlalchemy.create_engine("{flavor}://{username}:{password}@{host}/{database}".format(flavor=flavor, host=host, database=database, username=username, password=password))
         cassiopeia.type.dto.common.BaseDB.metadata.create_all(self.db)
@@ -97,10 +121,10 @@ class SQLAlchemyDB(object):
         return has_all.have_all if has_all else False
 
     def get_all(self, class_):
-        if(self.has_all(class_)):
-            return [class_(dto) for dto in self.session.query(class_.dto_type).all()]
-        else:
-            return []
+        return [class_(dto) for dto in self.session.query(class_.dto_type).all()]
+
+    def iterate(self, class_):
+        return SQLAlchemyDB.Iterator(class_, self.session.query(class_.dto_type).all())
 
     def get(self, class_, keys, key_field):
         if(not isinstance(keys, list)):
