@@ -9,13 +9,13 @@ import cassiopeia.type.dto.matchlist
 # @param ranked_queue # list<str> or str # The ranked queue(s) to limit the results to ("RANKED_SOLO_5x5", "RANKED_TEAM_3x3", "RANKED_TEAM_5x5")
 # @param seasons # list<str> or str # The season(s) to limit the results to ("PRESEASON3", "SEASON3", "PRESEASON2014", "SEASON2014", "PRESEASON2015", "SEASON2015")
 # @return # PlayerHistory # The match history for that summoner
-def get_match_list(summoner_id, begin_index=0, begin_time=0, end_time=0, champion_ids=None, ranked_queues=None, seasons=None):
+def get_match_list(summoner_id, begin_index=0, begin_time=-1, end_time=0, champion_ids=None, ranked_queues=None, seasons=None):
     request = "{version}/matchlist/by-summoner/{summoner_id}".format(version=cassiopeia.dto.requests.api_versions["matchlist"], summoner_id=summoner_id)
 
-    params = {
-        "beginIndex": begin_index,
-        "endIndex": begin_index + 20
-    }
+    params = {}
+    if(begin_index >= 0):
+        params["beginIndex"] = begin_index
+        params["endIndex"] = begin_index + 20
     if(begin_time):
         params["beginTime"] = begin_time
     if(end_time):
