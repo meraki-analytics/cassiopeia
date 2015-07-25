@@ -12,6 +12,7 @@ api_versions = {
     "staticdata": "v1.2",
     "match": "v2.2",
     "matchhistory": "v2.2",
+    "matchlist": "v2.2",
     "stats": "v1.3",
     "summoner": "v1.4"
 }
@@ -47,7 +48,11 @@ def get(request, params={}, static=False):
     except urllib.error.HTTPError as e:
         # Reset rate limiter and retry on 429 (rate limit exceeded)
         if(e.code == 429 and rate_limiter):
-            rate_limiter.reset_in(int(e.headers["Retry-After"]) + 1)
+            try:
+                rate_limiter.reset_in(int(e.headers["Retry-After"]) + 1)
+            except(TypeError):
+                # Retry-Ater wasn't sent
+                raise cassiopeia.type.api.exception.APIError("Server returned error {code} on call: {url}".format(code=e.code, url=url))
             return get(request, params, static)
         else:
             raise cassiopeia.type.api.exception.APIError("Server returned error {code} on call: {url}".format(code=e.code, url=url))

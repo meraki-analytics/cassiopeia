@@ -5,6 +5,7 @@ import cassiopeia.core.requests
 import cassiopeia.type.core.common
 from cassiopeia.core.leagueapi import *
 from cassiopeia.core.matchapi import *
+from cassiopeia.core.matchlistapi import *
 from cassiopeia.core.matchhistoryapi import *
 from cassiopeia.core.staticdataapi import *
 from cassiopeia.core.statsapi import *

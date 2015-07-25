@@ -159,6 +159,10 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
         return cassiopeia.riotapi.get_match_history(self, begin_index, champions, ranked_queues)
 
     @cassiopeia.type.core.common.immutablemethod
+    def match_list(self, begin_index=0, begin_time=0, end_time=0, champions=None, ranked_queues=None, seasons=None):
+        return cassiopeia.riotapi.get_match_list(self, begin_index, begin_time, end_time, champions, ranked_queues, seasons)
+
+    @cassiopeia.type.core.common.immutablemethod
     def ranked_stats(self, season=None):
         return cassiopeia.riotapi.get_ranked_stats(self, season)
 
