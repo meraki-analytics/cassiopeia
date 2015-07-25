@@ -14,7 +14,7 @@ import cassiopeia.type.core.matchlist
 # @param ranked_queue # list<cassiopeia.type.core.common.Queue> or cassiopeia.type.core.common.Queue # The ranked queue(s) to limit the results to
 # @param seasons # list<cassiopeia.type.core.common.Season> or cassiopeia.type.core.common.Season # The season(s) to limit the results to
 # @return # list<cassiopeia.type.core.matchlist.MatchReference> # The match list for that summoner
-def get_match_list(summoner, begin_index=0, begin_time=0, end_time=0, champions=None, ranked_queues=None, seasons=None):
+def get_match_list(summoner, begin_index=-1, begin_time=0, end_time=0, champions=None, ranked_queues=None, seasons=None):
     if(ranked_queues):
         for queue in ranked_queues:
             if queue not in cassiopeia.type.core.common.ranked_queues:
@@ -30,9 +30,9 @@ def get_match_list(summoner, begin_index=0, begin_time=0, end_time=0, champions=
         delta = end_time - epoch
         end_time = delta.total_seconds() * 1000
 
-    champion_ids = [champion.id for champion in champions] if champions else None
-    queues = [queue.value for queue in ranked_queues] if ranked_queues else None
-    seasons = [season.value for season in seasons] if seasons else None
+    champion_ids = [champion.id for champion in champions] if isinstance(champions, list) else champions.id if champions else None
+    queues = [queue.value for queue in ranked_queues] if isinstance(ranked_queues, list) else ranked_queues.value if ranked_queues else None
+    seasons = [season.value for season in seasons] if isinstance(seasons, list) else seasons.value if seasons else None
 
     history = cassiopeia.dto.matchlistapi.get_match_list(summoner.id, begin_index, begin_time, end_time, champion_ids, queues, seasons)
 
