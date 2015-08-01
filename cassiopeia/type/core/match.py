@@ -85,14 +85,14 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def blue_team(self):
         for team in self.data.teams:
             if(team.teamId == cassiopeia.type.core.common.Side.blue.value):
-                return Team(team)
+                return Team(team, [part for part in self.participants if part.side is cassiopeia.type.core.common.Side.blue])
         return None
 
     @cassiopeia.type.core.common.lazyproperty
     def red_team(self):
         for team in self.data.teams:
             if(team.teamId == cassiopeia.type.core.common.Side.red.value):
-                return Team(team)
+                return Team(team, [part for part in self.participants if part.side is cassiopeia.type.core.common.Side.red])
         return None
 
     @cassiopeia.type.core.common.lazyproperty
@@ -174,8 +174,25 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
 class Team(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.match.Team
 
+    def __init__(self, data, participants):
+        super().__init__(data)
+        self.__participants = participants
+
     def __str__(self):
-        return "{side} team".format(side=self.side)
+        return "{side} team: {players}".format(side=self.side, players=self.__participants)
+
+    def __iter__(self):
+        return iter(self.__participants)
+
+    def __len__(self):
+        return len(self.__participants)
+
+    def __getitem__(self, index):
+        return self.__participants[index]
+
+    @property
+    def participants(self):
+        return self.__participants
 
     @cassiopeia.type.core.common.lazyproperty
     def bans(self):
@@ -219,7 +236,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def side(self):
-        return cassiopeia.type.core.common.Side(self.data.participant.teamId) if self.data.participant.teamId else None
+        return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.teamId else None
 
     @property
     def turret_kills(self):
