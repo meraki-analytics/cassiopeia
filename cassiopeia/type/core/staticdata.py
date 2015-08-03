@@ -1337,6 +1337,13 @@ class Rune(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def tags(self):
         return self.data.tags
+        
+    @property
+    def rune_type(self):
+        try:
+            return next(iter(set(self.tags).intersection({"mark", "seal", "glyph", "quintessence"})))
+        except:
+            return ""
 
 ############################
 # Summoner Spell Endpoints #
