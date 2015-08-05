@@ -1066,17 +1066,21 @@ class MapDetails(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.name
 
     def __eq__(self, other):
-        return self.mapId == other.mapId
+        return self.data.mapId == other.data.mapId
 
     def __ne__(self, other):
-        return self.mapId != other.mapId
+        return self.data.mapId != other.data.mapId
 
     def __hash__(self):
-        return hash(self.mapId)
+        return hash(self.data.mapId)
 
     @cassiopeia.type.core.common.lazyproperty
     def image(self):
         return Image(self.data.image) if self.data.image else None
+
+    @property
+    def map_id(self):
+        return self.data.mapId
 
     @property
     def map(self):
