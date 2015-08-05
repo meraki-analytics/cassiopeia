@@ -269,7 +269,7 @@ class Image(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common
         # int # Y
         self.y = dictionary.get("y", 0)
 
-        _is_alt = is_alt
+        self._is_alt = is_alt
 
 
 class Passive(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
