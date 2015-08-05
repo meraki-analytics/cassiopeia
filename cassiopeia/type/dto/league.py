@@ -10,7 +10,7 @@ class MiniSeries(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.c
     target = sqlalchemy.Column(sqlalchemy.Integer)
     wins = sqlalchemy.Column(sqlalchemy.Integer)
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _entry_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("LeagueEntry._id"))
+    _entry_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("LeagueEntry._id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # int # Number of current losses in the mini series.
@@ -35,12 +35,12 @@ class LeagueEntry(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.
     isVeteran = sqlalchemy.Column(sqlalchemy.Boolean)
     leaguePoints = sqlalchemy.Column(sqlalchemy.Integer)
     losses = sqlalchemy.Column(sqlalchemy.Integer)
-    miniSeries = sqlalchemy.orm.relationship("cassiopeia.type.dto.league.MiniSeries", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
+    miniSeries = sqlalchemy.orm.relationship("cassiopeia.type.dto.league.MiniSeries", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     playerOrTeamId = sqlalchemy.Column(sqlalchemy.String(50))
     playerOrTeamName = sqlalchemy.Column(sqlalchemy.String(30))
     wins = sqlalchemy.Column(sqlalchemy.Integer)
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _league_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("League._id"))
+    _league_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("League._id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # str # The league division of the participant.
@@ -80,7 +80,7 @@ class LeagueEntry(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.
 
 class League(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "League"
-    entries = sqlalchemy.orm.relationship("cassiopeia.type.dto.league.LeagueEntry", cascade="all, delete-orphan, merge", passive_deletes=True)
+    entries = sqlalchemy.orm.relationship("cassiopeia.type.dto.league.LeagueEntry", cascade="all, delete-orphan", passive_deletes=True)
     name = sqlalchemy.Column(sqlalchemy.String(30))
     participantId = sqlalchemy.Column(sqlalchemy.String(50))
     queue = sqlalchemy.Column(sqlalchemy.String(30))

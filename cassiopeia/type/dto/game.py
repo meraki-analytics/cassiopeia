@@ -84,7 +84,7 @@ class RawStatsDto(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.
     wardPlaced = sqlalchemy.Column(sqlalchemy.Integer)
     win = sqlalchemy.Column(sqlalchemy.Boolean)
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Game.gameId"))
+    _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Game.gameId", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # int # Number of assists
@@ -328,7 +328,7 @@ class Player(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.commo
     summonerId = sqlalchemy.Column(sqlalchemy.Integer)
     teamId = sqlalchemy.Column(sqlalchemy.Integer)
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Game.gameId"))
+    _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Game.gameId", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # int # Champion id associated with player.
@@ -345,7 +345,7 @@ class Game(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
     __tablename__ = "Game"
     championId = sqlalchemy.Column(sqlalchemy.Integer)
     createDate = sqlalchemy.Column(sqlalchemy.BigInteger)
-    fellowPlayers = sqlalchemy.orm.relationship("cassiopeia.type.dto.game.Player", cascade="all, delete-orphan, merge", passive_deletes=True)
+    fellowPlayers = sqlalchemy.orm.relationship("cassiopeia.type.dto.game.Player", cascade="all, delete-orphan", passive_deletes=True)
     gameId = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     gameMode = sqlalchemy.Column(sqlalchemy.String(30))
     gameType = sqlalchemy.Column(sqlalchemy.String(30))
@@ -355,7 +355,7 @@ class Game(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
     mapId = sqlalchemy.Column(sqlalchemy.Integer)
     spell1 = sqlalchemy.Column(sqlalchemy.Integer)
     spell2 = sqlalchemy.Column(sqlalchemy.Integer)
-    stats = sqlalchemy.orm.relationship("cassiopeia.type.dto.game.RawStats", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
+    stats = sqlalchemy.orm.relationship("cassiopeia.type.dto.game.RawStats", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     subType = sqlalchemy.Column(sqlalchemy.String(30))
     teamId = sqlalchemy.Column(sqlalchemy.Integer)
 
