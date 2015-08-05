@@ -24,7 +24,7 @@ class RunePage(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.com
     current = sqlalchemy.Column(sqlalchemy.Boolean)
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String(50))
-    slots = sqlalchemy.orm.relationship("cassiopeia.type.dto.summoner.RuneSlot", cascade="all, delete-orphan, merge", passive_deletes=True)
+    slots = sqlalchemy.orm.relationship("cassiopeia.type.dto.summoner.RuneSlot", cascade="all, delete-orphan, delete, merge", passive_deletes=True)
 
     def __init__(self, dictionary):
         # bool # Indicates if the page is the current page.
@@ -53,7 +53,7 @@ class RuneSlot(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.com
     runeId = sqlalchemy.Column(sqlalchemy.Integer)
     runeSlotId = sqlalchemy.Column(sqlalchemy.Integer)
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _page_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("RunePage.id"))
+    _page_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("RunePage.id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # int # Rune ID associated with the rune slot. For static information correlating to rune IDs, please refer to the LoL Static Data API.
@@ -83,7 +83,7 @@ class MasteryPage(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.
     __tablename__ = "MasteryPage"
     current = sqlalchemy.Column(sqlalchemy.Boolean)
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    masteries = sqlalchemy.orm.relationship("cassiopeia.type.dto.summoner.Mastery", cascade="all, delete-orphan, merge", passive_deletes=True)
+    masteries = sqlalchemy.orm.relationship("cassiopeia.type.dto.summoner.Mastery", cascade="all, delete-orphan, delete, merge", passive_deletes=True)
     name = sqlalchemy.Column(sqlalchemy.String(50))
 
     def __init__(self, dictionary):
@@ -113,7 +113,7 @@ class Mastery(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.comm
     id = sqlalchemy.Column(sqlalchemy.Integer)
     rank = sqlalchemy.Column(sqlalchemy.Integer)
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _page_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MasteryPage.id"))
+    _page_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MasteryPage.id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # int # Mastery ID. For static information correlating to masteries, please refer to the LoL Static Data API.

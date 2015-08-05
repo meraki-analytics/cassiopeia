@@ -12,7 +12,7 @@ class BlockItem(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.co
     count = sqlalchemy.Column(sqlalchemy.Integer)
     id = sqlalchemy.Column(sqlalchemy.Integer)
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _block_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Block._id"))
+    _block_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Block._id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # int # Item count
@@ -24,11 +24,11 @@ class BlockItem(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.co
 
 class Block(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "Block"
-    items = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.BlockItem", cascade="all, delete-orphan, merge", passive_deletes=True)
+    items = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.BlockItem", cascade="all, delete-orphan", passive_deletes=True)
     recMath = sqlalchemy.Column(sqlalchemy.Boolean)
     type = sqlalchemy.Column(sqlalchemy.String(30))
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _recommended_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Recommended._id"))
+    _recommended_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Recommended._id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # list<BlockItem> # The items
@@ -49,8 +49,8 @@ class SpellVars(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.co
     link = sqlalchemy.Column(sqlalchemy.String(30))
     ranksWith = sqlalchemy.Column(sqlalchemy.String(30))
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _c_spell_key = sqlalchemy.Column(sqlalchemy.String(30), sqlalchemy.ForeignKey("ChampionSpell.key"))
-    _s_spell_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("SummonerSpell.id"))
+    _c_spell_key = sqlalchemy.Column(sqlalchemy.String(30), sqlalchemy.ForeignKey("ChampionSpell.key", ondelete="CASCADE"))
+    _s_spell_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("SummonerSpell.id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # list<float> # Coefficients
@@ -74,8 +74,8 @@ class LevelTip(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.com
     effect = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
     label = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _c_spell_key = sqlalchemy.Column(sqlalchemy.String(30), sqlalchemy.ForeignKey("ChampionSpell.key"))
-    _s_spell_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("SummonerSpell.id"))
+    _c_spell_key = sqlalchemy.Column(sqlalchemy.String(30), sqlalchemy.ForeignKey("ChampionSpell.key", ondelete="CASCADE"))
+    _s_spell_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("SummonerSpell.id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # list<str> # effects
@@ -108,9 +108,9 @@ class Stats(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common
     spellblock = sqlalchemy.Column(sqlalchemy.Float)
     spellblockperlevel = sqlalchemy.Column(sqlalchemy.Float)
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _item_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Item.id"))
-    _rune_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Rune.id"))
-    _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id"))
+    _item_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Item.id", ondelete="CASCADE"))
+    _rune_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Rune.id", ondelete="CASCADE"))
+    _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # float # Armor
@@ -179,7 +179,7 @@ class Skin(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String(30))
     num = sqlalchemy.Column(sqlalchemy.Integer)
-    _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id"))
+    _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # int # ID
@@ -194,7 +194,7 @@ class Skin(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
 
 class Recommended(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "Recommended"
-    blocks = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Block", cascade="all, delete-orphan, merge", passive_deletes=True)
+    blocks = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Block", cascade="all, delete-orphan", passive_deletes=True)
     champion = sqlalchemy.Column(sqlalchemy.String(30))
     map = sqlalchemy.Column(sqlalchemy.String(30))
     mode = sqlalchemy.Column(sqlalchemy.String(30))
@@ -202,7 +202,7 @@ class Recommended(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.
     title = sqlalchemy.Column(sqlalchemy.String(50))
     type = sqlalchemy.Column(sqlalchemy.String(30))
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id"))
+    _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # list<Block> # Blocks
@@ -238,14 +238,14 @@ class Image(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common
     y = sqlalchemy.Column(sqlalchemy.Integer)
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     _is_alt = sqlalchemy.Column(sqlalchemy.Boolean)
-    _passive_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Passive._id"))
-    _c_spell_key = sqlalchemy.Column(sqlalchemy.String(30), sqlalchemy.ForeignKey("ChampionSpell.key"))
-    _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id"))
-    _item_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Item.id"))
-    _map_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MapDetails.mapId"))
-    _mastery_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Mastery.id"))
-    _rune_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Rune.id"))
-    _s_spell_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("SummonerSpell.id"))
+    _passive_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Passive._id", ondelete="CASCADE"))
+    _c_spell_key = sqlalchemy.Column(sqlalchemy.String(30), sqlalchemy.ForeignKey("ChampionSpell.key", ondelete="CASCADE"))
+    _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id", ondelete="CASCADE"))
+    _item_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Item.id", ondelete="CASCADE"))
+    _map_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MapDetails.mapId", ondelete="CASCADE"))
+    _mastery_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Mastery.id", ondelete="CASCADE"))
+    _rune_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Rune.id", ondelete="CASCADE"))
+    _s_spell_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("SummonerSpell.id", ondelete="CASCADE"))
 
     def __init__(self, dictionary, is_alt=False):
         # str # Full link
@@ -275,11 +275,11 @@ class Image(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common
 class Passive(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "Passive"
     description = sqlalchemy.Column(sqlalchemy.Text)
-    image = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Image", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
+    image = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Image", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     name = sqlalchemy.Column(sqlalchemy.String(30))
     sanitizedDescription = sqlalchemy.Column(sqlalchemy.Text)
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id"))
+    _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # str # Description
@@ -303,7 +303,7 @@ class Info(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
     difficulty = sqlalchemy.Column(sqlalchemy.Integer)
     magic = sqlalchemy.Column(sqlalchemy.Integer)
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id"))
+    _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # int # Attack rating
@@ -321,7 +321,7 @@ class Info(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
 
 class ChampionSpell(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "ChampionSpell"
-    altimages = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Image", primaryjoin="and_(cassiopeia.type.dto.staticdata.ChampionSpell.key==cassiopeia.type.dto.staticdata.Image._c_spell_key, cassiopeia.type.dto.staticdata.Image._is_alt==True)", cascade="all, delete-orphan, merge", passive_deletes=True)
+    altimages = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Image", primaryjoin="and_(cassiopeia.type.dto.staticdata.ChampionSpell.key==cassiopeia.type.dto.staticdata.Image._c_spell_key, cassiopeia.type.dto.staticdata.Image._is_alt==True)", cascade="all, delete-orphan", passive_deletes=True)
     cooldown = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
     cooldownBurn = sqlalchemy.Column(sqlalchemy.String(30))
     cost = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
@@ -330,9 +330,9 @@ class ChampionSpell(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dt
     description = sqlalchemy.Column(sqlalchemy.Text)
     effect = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
     effectBurn = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
-    image = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Image", primaryjoin="and_(cassiopeia.type.dto.staticdata.ChampionSpell.key==cassiopeia.type.dto.staticdata.Image._c_spell_key, cassiopeia.type.dto.staticdata.Image._is_alt==False)", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
+    image = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Image", primaryjoin="and_(cassiopeia.type.dto.staticdata.ChampionSpell.key==cassiopeia.type.dto.staticdata.Image._c_spell_key, cassiopeia.type.dto.staticdata.Image._is_alt==False)", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     key = sqlalchemy.Column(sqlalchemy.String(30), primary_key=True)
-    leveltip = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.LevelTip", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
+    leveltip = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.LevelTip", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     maxrank = sqlalchemy.Column(sqlalchemy.Integer)
     range = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
     rangeBurn = sqlalchemy.Column(sqlalchemy.String(30))
@@ -340,8 +340,8 @@ class ChampionSpell(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dt
     sanitizedDescription = sqlalchemy.Column(sqlalchemy.Text)
     sanitizedTooltip = sqlalchemy.Column(sqlalchemy.Text)
     tooltip = sqlalchemy.Column(sqlalchemy.Text)
-    vars = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.SpellVars", cascade="all, delete-orphan, merge", passive_deletes=True)
-    _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id"))
+    vars = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.SpellVars", cascade="all, delete-orphan", passive_deletes=True)
+    _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # list<Image> # Alternate images
@@ -416,17 +416,17 @@ class Champion(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.com
     blurb = sqlalchemy.Column(sqlalchemy.Text)
     enemytips = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    image = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Image", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
-    info = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Info", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
+    image = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Image", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    info = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Info", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     key = sqlalchemy.Column(sqlalchemy.String(30))
     lore = sqlalchemy.Column(sqlalchemy.Text)
     name = sqlalchemy.Column(sqlalchemy.String(30))
     partype = sqlalchemy.Column(sqlalchemy.String(30))
-    passive = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Passive", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
-    recommended = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Recommended", cascade="all, delete-orphan, merge", passive_deletes=True)
-    skins = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Skin", cascade="all, delete-orphan, merge", passive_deletes=True)
-    spells = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.ChampionSpell", cascade="all, delete-orphan, merge", passive_deletes=True)
-    stats = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Stats", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
+    passive = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Passive", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+    recommended = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Recommended", cascade="all, delete-orphan", passive_deletes=True)
+    skins = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Skin", cascade="all, delete-orphan", passive_deletes=True)
+    spells = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.ChampionSpell", cascade="all, delete-orphan", passive_deletes=True)
+    stats = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Stats", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     tags = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
     title = sqlalchemy.Column(sqlalchemy.String(50))
 
@@ -530,8 +530,8 @@ class MetaData(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.com
     tier = sqlalchemy.Column(sqlalchemy.String(30))
     type = sqlalchemy.Column(sqlalchemy.String(30))
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _item_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Item.id"))
-    _rune_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Rune.id"))
+    _item_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Item.id", ondelete="CASCADE"))
+    _rune_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Rune.id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # bool # Is a rune
@@ -551,7 +551,7 @@ class Gold(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
     sell = sqlalchemy.Column(sqlalchemy.Integer)
     total = sqlalchemy.Column(sqlalchemy.Integer)
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _item_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Item.id"))
+    _item_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Item.id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # int # Base price
@@ -635,8 +635,8 @@ class BasicDataStats(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.d
     rPercentTimeDeadMod = sqlalchemy.Column(sqlalchemy.Float)
     rPercentTimeDeadModPerLevel = sqlalchemy.Column(sqlalchemy.Float)
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _item_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Item.id"))
-    _rune_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Rune.id"))
+    _item_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Item.id", ondelete="CASCADE"))
+    _rune_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Rune.id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # float # The FlatArmorMod
@@ -852,22 +852,22 @@ class Item(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
     depth = sqlalchemy.Column(sqlalchemy.Integer)
     description = sqlalchemy.Column(sqlalchemy.Text)
     from_ = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
-    gold = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Gold", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
+    gold = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Gold", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     group = sqlalchemy.Column(sqlalchemy.String(30))
     hideFromAll = sqlalchemy.Column(sqlalchemy.Boolean)
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    image = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Image", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
+    image = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Image", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     inStore = sqlalchemy.Column(sqlalchemy.Boolean)
     into = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
     maps = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
     name = sqlalchemy.Column(sqlalchemy.String(50))
     plaintext = sqlalchemy.Column(sqlalchemy.String(100))
     requiredChampion = sqlalchemy.Column(sqlalchemy.String(30))
-    rune = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.MetaData", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
+    rune = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.MetaData", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     sanitizedDescription = sqlalchemy.Column(sqlalchemy.Text)
     specialRecipe = sqlalchemy.Column(sqlalchemy.Integer)
     stacks = sqlalchemy.Column(sqlalchemy.Integer)
-    stats = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.BasicDataStats", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
+    stats = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.BasicDataStats", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     tags = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
 
     def __init__(self, dictionary):
@@ -1073,7 +1073,7 @@ class LanguageStrings(cassiopeia.type.dto.common.CassiopeiaDto):
 
 class MapDetails(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "MapDetails"
-    image = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Image", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
+    image = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Image", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     mapId = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     mapName = sqlalchemy.Column(sqlalchemy.String(30))
     unpurchasableItemList = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
@@ -1139,7 +1139,7 @@ class Mastery(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.comm
     __tablename__ = "Mastery"
     description = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    image = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Image", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
+    image = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Image", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     masteryTree = sqlalchemy.Column(sqlalchemy.String(30))
     name = sqlalchemy.Column(sqlalchemy.String(50))
     prereq = sqlalchemy.Column(sqlalchemy.String(30))
@@ -1247,18 +1247,18 @@ class Rune(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
     group = sqlalchemy.Column(sqlalchemy.String(30))
     hideFromAll = sqlalchemy.Column(sqlalchemy.Boolean)
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    image = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Image", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
+    image = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Image", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     inStore = sqlalchemy.Column(sqlalchemy.Boolean)
     into = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
     maps = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
     name = sqlalchemy.Column(sqlalchemy.String(100))
     plaintext = sqlalchemy.Column(sqlalchemy.String(100))
     requiredChampion = sqlalchemy.Column(sqlalchemy.String(30))
-    rune = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.MetaData", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
+    rune = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.MetaData", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     sanitizedDescription = sqlalchemy.Column(sqlalchemy.Text)
     specialRecipe = sqlalchemy.Column(sqlalchemy.Integer)
     stacks = sqlalchemy.Column(sqlalchemy.Integer)
-    stats = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.BasicDataStats", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
+    stats = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.BasicDataStats", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     tags = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
 
     def __init__(self, dictionary):
@@ -1362,9 +1362,9 @@ class SummonerSpell(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dt
     effect = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
     effectBurn = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    image = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Image", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
+    image = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Image", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     key = sqlalchemy.Column(sqlalchemy.String(30))
-    leveltip = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.LevelTip", uselist=False, cascade="all, delete-orphan, merge", passive_deletes=True)
+    leveltip = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.LevelTip", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
     maxrank = sqlalchemy.Column(sqlalchemy.Integer)
     modes = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
     name = sqlalchemy.Column(sqlalchemy.String(30))
@@ -1375,7 +1375,7 @@ class SummonerSpell(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dt
     sanitizedTooltip = sqlalchemy.Column(sqlalchemy.Text)
     summonerLevel = sqlalchemy.Column(sqlalchemy.Integer)
     tooltip = sqlalchemy.Column(sqlalchemy.Text)
-    vars = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.SpellVars", cascade="all, delete-orphan, merge", passive_deletes=True)
+    vars = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.SpellVars", cascade="all, delete-orphan", passive_deletes=True)
 
     def __init__(self, dictionary):
         # list<float> # Cooldown

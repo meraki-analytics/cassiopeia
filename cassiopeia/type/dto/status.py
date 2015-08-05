@@ -34,7 +34,7 @@ class Translation(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.
     locale = sqlalchemy.Column(sqlalchemy.String(30))
     updated_at = sqlalchemy.Column(sqlalchemy.String(30))
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _message_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Message.id"))
+    _message_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Message.id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # str # Content
@@ -54,9 +54,9 @@ class Message(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.comm
     created_at = sqlalchemy.Column(sqlalchemy.String(30))
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     severity = sqlalchemy.Column(sqlalchemy.String(30))
-    translations = sqlalchemy.orm.relationship("cassiopeia.type.dto.status.Translation", cascade="all, delete-orphan, merge", passive_deletes=True)
+    translations = sqlalchemy.orm.relationship("cassiopeia.type.dto.status.Translation", cascade="all, delete-orphan", passive_deletes=True)
     updated_at = sqlalchemy.Column(sqlalchemy.String(30))
-    _incident_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Incident.id"))
+    _incident_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Incident.id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # str # Author
@@ -86,8 +86,8 @@ class Incident(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.com
     active = sqlalchemy.Column(sqlalchemy.Boolean)
     created_at = sqlalchemy.Column(sqlalchemy.String(30))
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    updates = sqlalchemy.orm.relationship("cassiopeia.type.dto.status.Message", cascade="all, delete-orphan, merge", passive_deletes=True)
-    _service_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Service._id"))
+    updates = sqlalchemy.orm.relationship("cassiopeia.type.dto.status.Message", cascade="all, delete-orphan", passive_deletes=True)
+    _service_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Service._id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # bool # Active
@@ -105,12 +105,12 @@ class Incident(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.com
 
 class Service(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "Service"
-    incidents = sqlalchemy.orm.relationship("cassiopeia.type.dto.status.Incident", cascade="all, delete-orphan, merge", passive_deletes=True)
+    incidents = sqlalchemy.orm.relationship("cassiopeia.type.dto.status.Incident", cascade="all, delete-orphan", passive_deletes=True)
     name = sqlalchemy.Column(sqlalchemy.String(30))
     slug = sqlalchemy.Column(sqlalchemy.String(30))
     status = sqlalchemy.Column(sqlalchemy.String(30))
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _shard_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("ShardStatus._id"))
+    _shard_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("ShardStatus._id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # list<Incident> # Incidents
@@ -132,7 +132,7 @@ class ShardStatus(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.
     locales = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
     name = sqlalchemy.Column(sqlalchemy.String(30))
     region_tag = sqlalchemy.Column(sqlalchemy.String(30))
-    services = sqlalchemy.orm.relationship("cassiopeia.type.dto.status.Service", cascade="all, delete-orphan, merge", passive_deletes=True)
+    services = sqlalchemy.orm.relationship("cassiopeia.type.dto.status.Service", cascade="all, delete-orphan", passive_deletes=True)
     slug = sqlalchemy.Column(sqlalchemy.String(30))
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
 
