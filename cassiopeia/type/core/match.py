@@ -926,7 +926,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.skillSlot
 
     @property
-    def side(self):
+    def tower(self):
         return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.teamId else None
 
     @cassiopeia.type.core.common.lazyproperty
