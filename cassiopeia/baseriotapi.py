@@ -7,6 +7,7 @@ from cassiopeia.dto.featuredgamesapi import *
 from cassiopeia.dto.gameapi import *
 from cassiopeia.dto.leagueapi import *
 from cassiopeia.dto.staticdataapi import *
+from cassiopeia.dto.statusapi import *
 from cassiopeia.dto.matchapi import *
 from cassiopeia.dto.matchlistapi import *
 from cassiopeia.dto.matchhistoryapi import *

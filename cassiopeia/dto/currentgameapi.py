@@ -8,7 +8,7 @@ import cassiopeia.type.api.exception
 def get_current_game(summoner_id):
     region = cassiopeia.type.core.common.Region(cassiopeia.dto.requests.region)
     platform = cassiopeia.type.core.common.Platform[region.name]
-    request = "observer-mode/rest/consumer/getSpectatorGameInfo/{platform}/{summoner_id}".format(platform=platform.value, summoner_id=summoner_id)
+    request = "https://{server}.api.pvp.net/observer-mode/rest/consumer/getSpectatorGameInfo/{platform}/{summoner_id}".format(server=cassiopeia.dto.requests.region.lower(), platform=platform.value, summoner_id=summoner_id)
     try:
         return cassiopeia.type.dto.currentgame.CurrentGameInfo(cassiopeia.dto.requests.get(request, include_base=False))
     except cassiopeia.type.api.exception.APIError as e:
