@@ -88,6 +88,14 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
     def third_to_last_join(self):
         return datetime.datetime.utcfromtimestamp(self.data.thirdLastJoinDate / 1000) if self.data.thirdLastJoinDate else None
 
+    @cassiopeia.type.core.common.immutablemethod
+    def leagues(self):
+        return cassiopeia.riotapi.get_leagues_by_team(self)
+
+    @cassiopeia.type.core.common.immutablemethod
+    def league_entries(self):
+        return cassiopeia.riotapi.get_league_entries_by_team(self)
+
 
 class MatchSummary(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.status.MatchHistorySummary
@@ -142,6 +150,10 @@ class MatchSummary(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def win(self):
         return self.data.win
+
+    @cassiopeia.type.core.common.immutablemethod
+    def match(self):
+        return cassiopeia.riotapi.get_match(self.id)
 
 
 class Stats(cassiopeia.type.core.common.CassiopeiaObject):

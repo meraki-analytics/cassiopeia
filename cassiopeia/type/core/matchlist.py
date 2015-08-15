@@ -21,7 +21,7 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.immutablemethod
     def match(self):
-        return cassiopeia.riotapi.get_match(self.id)
+        return cassiopeia.riotapi.get_match(self)
 
     @cassiopeia.type.core.common.lazyproperty
     def champion(self):

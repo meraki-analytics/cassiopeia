@@ -3,10 +3,14 @@ import cassiopeia.dto.matchapi
 import cassiopeia.core.requests
 import cassiopeia.type.core.common
 import cassiopeia.type.core.match
+import cassiopeia.type.core.matchlist
 
-# @param id_ # int # The match ID to get
-# @return cassiopeia.type.core.match.Match # The match
+# @param id_ # int or cassiopeia.type.core.matchlist.MatchReference # The match ID or reference to get
+# @return # cassiopeia.type.core.match.Match # The match
 def get_match(id_):
+    if(isinstance(id_, cassiopeia.type.core.matchlist.MatchReference)):
+        id_ = id_.id
+
     match = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.match.Match, id_, "matchId")
     if(match):
         return match
@@ -26,9 +30,11 @@ def get_match(id_):
     cassiopeia.core.requests.data_store.store(match, id_)
     return match
 
-# @param ids # list<int> # The match IDs to get
+# @param ids # list<int> or list<cassiopeia.type.core.matchlist.MatchReference> # The match IDs or references to get
 # @return # list<cassiopeia.type.core.match.Match> # The matches
 def get_matches(ids):
+    ids = [ref.id if isinstance(ref, cassiopeia.type.core.matchlist.MatchReference) else ref for ref in ids]
+
     matches = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.match.Match, ids, "matchId")
 
     # Find which matches weren't cached

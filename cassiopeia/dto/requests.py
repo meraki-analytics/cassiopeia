@@ -10,6 +10,7 @@ api_versions = {
     "champion": "v1.2",
     "currentgame": "v1.0",
     "featuredgames": "v1.0",
+    "game": "v1.3",
     "league": "v2.5",
     "staticdata": "v1.2",
     "match": "v2.2",
