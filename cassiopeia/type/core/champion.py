@@ -26,7 +26,7 @@ class ChampionStatus(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def champion(self):
-        return cassiopeia.riotapi.get_champion_by_id(self.data.id) if self.data.participant.championId else None
+        return cassiopeia.riotapi.get_champion_by_id(self.data.id) if self.data.id else None
 
     @property
     def ranked_enabled(self):

@@ -3,6 +3,9 @@ import cassiopeia.type.api.rates
 import cassiopeia.dto.staticdataapi
 import cassiopeia.core.requests
 import cassiopeia.type.core.common
+from cassiopeia.core.championapi import *
+from cassiopeia.core.currentgameapi import *
+from cassiopeia.core.featuredgamesapi import *
 from cassiopeia.core.leagueapi import *
 from cassiopeia.core.matchapi import *
 from cassiopeia.core.matchlistapi import *
@@ -18,7 +21,7 @@ def set_api_key(key):
 # @param region # Region or str # The region to query against
 def set_region(region):
     if(isinstance(region, str)):
-        region = cassiopeia.type.core.common.Region(region)
+        region = cassiopeia.type.core.common.Region(region.upper())
     cassiopeia.dto.requests.region = region.value
 
 # @param on # bool # Whether to print calls as they are made to the API

@@ -139,6 +139,10 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.summonerLevel
 
     @cassiopeia.type.core.common.immutablemethod
+    def current_game(self):
+        return cassiopeia.riotapi.get_current_game(self)
+
+    @cassiopeia.type.core.common.immutablemethod
     def rune_pages(self):
         return cassiopeia.riotapi.get_rune_pages(self)
 
