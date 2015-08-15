@@ -18,7 +18,8 @@ api_versions = {
     "matchhistory": "v2.2",
     "matchlist": "v2.2",
     "stats": "v1.3",
-    "summoner": "v1.4"
+    "summoner": "v1.4",
+    "team": "v2.4"
 }
 
 api_key = ""

@@ -1493,7 +1493,6 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
 
         for svar in self.variables:
             val = svar.coefficients[level - 1] if svar.link == "@player.level" else svar.coefficients[0]
-            print("REPLACING " + "{{{{{key}}}}}".format(key=svar.key) + " WITH " + str(val))
             text = text.replace("{{{{ {key} }}}}".format(key=svar.key), str(val))
 
         return text

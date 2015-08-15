@@ -8,7 +8,7 @@ import cassiopeia.type.core.summoner
 
 # @param ids # list<int> or int # The summoner ID(s) to get mastery pages for
 # @return # list<list<cassiopeia.type.core.summoner.MasteryPage>> or list<cassiopeia.type.core.summoner.MasteryPage> # The requested mastery pages
-def _get_mastery_pages_by_id(ids):
+def __get_mastery_pages_by_id(ids):
     pages = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.summonerapi.get_summoner_masteries, 40, ids)
 
     # Load required data if loading policy is eager
@@ -24,13 +24,13 @@ def _get_mastery_pages_by_id(ids):
 # @return # list<list<cassiopeia.type.core.summoner.MasteryPage>> or list<cassiopeia.type.core.summoner.MasteryPage> # The requested mastery pages
 def get_mastery_pages(summoners):
     if(isinstance(summoners, list)):
-        return _get_mastery_pages_by_id([summoner.id for summoner in summoners])
+        return __get_mastery_pages_by_id([summoner.id for summoner in summoners])
     else:
-        return _get_mastery_pages_by_id(summoners.id)
+        return __get_mastery_pages_by_id(summoners.id)
 
 # @param ids # list<int> or int # The summoner ID(s) to get rune pages for
 # @return # list<list<cassiopeia.type.core.summoner.RunePage>> or list<cassiopeia.type.core.summoner.RunePage> # The requested rune pages
-def _get_rune_pages_by_id(ids):
+def __get_rune_pages_by_id(ids):
     pages = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.summonerapi.get_summoner_runes, 40, ids)
 
     # Load required data if loading policy is eager
@@ -46,9 +46,9 @@ def _get_rune_pages_by_id(ids):
 # @return # list<list<cassiopeia.type.core.summoner.RunePage>> or list<cassiopeia.type.core.summoner.RunePage> # The requested rune pages
 def get_rune_pages(summoners):
     if(isinstance(summoners, list)):
-        return _get_rune_pages_by_id([summoner.id for summoner in summoners])
+        return __get_rune_pages_by_id([summoner.id for summoner in summoners])
     else:
-        return _get_rune_pages_by_id(summoners.id)
+        return __get_rune_pages_by_id(summoners.id)
 
 # @param id_ # int # The ID of the summoner to get
 # @return # cassiopeia.type.core.summoner.Summoner # The summoner
@@ -71,7 +71,7 @@ def get_summoner_by_name(name):
     if(summoner):
         return summoner
 
-    summoner = cassiopeia.dto.summonerapi.get_summoners_by_name(urllib.parse.quote(name))[_standardize(name)]
+    summoner = cassiopeia.dto.summonerapi.get_summoners_by_name(urllib.parse.quote(name))[__standardize(name)]
     summoner = cassiopeia.type.core.summoner.Summoner(summoner)
 
     cassiopeia.core.requests.data_store.store(summoner, name)
@@ -124,7 +124,7 @@ def get_summoners_by_name(names):
     # Make requests to get them
     new = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.summonerapi.get_summoners_by_name, 40, [urllib.parse.quote(name) for name in missing])
     for i in range(len(missing)):
-        summoner = cassiopeia.type.core.summoner.Summoner(new[_standardize(missing[i])])
+        summoner = cassiopeia.type.core.summoner.Summoner(new[__standardize(missing[i])])
         summoners[loc[i]] = summoner
         missing[i] = summoner
 
@@ -167,5 +167,5 @@ def get_summoner_names(ids):
 
 # @param name # str # A summoner name
 # @return # str # The standardized version of the name
-def _standardize(name):
+def __standardize(name):
     return name.replace(" ", "").lower()
