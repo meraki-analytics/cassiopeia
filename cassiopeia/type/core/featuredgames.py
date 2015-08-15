@@ -120,7 +120,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def participants(self):
-        return [Participant for participant in self.data.participants]
+        return [Participant(participant) for participant in self.data.participants]
 
     @property
     def platform(self):

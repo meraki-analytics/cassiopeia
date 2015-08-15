@@ -617,6 +617,10 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
     def title(self):
         return self.data.title
 
+    @cassiopeia.type.core.common.immutablemethod
+    def status(self):
+        return cassiopeia.riotapi.get_champion_status(self)
+
 ##################
 # Item Endpoints #
 ##################

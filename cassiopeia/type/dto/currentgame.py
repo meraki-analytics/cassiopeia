@@ -158,3 +158,48 @@ class CurrentGameInfo(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.
 
         # str # The ID of the platform on which the game is being played
         self.platformId = dictionary.get("platformId", "")
+
+    @property
+    def champion_ids(self):
+        ids = set()
+        for ban in self.bannedChampions:
+            ids.add(ban.championId)
+        for p in self.participants:
+            ids.add(p.championId)
+        return ids
+
+    @property
+    def summoner_ids(self):
+        ids = set()
+        for p in self.participants:
+            if(p.summonerId):
+                ids.add(p.summonerId)
+        return ids
+
+    @property
+    def summoner_spell_ids(self):
+        ids = set()
+        for p in self.participants:
+            if(p.spell1Id):
+                ids.add(p.spell1Id)
+            if(p.spell2Id):
+                ids.add(p.spell2Id)
+        return ids
+
+    @property
+    def rune_ids(self):
+        ids = set()
+        for p in self.participants:
+            for r in p.runes:
+                if(r.runeId):
+                    ids.add(r.runeId)
+        return ids
+
+    @property
+    def mastery_ids(self):
+        ids = set()
+        for p in self.participants:
+            for m in p.masteries:
+                if(m.masteryId):
+                    ids.add(m.masteryId)
+        return ids

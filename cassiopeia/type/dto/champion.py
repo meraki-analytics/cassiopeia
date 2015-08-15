@@ -35,3 +35,10 @@ class ChampionList(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<Champion> # The collection of champion information.
         self.champions = [(Champion(champ) if not isinstance(champ, Champion) else champ) for champ in dictionary.get("champions", []) if champ]
+
+    @property
+    def champion_ids(self):
+        ids = set()
+        for champ in self.champions:
+            ids.add(champ.id)
+        return ids

@@ -79,7 +79,7 @@ class FeaturedGameInfo(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type
     gameType = sqlalchemy.Column(sqlalchemy.String(30))
     mapId = sqlalchemy.Column(sqlalchemy.Integer)
     observers = sqlalchemy.orm.relationship("cassiopeia.type.dto.featuredgames.Observer", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    participants = sqlalchemy.orm.relationship("cassiopeia.type.dto.featuredgames.FeaturedGameParticipant", cascade="all, delete-orphan", passive_deletes=True)
+    participants = sqlalchemy.orm.relationship("cassiopeia.type.dto.featuredgames.Participant", cascade="all, delete-orphan", passive_deletes=True)
     platformId = sqlalchemy.Column(sqlalchemy.String(30))
 
     def __init__(self, dictionary):
@@ -117,6 +117,25 @@ class FeaturedGameInfo(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type
         # str # The ID of the platform on which the game is being played
         self.platformId = dictionary.get("platformId", "")
 
+    @property
+    def champion_ids(self):
+        ids = set()
+        for ban in self.bannedChampions:
+            ids.add(ban.championId)
+        for p in self.participants:
+            ids.add(p.championId)
+        return ids
+
+    @property
+    def summoner_spell_ids(self):
+        ids = set()
+        for p in self.participants:
+            if(p.spell1Id):
+                ids.add(p.spell1Id)
+            if(p.spell2Id):
+                ids.add(p.spell2Id)
+        return ids
+
 
 class FeaturedGames(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
@@ -125,3 +144,17 @@ class FeaturedGames(cassiopeia.type.dto.common.CassiopeiaDto):
 
         # list<FeaturedGameInfo> # The list of featured games
         self.gameList = [(FeaturedGameInfo(game) if not isinstance(game, FeaturedGameInfo) else game) for game in dictionary.get("gameList", []) if game]
+
+    @property
+    def champion_ids(self):
+        ids = set()
+        for game in self.gameList:
+            ids |= game.champion_ids
+        return ids
+
+    @property
+    def summoner_spell_ids(self):
+        ids = set()
+        for game in self.gameList:
+            ids |= game.summoner_spell_ids
+        return ids
