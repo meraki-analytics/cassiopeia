@@ -64,6 +64,14 @@ class Team(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
         # int # Date that third to last member joined specified as epoch milliseconds.
         self.thirdLastJoinDate = dictionary.get("thirdLastJoinDate", 0)
 
+    @property
+    def summoner_ids(self):
+        ids = set()
+        ids.add(self.roster.ownerId)
+        for member in self.roster.memberList:
+            ids.add(member.playerId)
+        return ids
+
 
 class MatchHistorySummary(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "TeamMatchHistorySummary"
@@ -116,7 +124,13 @@ class MatchHistorySummary(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.t
         self.win = dictionary.get("win", False)
 
 
-class Roster(cassiopeia.type.dto.common.CassiopeiaDto):
+class Roster(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+    __tablename__ = "Roster"
+    memberList = sqlalchemy.orm.relationship("cassiopeia.type.dto.team.TeamMemberInfo", cascade="all, delete-orphan", passive_deletes=True)
+    ownerId = sqlalchemy.Column(sqlalchemy.Integer)
+    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    _team_id = sqlalchemy.Column(sqlalchemy.String(50), sqlalchemy.ForeignKey("Team.fullId", ondelete="CASCADE"))
+
     def __init__(self, dictionary):
         # list<TeamMemberInfo> # MemberList
         self.memberList = [(TeamMemberInfo(ts) if not isinstance(ts, TeamMemberInfo) else ts) for ts in dictionary.get("memberList", []) if ts]
@@ -155,7 +169,7 @@ class TeamMemberInfo(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.d
     playerId = sqlalchemy.Column(sqlalchemy.Integer)
     status = sqlalchemy.Column(sqlalchemy.String(30))
     _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _team_id = sqlalchemy.Column(sqlalchemy.String(50), sqlalchemy.ForeignKey("Team.fullId", ondelete="CASCADE"))
+    _roster_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Roster._id", ondelete="CASCADE"))
 
     def __init__(self, dictionary):
         # int # Date that team member was invited to team specified as epoch milliseconds.

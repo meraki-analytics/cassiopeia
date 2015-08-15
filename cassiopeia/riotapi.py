@@ -15,6 +15,7 @@ from cassiopeia.core.staticdataapi import *
 from cassiopeia.core.statusapi import *
 from cassiopeia.core.statsapi import *
 from cassiopeia.core.summonerapi import *
+from cassiopeia.core.teamapi import *
 
 # @param key # str # The API key to use
 def set_api_key(key):

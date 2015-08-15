@@ -5,7 +5,7 @@ import cassiopeia.type.core.common
 import cassiopeia.type.dto.team
 
 class Team(cassiopeia.type.core.common.CassiopeiaObject):
-    dto_type = cassiopeia.type.dto.status.Team
+    dto_type = cassiopeia.type.dto.team.Team
 
     def __str__(self):
         return self.name
@@ -82,7 +82,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def stats(self):
-        return Stats(self.data.teamStatDetails) if self.data.teamStatDetails else None
+        return [Stats(stats) for stats in self.data.teamStatDetails]
 
     @cassiopeia.type.core.common.lazyproperty
     def third_to_last_join(self):
@@ -98,7 +98,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class MatchSummary(cassiopeia.type.core.common.CassiopeiaObject):
-    dto_type = cassiopeia.type.dto.status.MatchHistorySummary
+    dto_type = cassiopeia.type.dto.team.MatchHistorySummary
 
     def __str__(self):
         return "Match #{id_}".format(id_=self.id)
@@ -157,7 +157,7 @@ class MatchSummary(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class Stats(cassiopeia.type.core.common.CassiopeiaObject):
-    dto_type = cassiopeia.type.dto.status.TeamStatDetail
+    dto_type = cassiopeia.type.dto.team.TeamStatDetail
 
     def __str__(self):
         return "Stats ({q})".format(q=self.queue)
@@ -180,7 +180,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class TeamMember(cassiopeia.type.core.common.CassiopeiaObject):
-    dto_type = cassiopeia.type.dto.status.TeamMemberInfo
+    dto_type = cassiopeia.type.dto.team.TeamMemberInfo
 
     def __str__(self):
         return str(self.summoner)
@@ -195,7 +195,7 @@ class TeamMember(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def summoner(self):
-        return cassiopeia.riotapi.get_summoner_by_id(self.data.roster.playerId)
+        return cassiopeia.riotapi.get_summoner_by_id(self.data.playerId)
 
     @property
     def status(self):

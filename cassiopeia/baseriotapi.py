@@ -13,6 +13,7 @@ from cassiopeia.dto.matchlistapi import *
 from cassiopeia.dto.matchhistoryapi import *
 from cassiopeia.dto.statsapi import *
 from cassiopeia.dto.summonerapi import *
+from cassiopeia.dto.teamapi import *
 
 # @param key # str # The API key to use
 def set_api_key(key):

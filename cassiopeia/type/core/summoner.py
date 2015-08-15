@@ -163,6 +163,10 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
         return cassiopeia.riotapi.get_league_entries_by_summoner(self)
 
     @cassiopeia.type.core.common.immutablemethod
+    def teams(self):
+        return cassiopeia.riotapi.get_teams_by_summoner(self)
+
+    @cassiopeia.type.core.common.immutablemethod
     def match_history(self, begin_index=0, champions=None, ranked_queues=None):
         return cassiopeia.riotapi.get_match_history(self, begin_index, champions, ranked_queues)
 
