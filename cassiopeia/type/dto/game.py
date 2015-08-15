@@ -3,7 +3,7 @@ import sqlalchemy.orm
 
 import cassiopeia.type.dto.common
 
-class RawStatsDto(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
+class RawStats(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "GameRawStats"
     assists = sqlalchemy.Column(sqlalchemy.Integer)
     barracksKilled = sqlalchemy.Column(sqlalchemy.Integer)

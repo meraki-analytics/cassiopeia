@@ -165,7 +165,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def kda(self):
-        return (self.data.kills + self.data.assists) / self.data.deaths
+        return (self.kills + self.assists) / (self.deaths if self.deaths else 1)
 
     # int # Number of assists
     @property
@@ -179,7 +179,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
 
     # int # If game was a dominion game, player's combat score, otherwise 0
     @property
-    def combat_player_score(self):
+    def combat_score(self):
         return self.data.combatPlayerScore
 
     # int # Number of deaths
@@ -272,6 +272,11 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def item6(self):
         return cassiopeia.riotapi.get_item(self.data.item6) if self.data.item6 else None
 
+    # list<Item> # Items
+    @property
+    def items(self):
+        return [self.item0, self.item1, self.item2, self.item3, self.item4, self.item5, self.item6]
+
     # int # Number of killing sprees
     @property
     def killing_sprees(self):
@@ -314,22 +319,22 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
 
     # int # Minions killed
     @property
-    def minions_killed(self):
+    def minion_kills(self):
         return self.data.minionsKilled
 
     # int # Neutral minions killed
     @property
-    def neutral_minions_killed(self):
+    def neutral_minion_kills(self):
         return self.data.neutralMinionsKilled
 
     # int # Neutral jungle minions killed in the enemy team's jungle
     @property
-    def neutral_minions_killed_enemy_jungle(self):
+    def neutral_minion_kills_enemy_jungle(self):
         return self.data.neutralMinionsKilledEnemyJungle
 
     # int # Neutral jungle minions killed in your team's jungle
     @property
-    def neutral_minions_killed_team_jungle(self):
+    def neutral_minion_kills_ally_jungle(self):
         return self.data.neutralMinionsKilledTeamJungle
 
     # int # If game was a dominion game, number of node captures
@@ -354,7 +359,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
 
     # int # If game was a dominion game, player's objectives score, otherwise 0
     @property
-    def objective_player_score(self):
+    def objective_score(self):
         return self.data.objectivePlayerScore
 
     # int # Number of penta kills
@@ -414,17 +419,17 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
 
     # int # If game was a dominion game, player's total score, otherwise 0
     @property
-    def player_score(self):
+    def score(self):
         return self.data.totalPlayerScore
 
     # int # If game was a dominion game, team rank of the player's total score (e.g., 1-5)
     @property
-    def player_score_rank(self):
+    def score_rank(self):
         return self.data.totalScoreRank
 
     # int # Total dealt crowd control time
     @property
-    def time_crowd_control_dealt(self):
+    def crowd_control_dealt(self):
         return self.data.totalTimeCrowdControlDealt
 
     # int # Total units healed
@@ -469,7 +474,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
 
     # int # Number of wards killed
     @property
-    def wards_killed(self):
+    def ward_kills(self):
         return self.data.wardsKilled
 
     # int # Number of wards placed
@@ -479,7 +484,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
 
     # bool # Flag indicating whether or not the participant won
     @property
-    def winner(self):
+    def win(self):
         return self.data.winner
 
 

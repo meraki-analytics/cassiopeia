@@ -74,6 +74,19 @@ class Lane(enum.Enum):
     mid_lane = "MIDDLE"
     bot_lane = "BOTTOM"
 
+    def for_id(id_):
+        try:
+            return Lane.by_id[id_]
+        except:
+            return None
+
+Lane.by_id = {
+    1: Lane.top_lane,
+    2: Lane.mid_lane,
+    3: Lane.jungle,
+    4: Lane.bot_lane
+}
+
 
 class Role(enum.Enum):
     none = "NONE"
@@ -81,6 +94,19 @@ class Role(enum.Enum):
     duo = "DUO"
     carry = "DUO_CARRY"
     support = "DUO_SUPPORT"
+
+    def for_id(id_):
+        try:
+            return Role.by_id[id_]
+        except:
+            return None
+
+Role.by_id = {
+    1: Role.duo,
+    2: Role.support,
+    3: Role.carry,
+    4: Role.solo
+}
 
 
 class Side(enum.Enum):
@@ -117,12 +143,55 @@ class Queue(enum.Enum):
     doom_bots_1 = "NIGHTMARE_BOT_5x5_RANK1"
     doom_bots_2 = "NIGHTMARE_BOT_5x5_RANK2"
     doom_bots_5 = "NIGHTMARE_BOT_5x5_RANK5"
+    ascension = "ASCENSION_5x5"
     hexakill_twisted_treeline = "HEXAKILL"
     butchers_bridge = "BILGEWATER_ARAM_5x5"
     poro_king = "KING_PORO_5x5"
     nemesis_draft = "COUNTER_PICK"
     black_market = "BILGEWATER_5x5"
 
+    def for_id(id_):
+        try:
+            return Queue.by_id[id_]
+        except:
+            return None
+
+Queue.by_id = {
+    0: Queue.custom,
+    65: Queue.aram,
+    2: Queue.normal_blind_fives,
+    4: Queue.ranked_solo,
+    6: Queue.ranked_premade_fives,
+    7: Queue.bot_fives,
+    8: Queue.normal_blind_threes,
+    9: Queue.ranked_premade_threes,
+    75: Queue.hexakill_summoners_rift,
+    76: Queue.urf,
+    14: Queue.normal_draft_fives,
+    16: Queue.dominion_blind,
+    17: Queue.dominion_draft,
+    83: Queue.bot_urf,
+    25: Queue.bot_dominion,
+    91: Queue.doom_bots_1,
+    92: Queue.doom_bots_2,
+    93: Queue.doom_bots_5,
+    31: Queue.bot_intro_fives,
+    32: Queue.bot_beginner_fives,
+    33: Queue.bot_intermediate_fives,
+    98: Queue.hexakill_twisted_treeline,
+    100: Queue.butchers_bridge,
+    70: Queue.one_for_all,
+    41: Queue.ranked_threes,
+    42: Queue.ranked_fives,
+    300: Queue.poro_king,
+    96: Queue.ascension,
+    72: Queue.showdown_solo,
+    52: Queue.bot_threes,
+    310: Queue.nemesis_draft,
+    73: Queue.showdown_duo,
+    313: Queue.black_market,
+    61: Queue.team_builder
+}
 ranked_queues = {Queue.ranked_solo, Queue.ranked_threes, Queue.ranked_fives}
 
 
