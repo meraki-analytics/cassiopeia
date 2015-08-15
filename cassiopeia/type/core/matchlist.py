@@ -57,3 +57,10 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
     @cassiopeia.type.core.common.lazyproperty
     def timestamp(self):
         return datetime.datetime.utcfromtimestamp(self.data.timestamp / 1000) if self.data.timestamp else None
+
+###############################
+# Dynamic SQLAlchemy bindings #
+###############################
+
+def sa_rebind_all():
+    MatchReference.dto_type = cassiopeia.type.dto.matchlist.MatchReference

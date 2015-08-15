@@ -2,15 +2,7 @@ import sqlalchemy
 
 import cassiopeia.type.dto.common
 
-class Champion(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "ChampionStatus"
-    active = sqlalchemy.Column(sqlalchemy.Boolean)
-    botEnabled = sqlalchemy.Column(sqlalchemy.Boolean)
-    botMmEnabled = sqlalchemy.Column(sqlalchemy.Boolean)
-    freeToPlay = sqlalchemy.Column(sqlalchemy.Boolean)
-    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    rankedPlayEnabled = sqlalchemy.Column(sqlalchemy.Boolean)
-
+class Champion(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # bool # Indicates if the champion is active.
         self.active = dictionary.get("active", False)
@@ -42,3 +34,21 @@ class ChampionList(cassiopeia.type.dto.common.CassiopeiaDto):
         for champ in self.champions:
             ids.add(champ.id)
         return ids
+
+###############################
+# Dynamic SQLAlchemy bindings #
+###############################
+
+def sa_bind_champion():
+    global Champion
+    class Champion(Champion, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "ChampionStatus"
+        active = sqlalchemy.Column(sqlalchemy.Boolean)
+        botEnabled = sqlalchemy.Column(sqlalchemy.Boolean)
+        botMmEnabled = sqlalchemy.Column(sqlalchemy.Boolean)
+        freeToPlay = sqlalchemy.Column(sqlalchemy.Boolean)
+        id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        rankedPlayEnabled = sqlalchemy.Column(sqlalchemy.Boolean)
+
+def sa_bind_all():
+    sa_bind_champion()

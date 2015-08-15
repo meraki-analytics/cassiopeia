@@ -181,3 +181,12 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
     @cassiopeia.type.core.common.immutablemethod
     def stats(self, season=None):
         return cassiopeia.riotapi.get_stats(self, season)
+
+###############################
+# Dynamic SQLAlchemy bindings #
+###############################
+
+def sa_rebind_all():
+    RunePage.dto_type = cassiopeia.type.dto.summoner.RunePage
+    MasteryPage.dto_type = cassiopeia.type.dto.summoner.MasteryPage
+    Summoner.dto_type = cassiopeia.type.dto.summoner.Summoner

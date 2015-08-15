@@ -19,13 +19,7 @@ class RunePages(cassiopeia.type.dto.common.CassiopeiaDto):
         return ids
 
 
-class RunePage(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "RunePage"
-    current = sqlalchemy.Column(sqlalchemy.Boolean)
-    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    name = sqlalchemy.Column(sqlalchemy.String(50))
-    slots = sqlalchemy.orm.relationship("cassiopeia.type.dto.summoner.RuneSlot", cascade="all, delete-orphan, delete, merge", passive_deletes=True)
-
+class RunePage(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # bool # Indicates if the page is the current page.
         self.current = dictionary.get("current", False)
@@ -48,13 +42,7 @@ class RunePage(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.com
         return ids
 
 
-class RuneSlot(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "RuneSlot"
-    runeId = sqlalchemy.Column(sqlalchemy.Integer)
-    runeSlotId = sqlalchemy.Column(sqlalchemy.Integer)
-    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _page_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("RunePage.id", ondelete="CASCADE"))
-
+class RuneSlot(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Rune ID associated with the rune slot. For static information correlating to rune IDs, please refer to the LoL Static Data API.
         self.runeId = dictionary.get("runeId", 0)
@@ -79,13 +67,7 @@ class MasteryPages(cassiopeia.type.dto.common.CassiopeiaDto):
         return ids
 
 
-class MasteryPage(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "MasteryPage"
-    current = sqlalchemy.Column(sqlalchemy.Boolean)
-    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    masteries = sqlalchemy.orm.relationship("cassiopeia.type.dto.summoner.Mastery", cascade="all, delete-orphan, delete, merge", passive_deletes=True)
-    name = sqlalchemy.Column(sqlalchemy.String(50))
-
+class MasteryPage(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # bool # Indicates if the mastery page is the current mastery page.
         self.current = dictionary.get("current", False)
@@ -108,13 +90,7 @@ class MasteryPage(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.
         return ids
 
 
-class Mastery(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "MasterySlot"
-    id = sqlalchemy.Column(sqlalchemy.Integer)
-    rank = sqlalchemy.Column(sqlalchemy.Integer)
-    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _page_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MasteryPage.id", ondelete="CASCADE"))
-
+class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Mastery ID. For static information correlating to masteries, please refer to the LoL Static Data API.
         self.id = dictionary.get("id", 0)
@@ -123,14 +99,7 @@ class Mastery(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.comm
         self.rank = dictionary.get("rank", 0)
 
 
-class Summoner(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "Summoner"
-    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    name = sqlalchemy.Column(sqlalchemy.String(30))
-    profileIconId = sqlalchemy.Column(sqlalchemy.Integer)
-    revisionDate = sqlalchemy.Column(sqlalchemy.BigInteger)
-    summonerLevel = sqlalchemy.Column(sqlalchemy.Integer)
-
+class Summoner(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Summoner ID.
         self.id = dictionary.get("id", 0)
@@ -146,3 +115,60 @@ class Summoner(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.com
 
         # int # Summoner level associated with the summoner.
         self.summonerLevel = dictionary.get("summonerLevel", 0)
+
+###############################
+# Dynamic SQLAlchemy bindings #
+###############################
+
+def sa_bind_rune_page():
+    global RunePage
+    class RunePage(RunePage, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "RunePage"
+        current = sqlalchemy.Column(sqlalchemy.Boolean)
+        id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        name = sqlalchemy.Column(sqlalchemy.String(50))
+        slots = sqlalchemy.orm.relationship("cassiopeia.type.dto.summoner.RuneSlot", cascade="all, delete-orphan, delete, merge", passive_deletes=True)
+
+def sa_bind_rune_slot():
+    global RuneSlot
+    class RuneSlot(RuneSlot, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "RuneSlot"
+        runeId = sqlalchemy.Column(sqlalchemy.Integer)
+        runeSlotId = sqlalchemy.Column(sqlalchemy.Integer)
+        _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        _page_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("RunePage.id", ondelete="CASCADE"))
+
+def sa_bind_mastery_page():
+    global MasteryPage
+    class MasteryPage(MasteryPage, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "MasteryPage"
+        current = sqlalchemy.Column(sqlalchemy.Boolean)
+        id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        masteries = sqlalchemy.orm.relationship("cassiopeia.type.dto.summoner.Mastery", cascade="all, delete-orphan, delete, merge", passive_deletes=True)
+        name = sqlalchemy.Column(sqlalchemy.String(50))
+
+def sa_bind_mastery():
+    global Mastery
+    class Mastery(Mastery, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "MasterySlot"
+        id = sqlalchemy.Column(sqlalchemy.Integer)
+        rank = sqlalchemy.Column(sqlalchemy.Integer)
+        _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        _page_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MasteryPage.id", ondelete="CASCADE"))
+
+def sa_bind_summoner():
+    global Summoner
+    class Summoner(Summoner, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "Summoner"
+        id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        name = sqlalchemy.Column(sqlalchemy.String(30))
+        profileIconId = sqlalchemy.Column(sqlalchemy.Integer)
+        revisionDate = sqlalchemy.Column(sqlalchemy.BigInteger)
+        summonerLevel = sqlalchemy.Column(sqlalchemy.Integer)
+
+def sa_bind_all():
+    sa_bind_rune_page()
+    sa_bind_rune_slot()
+    sa_bind_mastery_page()
+    sa_bind_mastery()
+    sa_bind_summoner()

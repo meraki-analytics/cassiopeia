@@ -4,24 +4,7 @@ import sqlalchemy.orm.collections
 
 import cassiopeia.type.dto.common
 
-class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "MatchDetail"
-    mapId = sqlalchemy.Column(sqlalchemy.Integer)
-    matchCreation = sqlalchemy.Column(sqlalchemy.BigInteger)
-    matchDuration = sqlalchemy.Column(sqlalchemy.Integer)
-    matchId = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    matchMode = sqlalchemy.Column(sqlalchemy.String(30))
-    matchType = sqlalchemy.Column(sqlalchemy.String(30))
-    matchVersion = sqlalchemy.Column(sqlalchemy.String(30))
-    participantIdentities = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantIdentity", cascade="all, delete-orphan", passive_deletes=True)
-    participants = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Participant", cascade="all, delete-orphan", passive_deletes=True)
-    platformId = sqlalchemy.Column(sqlalchemy.String(30))
-    queueType = sqlalchemy.Column(sqlalchemy.String(30))
-    region = sqlalchemy.Column(sqlalchemy.String(30))
-    season = sqlalchemy.Column(sqlalchemy.String(30))
-    teams = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Team", cascade="all, delete-orphan", passive_deletes=True)
-    timeline = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Timeline", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-
+class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Match map ID
         self.mapId = dictionary.get("mapId", 0)
@@ -138,21 +121,8 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.
                 ids.add(p.spell2Id)
         return ids
 
-class Participant(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "MatchParticipant"
-    championId = sqlalchemy.Column(sqlalchemy.Integer)
-    highestAchievedSeasonTier = sqlalchemy.Column(sqlalchemy.String(30))
-    masteries = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Mastery", cascade="all, delete-orphan", passive_deletes=True)
-    participantId = sqlalchemy.Column(sqlalchemy.Integer)
-    runes = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Rune", cascade="all, delete-orphan", passive_deletes=True)
-    spell1Id = sqlalchemy.Column(sqlalchemy.Integer)
-    spell2Id = sqlalchemy.Column(sqlalchemy.Integer)
-    stats = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantStats", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    teamId = sqlalchemy.Column(sqlalchemy.Integer)
-    timeline = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimeline", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchDetail.matchId", ondelete="CASCADE"))
 
+class Participant(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Champion ID
         self.championId = dictionary.get("championId", 0)
@@ -187,13 +157,7 @@ class Participant(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.
         self.timeline = ParticipantTimeline(val) if val and not isinstance(val, ParticipantTimeline) else val
 
 
-class ParticipantIdentity(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "MatchParticipantIdentity"
-    participantId = sqlalchemy.Column(sqlalchemy.Integer)
-    player = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Player", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchDetail.matchId", ondelete="CASCADE"))
-
+class ParticipantIdentity(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Participant ID
         self.participantId = dictionary.get("participantId", 0)
@@ -203,25 +167,7 @@ class ParticipantIdentity(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.t
         self.player = Player(val) if val and not isinstance(val, Player) else val
 
 
-class Team(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "MatchTeam"
-    bans = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.BannedChampion", cascade="all, delete-orphan", passive_deletes=True)
-    baronKills = sqlalchemy.Column(sqlalchemy.Integer)
-    dominionVictoryScore = sqlalchemy.Column(sqlalchemy.Integer)
-    dragonKills = sqlalchemy.Column(sqlalchemy.Integer)
-    firstBaron = sqlalchemy.Column(sqlalchemy.Boolean)
-    firstBlood = sqlalchemy.Column(sqlalchemy.Boolean)
-    firstDragon = sqlalchemy.Column(sqlalchemy.Boolean)
-    firstInhibitor = sqlalchemy.Column(sqlalchemy.Boolean)
-    firstTower = sqlalchemy.Column(sqlalchemy.Boolean)
-    inhibitorKills = sqlalchemy.Column(sqlalchemy.Integer)
-    teamId = sqlalchemy.Column(sqlalchemy.Integer)
-    towerKills = sqlalchemy.Column(sqlalchemy.Integer)
-    vilemawKills = sqlalchemy.Column(sqlalchemy.Integer)
-    winner = sqlalchemy.Column(sqlalchemy.Boolean)
-    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchDetail.matchId", ondelete="CASCADE"))
-
+class Team(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<BannedChampion> # If game was draft mode, contains banned champion data, otherwise null
         self.bans = [(BannedChampion(c) if not isinstance(c, BannedChampion) else c) for c in dictionary.get("bans", []) if c]
@@ -266,13 +212,7 @@ class Team(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
         self.winner = dictionary.get("winner", False)
 
 
-class Timeline(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "MatchTimeline"
-    frameInterval = sqlalchemy.Column(sqlalchemy.Integer)
-    frames = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Frame", cascade="all, delete-orphan", passive_deletes=True)
-    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchDetail.matchId", ondelete="CASCADE"))
-
+class Timeline(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Time between each returned frame in milliseconds.
         self.frameInterval = dictionary.get("frameInterval", 0)
@@ -281,13 +221,7 @@ class Timeline(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.com
         self.frames = [(Frame(f) if not isinstance(f, Frame) else f) for f in dictionary.get("frames", []) if f]
 
 
-class Mastery(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "MatchMastery"
-    masteryId = sqlalchemy.Column(sqlalchemy.Integer)
-    rank = sqlalchemy.Column(sqlalchemy.Integer)
-    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipant._id", ondelete="CASCADE"))
-
+class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Mastery ID
         self.masteryId = dictionary.get("masteryId", 0)
@@ -296,74 +230,7 @@ class Mastery(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.comm
         self.rank = dictionary.get("rank", 0)
 
 
-class ParticipantStats(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "MatchParticipantStats"
-    assists = sqlalchemy.Column(sqlalchemy.Integer)
-    champLevel = sqlalchemy.Column(sqlalchemy.Integer)
-    combatPlayerScore = sqlalchemy.Column(sqlalchemy.Integer)
-    deaths = sqlalchemy.Column(sqlalchemy.Integer)
-    doubleKills = sqlalchemy.Column(sqlalchemy.Integer)
-    firstBloodAssist = sqlalchemy.Column(sqlalchemy.Boolean)
-    firstBloodKill = sqlalchemy.Column(sqlalchemy.Boolean)
-    firstInhibitorAssist = sqlalchemy.Column(sqlalchemy.Boolean)
-    firstInhibitorKill = sqlalchemy.Column(sqlalchemy.Boolean)
-    firstTowerAssist = sqlalchemy.Column(sqlalchemy.Boolean)
-    firstTowerKill = sqlalchemy.Column(sqlalchemy.Boolean)
-    goldEarned = sqlalchemy.Column(sqlalchemy.Integer)
-    goldSpent = sqlalchemy.Column(sqlalchemy.Integer)
-    inhibitorKills = sqlalchemy.Column(sqlalchemy.Integer)
-    item0 = sqlalchemy.Column(sqlalchemy.Integer)
-    item1 = sqlalchemy.Column(sqlalchemy.Integer)
-    item2 = sqlalchemy.Column(sqlalchemy.Integer)
-    item3 = sqlalchemy.Column(sqlalchemy.Integer)
-    item4 = sqlalchemy.Column(sqlalchemy.Integer)
-    item5 = sqlalchemy.Column(sqlalchemy.Integer)
-    item6 = sqlalchemy.Column(sqlalchemy.Integer)
-    killingSprees = sqlalchemy.Column(sqlalchemy.Integer)
-    kills = sqlalchemy.Column(sqlalchemy.Integer)
-    largestCriticalStrike = sqlalchemy.Column(sqlalchemy.Integer)
-    largestKillingSpree = sqlalchemy.Column(sqlalchemy.Integer)
-    largestMultiKill = sqlalchemy.Column(sqlalchemy.Integer)
-    magicDamageDealt = sqlalchemy.Column(sqlalchemy.Integer)
-    magicDamageDealtToChampions = sqlalchemy.Column(sqlalchemy.Integer)
-    magicDamageTaken = sqlalchemy.Column(sqlalchemy.Integer)
-    minionsKilled = sqlalchemy.Column(sqlalchemy.Integer)
-    neutralMinionsKilled = sqlalchemy.Column(sqlalchemy.Integer)
-    neutralMinionsKilledEnemyJungle = sqlalchemy.Column(sqlalchemy.Integer)
-    neutralMinionsKilledTeamJungle = sqlalchemy.Column(sqlalchemy.Integer)
-    nodeCapture = sqlalchemy.Column(sqlalchemy.Integer)
-    nodeCaptureAssist = sqlalchemy.Column(sqlalchemy.Integer)
-    nodeNeutralize = sqlalchemy.Column(sqlalchemy.Integer)
-    nodeNeutralizeAssist = sqlalchemy.Column(sqlalchemy.Integer)
-    objectivePlayerScore = sqlalchemy.Column(sqlalchemy.Integer)
-    pentaKills = sqlalchemy.Column(sqlalchemy.Integer)
-    physicalDamageDealt = sqlalchemy.Column(sqlalchemy.Integer)
-    physicalDamageDealtToChampions = sqlalchemy.Column(sqlalchemy.Integer)
-    physicalDamageTaken = sqlalchemy.Column(sqlalchemy.Integer)
-    quadraKills = sqlalchemy.Column(sqlalchemy.Integer)
-    sightWardsBoughtInGame = sqlalchemy.Column(sqlalchemy.Integer)
-    teamObjective = sqlalchemy.Column(sqlalchemy.Integer)
-    totalDamageDealt = sqlalchemy.Column(sqlalchemy.Integer)
-    totalDamageDealtToChampions = sqlalchemy.Column(sqlalchemy.Integer)
-    totalDamageTaken = sqlalchemy.Column(sqlalchemy.Integer)
-    totalHeal = sqlalchemy.Column(sqlalchemy.Integer)
-    totalPlayerScore = sqlalchemy.Column(sqlalchemy.Integer)
-    totalScoreRank = sqlalchemy.Column(sqlalchemy.Integer)
-    totalTimeCrowdControlDealt = sqlalchemy.Column(sqlalchemy.Integer)
-    totalUnitsHealed = sqlalchemy.Column(sqlalchemy.Integer)
-    towerKills = sqlalchemy.Column(sqlalchemy.Integer)
-    tripleKills = sqlalchemy.Column(sqlalchemy.Integer)
-    trueDamageDealt = sqlalchemy.Column(sqlalchemy.Integer)
-    trueDamageDealtToChampions = sqlalchemy.Column(sqlalchemy.Integer)
-    trueDamageTaken = sqlalchemy.Column(sqlalchemy.Integer)
-    unrealKills = sqlalchemy.Column(sqlalchemy.Integer)
-    visionWardsBoughtInGame = sqlalchemy.Column(sqlalchemy.Integer)
-    wardsKilled = sqlalchemy.Column(sqlalchemy.Integer)
-    wardsPlaced = sqlalchemy.Column(sqlalchemy.Integer)
-    winner = sqlalchemy.Column(sqlalchemy.Boolean)
-    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipant._id", ondelete="CASCADE"))
-
+class ParticipantStats(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Number of assists
         self.assists = dictionary.get("assists", 0)
@@ -555,38 +422,7 @@ class ParticipantStats(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type
         self.winner = dictionary.get("winner", False)
 
 
-class ParticipantTimeline(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "MatchParticipantTimeline"
-    ancientGolemAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='ancientGolemAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    ancientGolemKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='ancientGolemKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    assistedLaneDeathsPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='assistedLaneDeathsPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    assistedLaneKillsPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='assistedLaneKillsPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    baronAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='baronAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    baronKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='baronKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    creepsPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='creepsPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    csDiffPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='csDiffPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    damageTakenDiffPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='damageTakenDiffPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    damageTakenPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='damageTakenPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    dragonAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='dragonAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    dragonKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='dragonKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    elderLizardAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='elderLizardAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    elderLizardKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='elderLizardKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    goldPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='goldPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    inhibitorAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='inhibitorAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    inhibitorKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='inhibitorKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    lane = sqlalchemy.Column(sqlalchemy.String(30))
-    role = sqlalchemy.Column(sqlalchemy.String(30))
-    towerAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='towerAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    towerKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='towerKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    towerKillsPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='towerKillsPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    vilemawAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='vilemawAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    vilemawKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='vilemawKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    wardsPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='wardsPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    xpDiffPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='xpDiffPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    xpPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='xpPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipant._id", ondelete="CASCADE"))
-
+class ParticipantTimeline(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # ParticipantTimelineData # Ancient golem assists per minute timeline counts
         val = dictionary.get("ancientGolemAssistsPerMinCounts", None)
@@ -695,13 +531,7 @@ class ParticipantTimeline(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.t
         self.xpPerMinDeltas = ParticipantTimelineData(val, "xpPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
 
 
-class Rune(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "MatchRune"
-    rank = sqlalchemy.Column(sqlalchemy.Integer)
-    runeId = sqlalchemy.Column(sqlalchemy.Integer)
-    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipant._id", ondelete="CASCADE"))
-
+class Rune(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Rune rank
         self.rank = dictionary.get("rank", 0)
@@ -710,15 +540,7 @@ class Rune(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
         self.runeId = dictionary.get("runeId", 0)
 
 
-class Player(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "MatchPlayer"
-    matchHistoryUri = sqlalchemy.Column(sqlalchemy.String(50))
-    profileIcon = sqlalchemy.Column(sqlalchemy.Integer)
-    summonerId = sqlalchemy.Column(sqlalchemy.Integer)
-    summonerName = sqlalchemy.Column(sqlalchemy.String(30))
-    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipantIdentity._id", ondelete="CASCADE"))
-
+class Player(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # str # Match history URI
         self.matchHistoryUri = dictionary.get("matchHistoryUri", "")
@@ -733,13 +555,7 @@ class Player(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.commo
         self.summonerName = dictionary.get("summonerName", "")
 
 
-class BannedChampion(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "MatchBannedChampion"
-    championId = sqlalchemy.Column(sqlalchemy.Integer)
-    pickTurn = sqlalchemy.Column(sqlalchemy.Integer)
-    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _team_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchTeam._id", ondelete="CASCADE"))
-
+class BannedChampion(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Banned champion ID
         self.championId = dictionary.get("championId", 0)
@@ -748,14 +564,7 @@ class BannedChampion(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.d
         self.pickTurn = dictionary.get("pickTurn", 0)
 
 
-class Frame(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "MatchFrame"
-    events = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Event", cascade="all, delete-orphan", passive_deletes=True)
-    participantFrames = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantFrame", collection_class=sqlalchemy.orm.collections.mapped_collection(lambda p: str(p.participantId)), cascade="all, delete-orphan", passive_deletes=True) # OR I HAVE NO IDEA
-    timestamp = sqlalchemy.Column(sqlalchemy.Integer)
-    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _timeline_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchTimeline._id", ondelete="CASCADE"))
-
+class Frame(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # list<Event> # List of events for this frame.
         self.events = [(Event(e) if not isinstance(e, Event) else e) for e in dictionary.get("events", []) if e]
@@ -767,16 +576,7 @@ class Frame(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common
         self.timestamp = dictionary.get("timestamp", 0)
 
 
-class ParticipantTimelineData(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "MatchParticipantTimelineData"
-    tenToTwenty = sqlalchemy.Column(sqlalchemy.Float)
-    thirtyToEnd = sqlalchemy.Column(sqlalchemy.Float)
-    twentyToThirty = sqlalchemy.Column(sqlalchemy.Float)
-    zeroToTen = sqlalchemy.Column(sqlalchemy.Float)
-    _type = sqlalchemy.Column(sqlalchemy.String(50))
-    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _timeline_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipantTimeline._id", ondelete="CASCADE"))
-
+class ParticipantTimelineData(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary, type_=None):
         # float # Value per minute from 10 min to 20 min
         self.tenToTwenty = dictionary.get("tenToTwenty", 0.0)
@@ -793,32 +593,7 @@ class ParticipantTimelineData(cassiopeia.type.dto.common.CassiopeiaDto, cassiope
         self._type = type_
 
 
-class Event(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "MatchEvent"
-    ascendedType = sqlalchemy.Column(sqlalchemy.String(30))
-    assistingParticipantIds = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
-    buildingType = sqlalchemy.Column(sqlalchemy.String(30))
-    creatorId = sqlalchemy.Column(sqlalchemy.Integer)
-    eventType = sqlalchemy.Column(sqlalchemy.String(30))
-    itemAfter = sqlalchemy.Column(sqlalchemy.Integer)
-    itemBefore = sqlalchemy.Column(sqlalchemy.Integer)
-    itemId = sqlalchemy.Column(sqlalchemy.Integer)
-    killerId = sqlalchemy.Column(sqlalchemy.Integer)
-    laneType = sqlalchemy.Column(sqlalchemy.String(30))
-    levelUpType = sqlalchemy.Column(sqlalchemy.String(30))
-    monsterType = sqlalchemy.Column(sqlalchemy.String(30))
-    participantId = sqlalchemy.Column(sqlalchemy.Integer)
-    pointCaptured = sqlalchemy.Column(sqlalchemy.String(30))
-    position = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Position", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    skillSlot = sqlalchemy.Column(sqlalchemy.Integer)
-    teamId = sqlalchemy.Column(sqlalchemy.Integer)
-    timestamp = sqlalchemy.Column(sqlalchemy.Integer)
-    towerType = sqlalchemy.Column(sqlalchemy.String(30))
-    victimId = sqlalchemy.Column(sqlalchemy.Integer)
-    wardType = sqlalchemy.Column(sqlalchemy.String(30))
-    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _frame_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchFrame._id", ondelete="CASCADE"))
-
+class Event(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # str # The ascended type of the event. Only present if relevant. Note that CLEAR_ASCENDED refers to when a participants kills the ascended player. (Legal values: CHAMPION_ASCENDED, CLEAR_ASCENDED, MINION_ASCENDED)
         self.ascendedType = dictionary.get("ascendedType", "")
@@ -885,21 +660,7 @@ class Event(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common
         self.wardType = dictionary.get("wardType", "")
 
 
-class ParticipantFrame(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "MatchParticipantFrame"
-    currentGold = sqlalchemy.Column(sqlalchemy.Integer)
-    dominionScore = sqlalchemy.Column(sqlalchemy.Integer)
-    jungleMinionsKilled = sqlalchemy.Column(sqlalchemy.Integer)
-    level = sqlalchemy.Column(sqlalchemy.Integer)
-    minionsKilled = sqlalchemy.Column(sqlalchemy.Integer)
-    participantId = sqlalchemy.Column(sqlalchemy.Integer)
-    position = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Position", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-    teamScore = sqlalchemy.Column(sqlalchemy.Integer)
-    totalGold = sqlalchemy.Column(sqlalchemy.Integer)
-    xp = sqlalchemy.Column(sqlalchemy.Integer)
-    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _frame_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchFrame._id", ondelete="CASCADE"))
-
+class ParticipantFrame(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # Participant's current gold
         self.currentGold = dictionary.get("currentGold", 0)
@@ -933,17 +694,327 @@ class ParticipantFrame(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type
         self.xp = dictionary.get("xp", 0)
 
 
-class Position(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "MatchPosition"
-    x = sqlalchemy.Column(sqlalchemy.Integer)
-    y = sqlalchemy.Column(sqlalchemy.Integer)
-    _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    _event_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchEvent._id", ondelete="CASCADE"))
-    _frame_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipantFrame._id", ondelete="CASCADE"))
-
+class Position(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # x position
         self.x = dictionary.get("x", 0)
 
         # int # y position
         self.y = dictionary.get("y", 0)
+
+###############################
+# Dynamic SQLAlchemy bindings #
+###############################
+
+def sa_bind_match_detail():
+    global MatchDetail
+    class MatchDetail(MatchDetail, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "MatchDetail"
+        mapId = sqlalchemy.Column(sqlalchemy.Integer)
+        matchCreation = sqlalchemy.Column(sqlalchemy.BigInteger)
+        matchDuration = sqlalchemy.Column(sqlalchemy.Integer)
+        matchId = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        matchMode = sqlalchemy.Column(sqlalchemy.String(30))
+        matchType = sqlalchemy.Column(sqlalchemy.String(30))
+        matchVersion = sqlalchemy.Column(sqlalchemy.String(30))
+        participantIdentities = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantIdentity", cascade="all, delete-orphan", passive_deletes=True)
+        participants = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Participant", cascade="all, delete-orphan", passive_deletes=True)
+        platformId = sqlalchemy.Column(sqlalchemy.String(30))
+        queueType = sqlalchemy.Column(sqlalchemy.String(30))
+        region = sqlalchemy.Column(sqlalchemy.String(30))
+        season = sqlalchemy.Column(sqlalchemy.String(30))
+        teams = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Team", cascade="all, delete-orphan", passive_deletes=True)
+        timeline = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Timeline", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        
+def sa_bind_participant():
+    global Participant
+    class Participant(Participant, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "MatchParticipant"
+        championId = sqlalchemy.Column(sqlalchemy.Integer)
+        highestAchievedSeasonTier = sqlalchemy.Column(sqlalchemy.String(30))
+        masteries = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Mastery", cascade="all, delete-orphan", passive_deletes=True)
+        participantId = sqlalchemy.Column(sqlalchemy.Integer)
+        runes = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Rune", cascade="all, delete-orphan", passive_deletes=True)
+        spell1Id = sqlalchemy.Column(sqlalchemy.Integer)
+        spell2Id = sqlalchemy.Column(sqlalchemy.Integer)
+        stats = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantStats", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        teamId = sqlalchemy.Column(sqlalchemy.Integer)
+        timeline = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimeline", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchDetail.matchId", ondelete="CASCADE"))
+
+def sa_bind_participant_identity():
+    global ParticipantIdentity
+    class ParticipantIdentity(ParticipantIdentity, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "MatchParticipantIdentity"
+        participantId = sqlalchemy.Column(sqlalchemy.Integer)
+        player = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Player", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchDetail.matchId", ondelete="CASCADE"))
+
+def sa_bind_team():
+    global Team
+    class Team(Team, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "MatchTeam"
+        bans = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.BannedChampion", cascade="all, delete-orphan", passive_deletes=True)
+        baronKills = sqlalchemy.Column(sqlalchemy.Integer)
+        dominionVictoryScore = sqlalchemy.Column(sqlalchemy.Integer)
+        dragonKills = sqlalchemy.Column(sqlalchemy.Integer)
+        firstBaron = sqlalchemy.Column(sqlalchemy.Boolean)
+        firstBlood = sqlalchemy.Column(sqlalchemy.Boolean)
+        firstDragon = sqlalchemy.Column(sqlalchemy.Boolean)
+        firstInhibitor = sqlalchemy.Column(sqlalchemy.Boolean)
+        firstTower = sqlalchemy.Column(sqlalchemy.Boolean)
+        inhibitorKills = sqlalchemy.Column(sqlalchemy.Integer)
+        teamId = sqlalchemy.Column(sqlalchemy.Integer)
+        towerKills = sqlalchemy.Column(sqlalchemy.Integer)
+        vilemawKills = sqlalchemy.Column(sqlalchemy.Integer)
+        winner = sqlalchemy.Column(sqlalchemy.Boolean)
+        _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchDetail.matchId", ondelete="CASCADE"))
+
+def sa_bind_timeline():
+    global Timeline
+    class Timeline(Timeline, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "MatchTimeline"
+        frameInterval = sqlalchemy.Column(sqlalchemy.Integer)
+        frames = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Frame", cascade="all, delete-orphan", passive_deletes=True)
+        _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchDetail.matchId", ondelete="CASCADE"))
+
+def sa_bind_mastery():
+    global Mastery
+    class Mastery(Mastery, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "MatchMastery"
+        masteryId = sqlalchemy.Column(sqlalchemy.Integer)
+        rank = sqlalchemy.Column(sqlalchemy.Integer)
+        _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipant._id", ondelete="CASCADE"))
+
+def sa_bind_participant_stats():
+    global ParticipantStats
+    class ParticipantStats(ParticipantStats, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "MatchParticipantStats"
+        assists = sqlalchemy.Column(sqlalchemy.Integer)
+        champLevel = sqlalchemy.Column(sqlalchemy.Integer)
+        combatPlayerScore = sqlalchemy.Column(sqlalchemy.Integer)
+        deaths = sqlalchemy.Column(sqlalchemy.Integer)
+        doubleKills = sqlalchemy.Column(sqlalchemy.Integer)
+        firstBloodAssist = sqlalchemy.Column(sqlalchemy.Boolean)
+        firstBloodKill = sqlalchemy.Column(sqlalchemy.Boolean)
+        firstInhibitorAssist = sqlalchemy.Column(sqlalchemy.Boolean)
+        firstInhibitorKill = sqlalchemy.Column(sqlalchemy.Boolean)
+        firstTowerAssist = sqlalchemy.Column(sqlalchemy.Boolean)
+        firstTowerKill = sqlalchemy.Column(sqlalchemy.Boolean)
+        goldEarned = sqlalchemy.Column(sqlalchemy.Integer)
+        goldSpent = sqlalchemy.Column(sqlalchemy.Integer)
+        inhibitorKills = sqlalchemy.Column(sqlalchemy.Integer)
+        item0 = sqlalchemy.Column(sqlalchemy.Integer)
+        item1 = sqlalchemy.Column(sqlalchemy.Integer)
+        item2 = sqlalchemy.Column(sqlalchemy.Integer)
+        item3 = sqlalchemy.Column(sqlalchemy.Integer)
+        item4 = sqlalchemy.Column(sqlalchemy.Integer)
+        item5 = sqlalchemy.Column(sqlalchemy.Integer)
+        item6 = sqlalchemy.Column(sqlalchemy.Integer)
+        killingSprees = sqlalchemy.Column(sqlalchemy.Integer)
+        kills = sqlalchemy.Column(sqlalchemy.Integer)
+        largestCriticalStrike = sqlalchemy.Column(sqlalchemy.Integer)
+        largestKillingSpree = sqlalchemy.Column(sqlalchemy.Integer)
+        largestMultiKill = sqlalchemy.Column(sqlalchemy.Integer)
+        magicDamageDealt = sqlalchemy.Column(sqlalchemy.Integer)
+        magicDamageDealtToChampions = sqlalchemy.Column(sqlalchemy.Integer)
+        magicDamageTaken = sqlalchemy.Column(sqlalchemy.Integer)
+        minionsKilled = sqlalchemy.Column(sqlalchemy.Integer)
+        neutralMinionsKilled = sqlalchemy.Column(sqlalchemy.Integer)
+        neutralMinionsKilledEnemyJungle = sqlalchemy.Column(sqlalchemy.Integer)
+        neutralMinionsKilledTeamJungle = sqlalchemy.Column(sqlalchemy.Integer)
+        nodeCapture = sqlalchemy.Column(sqlalchemy.Integer)
+        nodeCaptureAssist = sqlalchemy.Column(sqlalchemy.Integer)
+        nodeNeutralize = sqlalchemy.Column(sqlalchemy.Integer)
+        nodeNeutralizeAssist = sqlalchemy.Column(sqlalchemy.Integer)
+        objectivePlayerScore = sqlalchemy.Column(sqlalchemy.Integer)
+        pentaKills = sqlalchemy.Column(sqlalchemy.Integer)
+        physicalDamageDealt = sqlalchemy.Column(sqlalchemy.Integer)
+        physicalDamageDealtToChampions = sqlalchemy.Column(sqlalchemy.Integer)
+        physicalDamageTaken = sqlalchemy.Column(sqlalchemy.Integer)
+        quadraKills = sqlalchemy.Column(sqlalchemy.Integer)
+        sightWardsBoughtInGame = sqlalchemy.Column(sqlalchemy.Integer)
+        teamObjective = sqlalchemy.Column(sqlalchemy.Integer)
+        totalDamageDealt = sqlalchemy.Column(sqlalchemy.Integer)
+        totalDamageDealtToChampions = sqlalchemy.Column(sqlalchemy.Integer)
+        totalDamageTaken = sqlalchemy.Column(sqlalchemy.Integer)
+        totalHeal = sqlalchemy.Column(sqlalchemy.Integer)
+        totalPlayerScore = sqlalchemy.Column(sqlalchemy.Integer)
+        totalScoreRank = sqlalchemy.Column(sqlalchemy.Integer)
+        totalTimeCrowdControlDealt = sqlalchemy.Column(sqlalchemy.Integer)
+        totalUnitsHealed = sqlalchemy.Column(sqlalchemy.Integer)
+        towerKills = sqlalchemy.Column(sqlalchemy.Integer)
+        tripleKills = sqlalchemy.Column(sqlalchemy.Integer)
+        trueDamageDealt = sqlalchemy.Column(sqlalchemy.Integer)
+        trueDamageDealtToChampions = sqlalchemy.Column(sqlalchemy.Integer)
+        trueDamageTaken = sqlalchemy.Column(sqlalchemy.Integer)
+        unrealKills = sqlalchemy.Column(sqlalchemy.Integer)
+        visionWardsBoughtInGame = sqlalchemy.Column(sqlalchemy.Integer)
+        wardsKilled = sqlalchemy.Column(sqlalchemy.Integer)
+        wardsPlaced = sqlalchemy.Column(sqlalchemy.Integer)
+        winner = sqlalchemy.Column(sqlalchemy.Boolean)
+        _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipant._id", ondelete="CASCADE"))
+
+def sa_bind_participant_timeline():
+    global ParticipantTimeline
+    class ParticipantTimeline(ParticipantTimeline, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "MatchParticipantTimeline"
+        ancientGolemAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='ancientGolemAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        ancientGolemKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='ancientGolemKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        assistedLaneDeathsPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='assistedLaneDeathsPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        assistedLaneKillsPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='assistedLaneKillsPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        baronAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='baronAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        baronKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='baronKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        creepsPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='creepsPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        csDiffPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='csDiffPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        damageTakenDiffPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='damageTakenDiffPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        damageTakenPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='damageTakenPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        dragonAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='dragonAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        dragonKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='dragonKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        elderLizardAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='elderLizardAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        elderLizardKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='elderLizardKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        goldPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='goldPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        inhibitorAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='inhibitorAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        inhibitorKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='inhibitorKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        lane = sqlalchemy.Column(sqlalchemy.String(30))
+        role = sqlalchemy.Column(sqlalchemy.String(30))
+        towerAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='towerAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        towerKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='towerKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        towerKillsPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='towerKillsPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        vilemawAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='vilemawAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        vilemawKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='vilemawKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        wardsPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='wardsPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        xpDiffPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='xpDiffPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        xpPerMinDeltas = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='xpPerMinDeltas')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipant._id", ondelete="CASCADE"))
+
+def sa_bind_rune():
+    global Rune
+    class Rune(Rune, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "MatchRune"
+        rank = sqlalchemy.Column(sqlalchemy.Integer)
+        runeId = sqlalchemy.Column(sqlalchemy.Integer)
+        _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipant._id", ondelete="CASCADE"))
+
+def sa_bind_player():
+    global Player
+    class Player(Player, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "MatchPlayer"
+        matchHistoryUri = sqlalchemy.Column(sqlalchemy.String(50))
+        profileIcon = sqlalchemy.Column(sqlalchemy.Integer)
+        summonerId = sqlalchemy.Column(sqlalchemy.Integer)
+        summonerName = sqlalchemy.Column(sqlalchemy.String(30))
+        _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipantIdentity._id", ondelete="CASCADE"))
+
+def sa_bind_banned_champion():
+    global BannedChampion
+    class BannedChampion(BannedChampion, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "MatchBannedChampion"
+        championId = sqlalchemy.Column(sqlalchemy.Integer)
+        pickTurn = sqlalchemy.Column(sqlalchemy.Integer)
+        _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        _team_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchTeam._id", ondelete="CASCADE"))
+
+def sa_bind_frame():
+    global Frame
+    class Frame(Frame, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "MatchFrame"
+        events = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Event", cascade="all, delete-orphan", passive_deletes=True)
+        participantFrames = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantFrame", collection_class=sqlalchemy.orm.collections.mapped_collection(lambda p: str(p.participantId)), cascade="all, delete-orphan", passive_deletes=True) # OR I HAVE NO IDEA
+        timestamp = sqlalchemy.Column(sqlalchemy.Integer)
+        _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        _timeline_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchTimeline._id", ondelete="CASCADE"))
+
+def sa_bind_participant_timeline_data():
+    global ParticipantTimelineData
+    class ParticipantTimelineData(ParticipantTimelineData, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "MatchParticipantTimelineData"
+        tenToTwenty = sqlalchemy.Column(sqlalchemy.Float)
+        thirtyToEnd = sqlalchemy.Column(sqlalchemy.Float)
+        twentyToThirty = sqlalchemy.Column(sqlalchemy.Float)
+        zeroToTen = sqlalchemy.Column(sqlalchemy.Float)
+        _type = sqlalchemy.Column(sqlalchemy.String(50))
+        _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        _timeline_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipantTimeline._id", ondelete="CASCADE"))
+
+def sa_bind_event():
+    global Event
+    class Event(Event, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "MatchEvent"
+        ascendedType = sqlalchemy.Column(sqlalchemy.String(30))
+        assistingParticipantIds = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
+        buildingType = sqlalchemy.Column(sqlalchemy.String(30))
+        creatorId = sqlalchemy.Column(sqlalchemy.Integer)
+        eventType = sqlalchemy.Column(sqlalchemy.String(30))
+        itemAfter = sqlalchemy.Column(sqlalchemy.Integer)
+        itemBefore = sqlalchemy.Column(sqlalchemy.Integer)
+        itemId = sqlalchemy.Column(sqlalchemy.Integer)
+        killerId = sqlalchemy.Column(sqlalchemy.Integer)
+        laneType = sqlalchemy.Column(sqlalchemy.String(30))
+        levelUpType = sqlalchemy.Column(sqlalchemy.String(30))
+        monsterType = sqlalchemy.Column(sqlalchemy.String(30))
+        participantId = sqlalchemy.Column(sqlalchemy.Integer)
+        pointCaptured = sqlalchemy.Column(sqlalchemy.String(30))
+        position = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Position", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        skillSlot = sqlalchemy.Column(sqlalchemy.Integer)
+        teamId = sqlalchemy.Column(sqlalchemy.Integer)
+        timestamp = sqlalchemy.Column(sqlalchemy.Integer)
+        towerType = sqlalchemy.Column(sqlalchemy.String(30))
+        victimId = sqlalchemy.Column(sqlalchemy.Integer)
+        wardType = sqlalchemy.Column(sqlalchemy.String(30))
+        _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        _frame_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchFrame._id", ondelete="CASCADE"))
+
+def sa_bind_participant_frame():
+    global ParticipantFrame
+    class ParticipantFrame(ParticipantFrame, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "MatchParticipantFrame"
+        currentGold = sqlalchemy.Column(sqlalchemy.Integer)
+        dominionScore = sqlalchemy.Column(sqlalchemy.Integer)
+        jungleMinionsKilled = sqlalchemy.Column(sqlalchemy.Integer)
+        level = sqlalchemy.Column(sqlalchemy.Integer)
+        minionsKilled = sqlalchemy.Column(sqlalchemy.Integer)
+        participantId = sqlalchemy.Column(sqlalchemy.Integer)
+        position = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Position", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
+        teamScore = sqlalchemy.Column(sqlalchemy.Integer)
+        totalGold = sqlalchemy.Column(sqlalchemy.Integer)
+        xp = sqlalchemy.Column(sqlalchemy.Integer)
+        _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        _frame_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchFrame._id", ondelete="CASCADE"))
+
+def sa_bind_position():
+    global Position
+    class Position(Position, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "MatchPosition"
+        x = sqlalchemy.Column(sqlalchemy.Integer)
+        y = sqlalchemy.Column(sqlalchemy.Integer)
+        _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        _event_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchEvent._id", ondelete="CASCADE"))
+        _frame_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipantFrame._id", ondelete="CASCADE"))
+
+def sa_bind_all():
+    sa_bind_match_detail()
+    sa_bind_participant()
+    sa_bind_participant_identity()
+    sa_bind_team()
+    sa_bind_timeline()
+    sa_bind_mastery()
+    sa_bind_participant_stats()
+    sa_bind_participant_timeline()
+    sa_bind_rune()
+    sa_bind_player()
+    sa_bind_banned_champion()
+    sa_bind_frame()
+    sa_bind_participant_timeline_data()
+    sa_bind_event()
+    sa_bind_participant_frame()
+    sa_bind_position()

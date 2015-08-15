@@ -654,3 +654,13 @@ class ParticipantTimelineData(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def zero_to_ten(self):
         return self.data.zeroToTen
+
+###############################
+# Dynamic SQLAlchemy bindings #
+###############################
+
+def sa_rebind_all():
+    MatchSummary.dto_type = cassiopeia.type.dto.matchhistory.MatchSummary
+    ParticipantStats.dto_type = cassiopeia.type.dto.matchhistory.ParticipantStats
+    ParticipantTimeline.dto_type = cassiopeia.type.dto.matchhistory.ParticipantTimeline
+    ParticipantTimelineData.dto_type = cassiopeia.type.dto.matchhistory.ParticipantTimelineData

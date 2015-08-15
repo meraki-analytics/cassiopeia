@@ -1017,3 +1017,20 @@ class Position(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def y(self):
         return self.data.y
+
+###############################
+# Dynamic SQLAlchemy bindings #
+###############################
+
+def sa_rebind_all():
+    Match.dto_type = cassiopeia.type.dto.match.MatchDetail
+    Team.dto_type = cassiopeia.type.dto.match.Team
+    Timeline.dto_type = cassiopeia.type.dto.match.Timeline
+    ParticipantStats.dto_type = cassiopeia.type.dto.match.ParticipantStats
+    ParticipantTimeline.dto_type = cassiopeia.type.dto.match.ParticipantTimeline
+    Ban.dto_type = cassiopeia.type.dto.match.BannedChampion
+    Frame.dto_type = cassiopeia.type.dto.match.Frame
+    ParticipantTimelineData.dto_type = cassiopeia.type.dto.match.ParticipantTimelineData
+    Event.dto_type = cassiopeia.type.dto.match.Event
+    ParticipantFrame.dto_type = cassiopeia.type.dto.match.ParticipantFrame
+    Position.dto_type = cassiopeia.type.dto.match.Position
