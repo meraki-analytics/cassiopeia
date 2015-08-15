@@ -20,7 +20,8 @@ def get_champion_by_id(id_):
 
     # Load required data if loading policy is eager
     if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
-        cassiopeia.riotapi.get_items(list(champion.item_ids))
+        ids = champion.item_ids
+        cassiopeia.riotapi.get_items(list(ids)) if ids else None
 
     champion = cassiopeia.type.core.staticdata.Champion(champion)
     cassiopeia.core.requests.data_store.store(champion, id_)
@@ -44,7 +45,8 @@ def get_champions():
 
     # Load required data if loading policy is eager
     if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
-        cassiopeia.riotapi.get_items(list(champions.item_ids))
+        ids = champions.item_ids
+        cassiopeia.riotapi.get_items(list(ids)) if ids else None
 
     champions = [cassiopeia.type.core.staticdata.Champion(champ[1]) for champ in champions.data.items()]
     cassiopeia.core.requests.data_store.store(champions, [champ.id for champ in champions], [cassiopeia.type.core.staticdata.Champion])

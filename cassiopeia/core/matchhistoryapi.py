@@ -23,12 +23,18 @@ def get_match_history(summoner, begin_index=0, champions=None, ranked_queues=Non
 
     # Load required data if loading policy is eager
     if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
-        cassiopeia.riotapi.get_items(list(history.item_ids))
-        cassiopeia.riotapi.get_champions_by_id(list(history.champion_ids))
-        cassiopeia.riotapi.get_masteries(list(history.mastery_ids))
-        cassiopeia.riotapi.get_runes(list(history.rune_ids))
-        cassiopeia.riotapi.get_summoners_by_id(list(history.summoner_ids))
-        cassiopeia.riotapi.get_summoner_spells(list(history.summoner_spell_ids))
+        ids = history.item_ids
+        cassiopeia.riotapi.get_items(list(ids)) if ids else None
+        ids = history.champion_ids
+        cassiopeia.riotapi.get_champions_by_id(list(ids)) if ids else None
+        ids = history.mastery_ids
+        cassiopeia.riotapi.get_masteries(list(ids)) if ids else None
+        ids = history.rune_ids
+        cassiopeia.riotapi.get_runes(list(ids)) if ids else None
+        ids = history.summoner_ids
+        cassiopeia.riotapi.get_summoners_by_id(list(ids)) if ids else None
+        ids = history.summoner_spell_ids
+        cassiopeia.riotapi.get_summoner_spells(list(ids)) if ids else None
 
     result = [cassiopeia.type.core.matchhistory.MatchSummary(summary) for summary in history.matches]
     result.reverse()
