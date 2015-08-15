@@ -9,9 +9,13 @@ def get_recent_games(summoner):
 
     # Load required data if loading policy is eager
     if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
-        cassiopeia.riotapi.get_items(list(games.item_ids))
-        cassiopeia.riotapi.get_champions_by_id(list(games.champion_ids))
-        cassiopeia.riotapi.get_summoners_by_id(list(games.summoner_ids))
-        cassiopeia.riotapi.get_summoner_spells(list(games.summoner_spell_ids))
+        ids = games.item_ids
+        cassiopeia.riotapi.get_items(list(ids)) if ids else None
+        ids = games.champion_ids
+        cassiopeia.riotapi.get_champions_by_id(list(ids)) if ids else None
+        ids = games.summoner_ids
+        cassiopeia.riotapi.get_summoners_by_id(list(ids)) if ids else None
+        ids = games.summoner_spell_ids
+        cassiopeia.riotapi.get_summoner_spells(list(ids)) if ids else None
 
     return [cassiopeia.type.core.game.Game(game, games.summonerId) for game in games.games]

@@ -9,10 +9,15 @@ def get_current_game(summoner):
 
     # Load required data if loading policy is eager
     if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
-        cassiopeia.riotapi.get_champions_by_id(list(game.champion_ids))
-        cassiopeia.riotapi.get_masteries(list(game.mastery_ids))
-        cassiopeia.riotapi.get_runes(list(game.rune_ids))
-        cassiopeia.riotapi.get_summoners_by_id(list(game.summoner_ids))
-        cassiopeia.riotapi.get_summoner_spells(list(game.summoner_spell_ids))
+        ids = game.champion_ids
+        cassiopeia.riotapi.get_champions_by_id(list(ids)) if ids else None
+        ids = game.mastery_ids
+        cassiopeia.riotapi.get_masteries(list(ids)) if ids else None
+        ids = game.rune_ids
+        cassiopeia.riotapi.get_runes(list(ids)) if ids else None
+        ids = game.summoner_ids
+        cassiopeia.riotapi.get_summoners_by_id(list(ids)) if ids else None
+        ids = game.summoner_spell_ids
+        cassiopeia.riotapi.get_summoner_spells(list(ids)) if ids else None
 
     return cassiopeia.type.core.currentgame.Game(game) if game else None

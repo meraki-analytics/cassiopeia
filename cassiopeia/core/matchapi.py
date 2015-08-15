@@ -19,12 +19,18 @@ def get_match(id_):
 
     # Load required data if loading policy is eager
     if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
-        cassiopeia.riotapi.get_items(list(match.item_ids))
-        cassiopeia.riotapi.get_champions_by_id(list(match.champion_ids))
-        cassiopeia.riotapi.get_masteries(list(match.mastery_ids))
-        cassiopeia.riotapi.get_runes(list(match.rune_ids))
-        cassiopeia.riotapi.get_summoners_by_id(list(match.summoner_ids))
-        cassiopeia.riotapi.get_summoner_spells(list(match.summoner_spell_ids))
+        ids = match.item_ids
+        cassiopeia.riotapi.get_items(list(ids)) if ids else None
+        ids = match.champion_ids
+        cassiopeia.riotapi.get_champions_by_id(list(ids)) if ids else None
+        ids = match.mastery_ids
+        cassiopeia.riotapi.get_masteries(list(ids)) if ids else None
+        ids = match.rune_ids
+        cassiopeia.riotapi.get_runes(list(ids)) if ids else None
+        ids = match.summoner_ids
+        cassiopeia.riotapi.get_summoners_by_id(list(ids)) if ids else None
+        ids = match.summoner_spell_ids
+        cassiopeia.riotapi.get_summoner_spells(list(ids)) if ids else None
 
     match = cassiopeia.type.core.match.Match(match)
     cassiopeia.core.requests.data_store.store(match, id_)
@@ -73,12 +79,12 @@ def get_matches(ids):
 
     # Load required data if loading policy is eager
     if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
-        cassiopeia.riotapi.get_items(list(item_ids))
-        cassiopeia.riotapi.get_champions_by_id(list(champion_ids))
-        cassiopeia.riotapi.get_masteries(list(mastery_ids))
-        cassiopeia.riotapi.get_runes(list(rune_ids))
-        cassiopeia.riotapi.get_summoners_by_id(list(summoner_ids))
-        cassiopeia.riotapi.get_summoner_spells(list(summoner_spell_ids))
+        cassiopeia.riotapi.get_items(list(item_ids)) if item_ids else None
+        cassiopeia.riotapi.get_champions_by_id(list(champion_ids)) if champion_ids else None
+        cassiopeia.riotapi.get_masteries(list(mastery_ids)) if mastery_ids else None
+        cassiopeia.riotapi.get_runes(list(rune_ids)) if rune_ids else None
+        cassiopeia.riotapi.get_summoners_by_id(list(summoner_ids)) if summoner_ids else None
+        cassiopeia.riotapi.get_summoner_spells(list(summoner_spell_ids)) if summoner_spell_ids else None
 
     cassiopeia.core.requests.data_store.store(missing, [match.id for match in missing])
     return matches

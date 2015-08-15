@@ -15,7 +15,7 @@ def get_teams_by_summoner(summoners):
         for _, lst in teams.items():
             for team in lst:
                 summoner_ids |= team.summoner_ids
-        cassiopeia.riotapi.get_summoners_by_id(list(summoner_ids))
+        cassiopeia.riotapi.get_summoners_by_id(list(summoner_ids)) if summoner_ids else None
 
     if(not isinstance(ids, list)):
         return [cassiopeia.type.core.team.Team(team) for team in teams[str(ids)]]
@@ -32,7 +32,7 @@ def get_teams(ids):
         summoner_ids = set()
         for _, team in teams.items():
             summoner_ids |= team.summoner_ids
-        cassiopeia.riotapi.get_summoners_by_id(list(summoner_ids))
+        cassiopeia.riotapi.get_summoners_by_id(list(summoner_ids)) if summoner_ids else None
 
     if(not isinstance(ids, list)):
         return cassiopeia.type.core.team.Team(teams[ids])
