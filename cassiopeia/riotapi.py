@@ -12,6 +12,7 @@ from cassiopeia.core.matchapi import *
 from cassiopeia.core.matchlistapi import *
 from cassiopeia.core.matchhistoryapi import *
 from cassiopeia.core.staticdataapi import *
+from cassiopeia.core.statusapi import *
 from cassiopeia.core.statsapi import *
 from cassiopeia.core.summonerapi import *
 

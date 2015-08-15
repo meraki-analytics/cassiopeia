@@ -13,6 +13,7 @@ api_versions = {
     "game": "v1.3",
     "league": "v2.5",
     "staticdata": "v1.2",
+    "status": "v1.0",
     "match": "v2.2",
     "matchhistory": "v2.2",
     "matchlist": "v2.2",
@@ -28,7 +29,7 @@ rate_limiter = cassiopeia.type.api.rates.MultiRateLimiter([(10, 10), (500, 600)]
 # @param request # str # The request string which follows /api/lol/{region}/
 # @param params # dict<str, *> # The parameters to send with the request
 # @param static # bool # Whether this is a call to a static (non-rate-limited) API
-# @param include_base # bool # If false, don't include /api/lol/{region}/
+# @param include_base # bool # If false, don't prepend https://{server}.api.pvp.net/api/lol/{region}/
 # @return # dict # The JSON response in a dict
 def get(request, params={}, static=False, include_base=True):
     if(not api_key):
@@ -48,7 +49,7 @@ def get(request, params={}, static=False, include_base=True):
     if(include_base):
         url = "https://{server}.api.pvp.net/api/lol/{region}/{request}?{params}".format(server=server, region=rgn, request=request, params=encoded_params)
     else:
-        url = "https://{server}.api.pvp.net/{request}?{params}".format(server=server, region=rgn, request=request, params=encoded_params)
+        url = "{request}?{params}".format(request=request, params=encoded_params)
 
     try:
         content = rate_limiter.call(executeRequest, url) if rate_limiter else executeRequest(url)

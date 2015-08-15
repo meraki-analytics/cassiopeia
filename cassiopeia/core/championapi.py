@@ -1,6 +1,5 @@
 import cassiopeia.riotapi
 import cassiopeia.dto.championapi
-import cassiopeia.core.requests
 import cassiopeia.type.core.champion
 
 # @param free_to_play # bool # Whether to only return free champions
