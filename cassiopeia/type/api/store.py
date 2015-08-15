@@ -1,9 +1,31 @@
+import pickle
+import os.path
 import sqlalchemy
 import sqlalchemy.orm
 
 import cassiopeia.type.dto.common
 
-class Cache(object):
+class DataStore(object):
+    def has_all(self, class_):
+        pass
+
+    def get_all(self, class_):
+        pass
+
+    def iterate(self, class_):
+        pass
+
+    def get(self, class_, keys, key_field):
+        pass
+
+    def store(self, objs, keys, complete_sets=[]):
+        pass
+
+#############################
+# In-memory Cache resources #
+#############################
+
+class Cache(DataStore):
     def __init__(self):
         self._cache = {}
         self._has_all = {}
@@ -78,6 +100,9 @@ class Cache(object):
             for class_ in complete_sets:
                 self._has_all[class_] = True
 
+########################
+# SQLAlchemy resources #
+########################
 
 class HasAllStatus(cassiopeia.type.dto.common.BaseDB):
     __tablename__ = "HasAll"
@@ -92,7 +117,7 @@ class HasAllStatus(cassiopeia.type.dto.common.BaseDB):
         self.have_all = have_all
 
 
-class SQLAlchemyDB(object):
+class SQLAlchemyDB(DataStore):
     class Iterator(object):
         def __init__(self, class_, result):
             self.class_ = class_
