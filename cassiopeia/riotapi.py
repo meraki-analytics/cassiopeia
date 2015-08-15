@@ -6,6 +6,7 @@ import cassiopeia.type.core.common
 from cassiopeia.core.championapi import *
 from cassiopeia.core.currentgameapi import *
 from cassiopeia.core.featuredgamesapi import *
+from cassiopeia.core.gameapi import *
 from cassiopeia.core.leagueapi import *
 from cassiopeia.core.matchapi import *
 from cassiopeia.core.matchlistapi import *

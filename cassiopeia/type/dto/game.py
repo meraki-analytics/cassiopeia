@@ -406,6 +406,49 @@ class Game(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.
         # int # Team ID associated with game. Team ID 100 is blue team. Team ID 300 is purple team.
         self.teamId = dictionary.get("teamId", 0)
 
+    @property
+    def champion_ids(self):
+        ids = set()
+        ids.add(self.championId)
+        for p in self.fellowPlayers:
+            ids.add(p.championId)
+        return ids
+
+    @property
+    def summoner_ids(self):
+        ids = set()
+        for p in self.fellowPlayers:
+            if(p.summonerId):
+                ids.add(p.summonerId)
+        return ids
+
+    @property
+    def summoner_spell_ids(self):
+        ids = set()
+        ids.add(self.spell1)
+        ids.add(self.spell2)
+        return ids
+
+    @property
+    def item_ids(self):
+        ids = set()
+        s = self.stats
+        if(s.item0):
+            ids.add(s.item0)
+        if(s.item1):
+            ids.add(s.item1)
+        if(s.item2):
+            ids.add(s.item2)
+        if(s.item3):
+            ids.add(s.item3)
+        if(s.item4):
+            ids.add(s.item4)
+        if(s.item5):
+            ids.add(s.item5)
+        if(s.item6):
+            ids.add(s.item6)
+        return ids
+
 
 class RecentGames(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
@@ -414,3 +457,32 @@ class RecentGames(cassiopeia.type.dto.common.CassiopeiaDto):
 
         # int # Summoner ID.
         self.summonerId = dictionary.get("summonerId", 0)
+
+    @property
+    def champion_ids(self):
+        ids = set()
+        for game in self.games:
+            ids |= game.champion_ids
+        return ids
+
+    @property
+    def summoner_ids(self):
+        ids = set()
+        ids.add(self.summonerId)
+        for game in self.games:
+            ids |= game.summoner_ids
+        return ids
+
+    @property
+    def summoner_spell_ids(self):
+        ids = set()
+        for game in self.games:
+            ids |= game.summoner_spell_ids
+        return ids
+
+    @property
+    def item_ids(self):
+        ids = set()
+        for game in self.games:
+            ids |= game.item_ids
+        return ids

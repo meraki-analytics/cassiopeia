@@ -5,7 +5,7 @@ import cassiopeia.type.core.common
 import cassiopeia.type.dto.game
 
 class Stats(cassiopeia.type.core.common.CassiopeiaObject):
-    dto_type = cassiopeia.type.dto.game.RawStatsDto
+    dto_type = cassiopeia.type.dto.game.RawStats
 
     def __str__(self):
         return "Stats"
@@ -336,7 +336,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 class Participant(cassiopeia.type.core.common.CassiopeiaObject):
-    dto_type = cassiopeia.type.dto.game.player
+    dto_type = cassiopeia.type.dto.game.Player
 
     def __str__(self):
         return "{player} ({champ})".format(player=self.summoner, champ=self.champion)
@@ -357,6 +357,10 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
 class Game(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.game.Game
 
+    def __init__(self, data, summoner_id):
+        super().__init__(data)
+        self.__summoner_id = summoner_id
+
     def __str__(self):
         return "Game #{id}".format(id=self.id)
 
@@ -370,6 +374,10 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
         return self.participants[index]
 
     @property
+    def summoner(self):
+        return cassiopeia.riotapi.get_summoner_by_id(self.__summoner_id) if self.__summoner_id else None
+
+    @property
     def champion(self):
         return cassiopeia.riotapi.get_champion_by_id(self.data.championId) if self.data.championId else None
 
@@ -379,7 +387,13 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def participants(self):
-        return [Participant(player) for player in self.data.fellowPlayers]
+        parts = [Participant(player) for player in self.data.fellowPlayers]
+        parts.append(Participant(cassiopeia.type.dto.game.Player({
+            "championId": self.data.championId,
+            "summonerId": self.__summoner_id,
+            "teamId": self.data.teamId
+        })))
+        return parts
 
     @property
     def id(self):
