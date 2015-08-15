@@ -1504,3 +1504,30 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     @cassiopeia.type.core.common.immutablemethod
     def sanitized_tooltip_for_level(self, level):
         return self.__replace_variables(self.sanitized_tooltip, level)
+
+###############################
+# Dynamic SQLAlchemy bindings #
+###############################
+
+def sa_rebind_all():
+    BlockItem.dto_type = cassiopeia.type.dto.staticdata.BlockItem
+    Block.dto_type = cassiopeia.type.dto.staticdata.Block
+    SpellVariables.dto_type = cassiopeia.type.dto.staticdata.SpellVars
+    LevelTip.dto_type = cassiopeia.type.dto.staticdata.LevelTip
+    ChampionStats.dto_type = cassiopeia.type.dto.staticdata.Stats
+    Skin.dto_type = cassiopeia.type.dto.staticdata.Skin
+    RecommendedItems.dto_type = cassiopeia.type.dto.staticdata.Recommended
+    Image.dto_type = cassiopeia.type.dto.staticdata.Image
+    Passive.dto_type = cassiopeia.type.dto.staticdata.Passive
+    ChampionInfo.dto_type = cassiopeia.type.dto.staticdata.Info
+    Spell.dto_type = cassiopeia.type.dto.staticdata.ChampionSpell
+    Champion.dto_type = cassiopeia.type.dto.staticdata.Champion
+    MetaData.dto_type = cassiopeia.type.dto.staticdata.MetaData
+    Gold.dto_type = cassiopeia.type.dto.staticdata.Gold
+    ItemStats.dto_type = cassiopeia.type.dto.staticdata.BasicDataStats
+    Item.dto_type = cassiopeia.type.dto.staticdata.Item
+    MapDetails.dto_type = cassiopeia.type.dto.staticdata.MapDetails
+    Mastery.dto_type = cassiopeia.type.dto.staticdata.Mastery
+    Realm.dto_type = cassiopeia.type.dto.staticdata.Realm
+    Rune.dto_type = cassiopeia.type.dto.staticdata.Rune
+    SummonerSpell.dto_type = cassiopeia.type.dto.staticdata.SummonerSpell

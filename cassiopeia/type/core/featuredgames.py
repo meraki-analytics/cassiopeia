@@ -125,3 +125,12 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def platform(self):
         return cassiopeia.type.core.common.Platform(self.data.platformId) if self.data.platformId else None
+
+###############################
+# Dynamic SQLAlchemy bindings #
+###############################
+
+def sa_rebind_all():
+    Participant.dto_type = cassiopeia.type.dto.featuredgames.Participant
+    Ban.dto_type = cassiopeia.type.dto.featuredgames.BannedChampion
+    Game.dto_type = cassiopeia.type.dto.featuredgames.FeaturedGameInfo

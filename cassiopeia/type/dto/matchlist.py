@@ -24,17 +24,7 @@ class MatchList(cassiopeia.type.dto.common.CassiopeiaDto):
         return ids
 
 
-class MatchReference(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.dto.common.BaseDB):
-    __tablename__ = "MatchReference"
-    champion = sqlalchemy.Column(sqlalchemy.Integer)
-    lane = sqlalchemy.Column(sqlalchemy.String(30))
-    matchId = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    platformId = sqlalchemy.Column(sqlalchemy.String(30))
-    queue = sqlalchemy.Column(sqlalchemy.String(30))
-    role = sqlalchemy.Column(sqlalchemy.String(30))
-    season = sqlalchemy.Column(sqlalchemy.String(30))
-    timestamp = sqlalchemy.Column(sqlalchemy.BigInteger)
-
+class MatchReference(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, dictionary):
         # int # The target player's champion ID
         self.champion = dictionary.get("champion", 0)
@@ -59,3 +49,23 @@ class MatchReference(cassiopeia.type.dto.common.CassiopeiaDto, cassiopeia.type.d
 
         # int # The timestamp for the match
         self.timestamp = dictionary.get("timestamp", 0)
+
+###############################
+# Dynamic SQLAlchemy bindings #
+###############################
+
+def sa_bind_match_reference():
+    global MatchReference
+    class MatchReference(MatchReference, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "MatchReference"
+        champion = sqlalchemy.Column(sqlalchemy.Integer)
+        lane = sqlalchemy.Column(sqlalchemy.String(30))
+        matchId = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        platformId = sqlalchemy.Column(sqlalchemy.String(30))
+        queue = sqlalchemy.Column(sqlalchemy.String(30))
+        role = sqlalchemy.Column(sqlalchemy.String(30))
+        season = sqlalchemy.Column(sqlalchemy.String(30))
+        timestamp = sqlalchemy.Column(sqlalchemy.BigInteger)
+
+def sa_bind_all():
+    sa_bind_match_reference()

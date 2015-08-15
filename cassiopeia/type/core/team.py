@@ -200,3 +200,13 @@ class TeamMember(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def status(self):
         return self.data.status
+
+###############################
+# Dynamic SQLAlchemy bindings #
+###############################
+
+def sa_rebind_all():
+    Team.dto_type = cassiopeia.type.dto.team.Team
+    MatchSummary.dto_type = cassiopeia.type.dto.team.MatchHistorySummary
+    Stats.dto_type = cassiopeia.type.dto.team.TeamStatDetail
+    TeamMember.dto_type = cassiopeia.type.dto.team.TeamMemberInfo

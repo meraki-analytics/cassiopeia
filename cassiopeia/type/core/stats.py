@@ -319,3 +319,11 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def unreal_kills(self):
         return self.data.totalUnrealKills
+
+###############################
+# Dynamic SQLAlchemy bindings #
+###############################
+
+def sa_rebind_all():
+    StatsSummary.dto_type = cassiopeia.type.dto.stats.PlayerStatsSummary
+    AggregatedStats.dto_type = cassiopeia.type.dto.stats.AggregatedStats

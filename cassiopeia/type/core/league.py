@@ -192,3 +192,12 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def tier(self):
         return cassiopeia.type.core.common.Tier(self.data.tier) if self.data.tier else None
+
+###############################
+# Dynamic SQLAlchemy bindings #
+###############################
+
+def sa_rebind_all():
+    Series.dto_type = cassiopeia.type.dto.league.MiniSeries
+    Entry.dto_type = cassiopeia.type.dto.league.LeagueEntry
+    League.dto_type = cassiopeia.type.dto.league.League

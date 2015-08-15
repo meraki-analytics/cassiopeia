@@ -31,3 +31,10 @@ class ChampionStatus(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def ranked_enabled(self):
         return self.data.rankedPlayEnabled
+
+###############################
+# Dynamic SQLAlchemy bindings #
+###############################
+
+def sa_rebind_all():
+    ChampionStatus.dto_type = cassiopeia.type.dto.champion.Champion
