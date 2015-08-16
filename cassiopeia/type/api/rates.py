@@ -71,8 +71,8 @@ class SingleRateLimiter(object):
         self.resetter.start()
 
 class MultiRateLimiter(object):
-    # @param limits # list<tuple> # A list of rate limit pairs. A rate limit is (calls_per_epoch, seconds_per_epoch)
-    def __init__(self, limits):
+    # @param limits # tuple... # A list of rate limit pairs. A rate limit is (calls_per_epoch, seconds_per_epoch)
+    def __init__(self, *limits):
         self.limits = []
 
         for limit in limits:

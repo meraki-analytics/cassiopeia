@@ -33,7 +33,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.league.LeagueEntry
 
     def __str__(self):
-        return "{player} ({lp} LP)".format(player=self.player_name, lp=self.league_points)
+        return "{summoner} ({lp} LP)".format(summoner=self.summoner_name, lp=self.league_points)
 
     # cassiopeia.type.core.common.Division # The league division of the participant.
     @property
@@ -77,7 +77,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
 
     # Summoner # The summoner represented by this entry. None if this entry is for a team.
     @property
-    def player(self):
+    def summoner(self):
         if(not self.data.playerOrTeamId):
             return None
 
@@ -101,7 +101,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
 
     # str # The name of the summoner represented by this entry. "" if this entry is for a team. 
     @property
-    def player_name(self):
+    def summoner_name(self):
         if(not self.data.playerOrTeamId):
             return ""
 
@@ -161,7 +161,7 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
 
     # Summoner # The relevant summoner that is a member of this league. Only present when full league is requested so that participant's entry can be identified. None when individual entry is requested or the participant is a team.
     @property
-    def player(self):
+    def summoner(self):
         if(not self.data.participantId):
             return None
 

@@ -25,7 +25,7 @@ api_versions = {
 api_key = ""
 region = ""
 print_calls = False
-rate_limiter = cassiopeia.type.api.rates.MultiRateLimiter([(10, 10), (500, 600)])
+rate_limiter = cassiopeia.type.api.rates.MultiRateLimiter((10, 10), (500, 600))
 
 # @param request # str # The request string which follows /api/lol/{region}/
 # @param params # dict<str, *> # The parameters to send with the request

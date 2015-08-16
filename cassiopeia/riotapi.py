@@ -36,9 +36,9 @@ def print_calls(on):
 def set_rate_limit(calls_per_epoch, seconds_per_epoch):
     cassiopeia.dto.requests.rate_limiter = cassiopeia.type.api.rates.SingleRateLimiter(calls_per_epoch, seconds_per_epoch)
 
-# @param limits # list<tuple> # A list of rate limit pairs. A rate limit is (calls_per_epoch, seconds_per_epoch)
-def set_rate_limits(limits):
-    cassiopeia.dto.requests.rate_limiter = cassiopeia.type.api.rates.MultiRateLimiter(limits)
+# @param limits # tuple... # A list of rate limit pairs. A rate limit is (calls_per_epoch, seconds_per_epoch)
+def set_rate_limits(*limits):
+    cassiopeia.dto.requests.rate_limiter = cassiopeia.type.api.rates.MultiRateLimiter(*limits)
 
 # @param url # str # The URL to use as a proxy (without port number or protocol)
 # @param port # int # The port to connect to
