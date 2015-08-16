@@ -2,109 +2,105 @@ import sqlalchemy
 import sqlalchemy.orm
 
 import cassiopeia.type.dto.common
+import cassiopeia.type.core.common
 
+@cassiopeia.type.core.common.inheritdocs
 class Shard(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    hostname      str          hostname
+    locales       list<str>    locales
+    name          str          name
+    region_tag    str          region tag
+    slug          str          slug
+    """
     def __init__(self, dictionary):
-        # str # Hostname
         self.hostname = dictionary.get("hostname", "")
-
-        # list<str> # Locales
         self.locales = dictionary.get("locales", [])
-
-        # str # Name
         self.name = dictionary.get("name", "")
-
-        # str # Region tag
         self.region_tag = dictionary.get("region_tag", "")
-
-        # str # Slug
         self.slug = dictionary.get("slug", "")
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Translation(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    content       str    content
+    locale        str    locale
+    updated_at    str    timestamp
+    """
     def __init__(self, dictionary):
-        # str # Content
         self.content = dictionary.get("content", "")
-
-        # str # Locale
         self.locale = dictionary.get("locale", "")
-
-        # str # Timestamp
         self.updated_at = dictionary.get("updated_at", "")
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Message(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    author          str                  author
+    content         str                  content
+    created_at      str                  timestamp created
+    id              int                  ID
+    severity        str                  legal values: Info, Alert, Error
+    translations    list<Translation>    translations
+    updated_at      str                  timestamp updated
+    """
     def __init__(self, dictionary):
-        # str # Author
         self.author = dictionary.get("author", "")
-
-        # str # Content
         self.content = dictionary.get("content", "")
-
-        # str # Timestamp created
         self.created_at = dictionary.get("created_at", "")
-
-        # int # ID
         self.id = dictionary.get("id", 0)
-
-        # str # Legal values: Info, Alert, Error
         self.severity = dictionary.get("severity", "")
-
-        # list<Translation> # Translations
         self.translations = [(Translation(trans) if not isinstance(trans, Translation) else trans) for trans in dictionary.get("translations", []) if trans]
-
-        # str # Timestamp updated
         self.updated_at = dictionary.get("updated_at", "")
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Incident(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    active        bool             active
+    created_at    str              timestamp created
+    id            int              ID
+    updates       list<Message>    updates
+    """
     def __init__(self, dictionary):
-        # bool # Active
         self.active = dictionary.get("active", False)
-
-        # str # Timestamp created
         self.created_at = dictionary.get("created_at", "")
-
-        # int # ID
         self.id = dictionary.get("id", 0)
-
-        # list<Message> # Updates
         self.updates = [(Message(msg) if not isinstance(msg, Message) else msg) for msg in dictionary.get("updates", []) if msg]
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Service(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    incidents    list<Incident>    incidents
+    name         str               name
+    slug         str               slug
+    status       str               legal values: Online, Alert, Offline, Deploying
+    """
     def __init__(self, dictionary):
-        # list<Incident> # Incidents
         self.incidents = [(Incident(inc) if not isinstance(inc, Incident) else inc) for inc in dictionary.get("incidents", []) if inc]
-
-        # str # Name
         self.name = dictionary.get("name", "")
-
-        # str # Slug
         self.slug = dictionary.get("slug", "")
-
-        # str # Legal values: Online, Alert, Offline, Deploying
         self.status = dictionary.get("status", "")
 
 
+@cassiopeia.type.core.common.inheritdocs
 class ShardStatus(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    hostname      str              hostname
+    locales       list<string>     locales
+    name          str              name
+    region_tag    str              region tag
+    services      list<Service>    services
+    slug          str              slug
+    """
     def __init__(self, dictionary):
-        # str # Hostname
         self.hostname = dictionary.get("hostname", "")
-
-        # list<string> # Locales
         self.locales = dictionary.get("locales", [])
-
-        # str # Name
         self.name = dictionary.get("name", "")
-
-        # str # Region tag
         self.region_tag = dictionary.get("region_tag", "")
-
-        # list<Service> # Services
         self.services = [(Service(srvc) if not isinstance(srvc, Service) else srvc) for srvc in dictionary.get("services", []) if srvc]
-
-        # str # Slug
         self.slug = dictionary.get("slug", "")
 
 ###############################
