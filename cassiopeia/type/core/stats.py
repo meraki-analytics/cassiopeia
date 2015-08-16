@@ -3,6 +3,7 @@ import datetime
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.stats
 
+@cassiopeia.type.core.common.inheritdocs
 class StatsSummary(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.stats.PlayerStatsSummary
 
@@ -11,25 +12,31 @@ class StatsSummary(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def stats(self):
+        """The AggregatedStats (contains pretty much every stat you probably want to access)"""
         return AggregatedStats(self.data.aggregatedStats) if self.data.aggregatedStats else None
 
     @property
     def losses(self):
+        """How many loses this participant has"""
         return self.data.losses
 
     @cassiopeia.type.core.common.lazyproperty
     def modify_date(self):
+        """The date when the stats were last updated (in epoch milliseconds)"""
         return datetime.datetime.utcfromtimestamp(self.data.modifyDate / 1000) if self.data.modifyDate else None
 
     @property
     def type(self):
+        """The identifier for what Queue this stat summary is for"""
         return cassiopeia.type.core.common.StatSummaryType(self.data.playerStatSummaryType) if self.data.playerStatSummaryType else None
 
     @property
     def wins(self):
+        """How many wins this participant has"""
         return self.data.wins
 
 
+@cassiopeia.type.core.common.inheritdocs
 class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.stats.AggregatedStats
 
@@ -38,286 +45,283 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def kda(self):
+        """The participant's kda"""
         return (self.data.totalChampionKills + self.data.totalAssists) / (self.data.totalDeathsPerSession if self.data.totalDeathsPerSession else 1)
 
-    # int # Dominion only.
     @property
     def average_assists(self):
+        """Dominion only"""
         return self.data.averageAssists
 
-    # int # Dominion only.
     @property
     def average_kills(self):
+        """Dominion only"""
         return self.data.averageChampionsKilled
 
-    # int # Dominion only.
     @property
     def average_combat_score(self):
+        """Dominion only. The part of your score in Dominion that comes from combat-related activities"""
         return self.data.averageCombatPlayerScore
 
-    # int # Dominion only.
     @property
     def average_node_captures(self):
+        """Dominion only"""
         return self.data.averageNodeCapture
 
-    # int # Dominion only.
     @property
     def average_node_capture_assists(self):
+        """Dominion only"""
         return self.data.averageNodeCaptureAssist
 
-    # int # Dominion only.
     @property
     def average_node_neutralizations(self):
+        """Dominion only"""
         return self.data.averageNodeNeutralize
 
-    # int # Dominion only.
     @property
     def average_node_neutralization_assists(self):
         return self.data.averageNodeNeutralizeAssist
 
-    # int # Dominion only.
     @property
     def average_deaths(self):
+        """Dominion only"""
         return self.data.averageNumDeaths
 
-    # int # Dominion only.
     @property
     def average_objective_score(self):
+        """Dominion only. The part of your score in Dominion that comes from object-based activities"""
         return self.data.averageObjectivePlayerScore
 
-    # int # Dominion only.
     @property
     def average_team_score(self):
+        """Dominion only"""
         return self.data.averageTeamObjective
 
-    # int # Dominion only.
     @property
     def average_score(self):
+        """Dominion only"""
         return self.data.averageTotalPlayerScore
 
-    # int # botGamesPlayed
     @property
     def bot_games(self):
+        """The number of bot games the participant has played"""
         return self.data.botGamesPlayed
 
-    # int # killingSpree
     @property
     def killing_sprees(self):
+        """How many killing sprees the participant has had"""
         return self.data.killingSpree
 
-    # int # Dominion only.
     @property
     def max_assists(self):
+        """Dominion only. The most assists the participant has ever had"""
         return self.data.maxAssists
 
-    # int # maxChampionsKilled
     @property
     def max_kills(self):
         return self.data.maxChampionsKilled
 
-    # int # Dominion only.
     @property
     def max_combat_score(self):
+        """Dominion only. The highest combat score the participant has ever had"""
         return self.data.maxCombatPlayerScore
 
-    # int # maxLargestCriticalStrike
     @property
     def max_crit(self):
+        """The highest damage crit the participant has ever had"""
         return self.data.maxLargestCriticalStrike
 
-    # int # maxLargestKillingSpree
     @property
     def max_killing_spree(self):
+        """The largest killing spree the participant has ever had"""
         return self.data.maxLargestKillingSpree
 
-    # int # Dominion only.
     @property
     def max_node_captures(self):
         return self.data.maxNodeCapture
 
-    # int # Dominion only.
     @property
     def max_node_capture_assists(self):
+        """Dominion only. The most node capture assists the participant has ever had"""
         return self.data.maxNodeCaptureAssist
 
-    # int # Dominion only.
     @property
     def max_node_neutralizations(self):
+        """Dominion only. The most node neutralizations the participant has ever had"""
         return self.data.maxNodeNeutralize
 
-    # int # Dominion only.
     @property
     def maxNodeNeutralizeAssist(self):
+        """Dominion only. The most node neutralization assists the participant has ever had"""
         return self.data.maxNodeNeutralizeAssist
 
-    # int # Only returned for ranked statistics.
     @property
     def max_deaths(self):
+        """Only returned for ranked statistics. The most deaths the participant has ever had"""
         return self.data.maxNumDeaths
 
-    # int # Dominion only.
     @property
     def max_objective_score(self):
+        """Dominion only. The highest object score the participant has ever had"""
         return self.data.maxObjectivePlayerScore
 
-    # int # Dominion only.
     @property
     def max_team_score(self):
+        """Dominion only. The highest team score the participant has ever had"""
         return self.data.maxTeamObjective
 
-    # int # maxTimePlayed
     @property
     def max_game_time(self):
+        """The longest a participant has ever been in a game"""
         return self.data.maxTimePlayed
 
-    # int # maxTimeSpentLiving
     @property
     def max_time_alive(self):
+        """The longest a participant has ever been alive"""
         return self.data.maxTimeSpentLiving
 
-    # int # Dominion only.
     @property
     def max_score(self):
+        """Dominion only. The highest Dominion score the participant has ever obtained"""
         return self.data.maxTotalPlayerScore
 
-    # int # mostChampionKillsPerSession
     @property
     def max_kills_per_session(self):
+        """Well, we don't know what this one is. Let us know if you figure it out."""
         return self.data.mostChampionKillsPerSession
 
-    # int # mostSpellsCast
     @property
     def max_spells_cast(self):
+        """The most spell casts the participant has ever done in a game"""
         return self.data.mostSpellsCast
 
-    # int # normalGamesPlayed
     @property
     def normal_games(self):
         return self.data.normalGamesPlayed
 
-    # int # rankedPremadeGamesPlayed
     @property
     def ranked_premade_games(self):
+        """How many premade, ranked games the participant has played"""
         return self.data.rankedPremadeGamesPlayed
 
-    # int # rankedSoloGamesPlayed
     @property
     def ranked_solo_games(self):
+        """How many premade, solo games the participant has played"""
         return self.data.rankedSoloGamesPlayed
 
-    # int # totalAssists
     @property
     def assists(self):
+        """The total number of assists this participant has had"""
         return self.data.totalAssists
 
-    # int # totalChampionKills
     @property
     def kills(self):
+        """The total number of champion kills this participant has had"""
         return self.data.totalChampionKills
 
-    # int # totalDamageDealt
     @property
     def damage_dealt(self):
+        """The total amount of damage this participant has dealt"""
         return self.data.totalDamageDealt
 
-    # int # totalDamageTaken
     @property
     def damage_taken(self):
+        """The total amount of damage this participant has taken"""
         return self.data.totalDamageTaken
 
-    # int # Only returned for ranked statistics.
     @property
     def deaths(self):
+        """The total number of deaths this participant has had"""
         return self.data.totalDeathsPerSession
 
-    # int # totalDoubleKills
     @property
     def double_kills(self):
+        """The total number of double kills this participant has had"""
         return self.data.totalDoubleKills
 
-    # int # totalFirstBlood
     @property
     def first_bloods(self):
+        """The total number of first bloods this participant has had"""
         return self.data.totalFirstBlood
 
-    # int # totalGoldEarned
     @property
     def gold_earned(self):
+        """The total amount of gold earned this participant has had"""
         return self.data.totalGoldEarned
 
-    # int # totalHeal
     @property
     def healing_done(self):
+        """The total amount of healing this participant has done"""
         return self.data.totalHeal
 
-    # int # totalMagicDamageDealt
     @property
     def magic_damage_dealt(self):
+        """The total amount of magic damage this participant has dealt"""
         return self.data.totalMagicDamageDealt
 
-    # int # totalMinionKills
     @property
     def minions_killed(self):
+        """The total number of minion kills this participant has had"""
         return self.data.totalMinionKills
 
-    # int # totalNeutralMinionsKilled
     @property
-    def neutral_minions_killed(self):
+    def neutral_monster_killed(self):
+        """The total number of neutral monster kills this participant has had"""
         return self.data.totalNeutralMinionsKilled
 
-    # int # Dominion only.
     @property
     def node_captures(self):
+        """Dominion only. The total number of nodes this participant has captured"""
         return self.data.totalNodeCapture
 
-    # int # Dominion only.
     @property
     def node_neutralizations(self):
+        """Dominion only. The total number of nodes this participant has neutralized"""
         return self.data.totalNodeNeutralize
 
-    # int # totalPentaKills
     @property
     def penta_kills(self):
+        """The total number of penta kills this participant has gotten"""
         return self.data.totalPentaKills
 
-    # int # totalPhysicalDamageDealt
     @property
     def physical_damage_dealt(self):
+        """The total amount of physical damage this participant has dealt"""
         return self.data.totalPhysicalDamageDealt
 
-    # int # totalQuadraKills
     @property
     def quadra_kills(self):
+        """The total number of quadra kills this participant has gotten"""
         return self.data.totalQuadraKills
 
-    # int # totalSessionsLost
     @property
     def losses(self):
+        """The total number of loses this participant has had"""
         return self.data.totalSessionsLost
 
-    # int # totalSessionsPlayed
     @property
     def games_played(self):
+        """The total number of games this participant has played"""
         return self.data.totalSessionsPlayed
 
-    # int # totalSessionsWon
     @property
     def wins(self):
+        """The total number of wins this participant has had"""
         return self.data.totalSessionsWon
 
-    # int # totalTripleKills
     @property
     def triple_kills(self):
+        """The total number of triple kills this participant has gotten"""
         return self.data.totalTripleKills
 
-    # int # totalTurretsKilled
     @property
     def turrets_killed(self):
+        """The total number of turrets this participant has killed"""
         return self.data.totalTurretsKilled
 
-    # int # totalUnrealKills
     @property
     def unreal_kills(self):
+        """The total number of unreal kills this participant has gotten"""
         return self.data.totalUnrealKills
 
 ###############################
