@@ -4,28 +4,66 @@ import sqlalchemy
 import sqlalchemy.orm
 
 import cassiopeia.type.dto.common
+import cassiopeia.type.core.common
 
 class DataStore(object):
+    """A place to store data. Used for caching/storing data from API calls"""
+
     def has_all(self, class_):
+        """Checks if the data store has all the values for a type there can be (as reported by the user)
+
+        class_    type    the class to do the check for
+
+        return    bool    whether all the values are stored
+        """
         pass
 
     def get_all(self, class_):
+        """Gets all currently stored values for a type
+
+        class_    type            the class to get values for
+
+        return    list<class_>    all stored values for the type 
+        """
         pass
 
     def iterate(self, class_):
+        """Gets an iterator over all currently stored values for a type
+
+        class_    type                the class to get values for
+
+        return    iterator<class_>    and iterator over all stored values for the type 
+        """
         pass
 
     def get(self, class_, keys, key_field):
+        """Gets objects from the data store
+
+        class_       type                     the class to get values for
+        keys         any | list<any>          the keys that should be used to find the desired values
+        key_field    str                      the name of the attribute that the key(s) reference
+
+        return       class_ | list<class_>    the values from storage - None will replace any value that couldn't be found
+        """
         pass
 
     def store(self, objs, keys, complete_sets=[]):
+        """Stores objects in the data store
+
+        objs             any                the objects to store
+        keys             any | list<any>    the keys to store those values with
+        complete_sets    list<type>         include any types for which it should be marked that all possible values are stored
+        """
         pass
 
 #############################
 # In-memory Cache resources #
 #############################
 
+@cassiopeia.type.core.common.inheritdocs
 class Cache(DataStore):
+    """In-memory cache of API data"""
+
     def __init__(self):
         self._cache = {}
         self._has_all = {}
@@ -117,6 +155,7 @@ class HasAllStatus(cassiopeia.type.dto.common.BaseDB):
         self.have_all = have_all
 
 
+@cassiopeia.type.core.common.inheritdocs
 class SQLAlchemyDB(DataStore):
     class Iterator(object):
         def __init__(self, class_, result):
@@ -136,6 +175,13 @@ class SQLAlchemyDB(DataStore):
             return self
 
     def __init__(self, flavor, host, database, username, password):
+        """
+        flavor      str    the connector to use for SQLAlchemy (http://docs.sqlalchemy.org/en/rel_1_0/core/engines.html#database-urls)
+        host        str    the server IP or domain name to connect to
+        database    str    the name of the database to connect to
+        username    str    the username to connect to the database with
+        password    str    the password to connect to the database with
+        """
         sa_bind_typesystem()
         self.db = sqlalchemy.create_engine("{flavor}://{username}:{password}@{host}/{database}".format(flavor=flavor, host=host, database=database, username=username, password=password))
         cassiopeia.type.dto.common.BaseDB.metadata.create_all(self.db)
@@ -197,11 +243,13 @@ class SQLAlchemyDB(DataStore):
         self.session.commit()
 
     def close(self):
+        """Closes the connection to the database"""
         self.session.close()
         self.db.dispose()
 
 __sa_bound = False
 def sa_bind_typesystem():
+    """Dynamically binds the typesystem with SQLAlchemy bindings"""
     global __sa_bound
     if(__sa_bound):
         return

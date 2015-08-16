@@ -31,6 +31,7 @@ class lazyproperty(object):
     def __init__(self, method):
         self.method = method
         self.values = {}
+        self.__doc__ = method.__doc__
 
     def __set__(self, obj, value):
         raise AttributeError("can't set attribute")
@@ -50,6 +51,7 @@ class immutablemethod(object):
     # @param method # function # The method to make immutable
     def __init__(self, method):
         self.method = method
+        self.__doc__ = method.__doc__
 
     def __set__(self, obj, value):
         raise AttributeError("can't set method")
@@ -61,6 +63,26 @@ class immutablemethod(object):
         def curried(*args, **kwargs):
             return self.method(obj, *args, **kwargs)
         return curried
+
+
+def inheritdocs(class_):
+    """Makes a class inherit the documentation from any overridden methods
+    @decorator
+
+    class_    class    the class to make inherit documentation
+
+    return    class    the class with inherited documentation
+    """
+    for name, method in vars(class_).items():
+        if(not method.__doc__):
+            for parent in class_.__bases__:
+                try:
+                    p_method = getattr(parent, name)
+                    if(p_method and p_method.__doc__):
+                        method.__doc__ = p_method.__doc__
+                except AttributeError:
+                    continue
+    return class_
 
 
 class LoadPolicy(enum.Enum):
