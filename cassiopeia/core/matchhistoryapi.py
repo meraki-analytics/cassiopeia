@@ -4,12 +4,16 @@ import cassiopeia.core.requests
 import cassiopeia.type.core.common
 import cassiopeia.type.core.matchhistory
 
-# @param summoner # cassiopeia.type.core.summoner.Summoner # The summoner to get the match history for
-# @param begin_index # int # The game index to start from
-# @param champions # list<cassiopeia.type.core.staticdata.Champion> or cassiopeia.type.core.staticdata.Champion # The champion(s) to limit the results to
-# @param ranked_queue # list<cassiopeia.type.core.common.Queue> or cassiopeia.type.core.common.Queue # The ranked queue(s) to limit the results to
-# @return # list<cassiopeia.type.core.matchhistory.MatchSummary> # The match history for that summoner
 def get_match_history(summoner, begin_index=0, champions=None, ranked_queues=None):
+    """Gets a summoner's match history
+
+    summoner        Summoner                     the summoner to get match history for
+    begin_index     int                          the game index to start from (default 0)
+    champions       Champion | list<Champion>    the champion(s) to limit the results to (default None)
+    ranked_queue    Queue | list<Queue>          the ranked queue(s) to limit the results to (default None)
+
+    return          list<MatchSummary>           the summoner's match history
+    """
     if(ranked_queues):
         for queue in ranked_queues:
             if queue not in cassiopeia.type.core.common.ranked_queues:

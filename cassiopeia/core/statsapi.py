@@ -4,10 +4,14 @@ import cassiopeia.core.requests
 import cassiopeia.type.core.common
 import cassiopeia.type.core.stats
 
-# @param summoner # cassiopeia.type.core.summoner.Summoner # The summoner to get stats for
-# @param season # cassiopeia.type.core.common.Season # The season to get stats for. Current is default.
-# @return # dict<cassiopeia.type.core.staticdata.Champion, cassiopeia.type.core.stats.AggregatedStats> # The ranked stats divided by champion. The entry for None has combined stats for all champions.
 def get_ranked_stats(summoner, season=None):
+    """Gets a summoner's ranked stats
+
+    summoner    Summoner                           the summoner to get ranked stats for
+    season      Season                             the season to get ranked stats for (None will give current season stats) (default None)
+
+    return      dict<Champion, AggregatedStats>    the summoner's ranked stats divided by champion. The entry for None contains combined stats for all champions.
+    """
     if(season and season not in cassiopeia.type.core.common.stats_seasons):
         raise ValueError("Must use a valid season to get ranked stats for")
 
@@ -17,10 +21,14 @@ def get_ranked_stats(summoner, season=None):
 
     return {champions[stat.id]: cassiopeia.type.core.stats.AggregatedStats(stat.stats) for stat in stats.champions}
 
-# @param summoner # cassiopeia.type.core.summoner.Summoner # The summoner to get stats for
-# @param season # cassiopeia.type.core.common.Season # The season to get stats for. Current is default.
-# @return # dict<cassiopeia.type.core.common.StatSummaryType, cassiopeia.type.core.stats.StatsSummary> # The ranked stats divided by champion. The entry for None has combined stats for all champions.
 def get_stats(summoner, season=None):
+    """Gets a summoner's stats
+
+    summoner    Summoner                               the summoner to get stats for
+    season      Season                                 the season to get stats for (None will give current season stats) (default None)
+
+    return      dict<StatSummaryType, StatsSummary>    the summoner's stats divided by queue type
+    """
     if(season and season not in cassiopeia.type.core.common.stats_seasons):
         raise ValueError("Must use a valid season to get stats for")
 
