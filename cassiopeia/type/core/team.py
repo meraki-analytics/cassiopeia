@@ -105,12 +105,18 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.immutablemethod
     def leagues(self):
-        """return    League    the team's league"""
+        """Gets the leagues that the summoner belongs to
+
+        return    list<League>   the leagues that the summoner belongs to
+        """
         return cassiopeia.riotapi.get_leagues_by_team(self)
 
     @cassiopeia.type.core.common.immutablemethod
     def league_entries(self):
-        """return    list<Entry>    the team's league entries"""
+        """Gets the leagues that the summoner belongs to, including only their own entries
+
+        return    list<League>    the leagues that the summoner belongs to
+        """
         return cassiopeia.riotapi.get_league_entries_by_team(self)
 
 
@@ -182,7 +188,10 @@ class MatchSummary(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.immutablemethod
     def match(self):
-        """return    Match    full match information for this match"""
+        """Gets the full information for this match
+
+        return    Match    the match
+        """
         return cassiopeia.riotapi.get_match(self.id)
 
 

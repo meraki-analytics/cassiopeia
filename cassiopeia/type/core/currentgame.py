@@ -13,7 +13,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def bot(self):
-        """bool whether the participant is a bot"""
+        """bool    whether the participant is a bot"""
         return self.data.bot
 
     @property
