@@ -12,27 +12,27 @@ class Shard(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def host_name(self):
-        """The domain name of the server"""
+        """str    the domain name of the server"""
         return self.data.hostname
 
     @property
     def locales(self):
-        """The languages that you can have api results in"""
+        """list<str>    the languages that you can have api results in"""
         return self.data.locales
 
     @property
     def name(self):
-        """The full name of the region the server is located in"""
+        """str    the full name of the region the server is located in"""
         return self.data.name
 
     @property
     def platform(self):
-        """The Platform (ie server) for this match"""
+        """Platform    the platform (ie server) for this match"""
         return cassiopeia.type.core.common.Platform(self.data.region_tag.upper()) if self.data.region_tag else None
 
     @property
     def region(self):
-        """The Region of the server is located in"""
+        """Region    the region of the server is located in"""
         return cassiopeia.type.core.common.Region(self.data.slug.upper()) if self.data.slug else None
 
 
@@ -54,32 +54,32 @@ class ShardStatus(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def host_name(self):
-        """The domain name of the server"""
+        """str    the domain name of the server"""
         return self.data.hostname
 
     @property
     def locales(self):
-        """The languages that you can have api results in"""
+        """list<str>    the languages that you can have api results in"""
         return self.data.locales
 
     @property
     def name(self):
-        """The full name of the region the server is located in"""
+        """str    the full name of the region the server is located in"""
         return self.data.name
 
     @property
     def platform(self):
-        """The Platform (ie server) for this match"""
+        """Platform    the platform (ie server) for this match"""
         return cassiopeia.type.core.common.Platform(self.data.region_tag.upper()) if self.data.region_tag else None
 
     @cassiopeia.type.core.common.lazyproperty
     def services(self):
-        """A list of Services that this region offers"""
+        """list<Service>    the services that this region offers"""
         return [Service(service) for service in self.data.services]
 
     @property
     def region(self):
-        """The Region of the server is located in"""
+        """Region    the region of the server is located in"""
         return cassiopeia.type.core.common.Region(self.data.slug.upper()) if self.data.slug else None
 
 
@@ -101,22 +101,22 @@ class Service(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def incidents(self):
-        """The incidents associated with this Server"""
+        """list<Incident>    the incidents associated with this server"""
         return [Incident(incident) for incident in self.data.incidents]
 
     @property
     def name(self):
-        """The name of this Service"""
+        """str    the name of this service"""
         return self.data.name
 
     @property
     def slug(self):
-        """The name of the Service in lowercase"""
+        """str    the name of the service in lowercase"""
         return self.data.slug
 
     @property
     def status(self):
-        """The Status of the Service"""
+        """str    the status of the service"""
         return self.data.status
 
 
@@ -147,22 +147,22 @@ class Incident(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def active(self):
-        """Whether or not this Incident is active"""
+        """boolean    whether or not this incident is active"""
         return self.data.active
 
     @cassiopeia.type.core.common.lazyproperty
     def created(self):
-        """When this Incident was created"""
+        """datetime.datetime    when this incident was created"""
         return datetime.datetime.strptime(self.data.created_at, "%Y-%m-%dT%H:%M:%SZ") if self.data.created_at else None
 
     @property
     def id(self):
-        """The ID of this Incident"""
+        """int    the id of this incident"""
         return self.data.id
 
     @cassiopeia.type.core.common.lazyproperty
     def updates(self):
-        """The updates associated with this Incident"""
+        """list<Message>    the updates associated with this incident"""
         return [Message(update) for update in self.data.updates]
 
 
@@ -193,37 +193,37 @@ class Message(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def author(self):
-        """Who wrote this Message"""
+        """str    who wrote this message"""
         return self.author
 
     @property
     def content(self):
-        """The content of this Message"""
+        """str    the content of this message"""
         return self.content
 
     @cassiopeia.type.core.common.lazyproperty
     def created(self):
-        """Whent his Message was created"""
+        """datetime.datetime    whent his message was created"""
         return datetime.datetime.strptime(self.data.created_at, "%Y-%m-%dT%H:%M:%SZ") if self.data.created_at else None
 
     @property
     def id(self):
-        """The ID of this Message"""
+        """int    the id of this message"""
         return self.data.id
 
     @property
     def severity(self):
-        """The severity of this Message"""
+        """str    the severity of this message"""
         return self.data.severity
 
     @cassiopeia.type.core.common.lazyproperty
     def translations(self):
-        """The translated text of this Message"""
+        """dict<translation.locale: Translation>    the translated text of this message"""
         return {translation.locale: Translation(translation) for translation in self.data.translations}
 
     @cassiopeia.type.core.common.lazyproperty
     def updated(self):
-        """When this Message was last updated"""
+        """datetime.datetime    when this message was last updated"""
         return datetime.datetime.strptime(self.data.updated_at, "%Y-%m-%dT%H:%M:%SZ") if self.data.updated_at else None
 
 
@@ -236,17 +236,17 @@ class Translation(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def content(self):
-        """The content of this Translation"""
+        """str    the content of this translation"""
         return self.data.content
 
     @property
     def locale(self):
-        """The language of this Translation"""
+        """str    the language of this translation"""
         return self.data.locale
 
     @cassiopeia.type.core.common.lazyproperty
     def updated(self):
-        """When this Translation was last updated"""
+        """datetime.datetime    when this translation was last updated"""
         return datetime.datetime.strptime(self.data.updated_at, "%Y-%m-%dT%H:%M:%SZ") if self.data.updated_at else None
 
 ###############################

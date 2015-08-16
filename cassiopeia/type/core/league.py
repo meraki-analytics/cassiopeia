@@ -11,22 +11,22 @@ class Series(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def losses(self):
-        """Number of current losses in the mini series"""
+        """int    number of current losses in the mini series"""
         return self.data.losses
 
     @property
     def progress(self):
-        """String showing the current, sequential mini series progress where 'W' represents a win, 'L' epresents a loss, and 'N' represents a game that hasn't been played yet"""
+        """str    string showing the current, sequential mini series progress where 'W' represents a win, 'L' epresents a loss, and 'N' represents a game that hasn't been played yet"""
         return self.data.progress
 
     @property
     def wins_required(self):
-        """Number of wins required for promotion"""
+        """int    number of wins required for promotion"""
         return self.data.target
 
     @property
     def wins(self):
-        """Number of current wins in the series"""
+        """int    number of current wins in the series"""
         return self.data.wins
 
 
@@ -39,47 +39,47 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def division(self):
-        """The League division of the participant"""
+        """Division    the league division of the participant"""
         return cassiopeia.type.core.common.Division(self.data.division) if self.data.division else None
 
     @property
     def fresh_blood(self):
-        """Specifies if the participant is fresh blood (ie if they have just joined the league)"""
+        """bool    specifies if the participant is fresh blood (ie if they have just joined the league)"""
         return self.data.isFreshBlood
 
     @property
     def hot_streak(self):
-        """Specifies if the participant is on a hot streak"""
+        """bool    specifies if the participant is on a hot streak"""
         return self.data.isHotStreak
 
     @property
     def inactive(self):
-        """Specifies if the participant is inactive"""
+        """bool    specifies if the participant is inactive"""
         return self.data.isInactive
 
     @property
     def veteran(self):
-        """Specifies if the participant is a veteran (ie they have been in this league for a long time)"""
+        """bool    specifies if the participant is a veteran (ie they have been in this league for a long time)"""
         return self.data.isVeteran
 
     @property
     def league_points(self):
-        """The league points of the participant"""
+        """int    the league points of the participant"""
         return self.data.leaguePoints
 
     @property
     def losses(self):
-        """The number of losses for the participant"""
+        """int    the number of losses for the participant"""
         return self.data.losses
 
     @cassiopeia.type.core.common.lazyproperty
     def series(self):
-        """Series data for the participant. Only present if the participant is currently in a mini series"""
+        """Series    series data for the participant. Only present if the participant is currently in a mini series"""
         return Series(self.data.miniSeries) if self.data.miniSeries else None
 
     @property
     def summoner(self):
-        """The Summoner represented by this entry. None if this entry is for a team"""
+        """Summoner    the summoner represented by this entry. None if this entry is for a team"""
         if(not self.data.playerOrTeamId):
             return None
 
@@ -91,7 +91,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def team(self):
-        """The Team represented by this entry. None if this entry is for a summoner"""
+        """Team    the team represented by this entry. None if this entry is for a summoner"""
         if(not self.data.playerOrTeamId):
             return None
 
@@ -103,7 +103,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def summoner_name(self):
-        """The name of the summoner represented by this entry. An empty string if this entry is for a team"""
+        """str    the name of the summoner represented by this entry. An empty string if this entry is for a team"""
         if(not self.data.playerOrTeamId):
             return ""
 
@@ -115,7 +115,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def team_name(self):
-        """The name of the team represented by this entry. An empty string if this entry is for a summoner"""
+        """str    the name of the team represented by this entry. An empty string if this entry is for a summoner"""
         try:
             int(self.data.playerOrTeamId)
             return ""
@@ -124,7 +124,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def wins(self):
-        """The number of wins for the participant"""
+        """int    the number of wins for the participant"""
         return self.data.wins
 
 
@@ -146,17 +146,17 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def entries(self):
-        """A list of the requested league entries, sorted by LP"""
+        """a list of the requested league entries, sorted by LP"""
         return sorted([Entry(entry) for entry in self.data.entries], key=lambda entry: entry.league_points, reverse=True)
 
     @property
     def name(self):
-        """The name of the league"""
+        """str    the name of the league"""
         return self.data.name
 
     @cassiopeia.type.core.common.lazyproperty
     def participant_entry(self):
-        """The Entry for the relevant team or summoner that is a member of this league. Only present when full league is requested so that participant's entry can be identified. None when individual entry is requested"""
+        """Entry    the entry for the relevant team or summoner that is a member of this league. Only present when full league is requested so that participant's entry can be identified. None when individual entry is requested"""
         for entry in self.entries:
             if(entry.data.playerOrTeamId == self.data.participantId):
                 return entry
@@ -164,7 +164,7 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def summoner(self):
-        """The relevant Summoner that is a member of this league. Only present when full league is requested so that participant's entry can be identified. None when individual entry is requested or the participant is a team."""
+        """Summoner    the relevant summoner that is a member of this league. Only present when full league is requested so that participant's entry can be identified. None when individual entry is requested or the participant is a team."""
         if(not self.data.participantId):
             return None
 
@@ -176,7 +176,7 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def team(self):
-        """The relevant Team that is a member of this league. Only present when full league is requested so that participant's entry can be identified. None when individual entry is requested or the participant is a summoner."""
+        """Team    the relevant team that is a member of this league. Only present when full league is requested so that participant's entry can be identified. None when individual entry is requested or the participant is a summoner."""
         if(not self.data.participantId):
             return None
 
@@ -188,12 +188,12 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def queue(self):
-        """The league's Queue type"""
+        """Queue    the league's queue type"""
         return cassiopeia.type.core.common.Queue(self.data.queue) if self.data.queue else None
 
     @property
     def tier(self):
-        """The league's Tier"""
+        """Tier    the league's tier"""
         return cassiopeia.type.core.common.Tier(self.data.tier) if self.data.tier else None
 
 ###############################

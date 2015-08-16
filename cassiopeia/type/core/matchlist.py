@@ -22,17 +22,17 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.immutablemethod
     def match(self):
-        """The full, pulled match associated with this match reference"""
+        """return    Match    the full, pulled match associated with this match reference"""
         return cassiopeia.riotapi.get_match(self)
 
     @cassiopeia.type.core.common.lazyproperty
     def champion(self):
-        """The champion that the summoner played for the summoner that was used to pull this match reference"""
+        """Champion    the champion that the summoner played for the summoner that was used to pull this match reference"""
         return cassiopeia.riotapi.get_champion_by_id(self.data.champion)
 
     @property
     def lane(self):
-        """The lane that the summoner was in for the summoner that was used to  pull this match reference"""
+        """the lane that the summoner was in for the summoner that was used to  pull this match reference"""
         lane = self.data.lane
         lane = "MIDDLE" if lane == "MID" else lane
         lane = "BOTTOM" if lane == "BOT" else lane
@@ -40,33 +40,33 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def id(self):
-        """The match ID for this match"""
-        return self.data.matchId
+        """int    the match id for this match"""
+        return self.data.matchid
 
     @property
     def platform(self):
-        """The Platform (ie server) for this match"""
-        return cassiopeia.type.core.common.Platform(self.data.platformId) if self.data.platformId else None
+        """Platform    the platform (ie server) for this match"""
+        return cassiopeia.type.core.common.platform(self.data.platformid) if self.data.platformid else none
 
     @property
     def queue(self):
-        """The Queue type for this match"""
-        return cassiopeia.type.core.common.Queue(self.data.queue) if self.data.queue else None
+        """Queue    the queue type for this match"""
+        return cassiopeia.type.core.common.queue(self.data.queue) if self.data.queue else none
 
     @property
     def role(self):
-        """The Role that the summoner was in for the summoner that was used to  pull this match reference"""
-        return cassiopeia.type.core.common.Season(self.data.role) if self.data.role else None
+        """Role    the role that the summoner was in for the summoner that was used to  pull this match reference"""
+        return cassiopeia.type.core.common.Role(self.data.role) if self.data.role else none
 
     @property
     def season(self):
-        """The Season that this match was played in"""
-        return cassiopeia.type.core.common.Season(self.data.season) if self.data.season else None
+        """Season    the season that this match was played in"""
+        return cassiopeia.type.core.common.season(self.data.season) if self.data.season else none
 
     @cassiopeia.type.core.common.lazyproperty
     def timestamp(self):
-        """The timestamp for this match"""
-        return datetime.datetime.utcfromtimestamp(self.data.timestamp / 1000) if self.data.timestamp else None
+        """datetime.datetime    the timestamp for this match"""
+        return datetime.datetime.utcfromtimestamp(self.data.timestamp / 1000) if self.data.timestamp else none
 
 ###############################
 # Dynamic SQLAlchemy bindings #
