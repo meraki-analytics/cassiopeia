@@ -1,12 +1,18 @@
 import cassiopeia.dto.requests
 import cassiopeia.type.dto.status
 
-# @return # list<cassiopeia.type.dto.status.Shard> # The shards. Unfortunately neither Crystal nor Kirby's.
 def get_shards():
+    """https://developer.riotgames.com/api/methods#!/908/3143
+
+    return    list<Shard>    the shards (unfortunately neither Crystal nor Kirby's)
+    """
     request = "http://status.leagueoflegends.com/shards"
     return [cassiopeia.type.dto.status.Shard(shard) for shard in cassiopeia.dto.requests.get(request, static=True, include_base=False)]
 
-# @return # cassiopeia.type.dto.status.ShardStatus # The shard for the current region
 def get_shard():
+    """https://developer.riotgames.com/api/methods#!/908/3142
+
+    return    ShardStatus    the status of the current region's shard
+    """
     request = "http://status.leagueoflegends.com/shards/{region}".format(region=cassiopeia.dto.requests.region.lower())
     return cassiopeia.type.dto.status.ShardStatus(cassiopeia.dto.requests.get(request, static=True, include_base=False))

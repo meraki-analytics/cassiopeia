@@ -3,9 +3,13 @@ import cassiopeia.type.core.common
 import cassiopeia.type.dto.currentgame
 import cassiopeia.type.api.exception
 
-# @param summoner_id # int # The ID of the summoner to find an active game for
-# @return # cassiopeia.type.dto.currentgame.CurrentGameInfo # The summoner's current game (or None if they aren't in one)
 def get_current_game(summoner_id):
+    """https://developer.riotgames.com/api/methods#!/976/3336
+
+    summoner_id    int                the ID of the summoner to find an active game for
+
+    return         CurrentGameInfo    the summoner's current game (or None if they aren't in one)
+    """
     region = cassiopeia.type.core.common.Region(cassiopeia.dto.requests.region)
     platform = cassiopeia.type.core.common.Platform[region.name]
     request = "https://{server}.api.pvp.net/observer-mode/rest/consumer/getSpectatorGameInfo/{platform}/{summoner_id}".format(server=cassiopeia.dto.requests.region.lower(), platform=platform.value, summoner_id=summoner_id)
