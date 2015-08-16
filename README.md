@@ -25,7 +25,7 @@ Cassiopeia is the sister library to [Orianna](https://raw.githubusercontent.com/
 
 Just `pip install cassiopeia` and you're good to go!
 
-If you want to reference to most recent codebase from github to stay up to date with every single change, pull the code from github and add the root directory (the one that contains LICENSE.txt) to your PYTHONPATH environment variable.
+If you want to reference to most recent codebase from github to stay up to date with every single change, download the code from github and add the root directory (the one that contains LICENSE.txt) or the .zip file to your PYTHONPATH environment variable.
 
 ## Dependencies
 
