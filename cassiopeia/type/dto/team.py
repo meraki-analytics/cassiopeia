@@ -2,54 +2,46 @@ import sqlalchemy
 import sqlalchemy.orm
 
 import cassiopeia.type.dto.common
+import cassiopeia.type.core.common
 
+@cassiopeia.type.core.common.inheritdocs
 class Team(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    createDate                       int                          date that team was created specified as epoch milliseconds
+    fullId                           str                          fullId
+    lastGameDate                     int                          date that last game played by team ended specified as epoch milliseconds
+    lastJoinDate                     int                          date that last member joined specified as epoch milliseconds
+    lastJoinedRankedTeamQueueDate    int                          date that team last joined the ranked team queue specified as epoch milliseconds
+    matchHistory                     list<MatchHistorySummary>    matchHistory
+    modifyDate                       int                          date that team was last modified specified as epoch milliseconds
+    name                             str                          name
+    roster                           Roster                       roster
+    secondLastJoinDate               int                          date that second to last member joined specified as epoch milliseconds
+    status                           str                          status
+    tag                              str                          tag
+    teamStatDetails                  list<TeamStatDetail>         stat details
+    thirdLastJoinDate                int                          date that third to last member joined specified as epoch milliseconds
+    """
     def __init__(self, dictionary):
-        # int # Date that team was created specified as epoch milliseconds.
         self.createDate = dictionary.get("createDate", 0)
-
-        # str # FullId
         self.fullId = dictionary.get("fullId", "")
-
-        # int # Date that last game played by team ended specified as epoch milliseconds.
         self.lastGameDate = dictionary.get("lastGameDate", 0)
-
-        # int # Date that last member joined specified as epoch milliseconds.
         self.lastJoinDate = dictionary.get("lastJoinDate", 0)
-
-        # int # Date that team last joined the ranked team queue specified as epoch milliseconds.
         self.lastJoinedRankedTeamQueueDate = dictionary.get("lastJoinedRankedTeamQueueDate", 0)
-
-        # list<MatchHistorySummary> # MatchHistory
         self.matchHistory = [(MatchHistorySummary(mh) if not isinstance(mh, MatchHistorySummary) else mh) for mh in dictionary.get("matchHistory", []) if mh]
-
-        # int # Date that team was last modified specified as epoch milliseconds.
         self.modifyDate = dictionary.get("modifyDate", 0)
-
-        # str # Name
         self.name = dictionary.get("name", "")
-
-        # Roster # Roster
         val = dictionary.get("roster", None)
         self.roster = Roster(val) if val and not isinstance(val, Roster) else val
-
-        # int # Date that second to last member joined specified as epoch milliseconds.
         self.secondLastJoinDate = dictionary.get("secondLastJoinDate", 0)
-
-        # str # Status
         self.status = dictionary.get("status", "")
-
-        # str # Tag
         self.tag = dictionary.get("tag", "")
-
-        # list<TeamStatDetail> # Stat details
         self.teamStatDetails = [(TeamStatDetail(ts) if not isinstance(ts, TeamStatDetail) else ts) for ts in dictionary.get("teamStatDetails", []) if ts]
-
-        # int # Date that third to last member joined specified as epoch milliseconds.
         self.thirdLastJoinDate = dictionary.get("thirdLastJoinDate", 0)
 
     @property
     def summoner_ids(self):
+        """Gets all summoner IDs contained in this object"""
         ids = set()
         ids.add(self.roster.ownerId)
         for member in self.roster.memberList:
@@ -57,78 +49,73 @@ class Team(cassiopeia.type.dto.common.CassiopeiaDto):
         return ids
 
 
+@cassiopeia.type.core.common.inheritdocs
 class MatchHistorySummary(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    assists              int     assists
+    date                 int     date that match was completed specified as epoch milliseconds
+    deaths               int     deaths
+    gameId               int     gameId
+    gameMode             str     gameMode
+    invalid              bool    invalid
+    kills                int     kills
+    mapId                int     mapId
+    opposingTeamKills    int     opposingTeamKills
+    opposingTeamName     str     opposingTeamName
+    win                  bool    win
+    """
     def __init__(self, dictionary):
-        # int # Assists
         self.assists = dictionary.get("assists", 0)
-
-        # int # Date that match was completed specified as epoch milliseconds.
         self.date = dictionary.get("date", 0)
-
-        # int # Deaths
         self.deaths = dictionary.get("deaths", 0)
-
-        # int # GameId
         self.gameId = dictionary.get("gameId", 0)
-
-        # str # GameMode
         self.gameMode = dictionary.get("gameMode", "")
-
-        # bool # Invalid
         self.invalid = dictionary.get("invalid", False)
-
-        # int # Kills
         self.kills = dictionary.get("kills", 0)
-
-        # int # MapId
         self.mapId = dictionary.get("mapId", 0)
-
-        # int # OpposingTeamKills
         self.opposingTeamKills = dictionary.get("opposingTeamKills", 0)
-
-        # str # OpposingTeamName
         self.opposingTeamName = dictionary.get("opposingTeamName", "")
-
-        # bool # Win
         self.win = dictionary.get("win", False)
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Roster(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    memberList    list<TeamMemberInfo>    memberList
+    ownerId       int                     ownerId
+    """
     def __init__(self, dictionary):
-        # list<TeamMemberInfo> # MemberList
         self.memberList = [(TeamMemberInfo(ts) if not isinstance(ts, TeamMemberInfo) else ts) for ts in dictionary.get("memberList", []) if ts]
-
-        # int # OwnerId
         self.ownerId = dictionary.get("ownerId", 0)
 
 
+@cassiopeia.type.core.common.inheritdocs
 class TeamStatDetail(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    averageGamesPlayed    int    averageGamesPlayed
+    losses                int    losses
+    teamStatType          str    teamStatType
+    wins                  int    wins
+    """
     def __init__(self, dictionary):
-        # int # AverageGamesPlayed
         self.averageGamesPlayed = dictionary.get("averageGamesPlayed", 0)
-
-        # int # Losses
         self.losses = dictionary.get("losses", 0)
-
-        # str # TeamStatType
         self.teamStatType = dictionary.get("teamStatType", "")
-
-        # int # Wins
         self.wins = dictionary.get("wins", 0)
 
 
+@cassiopeia.type.core.common.inheritdocs
 class TeamMemberInfo(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    inviteDate    int    date that team member was invited to team specified as epoch milliseconds
+    joinDate      int    date that team member joined team specified as epoch milliseconds
+    playerId      int    playerId
+    status        str    status
+    """
     def __init__(self, dictionary):
-        # int # Date that team member was invited to team specified as epoch milliseconds.
         self.inviteDate = dictionary.get("inviteDate", 0)
-
-        # int # Date that team member joined team specified as epoch milliseconds.
         self.joinDate = dictionary.get("joinDate", 0)
-
-        # int # PlayerId
         self.playerId = dictionary.get("playerId", 0)
-
-        # str # Status
         self.status = dictionary.get("status", "")
 
 ###############################
