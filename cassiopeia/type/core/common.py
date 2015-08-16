@@ -295,6 +295,7 @@ class Map(enum.Enum):
     twisted_treeline = 10
     summoners_rift = 11
     howling_abyss = 12
+    butchers_bridge = 14
 
 
 class GameMode(enum.Enum):

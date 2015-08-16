@@ -77,7 +77,7 @@ class SingleRateLimiter(object):
             self.resetter.cancel()
 
         self._drain()
-        self.resetter = threading.Timer(seconds, self.reset)
+        self.resetter = threading.Timer(seconds, self._reset)
         self.resetter.daemon = True
         self.resetter.start()
 

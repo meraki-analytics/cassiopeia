@@ -148,48 +148,69 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.immutablemethod
     def current_game(self):
-        """return    Game    the summoner's current game, if any"""
+        """Gets the game the summoner is currently in, if they're in one
+
+        return    Game    the game they're in (or None if they aren't in one)
+        """
         return cassiopeia.riotapi.get_current_game(self)
 
     @cassiopeia.type.core.common.immutablemethod
     def recent_games(self):
-        """return    list<Game>    the summoner's recent games, if any"""
+        """Gets the most recent games the summoner played
+
+        return    list<Game>    the summoner's recent games
+        """
         return cassiopeia.riotapi.get_recent_games(self)
 
     @cassiopeia.type.core.common.immutablemethod
     def rune_pages(self):
-        """return    list<RunePage>    the summoner's rune pages, if any"""
+        """Get the summoner's rune pages
+
+        return    list<RunePage>    the summoner's rune pages
+        """
         return cassiopeia.riotapi.get_rune_pages(self)
 
     @cassiopeia.type.core.common.immutablemethod
     def mastery_pages(self):
-        """return    list<MasteryPage>    the summoner's mastery pages, if any"""
+        """Get the summoner's mastery pages
+
+        return    list<RunePage>    the summoner's mastery pages
+        """
         return cassiopeia.riotapi.get_mastery_pages(self)
 
     @cassiopeia.type.core.common.immutablemethod
     def leagues(self):
-        """return    League    the summoner's league"""
+        """Gets the leagues that the summoner belongs to. You probably don't want to call this with LoadPolicy.eager set.
+
+        return    list<League>   the leagues that the summoner belongs to
+        """
         return cassiopeia.riotapi.get_leagues_by_summoner(self)
 
     @cassiopeia.type.core.common.immutablemethod
     def league_entries(self):
-        """return    list<Entry>    the summoner's league entries"""
+        """Gets the leagues that the summoner belongs to, including only their own entries
+
+        return    list<League>    the leagues that the summoner belongs to
+        """
         return cassiopeia.riotapi.get_league_entries_by_summoner(self)
 
     @cassiopeia.type.core.common.immutablemethod
     def teams(self):
-        """return    list<Team>    the summoner's teams"""
+        """Gets the summoner's' teams
+
+        return    list<Team>    the summoner's teams
+        """
         return cassiopeia.riotapi.get_teams_by_summoner(self)
 
     @cassiopeia.type.core.common.immutablemethod
     def match_history(self, begin_index=0, champions=None, ranked_queues=None):
         """Gets the summoner's match history
 
-        begin_index      int               the first index of games in the summoner's history that you want to start pulling (default 0)
-        champions        list<Champion>    a list of champions you want to get games for (default None)
-        ranked_queues    Enum              the ranked queues you want to pull (default None)
+        begin_index     int                          the game index to start from (default 0)
+        champions       Champion | list<Champion>    the champion(s) to limit the results to (default None)
+        ranked_queue    Queue | list<Queue>          the ranked queue(s) to limit the results to (default None)
 
-        return    list<MatchHistory>
+        return          list<MatchSummary>           the summoner's match history
         """
         return cassiopeia.riotapi.get_match_history(self, begin_index, champions, ranked_queues)
 
@@ -197,33 +218,34 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
     def match_list(self, begin_index=-1, begin_time=0, end_time=0, champions=None, ranked_queues=None, seasons=None):
         """Gets the summoner's match history
 
-        begin_index      int               the first index of games in the summoner's history that you want to start pulling (default -1)
-        begin_time       int               epoch time for when you want to start pulling the summoner's matches (default 0)
-        end_time         int               epoch time for when you want to stop pulling the summoner's matches (default 0)
-        champions        list<Champion>    a list of champions you want to get games for (default None)
-        ranked_queues    Enum              the ranked queues you want to pull (default None)
+        begin_index     int                          the game index to start from (default -1)
+        begin_time      int | datetime               the begin time to use for fetching games (default 0)
+        end_time        int | datetime               the end time to use for fetching games (default 0)
+        champions       Champion | list<Champion>    the champion(s) to limit the results to (default None)
+        ranked_queue    Queue | list<Queue>          the ranked queue(s) to limit the results to (default None)
+        seasons         Season | list<Season>        the season(s) to limit the results to (default None)
 
-        return    list<MatchHistory>
+        return          list<MatchSummary>           the summoner's match history
         """
         return cassiopeia.riotapi.get_match_list(self, begin_index, begin_time, end_time, champions, ranked_queues, seasons)
 
     @cassiopeia.type.core.common.immutablemethod
     def ranked_stats(self, season=None):
-        """Gets the ranked statistics for this summoner
+        """Gets the summoner's ranked stats
 
-        season    Enum    the season you want to pull the summoner's stats for (default None)
+        season    Season                             the season to get ranked stats for (None will give current season stats) (default None)
 
-        return    StatsSummary
+        return    dict<Champion, AggregatedStats>    the summoner's ranked stats divided by champion. The entry for None contains combined stats for all champions.
         """
         return cassiopeia.riotapi.get_ranked_stats(self, season)
 
     @cassiopeia.type.core.common.immutablemethod
     def stats(self, season=None):
-        """Gets the overall statistics for this summoner
+        """Gets the summoner's stats
 
-        season    Enum    the season you want to pull the summoner's stats for (default None)
+        season    Season                                 the season to get stats for (None will give current season stats) (default None)
 
-        return    StatsSummary
+        return    dict<StatSummaryType, StatsSummary>    the summoner's stats divided by queue type
         """
         return cassiopeia.riotapi.get_stats(self, season)
 
