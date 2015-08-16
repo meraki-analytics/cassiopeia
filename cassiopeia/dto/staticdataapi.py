@@ -18,7 +18,6 @@ def get_champion(id_):
 
     return cassiopeia.type.dto.staticdata.Champion(cassiopeia.dto.requests.get(request, params, True))
 
-# @return # ChampionList # All the champions
 def get_champions():
     """https://developer.riotgames.com/api/methods#!/968/3326
 

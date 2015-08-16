@@ -501,7 +501,6 @@ class ParticipantTimelineData(cassiopeia.type.dto.common.CassiopeiaDto):
         self.thirtyToEnd = dictionary.get("thirtyToEnd", 0.0)
         self.twentyToThirty = dictionary.get("twentyToThirty", 0.0)
         self.zeroToTen = dictionary.get("zeroToTen", 0.0)
-
         self._type = type_
 
 

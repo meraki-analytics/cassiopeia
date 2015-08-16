@@ -8,7 +8,6 @@ def get_shards():
     """
     return [cassiopeia.type.core.status.Shard(shard) for shard in cassiopeia.dto.statusapi.get_shards()]
 
-# @return # cassiopeia.type.core.status.ShardStatus # The shard for the current region
 def get_shard():
     """Gets the status of the current region's shard
 

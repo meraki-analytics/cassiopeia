@@ -1,7 +1,6 @@
 import cassiopeia.dto.requests
 import cassiopeia.type.dto.matchhistory
 
-
 def get_match_history(summoner_id, begin_index=0, champion_ids=None, ranked_queues=None):
     """https://developer.riotgames.com/api/methods#!/1012/3438
 
