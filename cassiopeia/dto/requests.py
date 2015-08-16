@@ -1,3 +1,7 @@
+"""
+Handles making HTTP requests to the REST API and converting the results into a usable format
+"""
+
 import urllib.parse
 import urllib.request
 import urllib.error
@@ -27,12 +31,16 @@ region = ""
 print_calls = False
 rate_limiter = cassiopeia.type.api.rates.MultiRateLimiter((10, 10), (500, 600))
 
-# @param request # str # The request string which follows /api/lol/{region}/
-# @param params # dict<str, *> # The parameters to send with the request
-# @param static # bool # Whether this is a call to a static (non-rate-limited) API
-# @param include_base # bool # If false, don't prepend https://{server}.api.pvp.net/api/lol/{region}/
-# @return # dict # The JSON response in a dict
 def get(request, params={}, static=False, include_base=True):
+    """Makes a rate-limited HTTP request to the Riot API and returns the result
+
+    request         str               the request string
+    params          dict<str, any>    the parameters to send with the request (default {})
+    static          bool              whether this is a call to a static (non-rate-limited) API
+    include_base    bool              whether to prepend https://{server}.api.pvp.net/api/lol/{region}/ to the request
+
+    return          dict              the JSON response from the Riot API as a dict
+    """
     if(not api_key):
         raise cassiopeia.type.api.exception.CassiopeiaException("API Key must be set before the API can be queried.")
     if(not region):
@@ -67,9 +75,13 @@ def get(request, params={}, static=False, include_base=True):
         else:
             raise cassiopeia.type.api.exception.APIError("Server returned error {code} on call: {url}".format(code=e.code, url=url), e.code)
 
-# @param url # str # The full URL to send a GET request to
-# @return # str # The content returned by the server
 def executeRequest(url):
+    """Executes an HTTP GET request and returns the result in a string
+
+    url       str    the full URL to send a GET request to
+
+    return    str    the content returned by the server
+    """
     if(print_calls):
         print(url)
 

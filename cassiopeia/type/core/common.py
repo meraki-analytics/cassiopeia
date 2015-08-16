@@ -4,13 +4,17 @@ import json
 import cassiopeia.type.api.exception
 
 class CassiopeiaObject(object):
-    # @param data # CassiopeiaDto # The underlying DTO object with the data for this type
+    """An object storing data from the API, with various helpful utilities and shortcuts"""
     def __init__(self, data):
+        """
+        data    CassiopeiaDto    the underlying DTO object with the data for this type
+        """
         if(data.__class__ is not self.dto_type):
             raise cassiopeia.type.api.exception.CassiopeiaException("Tried to instantiate a core {class_} with a {dto} dto!".format(class_=self.__class__.__name__, dto=data.__class__.__name__))
         self.data = data
 
     def to_json(self):
+        """Gets a JSON representation of the object"""
         return self.data.to_json()
 
     def __str__(self):
@@ -27,8 +31,13 @@ class CassiopeiaObject(object):
 
 
 class lazyproperty(object):
-    # @param method # function # The method to make a lazy property out of
+    """Makes a property load only once and store the result value to be returned to all later calls
+    @decorator
+    """
     def __init__(self, method):
+        """
+        method    function    the method to turn into a lazy property
+        """
         self.method = method
         self.values = {}
         self.__doc__ = method.__doc__
@@ -48,8 +57,13 @@ class lazyproperty(object):
 
 
 class immutablemethod(object):
-    # @param method # function # The method to make immutable
+    """Makes a method un-deletable and un-repleacable
+    @decorator
+    """
     def __init__(self, method):
+        """
+        method    function    the method to make immutable
+        """
         self.method = method
         self.__doc__ = method.__doc__
 

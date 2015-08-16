@@ -1,9 +1,13 @@
 import cassiopeia.dto.requests
 import cassiopeia.type.dto.summoner
 
-# @param summoner_names # list<str> or str # The summoner name(s) to look up
-# @return # dict<str, Summoner> # The requested summoners
 def get_summoners_by_name(summoner_names):
+    """https://developer.riotgames.com/api/methods#!/1017/3446
+
+    summoner_names    str | list<str>        the summoner name(s) to look up
+
+    return            dict<str, Summoner>    the requested summoners
+    """
     # Can only have 40 summoners max if it's a list
     if(isinstance(summoner_names, list) and len(summoner_names) > 40):
         raise ValueError("Can only get up to 40 summoners at once.")
@@ -20,9 +24,13 @@ def get_summoners_by_name(summoner_names):
 
     return response
 
-# @param summoner_ids # list<int> or int # The summoner ID(s) to look up
-# @return # dict<str, Summoner> # The requested summoners
 def get_summoners_by_id(summoner_ids):
+    """https://developer.riotgames.com/api/methods#!/1017/3447
+
+    summoner_ids    int | list<int>        the summoner ID(s) to look up
+
+    return          dict<str, Summoner>    the requested summoners
+    """
     # Can only have 40 summoners max if it's a list
     if(isinstance(summoner_ids, list) and len(summoner_ids) > 40):
         raise ValueError("Can only get up to 40 summoners at once.")
@@ -39,9 +47,13 @@ def get_summoners_by_id(summoner_ids):
 
     return response
 
-# @param summoner_ids # list<int> or int # The summoner ID(s) to get mastery pages for
-# @return # dict<str, MasteryPages> # The cassiopeia.dto.requests summoners' mastery pages
 def get_summoner_masteries(summoner_ids):
+    """https://developer.riotgames.com/api/methods#!/1017/3450
+
+    summoner_ids    int | list<int>            the summoner ID(s) to get mastery pages for
+
+    return          dict<str, MasteryPages>    the requested summoners' mastery pages
+    """
     # Can only have 40 summoners max if it's a list
     if(isinstance(summoner_ids, list) and len(summoner_ids) > 40):
         raise ValueError("Can only get masteries for up to 40 summoners at once.")
@@ -58,9 +70,13 @@ def get_summoner_masteries(summoner_ids):
 
     return response
 
-# @param summoner_ids # list<int> or int # The summoner ID(s) to get names for
-# @return # dict<str, str> # The names of the requested summoners
 def get_summoner_names(summoner_ids):
+    """https://developer.riotgames.com/api/methods#!/1017/3451
+
+    summoner_ids    int | list<int>   the summoner ID(s) to get names for
+
+    return          dict<str, str>    the requested summoners' names
+    """
     # Can only have 40 summoners max if it's a list
     if(isinstance(summoner_ids, list) and len(summoner_ids) > 40):
         raise ValueError("Can only get names for up to 40 summoners at once.")
@@ -71,9 +87,13 @@ def get_summoner_names(summoner_ids):
     request = "{version}/summoner/{ids}/name".format(version=cassiopeia.dto.requests.api_versions["summoner"], ids=id_string)
     return cassiopeia.dto.requests.get(request)
 
-# @param summoner_ids # list<int> or int # The summoner ID(s) to get rune pages for
-# @return # dict<str, RunePages> # The cassiopeia.dto.requests summoners' rune pages
 def get_summoner_runes(summoner_ids):
+    """https://developer.riotgames.com/api/methods#!/1017/3449
+
+    summoner_ids    int | list<int>         the summoner ID(s) to get rune pages for
+
+    return          dict<str, RunePages>    the requested summoners' rune pages
+    """
     # Can only have 40 summoners max if it's a list
     if(isinstance(summoner_ids, list) and len(summoner_ids) > 40):
         raise ValueError("Can only get runes for up to 40 summoners at once.")
