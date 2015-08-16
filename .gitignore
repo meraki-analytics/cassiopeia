@@ -55,5 +55,3 @@ docs/_build/
 
 # PyBuilder
 target/
-
-tests/
