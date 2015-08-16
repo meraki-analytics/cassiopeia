@@ -22,7 +22,7 @@ def __get_mastery_pages_by_id(ids):
 def get_mastery_pages(summoners):
     """Get the mastery pages for (a) summoner(s).
 
-    ids       int | list<int>                                the summoner(s) to get mastery pages for
+    ids       Summoner | list<Summoner>                      the summoner(s) to get mastery pages for
 
     return    list<MasteryPage> | list<list<MasteryPage>>    the requested summoner(s)' mastery pages
     """
@@ -47,7 +47,7 @@ def __get_rune_pages_by_id(ids):
 def get_rune_pages(summoners):
     """Get the rune pages for (a) summoner(s).
 
-    ids       int | list<int>                                the summoner(s) to get rune pages for
+    ids       Summoner | list<Summoner>                the summoner(s) to get rune pages for
 
     return    list<RunePage> | list<list<RunePage>>    the requested summoner(s)' rune pages
     """
