@@ -1,9 +1,13 @@
 import cassiopeia.dto.requests
 import cassiopeia.type.dto.league
 
-# @param summoner_ids # list<int> or int # A list of summoner IDs to get leagues for or a single ID
-# @return # dict<str, list<League>> # A mapping of summoner IDs to the leagues the summoner is in
 def get_leagues_by_summoner(summoner_ids):
+    """https://developer.riotgames.com/api/methods#!/985/3351
+
+    summoner_ids    int | list<int>            the summoner ID(s) to get leagues for
+
+    return          dict<str, list<League>>    the summoner(s)' leagues
+    """
     # Can only have 10 summoners max if it's a list
     if(isinstance(summoner_ids, list) and len(summoner_ids) > 10):
         raise ValueError("Can only get leagues for up to 10 summoners at once.")
@@ -21,9 +25,13 @@ def get_leagues_by_summoner(summoner_ids):
 
     return response
 
-# @param summoner_ids # list<int> or int # A list of summoner IDs to get leagues for or a single ID
-# @return # dict<str, list<League>> # A mapping of summoner IDs to the leagues the summoner is in (only including the summoner's own entries)
 def get_league_entries_by_summoner(summoner_ids):
+    """https://developer.riotgames.com/api/methods#!/985/3356
+
+    summoner_ids    int | list<int>            the summoner ID(s) to get league entries for
+
+    return          dict<str, list<League>>    the summoner(s)' league entries
+    """
     # Can only have 10 summoners max if it's a list
     if(isinstance(summoner_ids, list) and len(summoner_ids) > 10):
         raise ValueError("Can only get leagues for up to 10 summoners at once.")
@@ -41,9 +49,13 @@ def get_league_entries_by_summoner(summoner_ids):
 
     return response
 
-# @param team_ids # list<str> or str # A list of team IDs to get leagues for or a single ID
-# @return # dict<str, list<League>> # A mapping of team IDs to the leagues the team is in
 def get_leagues_by_team(team_ids):
+    """https://developer.riotgames.com/api/methods#!/985/3352
+
+    team_ids    str | list<str>            the team ID(s) to get leagues for
+
+    return      dict<str, list<League>>    the team(s)' leagues
+    """
     # Can only have 10 teams max if it's a list
     if(isinstance(team_ids, list) and len(team_ids) > 10):
         raise ValueError("Can only get leagues for up to 10 summoners at once.")
@@ -60,9 +72,13 @@ def get_leagues_by_team(team_ids):
 
     return response
 
-# @param team_ids # list<str> or str # A list of team IDs to get leagues for or a single ID
-# @return # dict<str, list<League>> # A mapping of team IDs to the leagues the team is in (only including the team's own entries)
 def get_league_entries_by_team(team_ids):
+    """https://developer.riotgames.com/api/methods#!/985/3355
+
+    team_ids    str | list<str>            the team ID(s) to get league entries for
+
+    return      dict<str, list<League>>    the team(s)' league entries
+    """
     # Can only have 10 teams max if it's a list
     if(isinstance(team_ids, list) and len(team_ids) > 10):
         raise ValueError("Can only get leagues for up to 10 summoners at once.")
@@ -79,14 +95,22 @@ def get_league_entries_by_team(team_ids):
 
     return response
 
-# @param queue_type # str # The queue type to get the challenger league for ("RANKED_SOLO_5x5", "RANKED_TEAM_3x3", "RANKED_TEAM_5x5")
-# @return # League # The challenger league
 def get_challenger(queue_type):
+    """https://developer.riotgames.com/api/methods#!/985/3353
+
+    queue_type    str       the queue type to get the challenger league for ("RANKED_SOLO_5x5", "RANKED_TEAM_3x3", "RANKED_TEAM_5x5")
+
+    return        League    the challenger league
+    """
     request = "{version}/league/challenger".format(version=cassiopeia.dto.requests.api_versions["league"])
     return cassiopeia.type.dto.league.League(cassiopeia.dto.requests.get(request, {"type": queue_type}))
 
-# @param queue_type # str # The queue type to get the master league for ("RANKED_SOLO_5x5", "RANKED_TEAM_3x3", "RANKED_TEAM_5x5")
-# @return # League # The master league
 def get_master(queue_type):
+    """https://developer.riotgames.com/api/methods#!/985/3354
+
+    queue_type    str       the queue type to get the master league for ("RANKED_SOLO_5x5", "RANKED_TEAM_3x3", "RANKED_TEAM_5x5")
+
+    return        League    the master league
+    """
     request = "{version}/league/master".format(version=cassiopeia.dto.requests.api_versions["league"])
     return cassiopeia.type.dto.league.League(cassiopeia.dto.requests.get(request, {"type": queue_type}))

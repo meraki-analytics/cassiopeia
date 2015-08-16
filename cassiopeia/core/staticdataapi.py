@@ -1,4 +1,3 @@
-from cassiopeia.dto.staticdataapi import get_languages, get_versions
 import cassiopeia.riotapi
 import cassiopeia.dto.staticdataapi
 import cassiopeia.core.requests
@@ -140,6 +139,13 @@ def get_language_strings():
     """
     return cassiopeia.dto.staticdataapi.get_language_strings().data
 
+def get_languages():
+    """Gets the valid locales (languages) that can be used with the API
+
+    return    list<str>    the valid locales
+    """
+    return cassiopeia.dto.staticdataapi.get_languages()
+
 def get_map_information():
     """Gets specific information about each map
 
@@ -270,3 +276,10 @@ def get_summoner_spells(ids=None):
 
         cassiopeia.core.requests.data_store.store(summoner_spells, [summoner_spell.id for summoner_spell in summoner_spells], [cassiopeia.type.core.staticdata.SummonerSpell])
         return summoner_spells
+
+def get_languages():
+    """Gets the valid versions of the API
+
+    return    list<str>    the valid versions
+    """
+    return cassiopeia.dto.staticdataapi.get_versions()

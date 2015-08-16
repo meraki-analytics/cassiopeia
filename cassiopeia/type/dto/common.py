@@ -33,9 +33,7 @@ class CassiopeiaDto(object):
     def __hash__(self):
         return hash(id(self))
 
-
 BaseDB = sqlalchemy.ext.declarative.declarative_base()
-
 
 class JSONEncoded(sqlalchemy.types.TypeDecorator):
     """JSON encoded storage for SQLAlchemy"""
