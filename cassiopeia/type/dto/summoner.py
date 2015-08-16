@@ -43,7 +43,7 @@ class RunePage(cassiopeia.type.dto.common.CassiopeiaDto):
         ids = set()
         for s in self.slots:
             if(s.runeId):
-                ids = ids.add(s.runeId)
+                ids.add(s.runeId)
         return ids
 
 
