@@ -2,6 +2,7 @@ import cassiopeia.riotapi
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.champion
 
+@cassiopeia.type.core.common.inheritdocs
 class ChampionStatus(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.champion.Champion
 
@@ -10,26 +11,32 @@ class ChampionStatus(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def enabled(self):
+        """Whether the champion is currently enabled"""
         return self.data.active
 
     @property
     def custom_enabled(self):
+        """Whether the champion is currently enabled for custom games"""
         return self.data.botEnabled
 
     @property
     def coop_ai_enabled(self):
+        """Whether the champion is currently enabled for coop vs ai games"""
         return self.data.botMmEnabled
 
     @property
     def free(self):
+        """Whether the champion is currently free this week"""
         return self.data.freeToPlay
 
     @property
     def champion(self):
+        """The champion this status is for"""
         return cassiopeia.riotapi.get_champion_by_id(self.data.id) if self.data.id else None
 
     @property
     def ranked_enabled(self):
+        """Whether the champion is currently enabled for ranked games"""
         return self.data.rankedPlayEnabled
 
 ###############################
