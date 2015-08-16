@@ -2,9 +2,9 @@
 
 A Python adaptation of the Riot Games LoL API (http://developer.riotgames.com/).
 
-Cassiopeia is the sister library to [Orianna](https://raw.githubusercontent.com/robrua/Orianna) (Java). It's been designed with usability in mind - making sure all the bookkeeping is done right so you can focus on getting the data you need and building your application. There's two main entry points, riotapi and baseriotapi. The former handles a ton of stuff behind the scenes to make your development experience awesome, while the latter allows you fine-grained control by exposing the Riot API exactly as the website's documentation specifies.
+Cassiopeia is the sister library to [Orianna](https://raw.githubusercontent.com/robrua/Orianna) (Java). It's been designed with usability in mind - making sure all the bookkeeping is done right so you can focus on getting the data you need and building your application. There's two main entry points - riotapi and baseriotapi. The former handles a ton of stuff behind the scenes to make your development experience awesome, while the latter allows you fine-grained control by exposing the Riot API exactly as the website's documentation specifies.
 
-## Features (riotAPI)
+## Features (riotapi)
 
 - Usability-focused type system to make your life easy
 - Automatically throttles requests to fit rate limits

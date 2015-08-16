@@ -1,9 +1,13 @@
 import threading
 
 class SingleRateLimiter(object):
-    # @param calls_per_epoch # int # Number of calls allowed in each epoch
-    # @param seconds_per_epoch # int # Number of seconds per epoch
+    """Handles a single rate limit, ensuring that calls don't exceed it"""
+
     def __init__(self, calls_per_epoch, seconds_per_epoch):
+        """
+        calls_per_epoch      int    the number of calls allowed in each epoch
+        seconds_per_epoch    int    the number of seconds per epoch
+        """
         self.seconds_per_epoch = seconds_per_epoch
         self.semaphore = threading.Semaphore(calls_per_epoch)
         self.lock = threading.Lock()
@@ -11,10 +15,14 @@ class SingleRateLimiter(object):
         self.limit = calls_per_epoch
         self.resetter = None
 
-    # @param method # function # The function which will be called within the rate limit
-    # @param *args # * # The arguments to be passed to the function when it is called
-    # @return # * # The result of the function
     def call(self, method=None, *args):
+        """Calls a function when the rate limit allows (first come first serve)
+
+        method    function    the function which will be called when the rate limit allows
+        *args     any...      the arguments to be passed to the functions when it is called
+
+        return    any         the result of the function once it has been called
+        """
         # Block until a call opens up
         self.semaphore.acquire()
 
@@ -39,13 +47,13 @@ class SingleRateLimiter(object):
             self.current -= 1
             self.lock.release()
 
-    # Drains the current 
     def _drain(self):
+        """Drains all remaining calls"""
         while self.semaphore.acquire(False):
             pass
 
-    # Resets the rate limit after an epoch has completed
     def _reset(self):
+        """Resets the rate limit"""
         self.lock.acquire()
 
         self._drain()
@@ -55,13 +63,16 @@ class SingleRateLimiter(object):
 
         self.lock.release()
 
-    # Waits until a call is available
     def wait(self):
+        """Waits until a call becomes available"""
         self.semaphore.acquire()
         self.semaphore.release()
 
-    # @param seconds # int # Number of seconds to reset after
     def reset_in(self, seconds):
+        """Resets the rate limiter after waiting
+
+        seconds    int    the number of seconds to wait before resetting
+        """
         if(self.resetter):
             self.resetter.cancel()
 
@@ -70,18 +81,27 @@ class SingleRateLimiter(object):
         self.resetter.daemon = True
         self.resetter.start()
 
+
 class MultiRateLimiter(object):
-    # @param limits # tuple... # A list of rate limit pairs. A rate limit is (calls_per_epoch, seconds_per_epoch)
+    """Handles a multiple rate limits simultaneously, ensuring that calls don't exceed them"""
+
     def __init__(self, *limits):
+        """
+        *limits    tuple...    the rate limits to apply. Rate limits are of the form (calls_per_epoch, seconds_per_epoch)
+        """
         self.limits = []
 
         for limit in limits:
             self.limits.append(SingleRateLimiter(limit[0], limit[1]))
 
-    # @param method # function # The function which will be called within the rate limit
-    # @param *args # * # The arguments to be passed to the function when it is called
-    # @return # * # The result of the function
     def call(self, method=None, *args):
+        """Calls a function when the rate limit allows (first come first serve)
+
+        method    function    the function which will be called when the rate limit allows
+        *args     any...      the arguments to be passed to the functions when it is called
+
+        return    any         the result of the function once it has been called
+        """
         self.wait()
 
         try:
@@ -93,12 +113,15 @@ class MultiRateLimiter(object):
             for limit in self.limits:
                 limit.call()
 
-    # Waits until a call is available
     def wait(self):
+        """Waits until a call becomes available"""
         for limit in self.limits:
             limit.wait()
 
-    # @param seconds # int # Number of seconds to reset after
     def reset_in(self, seconds):
+        """Resets the rate limiter after waiting
+
+        seconds    int    the number of seconds to wait before resetting
+        """
         for limit in self.limits:
             limit.reset_in(seconds)
