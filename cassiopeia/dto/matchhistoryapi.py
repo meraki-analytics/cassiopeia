@@ -1,12 +1,17 @@
 import cassiopeia.dto.requests
 import cassiopeia.type.dto.matchhistory
 
-# @param summoner_id # int # The ID of the summoner to get the match history for
-# @param begin_index # int # The game index to start from
-# @param champion_ids # list<int> or int # The champion ID(s) to limit the results to
-# @param ranked_queue # list<str> or str # The ranked queue(s) to limit the results to ("RANKED_SOLO_5x5", "RANKED_TEAM_3x3", "RANKED_TEAM_5x5")
-# @return # PlayerHistory # The match history for that summoner
+
 def get_match_history(summoner_id, begin_index=0, champion_ids=None, ranked_queues=None):
+    """https://developer.riotgames.com/api/methods#!/1012/3438
+
+    summoner_id      int                the ID of the summoner to get the match history for
+    begin_index      int                the game index to start from (default 0)
+    champion_ids     int | list<int>    the champion ID(s) to limit the results to (default None)
+    ranked_queues    str | list<str>    the ranked queue(s) to limit the results to ("RANKED_SOLO_5x5", "RANKED_TEAM_3x3", "RANKED_TEAM_5x5") (default None)
+
+    return           PlayerHistory      the summoner's match history
+    """
     request = "{version}/matchhistory/{summoner_id}".format(version=cassiopeia.dto.requests.api_versions["matchhistory"], summoner_id=summoner_id)
 
     params = {

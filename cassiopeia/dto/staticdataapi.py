@@ -3,9 +3,13 @@ import cassiopeia.type.dto.staticdata
 
 _locale = None
 
-# @param id_ # int # The ID of the champion to get
-# @return # Champion # The champion
 def get_champion(id_):
+    """https://developer.riotgames.com/api/methods#!/968/3322
+
+    id_       int         the ID of the champion to get
+
+    return    Champion    the champion
+    """
     request = "{version}/champion/{id_}".format(version=cassiopeia.dto.requests.api_versions["staticdata"], id_=id_)
 
     params = {"champData": "all"}
@@ -16,6 +20,10 @@ def get_champion(id_):
 
 # @return # ChampionList # All the champions
 def get_champions():
+    """https://developer.riotgames.com/api/methods#!/968/3326
+
+    return    ChampionList    all the champions
+    """
     request = "{version}/champion".format(version=cassiopeia.dto.requests.api_versions["staticdata"])
 
     params = {"champData": "all"}
@@ -24,9 +32,13 @@ def get_champions():
 
     return cassiopeia.type.dto.staticdata.ChampionList(cassiopeia.dto.requests.get(request, params, True))
 
-# @param id_ # int # The ID of the item to get
-# @return # Item # The item
 def get_item(id_):
+    """https://developer.riotgames.com/api/methods#!/968/3319
+
+    id_       int     the ID of the item to get
+
+    return    Item    the item
+    """
     request = "{version}/item/{id_}".format(version=cassiopeia.dto.requests.api_versions["staticdata"], id_=id_)
 
     params = {"itemData": "all"}
@@ -35,8 +47,11 @@ def get_item(id_):
 
     return cassiopeia.type.dto.staticdata.Item(cassiopeia.dto.requests.get(request, params, True))
 
-# @return # ItemList # All the items
 def get_items():
+    """https://developer.riotgames.com/api/methods#!/968/3314
+
+    return    ItemList    all the items
+    """
     request = "{version}/item".format(version=cassiopeia.dto.requests.api_versions["staticdata"])
 
     params = {"itemListData": "all"}
@@ -45,8 +60,11 @@ def get_items():
 
     return cassiopeia.type.dto.staticdata.ItemList(cassiopeia.dto.requests.get(request, params, True))
 
-# @return # LanguageStrings # The locale-based string replacements for various game constants
 def get_language_strings():
+    """https://developer.riotgames.com/api/methods#!/968/3316
+
+    return    LanguageStrings    the locale-based string replacements for various game constants
+    """
     request = "{version}/language-strings".format(version=cassiopeia.dto.requests.api_versions["staticdata"])
 
     params = {}
@@ -55,13 +73,19 @@ def get_language_strings():
 
     return cassiopeia.type.dto.staticdata.LanguageStrings(cassiopeia.dto.requests.get(request, params, True))
 
-# @return # list<str> # The valid locale strings for the API
 def get_languages():
+    """https://developer.riotgames.com/api/methods#!/968/3324
+
+    return    list<str>    the valid locale strings for the API
+    """
     request = "{version}/languages".format(version=cassiopeia.dto.requests.api_versions["staticdata"])
     return cassiopeia.dto.requests.get(request, {}, True)
 
-# @return # MapData # Specific information about each map
 def get_maps():
+    """https://developer.riotgames.com/api/methods#!/968/3328
+
+    return    MapData    specific information about each map
+    """
     request = "{version}/map".format(version=cassiopeia.dto.requests.api_versions["staticdata"])
 
     params = {}
@@ -70,9 +94,13 @@ def get_maps():
 
     return cassiopeia.type.dto.staticdata.MapData(cassiopeia.dto.requests.get(request, params, True))
 
-# @param id_ # int # The ID of the mastery to get
-# @return # Mastery # The mastery
 def get_mastery(id_):
+    """https://developer.riotgames.com/api/methods#!/968/3318
+
+    id_       int        the ID of the mastery to get
+
+    return    Mastery    the mastery
+    """
     request = "{version}/mastery/{id_}".format(version=cassiopeia.dto.requests.api_versions["staticdata"], id_=id_)
 
     params = {"masteryData": "all"}
@@ -81,8 +109,11 @@ def get_mastery(id_):
 
     return cassiopeia.type.dto.staticdata.Mastery(cassiopeia.dto.requests.get(request, params, True))
 
-# @return # MasteryList # All the masteries and associated metadata
 def get_masteries():
+    """https://developer.riotgames.com/api/methods#!/968/3317
+
+    return    MasteryList    all the masteries
+    """
     request = "{version}/mastery".format(version=cassiopeia.dto.requests.api_versions["staticdata"])
 
     params = {"masteryListData": "all"}
@@ -91,14 +122,21 @@ def get_masteries():
 
     return cassiopeia.type.dto.staticdata.MasteryList(cassiopeia.dto.requests.get(request, params, True))
 
-# @return # Realm # The realm for the current region
 def get_realm():
+    """https://developer.riotgames.com/api/methods#!/968/3325
+
+    return    Realm    the realm for the current region
+    """
     request = "{version}/realm".format(version=cassiopeia.dto.requests.api_versions["staticdata"])
     return cassiopeia.type.dto.staticdata.Realm(cassiopeia.dto.requests.get(request, {}, True))
 
-# @param id_ # int # The ID of the rune to get
-# @return # Rune # The rune
 def get_rune(id_):
+    """https://developer.riotgames.com/api/methods#!/968/3321
+
+    id_       int     the ID of the rune to get
+
+    return    Rune    the rune
+    """
     request = "{version}/rune/{id_}".format(version=cassiopeia.dto.requests.api_versions["staticdata"], id_=id_)
 
     params = {"runeData": "all"}
@@ -107,8 +145,11 @@ def get_rune(id_):
 
     return cassiopeia.type.dto.staticdata.Rune(cassiopeia.dto.requests.get(request, params, True))
 
-# @return # RuneList # All the runes
 def get_runes():
+    """https://developer.riotgames.com/api/methods#!/968/3315
+
+    return    RuneList    all the runes
+    """
     request = "{version}/rune".format(version=cassiopeia.dto.requests.api_versions["staticdata"])
 
     params = {"runeListData": "all"}
@@ -117,9 +158,13 @@ def get_runes():
 
     return cassiopeia.type.dto.staticdata.RuneList(cassiopeia.dto.requests.get(request, params, True))
 
-# @param id_ # int # The ID of the summoner spell to get
-# @return # SummonerSpell # The summoner spell
 def get_summoner_spell(id_):
+    """https://developer.riotgames.com/api/methods#!/968/3320
+
+    id_       int              the ID of the summoner spell to get
+
+    return    SummonerSpell    the summoner spell
+    """
     request = "{version}/summoner-spell/{id_}".format(version=cassiopeia.dto.requests.api_versions["staticdata"], id_=id_)
 
     params = {"spellData": "all"}
@@ -128,8 +173,11 @@ def get_summoner_spell(id_):
 
     return cassiopeia.type.dto.staticdata.SummonerSpell(cassiopeia.dto.requests.get(request, params, True))
 
-# @return # SummonerSpellList # All the summoner spells
 def get_summoner_spells():
+    """https://developer.riotgames.com/api/methods#!/968/3327
+
+    return    SummonerSpellList    all the summoner spells
+    """
     request = "{version}/summoner-spell".format(version=cassiopeia.dto.requests.api_versions["staticdata"])
 
     params = {"spellData": "all"}
@@ -138,7 +186,10 @@ def get_summoner_spells():
 
     return cassiopeia.type.dto.staticdata.SummonerSpellList(cassiopeia.dto.requests.get(request, params, True))
 
-# @return # list<str> # The valid API versions
 def get_versions():
+    """https://developer.riotgames.com/api/methods#!/968/3323
+
+    return    list<str>    the valid API versions
+    """
     request = "{version}/versions".format(version=cassiopeia.dto.requests.api_versions["staticdata"])
     return cassiopeia.dto.requests.get(request, {}, True)
