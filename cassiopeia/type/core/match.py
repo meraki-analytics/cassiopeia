@@ -31,34 +31,42 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def map(self):
+        """Map    the map the match was played on"""
         return cassiopeia.type.core.common.Map(self.data.mapId) if self.data.mapId else None
 
     @cassiopeia.type.core.common.lazyproperty
     def creation(self):
+        """datetime.datetime    when the match was created"""
         return datetime.datetime.utcfromtimestamp(self.data.matchCreation / 1000) if self.data.matchCreation else None
 
     @cassiopeia.type.core.common.lazyproperty
     def duration(self):
+        """datetime.datetime    duration of the match"""
         return datetime.timedelta(seconds=self.data.matchDuration)
 
     @property
     def id(self):
+        """int    the match ID"""
         return self.data.matchId
 
     @property
     def mode(self):
+        """GameMode    the game mode"""
         return cassiopeia.type.core.common.GameMode(self.data.matchMode) if self.data.matchMode else None
 
     @property
     def type(self):
+        """GameType    the game type"""
         return cassiopeia.type.core.common.GameType(self.data.matchType) if self.data.matchType else None
 
     @property
     def version(self):
+        """str    the patch this match was played in"""
         return self.data.matchVersion
 
     @cassiopeia.type.core.common.lazyproperty
     def participants(self):
+        """list<Participant>    the participants in this match"""
         participants = []
         for i in range(len(self.data.participants)):
             p = CombinedParticipant(self.data.participants[i], self.data.participantIdentities[i])
@@ -67,22 +75,27 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def platform(self):
+        """Platform    the platform (ie server) for this match"""
         return cassiopeia.type.core.common.Platform(self.data.platformId) if self.data.platformId else None
 
     @property
     def queue(self):
+        """Queue    the queue type for this match"""
         return cassiopeia.type.core.common.Queue(self.data.queueType) if self.data.queueType else None
 
     @property
     def region(self):
+        """Region    the region the match was played in"""
         return cassiopeia.type.core.common.Region(self.data.region) if self.data.region else None
 
     @property
     def season(self):
+        """Season    the season this match was played in"""
         return cassiopeia.type.core.common.Season(self.data.season) if self.data.season else None
 
     @cassiopeia.type.core.common.lazyproperty
     def blue_team(self):
+        """Team   the team on the blue side"""
         for team in self.data.teams:
             if(team.teamId == cassiopeia.type.core.common.Side.blue.value):
                 return Team(team, [part for part in self.participants if part.side is cassiopeia.type.core.common.Side.blue])
@@ -90,6 +103,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def red_team(self):
+        """Team   the team on the red side"""
         for team in self.data.teams:
             if(team.teamId == cassiopeia.type.core.common.Side.red.value):
                 return Team(team, [part for part in self.participants if part.side is cassiopeia.type.core.common.Side.red])
@@ -97,7 +111,13 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def timeline(self):
+        """ParticipantTimeline    the participant's timeline"""
         return Timeline(self.data.timeline, self.participants) if self.data.timeline else None
+
+    @cassiopeia.type.core.common.lazyproperty
+    def frames(self):
+        """list<Frame>    the frames in this match"""
+        return self.timeline.frames
 
 
 class CombinedParticipant(cassiopeia.type.dto.common.CassiopeiaDto):
@@ -114,14 +134,17 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def champion(self):
+        """Champion    the champion this participant played"""
         return cassiopeia.riotapi.get_champion_by_id(self.data.participant.championId) if self.data.participant.championId else None
 
     @property
     def previous_season_tier(self):
+        """Tier    the participant's tier last season"""
         return cassiopeia.type.core.common.Tier(self.data.participant.highestAchievedSeasonTier) if self.data.participant.highestAchievedSeasonTier else None
 
     @cassiopeia.type.core.common.lazyproperty
     def masteries(self):
+        """list<Mastery>    the participant's masteries"""
         masteries = []
         ranks = []
         for mastery in self.data.participant.masteries:
@@ -131,10 +154,12 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def id(self):
+        """int    the participant ID"""
         return self.data.participant.participantId
 
     @cassiopeia.type.core.common.lazyproperty
     def runes(self):
+        """list<Rune>    the participant's current runes"""
         runes = []
         counts = []
         for rune in self.data.participant.runes:
@@ -144,34 +169,42 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
         
     @property
     def summoner_spell_d(self):
+        """SummonerSpell    the participant's first summoner spell"""
         return cassiopeia.riotapi.get_summoner_spell(self.data.participant.spell1Id) if self.data.participant.spell1Id else None
 
     @property
     def summoner_spell_f(self):
+        """SummonerSpell    the participant's second summoner spell"""
         return cassiopeia.riotapi.get_summoner_spell(self.data.participant.spell2Id) if self.data.participant.spell2Id else None
 
     @cassiopeia.type.core.common.lazyproperty
     def stats(self):
+        """ParticipantStats    the participant's stats"""
         return ParticipantStats(self.data.participant.stats) if self.data.participant.stats else None
 
     @property
     def side(self):
+        """Side    the side this participant was on"""
         return cassiopeia.type.core.common.Side(self.data.participant.teamId) if self.data.participant.teamId else None
 
     @cassiopeia.type.core.common.lazyproperty
     def timeline(self):
+        """ParticipantTimeline    the participant's timeline"""
         return ParticipantTimeline(self.data.participant.timeline) if self.data.participant.timeline else None
 
     @property
     def match_history_uri(self):
+        """str    the the URI to access this player's match history online"""
         return self.data.identity.player.matchHistoryUri
 
     @property
     def summoner(self):
+        """Summoner    the summoner associated with this participant"""
         return cassiopeia.riotapi.get_summoner_by_id(self.data.identity.player.summonerId) if self.data.identity.player and self.data.identity.player.summonerId else None
 
     @property
     def summoner_name(self):
+        """str    the participant's summoner name"""
         return self.data.identity.player.summonerName
 
 
@@ -196,62 +229,77 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def participants(self):
+        """list<Participant>    the participants in this match"""
         return self.__participants
 
     @cassiopeia.type.core.common.lazyproperty
     def bans(self):
+        """list<Ban>    the bans for this game"""
         return [Ban(ban) for ban in self.data.bans]
 
     @property
     def baron_kills(self):
+        """int    the number of times the team killed Baron"""
         return self.data.baronKills
 
     @property
     def victory_score(self):
+        """int    dominion only, the points the team had at game end"""
         return self.data.dominionVictoryScore
 
     @property
     def dragon_kills(self):
+        """int    the number of times the team killed Dragon"""
         return self.data.dragonKills
 
     @property
     def first_baron(self):
+        """bool    whether or not the team killed the first baron"""
         return self.data.firstBaron
 
     @property
     def first_blood(self):
+        """bool    whether this team got first blood"""
         return self.data.firstBlood
 
     @property
     def first_dragon(self):
+        """bool    whether or not this team killed the first dragon"""
         return self.data.firstDragon
 
     @property
     def first_inhibitor(self):
+        """bool    flag indicating if this team destroyed the first inhibitor"""
         return self.data.firstInhibitor
 
     @property
     def first_turret(self):
+        """bool    flag indicating if this team destroyed the first tower"""
         return self.data.firstTower
 
     @property
     def inhibitor_kills(self):
+        """int    the number of inhibitors this team killed"""
         return self.data.inhibitorKills
 
     @property
     def side(self):
+        """Side    the side this participant was on"""
         return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.teamId else None
 
     @property
     def turret_kills(self):
+        """int    the number of turret kills this participant had"""
         return self.data.towerKills
 
     @property
-    def spider_kills(self):
+    def vilemaw_kills(self):
+        """int    the number of times the participant has killed Vilemaw"""
         return self.data.vilemawKills
 
     @property
     def win(self):
+        """bool    whether or not the participant won the game"""
         return self.data.winner
 
 
@@ -276,10 +324,12 @@ class Timeline(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def frame_interval(self):
+        """datetime.timedelta    the number of milliseconds between frames"""
         return datetime.timedelta(milliseconds=self.data.frameInterval)
 
     @cassiopeia.type.core.common.lazyproperty
     def frames(self):
+        """list<Frame>    the frames in this match"""
         participants = {participant.id: participant for participant in self.__participants}
         value = [Frame(frame, participants) for frame in self.data.frames]
         del self.__participants
@@ -294,326 +344,326 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def kda(self):
+        """float    the participant's kda"""
         return (self.kills + self.assists) / (self.deaths if self.deaths else 1)
 
-    # int # Number of assists
     @property
     def assists(self):
+        """int    the total number of assists this participant had"""
         return self.data.assists
 
-    # int # Champion level achieved
     @property
     def champion_level(self):
+        """int    the champion level of the participant when the game ended"""
         return self.data.champLevel
 
-    # int # If game was a dominion game, player's combat score, otherwise 0
     @property
     def combat_score(self):
+        """int    dominion only. the part of the participant's score that came from combat-related activities"""
         return self.data.combatPlayerScore
 
-    # int # Number of deaths
     @property
     def deaths(self):
+        """int    the number of deaths this participant had"""
         return self.data.deaths
 
-    # int # Number of double kills
     @property
     def double_kills(self):
+        """int    the number of double kills this participant had"""
         return self.data.doubleKills
 
-    # bool # Flag indicating if participant got an assist on first blood
     @property
     def first_blood_assist(self):
+        """bool    flag indicating if participant got an assist on first blood"""
         return self.data.firstBloodAssist
 
-    # bool # Flag indicating if participant got first blood
     @property
     def first_blood(self):
+        """bool    whether this participant got first blood"""
         return self.data.firstBloodKill
 
-    # bool # Flag indicating if participant got an assist on the first inhibitor
     @property
     def first_inhibitor_assist(self):
+        """bool    flag indicating if participant got an assist on the first inhibitor"""
         return self.data.firstInhibitorAssist
 
-    # bool # Flag indicating if participant destroyed the first inhibitor
     @property
     def first_inhibitor(self):
+        """bool    flag indicating if participant destroyed the first inhibitor"""
         return self.data.firstInhibitorKill
 
-    # bool # Flag indicating if participant got an assist on the first tower
     @property
     def first_turret_assist(self):
+        """bool    flag indicating if participant got an assist on the first tower"""
         return self.data.firstTowerAssist
 
-    # bool # Flag indicating if participant destroyed the first tower
     @property
     def first_turret(self):
+        """bool    flag indicating if participant destroyed the first tower"""
         return self.data.firstTowerKill
 
-    # int # Gold earned
     @property
     def gold_earned(self):
+        """int    the participant's total gold"""
         return self.data.goldEarned
 
-    # int # Gold spent
     @property
     def gold_spent(self):
+        """int    the participant's spent gold"""
         return self.data.goldSpent
 
-    # int # Number of inhibitor kills
     @property
     def inhibitor_kills(self):
+        """int    the number of inhibitors this participant killed"""
         return self.data.inhibitorKills
 
-    # Item # First item
     @property
     def item0(self):
+        """Item    the participant's first item"""
         return cassiopeia.riotapi.get_item(self.data.item0) if self.data.item0 else None
 
-    # Item # Second item
     @property
     def item1(self):
+        """Item    the participant's second item"""
         return cassiopeia.riotapi.get_item(self.data.item1) if self.data.item1 else None
 
-    # Item # Third item
     @property
     def item2(self):
+        """Item    the participant's third item"""
         return cassiopeia.riotapi.get_item(self.data.item2) if self.data.item2 else None
 
-    # Item # Fourth item
     @property
     def item3(self):
+        """Item    the participant's fourth item"""
         return cassiopeia.riotapi.get_item(self.data.item3) if self.data.item3 else None
 
-    # Item # Fifth item
     @property
     def item4(self):
+        """Item    the participant's fifth item"""
         return cassiopeia.riotapi.get_item(self.data.item4) if self.data.item4 else None
 
-    # Item # Sixth item
     @property
     def item5(self):
         return cassiopeia.riotapi.get_item(self.data.item5) if self.data.item5 else None
 
-    # Item # Seventh item
     @property
     def item6(self):
+        """Item    the participant's seventh item (i.e. their ward)"""
         return cassiopeia.riotapi.get_item(self.data.item6) if self.data.item6 else None
 
-    # list<Item> # Items
     @property
     def items(self):
+        """list<Item>    the participant's items"""
         return [self.item0, self.item1, self.item2, self.item3, self.item4, self.item5, self.item6]
 
-    # int # Number of killing sprees
     @property
     def killing_sprees(self):
+        """int    the number of killing sprees this participant had"""
         return self.data.killingSprees
 
-    # int # Number of kills
     @property
     def kills(self):
+        """int    the total number of kills this participant had"""
         return self.data.kills
 
-    # int # Largest critical strike
     @property
     def largest_critical_strike(self):
+        """int    the largest critical strike this participant had"""
         return self.data.largestCriticalStrike
 
-    # int # Largest killing spree
     @property
     def largest_killing_spree(self):
+        """int    the larges killing spree this participant had"""
         return self.data.largestKillingSpree
 
-    # int # Largest multi kill
     @property
     def largest_multi_kill(self):
+        """int    the largest multikill this participant had"""
         return self.data.largestMultiKill
 
-    # int # Magical damage dealt
     @property
     def magic_damage_dealt(self):
+        """int    the total magic damage this participant dealt"""
         return self.data.magicDamageDealt
 
-    # int # Magical damage dealt to champions
     @property
     def magic_damage_dealt_to_champions(self):
+        """int    the total magic damage this participant dealt to champions"""
         return self.data.magicDamageDealtToChampions
 
-    # int # Magic damage taken
     @property
     def magic_damage_taken(self):
+        """int    the total magic damage this participant received"""
         return self.data.magicDamageTaken
 
-    # int # Minions killed
     @property
     def minion_kills(self):
+        """int    the number of minions this participant killed"""
         return self.data.minionsKilled
 
-    # int # Neutral minions killed
     @property
-    def neutral_minion_kills(self):
+    def monster_kills(self):
+        """int    the number of neutral minions this participant killed"""
         return self.data.neutralMinionsKilled
 
-    # int # Neutral jungle minions killed in the enemy team's jungle
     @property
-    def neutral_minion_kills_enemy_jungle(self):
+    def enemy_monster_kills(self):
+        """int    the number of neutral jungle minions killed in the enemy team's jungle"""
         return self.data.neutralMinionsKilledEnemyJungle
 
-    # int # Neutral jungle minions killed in your team's jungle
     @property
-    def neutral_minion_kills_ally_jungle(self):
+    def ally_monster_kills(self):
+        """int    the number of neutral jungle minions killed in your team's jungle"""
         return self.data.neutralMinionsKilledTeamJungle
 
-    # int # If game was a dominion game, number of node captures
     @property
     def nodes_captured(self):
+        """int    dominion only. the number of nodes this participant captured"""
         return self.data.nodeCapture
 
-    # int # If game was a dominion game, number of node capture assists
     @property
     def node_capture_assists(self):
+        """int    dominion only. the number of nodes this participant assisted in capturing"""
         return self.data.nodeCaptureAssist
 
-    # int # If game was a dominion game, number of node neutralizations
     @property
     def node_neutralizations(self):
+        """int    dominion only. the number of nodes this participant neutralized"""
         return self.data.nodeNeutralize
 
-    # int # If game was a dominion game, number of node neutralization assists
     @property
     def node_neutralization_assists(self):
+        """int    dominion only. the number of nodes this participant assisted in neutralizing"""
         return self.data.nodeNeutralizeAssist
 
-    # int # If game was a dominion game, player's objectives score, otherwise 0
     @property
     def objective_score(self):
+        """int    dominion only. the part of the participant's score that came from objective-related activities"""
         return self.data.objectivePlayerScore
 
-    # int # Number of penta kills
     @property
     def penta_kills(self):
+        """int    the number of penta kills this participant had"""
         return self.data.pentaKills
 
-    # int # Physical damage dealt
     @property
     def physical_damage_dealt(self):
+        """int    the total physical damage this participant dealt"""
         return self.data.physicalDamageDealt
 
-    # int # Physical damage dealt to champions
     @property
     def physical_damage_dealt_to_champions(self):
+        """int    the total physical damage this participant dealt to champions"""
         return self.data.physicalDamageDealtToChampions
 
-    # int # Physical damage taken
     @property
     def physical_damage_taken(self):
+        """int    the total physical damage this participant received"""
         return self.data.physicalDamageTaken
 
-    # int # Number of quadra kills
     @property
     def quadra_kills(self):
+        """int    the number of quadra kills this participant had"""
         return self.data.quadraKills
 
-    # int # Sight wards purchased
     @property
     def sight_wards_bought(self):
+        """int    the number of sight wards this participant bought"""
         return self.data.sightWardsBoughtInGame
 
-    # int # If game was a dominion game, number of completed team objectives (i.e., quests)
     @property
     def team_objectives(self):
+        """int    if game was a dominion game, number of completed team objectives (i.e., quests)"""
         return self.data.teamObjective
 
-    # int # Total damage dealt
     @property
     def damage_dealt(self):
+        """int    the total damage this participant dealt"""
         return self.data.totalDamageDealt
 
-    # int # Total damage dealt to champions
     @property
     def damage_dealt_to_champions(self):
+        """int    the total damage this participant dealt to champions"""
         return self.data.totalDamageDealtToChampions
 
-    # int # Total damage taken
     @property
     def damage_taken(self):
+        """int    the total damage this participant received"""
         return self.data.totalDamageTaken
 
-    # int # Total heal amount
     @property
     def healing_done(self):
+        """int    the amount of healing this participant did"""
         return self.data.totalHeal
 
-    # int # If game was a dominion game, player's total score, otherwise 0
     @property
     def score(self):
+        """int    dominion only. the score for this participant"""
         return self.data.totalPlayerScore
 
-    # int # If game was a dominion game, team rank of the player's total score (e.g., 1-5)
     @property
     def score_rank(self):
+        """int    if game was a dominion game, team rank of the player's total score (e.g., 1-5)"""
         return self.data.totalScoreRank
 
-    # int # Total dealt crowd control time
     @property
     def crowd_control_dealt(self):
+        """int    the total amount of crowd control this participant dealt (in seconds)"""
         return self.data.totalTimeCrowdControlDealt
 
-    # int # Total units healed
     @property
     def units_healed(self):
+        """int    the number of units this participant healed"""
         return self.data.totalUnitsHealed
 
-    # int # Number of tower kills
     @property
     def turret_kills(self):
+        """int    the number of turret kills this participant had"""
         return self.data.towerKills
 
-    # int # Number of triple kills
     @property
     def triple_kills(self):
+        """int    the number of triple kills this participant had"""
         return self.data.tripleKills
 
-    # int # True damage dealt
     @property
     def true_damage_dealt(self):
+        """int    the total true damage this participant dealth"""
         return self.data.trueDamageDealt
 
-    # int # True damage dealt to champions
     @property
     def true_damage_dealt_to_champions(self):
+        """int    the total damage this participant dealt to champions"""
         return self.data.trueDamageDealtToChampions
 
-    # int # True damage taken
     @property
     def true_damage_taken(self):
+        """int    the total true damage this participant received"""
         return self.data.trueDamageTaken
 
-    # int # Number of unreal kills
     @property
     def unreal_kills(self):
+        """int    the number of unreal kills this participant had"""
         return self.data.unrealKills
 
-    # int # Vision wards purchased
     @property
     def vision_wards_bought(self):
+        """int    the number of vision wards sprees this participant bought"""
         return self.data.visionWardsBoughtInGame
 
-    # int # Number of wards killed
     @property
-    def wards_kills(self):
+    def ward_kills(self):
+        """int    the number of wards this participant killed"""
         return self.data.wardsKilled
 
-    # int # Number of wards placed
     @property
     def wards_placed(self):
+        """int    the number of wards this participant placed"""
         return self.data.wardsPlaced
 
-    # bool # Flag indicating whether or not the participant won
     @property
     def win(self):
+        """bool    whether or not the participant won the game"""
         return self.data.winner
 
 
@@ -623,142 +673,142 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def __str__(self):
         return "Participant Timeline"
 
-    # ParticipantTimelineData # Ancient golem assists per minute timeline counts
     @cassiopeia.type.core.common.lazyproperty
     def ancient_golem_assists_per_min_counts(self):
+        """ParticipantTimelineData    ancient golem assists per minute timeline counts"""
         return ParticipantTimelineData(self.data.ancientGolemAssistsPerMinCounts) if self.data.ancientGolemAssistsPerMinCounts else None
 
-    # ParticipantTimelineData # Ancient golem kills per minute timeline counts
     @cassiopeia.type.core.common.lazyproperty
     def ancient_golem_kills_per_min_counts(self):
+        """ParticipantTimelineData    ancient golem kills per minute timeline counts"""
         return ParticipantTimelineData(self.data.ancientGolemKillsPerMinCounts) if self.data.ancientGolemKillsPerMinCounts else None
 
-    # ParticipantTimelineData # Assisted lane deaths per minute timeline data
     @cassiopeia.type.core.common.lazyproperty
     def assisted_lane_deaths_per_min_deltas(self):
+        """ParticipantTimelineData    assisted lane deaths per minute timeline data"""
         return ParticipantTimelineData(self.data.assistedLaneDeathsPerMinDeltas) if self.data.assistedLaneDeathsPerMinDeltas else None
 
-    # ParticipantTimelineData # Assisted lane kills per minute timeline data
     @cassiopeia.type.core.common.lazyproperty
     def assisted_lane_kills_per_min_deltas(self):
+        """ParticipantTimelineData    assisted lane kills per minute timeline data"""
         return ParticipantTimelineData(self.data.assistedLaneKillsPerMinDeltas) if self.data.assistedLaneKillsPerMinDeltas else None
 
-    # ParticipantTimelineData # Baron assists per minute timeline counts
     @cassiopeia.type.core.common.lazyproperty
     def baron_assists_per_min_counts(self):
+        """ParticipantTimelineData    baron assists per minute timeline counts"""
         return ParticipantTimelineData(self.data.baronAssistsPerMinCounts) if self.data.baronAssistsPerMinCounts else None
 
-    # ParticipantTimelineData # Baron kills per minute timeline counts
     @cassiopeia.type.core.common.lazyproperty
     def baron_kills_per_min_counts(self):
+        """ParticipantTimelineData    baron kills per minute timeline counts"""
         return ParticipantTimelineData(self.data.baronKillsPerMinCounts) if self.data.baronKillsPerMinCounts else None
 
-    # ParticipantTimelineData # Creeps per minute timeline data
     @cassiopeia.type.core.common.lazyproperty
     def creeps_per_min_deltas(self):
+        """ParticipantTimelineData    creeps per minute timeline data"""
         return ParticipantTimelineData(self.data.creepsPerMinDeltas) if self.data.creepsPerMinDeltas else None
 
-    # ParticipantTimelineData # Creep score difference per minute timeline data
     @cassiopeia.type.core.common.lazyproperty
     def cs_diff_per_min_deltas(self):
+        """ParticipantTimelineData    creep score difference per minute timeline data"""
         return ParticipantTimelineData(self.data.csDiffPerMinDeltas) if self.data.csDiffPerMinDeltas else None
 
-    # ParticipantTimelineData # Damage taken difference per minute timeline data
     @cassiopeia.type.core.common.lazyproperty
     def damage_taken_diff_per_min_deltas(self):
+        """ParticipantTimelineData    damage taken difference per minute timeline data"""
         return ParticipantTimelineData(self.data.damageTakenDiffPerMinDeltas) if self.data.damageTakenDiffPerMinDeltas else None
 
-    # ParticipantTimelineData # Damage taken per minute timeline data
     @cassiopeia.type.core.common.lazyproperty
     def damage_taken_per_min_deltas(self):
+        """ParticipantTimelineData    damage taken per minute timeline data"""
         return ParticipantTimelineData(self.data.damageTakenPerMinDeltas) if self.data.damageTakenPerMinDeltas else None
 
-    # ParticipantTimelineData # Dragon assists per minute timeline counts
     @cassiopeia.type.core.common.lazyproperty
     def dragon_assists_per_min_counts(self):
+        """ParticipantTimelineData    dragon assists per minute timeline counts"""
         return ParticipantTimelineData(self.data.dragonAssistsPerMinCounts) if self.data.dragonAssistsPerMinCounts else None
 
-    # ParticipantTimelineData # Dragon kills per minute timeline counts
     @cassiopeia.type.core.common.lazyproperty
     def dragon_kills_per_min_counts(self):
+        """ParticipantTimelineData    dragon kills per minute timeline counts"""
         return ParticipantTimelineData(self.data.dragonKillsPerMinCounts) if self.data.dragonKillsPerMinCounts else None
 
-    # ParticipantTimelineData # Elder lizard assists per minute timeline counts
     @cassiopeia.type.core.common.lazyproperty
     def elder_lizard_assists_per_min_counts(self):
+        """ParticipantTimelineData    elder lizard assists per minute timeline counts"""
         return ParticipantTimelineData(self.data.elderLizardAssistsPerMinCounts) if self.data.elderLizardAssistsPerMinCounts else None
 
-    # ParticipantTimelineData # Elder lizard kills per minute timeline counts
     @cassiopeia.type.core.common.lazyproperty
     def elder_lizard_kills_per_min_counts(self):
+        """ParticipantTimelineData    elder lizard kills per minute timeline counts"""
         return ParticipantTimelineData(self.data.elderLizardKillsPerMinCounts) if self.data.elderLizardKillsPerMinCounts else None
 
-    # ParticipantTimelineData # Gold per minute timeline data
     @cassiopeia.type.core.common.lazyproperty
     def gold_per_min_deltas(self):
+        """ParticipantTimelineData    gold per minute timeline data"""
         return ParticipantTimelineData(self.data.goldPerMinDeltas) if self.data.goldPerMinDeltas else None
 
-    # ParticipantTimelineData # Inhibitor assists per minute timeline counts
     @cassiopeia.type.core.common.lazyproperty
     def inhibitor_assists_per_min_counts(self):
+        """ParticipantTimelineData    inhibitor assists per minute timeline counts"""
         return ParticipantTimelineData(self.data.inhibitorAssistsPerMinCounts) if self.data.inhibitorAssistsPerMinCounts else None
 
-    # ParticipantTimelineData # Inhibitor kills per minute timeline counts
     @cassiopeia.type.core.common.lazyproperty
     def inhibitor_kills_per_min_counts(self):
+        """ParticipantTimelineData    inhibitor kills per minute timeline counts"""
         return ParticipantTimelineData(self.data.inhibitorKillsPerMinCounts) if self.data.inhibitorKillsPerMinCounts else None
 
-    # str # Participant's lane
     @property
     def lane(self):
+        """Lane    the lane this participant was in"""
         lane = self.data.lane
         lane = "MIDDLE" if lane == "MID" else lane
         lane = "BOTTOM" if lane == "BOT" else lane
         return cassiopeia.type.core.common.Lane(lane) if lane else None
 
-    # str # Participant's role
     @property
     def role(self):
+        """Role    the role of this particiant"""
         return cassiopeia.type.core.common.Role(self.data.role) if self.data.role else None
 
-    # ParticipantTimelineData # Tower assists per minute timeline counts
     @cassiopeia.type.core.common.lazyproperty
     def turret_assists_per_min_counts(self):
+        """ParticipantTimelineData    tower assists per minute timeline counts"""
         return ParticipantTimelineData(self.data.towerAssistsPerMinCounts) if self.data.towerAssistsPerMinCounts else None
 
-    # ParticipantTimelineData # Tower kills per minute timeline counts
     @cassiopeia.type.core.common.lazyproperty
     def turret_kills_per_min_counts(self):
+        """ParticipantTimelineData    tower kills per minute timeline counts"""
         return ParticipantTimelineData(self.data.towerKillsPerMinCounts) if self.data.towerKillsPerMinCounts else None
 
-    # ParticipantTimelineData # Tower kills per minute timeline data
     @cassiopeia.type.core.common.lazyproperty
     def turret_Kills_per_min_deltas(self):
+        """ParticipantTimelineData    tower kills per minute timeline data"""
         return ParticipantTimelineData(self.data.towerKillsPerMinDeltas) if self.data.towerKillsPerMinDeltas else None
 
-    # ParticipantTimelineData # Vilemaw assists per minute timeline counts
     @cassiopeia.type.core.common.lazyproperty
     def spider_assists_per_min_counts(self):
+        """ParticipantTimelineData    vilemaw assists per minute timeline counts"""
         return ParticipantTimelineData(self.data.vilemawAssistsPerMinCounts) if self.data.vilemawAssistsPerMinCounts else None
 
-    # ParticipantTimelineData # Vilemaw kills per minute timeline counts
     @cassiopeia.type.core.common.lazyproperty
     def spider_kills_per_min_counts(self):
+        """ParticipantTimelineData    vilemaw kills per minute timeline counts"""
         return ParticipantTimelineData(self.data.vilemawKillsPerMinCounts) if self.data.vilemawKillsPerMinCounts else None
 
-    # ParticipantTimelineData # Wards placed per minute timeline data
     @cassiopeia.type.core.common.lazyproperty
     def wards_per_min_deltas(self):
+        """ParticipantTimelineData    wards placed per minute timeline data"""
         return ParticipantTimelineData(self.data.wardsPerMinDeltas) if self.data.wardsPerMinDeltas else None
 
-    # ParticipantTimelineData # Experience difference per minute timeline data
     @cassiopeia.type.core.common.lazyproperty
     def xp_diff_per_min_deltas(self):
+        """ParticipantTimelineData    experience difference per minute timeline data"""
         return ParticipantTimelineData(self.data.xpDiffPerMinDeltas) if self.data.xpDiffPerMinDeltas else None
 
-    # ParticipantTimelineData # Experience per minute timeline data
     @cassiopeia.type.core.common.lazyproperty
     def xp_per_min_deltas(self):
+        """ParticipantTimelineData    experience per minute timeline data"""
         return ParticipantTimelineData(self.data.xpPerMinDeltas) if self.data.xpPerMinDeltas else None
 
 
@@ -770,10 +820,12 @@ class Ban(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def champion(self):
+        """Champion    the champion that was banned"""
         return cassiopeia.riotapi.get_champion_by_id(self.data.championId) if self.data.championId else None
 
     @property
     def pick_turn(self):
+        """int    which pick turn this ban was on"""
         return self.data.pickTurn
 
 
@@ -806,18 +858,21 @@ class Frame(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def events(self):
+        """list<Event>    the events in this frame"""
         value = [Event(event, self.__participants) for event in self.data.events]
         self.__count_participant()
         return value
 
     @cassiopeia.type.core.common.lazyproperty
     def participant_frames(self):
+        """dict<participantID:ParticipantFrame>    the frames in for each participant"""
         value = {participant: ParticipantFrame(self.data.participantFrames[str(id_)], self.__participants) for id_, participant in self.__participants.items()}
         self.__count_participant()
         return value
 
     @cassiopeia.type.core.common.lazyproperty
     def timestamp(self):
+        """datetime.datetime    the timestamp for this match"""
         return datetime.timedelta(milliseconds=self.data.timestamp)
 
 
@@ -829,18 +884,22 @@ class ParticipantTimelineData(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def ten_to_twenty(self):
+        """float    value per minute from 10 min to 20 min"""
         return self.data.tenToTwenty
 
     @property
     def thirty_to_end(self):
+        """float    value per minute from 30 min to the end of the game"""
         return self.data.thirtyToEnd
 
     @property
     def twenty_to_thirty(self):
+        """float    value per minute from 20 min to 30 min"""
         return self.data.twentyToThirty
 
     @property
     def zero_to_ten(self):
+        """float    value per minute from the beginning of the game to 10 min"""
         return self.data.zeroToTen
 
 
@@ -864,96 +923,117 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def ascended(self):
+        """Ascended    what died in the event"""
         return cassiopeia.type.core.common.Ascended(self.data.ascendedType) if self.data.ascendedType else None
 
     @cassiopeia.type.core.common.lazyproperty
     def assists(self):
+        """list<Participant>    the participants who assisted in the event"""
         value = [self.__participants[i] for i in self.data.assistingParticipantIds]
         self.__count_participant()
         return value
 
     @property
     def building(self):
+        """Building    the building type associated with the event, if any"""
         return cassiopeia.type.core.common.Building(self.data.buildingType) if self.data.buildingType else None
 
     @cassiopeia.type.core.common.lazyproperty
     def creator(self):
+        """Participant    the participant who created the event"""
         value = self.__participants[self.data.creatorId] if self.data.creatorId else None
         self.__count_participant()
         return value
 
     @property
     def type(self):
+        """EventType    the event type"""
         return cassiopeia.type.core.common.EventType(self.data.eventType) if self.data.eventType else None
 
     @property
     def item_after(self):
+        """Item    the item involved before the event happened"""
         return cassiopeia.riotapi.get_item(self.data.itemAfter) if self.data.itemAfter else None
 
     @property
     def item_before(self):
+        """Item    the item involved after the event happened"""
         return cassiopeia.riotapi.get_item(self.data.itemBefore) if self.data.itemBefore else None
 
     @property
     def item(self):
+        """Item    the item involved in the event"""
         return cassiopeia.riotapi.get_item(self.data.itemId) if self.data.itemId else None
 
     @cassiopeia.type.core.common.lazyproperty
     def killer(self):
+        """Participant    the participant who did the killing"""
         value = self.__participants[self.data.killerId] if self.data.killerId else None
         self.__count_participant()
         return value
 
     @property
     def lane(self):
+        """Lane    the lane this event happened in"""
         return cassiopeia.type.core.common.LaneType(self.data.laneType) if self.data.laneType else None
 
     @property
     def level_up(self):
+        """LevelUp    the level up type of the event"""
         return cassiopeia.type.core.common.LevelUp(self.data.levelUpType) if self.data.levelUpType else None
 
     @property
     def monster(self):
+        """Monster    the monster that was involved in the event"""
         return cassiopeia.type.core.common.Monster(self.data.monsterType) if self.data.monsterType else None
 
     @cassiopeia.type.core.common.lazyproperty
     def participant(self):
+        """Participant    the primary participant that event happened to or who was involved in the event"""
         value = self.__participants[self.data.participantId] if self.data.participantId else None
         self.__count_participant()
         return value
 
     @property
     def point_captured(self):
-        return cassiopeia.type.core.common.oint(self.data.pointCaptured) if self.data.pointCaptured else None
+        """Point    dominion only, which point was captured"""
+        return cassiopeia.type.core.common.Point(self.data.pointCaptured) if self.data.pointCaptured else None
 
     @cassiopeia.type.core.common.lazyproperty
     def position(self):
+        """Position    the position where the event occurred"""
         return Position(self.data.position) if self.data.position else None
 
     @property
     def skill_slot(self):
+        """int    the skill slot of the event"""
         return self.data.skillSlot
 
     @property
     def tower(self):
-        return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.teamId else None
+        """Tower    which tower was involved in the event"""
+        return cassiopeia.type.core.common.Turret(self.data.towerType) if self.data.teamId else None
 
     @cassiopeia.type.core.common.lazyproperty
     def timestamp(self):
+        """datetime.datetime    the timestamp for this event"""
         return datetime.timedelta(milliseconds=self.data.timestamp)
 
     @property
     def side(self):
-        return cassiopeia.type.core.common.Tower(self.data.towerType) if self.data.towerType else None
+        """Side    the side the event was on"""
+        return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.towerType else None
 
     @cassiopeia.type.core.common.lazyproperty
     def victim(self):
+        """Participant    the victim!"""
         value = self.__participants[self.data.victimId] if self.data.victimId else None
         self.__count_participant()
         return value
 
     @property
     def ward(self):
+        """Ward    the ward type associated with this event"""
         return cassiopeia.type.core.common.Ward(self.data.wardType) if self.data.wardType else None
 
 
@@ -969,38 +1049,47 @@ class ParticipantFrame(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def gold(self):
+        """int    the participant's current gold"""
         return self.data.currentGold
 
     @property
     def score(self):
+        """int    dominion only. the score for this participant"""
         return self.data.dominionScore
 
     @property
-    def jungle_minions(self):
+    def jungle_monsters_killed(self):
+        """int    the number of neutral jungle monsters killed"""
         return self.data.jungleMinionsKilled
 
     @property
     def level(self):
+        """int    the participant's champion level"""
         return self.data.level
 
     @property
-    def minions(self):
+    def minions_killed(self):
+        """int    the number of minions killed"""
         return self.data.minionsKilled
 
     @property
     def participant(self):
+        """Participant    the participant whose frames you are looking at"""
         return self.__participant
 
     @cassiopeia.type.core.common.lazyproperty
     def position(self):
+        """Position    the participant's position"""
         return Position(self.data.position) if self.data.position else None
 
     @property
     def team_score(self):
+        """int    the team score for the participant"""
         return self.data.teamScore
 
     @property
     def xp(self):
+        """int    the amount of XP the participant has"""
         return self.data.xp
 
 
@@ -1012,10 +1101,12 @@ class Position(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def x(self):
+        """int    the x-position of the pixel"""
         return self.data.x
 
     @property
     def y(self):
+        """int    the y-position of the pixel"""
         return self.data.y
 
 ###############################
