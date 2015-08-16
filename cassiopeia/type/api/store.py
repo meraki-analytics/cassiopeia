@@ -154,7 +154,6 @@ class HasAllStatus(cassiopeia.type.dto.common.BaseDB):
         self.class_ = HasAllStatus.get_name(class_)
         self.have_all = have_all
 
-
 @cassiopeia.type.core.common.inheritdocs
 class SQLAlchemyDB(DataStore):
     class Iterator(object):

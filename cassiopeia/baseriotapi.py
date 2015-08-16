@@ -26,7 +26,6 @@ def set_api_key(key):
     """
     cassiopeia.dto.requests.api_key = key
 
-
 def set_region(region):
     """Set the region to run API queries against
 

@@ -128,8 +128,6 @@ def __get_leagues_by_team_id(ids):
     else:
         return [[cassiopeia.type.core.league.League(league) for league in leagues[str(id_)]] for id_ in ids]
 
-# @param teams # list<cassiopeia.type.core.team.Team> or cassiopeia.type.core.team.Team # The team(s) to get leagues for
-# @return # list<list<cassiopeia.type.core.league.League>> or list<cassiopeia.type.core.league.League> # The leagues for the requested team(s)
 def get_leagues_by_team(teams):
     """Gets the leagues that the team(s) belong(s) to
 
