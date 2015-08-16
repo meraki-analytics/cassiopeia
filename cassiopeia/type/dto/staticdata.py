@@ -559,6 +559,16 @@ class Item(cassiopeia.type.dto.common.CassiopeiaDto):
         self.stats = None if not val else BasicDataStats(val) if not isinstance(val, BasicDataStats) else val
         self.tags = dictionary.get("tags", [])
 
+    @property
+    def item_ids(self):
+        """Gets all other item IDs contained in this object"""
+        ids = set()
+        for id_ in self.from_:
+            ids.add(int(id_))
+        for id_ in self.into:
+            ids.add(int(id_))
+        return ids
+
 
 @cassiopeia.type.core.common.inheritdocs
 class Group(cassiopeia.type.dto.common.CassiopeiaDto):
@@ -754,6 +764,15 @@ class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
         self.prereq = dictionary.get("prereq", "")
         self.ranks = dictionary.get("ranks", 0)
         self.sanitizedDescription = dictionary.get("sanitizedDescription", [])
+
+    @property
+    def mastery_ids(self):
+        """Gets all other mastery IDs contained in this object"""
+        ids = set()
+        if(self.prereq):
+            ids.add(int(self.prereq))
+        return ids
+
 
 
 @cassiopeia.type.core.common.inheritdocs
