@@ -96,8 +96,8 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
         return cassiopeia.riotapi.get_item(self.data.item4) if self.data.item4 else None
 
     @property
-        """Item    the participant's sixth item"""
     def item5(self):
+        """Item    the participant's sixth item"""
         return cassiopeia.riotapi.get_item(self.data.item5) if self.data.item5 else None
 
     @property

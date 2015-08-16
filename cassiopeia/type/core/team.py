@@ -105,7 +105,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.immutablemethod
     def leagues(self):
-        """Gets the leagues that the summoner belongs to
+        """Gets the leagues that the summoner belongs to. You probably don't want to call this with LoadPolicy.eager set.
 
         return    list<League>   the leagues that the summoner belongs to
         """

@@ -18,10 +18,10 @@ def get_challenger(queue_type=cassiopeia.type.core.common.Queue.ranked_solo):
     
     # Load required data if loading policy is eager
     if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
-        ids = league.summoner_ids
-        cassiopeia.riotapi.get_summoners_by_id(list(ids)) if ids else None
-        ids = league.team_ids
-        cassiopeia.riotapi.get_teams(list(ids)) if ids else None
+        summoner_ids = league.summoner_ids
+        cassiopeia.riotapi.get_summoners_by_id(list(summoner_ids)) if summoner_ids else None
+        team_ids = league.team_ids
+        cassiopeia.riotapi.get_teams(list(team_ids)) if team_ids else None
 
     return cassiopeia.type.core.league.League(league)
 
@@ -39,10 +39,10 @@ def get_master(queue_type=cassiopeia.type.core.common.Queue.ranked_solo):
     
     # Load required data if loading policy is eager
     if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
-        ids = league.summoner_ids
-        cassiopeia.riotapi.get_summoners_by_id(list(ids)) if ids else None
-        ids = league.team_ids
-        cassiopeia.riotapi.get_teams(list(ids)) if ids else None
+        summoner_ids = league.summoner_ids
+        cassiopeia.riotapi.get_summoners_by_id(list(summoner_ids)) if summoner_ids else None
+        team_ids = league.team_ids
+        cassiopeia.riotapi.get_teams(list(team_ids)) if team_ids else None
 
     return cassiopeia.type.core.league.League(league)
 
@@ -66,7 +66,7 @@ def __get_leagues_by_summoner_id(ids):
         return [[cassiopeia.type.core.league.League(league) for league in leagues[str(id_)]] for id_ in ids]
 
 def get_leagues_by_summoner(summoners):
-    """Gets the leagues that the summoner(s) belong(s) to
+    """Gets the leagues that the summoner(s) belong(s) to. You probably don't want to call this with LoadPolicy.eager set.
 
     summoners    Summoner | list<Summoner>            the summoner(s) to get leagues for
 
@@ -90,7 +90,6 @@ def __get_league_entries_by_summoner_id(ids):
                 team_ids = team_ids | league.team_ids
         cassiopeia.riotapi.get_summoners_by_id(list(summoner_ids)) if summoner_ids else None
         cassiopeia.riotapi.get_teams(list(team_ids)) if team_ids else None
-
 
     if(not isinstance(ids, list)):
         return [cassiopeia.type.core.league.League(league) for league in leagues[str(ids)]]
@@ -129,7 +128,7 @@ def __get_leagues_by_team_id(ids):
         return [[cassiopeia.type.core.league.League(league) for league in leagues[str(id_)]] for id_ in ids]
 
 def get_leagues_by_team(teams):
-    """Gets the leagues that the team(s) belong(s) to
+    """Gets the leagues that the team(s) belong(s) to. You probably don't want to call this with LoadPolicy.eager set.
 
     teams     Team | list<Team>                    the team(s) to get leagues for
 
