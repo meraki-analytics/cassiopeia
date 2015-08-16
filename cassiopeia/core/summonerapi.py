@@ -11,8 +11,10 @@ def __get_mastery_pages_by_id(ids):
 
     # Load required data if loading policy is eager
     if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
-        ids_ = pages.mastery_ids
-        cassiopeia.riotapi.get_masteries(list(ids_)) if ids_ else None
+        mastery_ids = set()
+        for page in pages.values():
+            mastery_ids |= page.mastery_ids
+        cassiopeia.riotapi.get_masteries() if mastery_ids else None
 
     if(not isinstance(ids, list)):
         return [cassiopeia.type.core.summoner.MasteryPage(page) for page in pages[str(ids)].pages]
@@ -22,7 +24,7 @@ def __get_mastery_pages_by_id(ids):
 def get_mastery_pages(summoners):
     """Get the mastery pages for (a) summoner(s).
 
-    ids       int | list<int>                                the summoner(s) to get mastery pages for
+    ids       Summoner | list<Summoner>                      the summoner(s) to get mastery pages for
 
     return    list<MasteryPage> | list<list<MasteryPage>>    the requested summoner(s)' mastery pages
     """
@@ -36,8 +38,10 @@ def __get_rune_pages_by_id(ids):
 
     # Load required data if loading policy is eager
     if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
-        ids_ = pages.rune_ids
-        cassiopeia.riotapi.get_runes(list(ids_)) if ids_ else None
+        rune_ids = set()
+        for page in pages.values():
+            rune_ids |= page.rune_ids
+        cassiopeia.riotapi.get_runes() if rune_ids else None
 
     if(not isinstance(ids, list)):
         return [cassiopeia.type.core.summoner.RunePage(page) for page in pages[str(ids)].pages]
@@ -47,7 +51,7 @@ def __get_rune_pages_by_id(ids):
 def get_rune_pages(summoners):
     """Get the rune pages for (a) summoner(s).
 
-    ids       int | list<int>                                the summoner(s) to get rune pages for
+    ids       Summoner | list<Summoner>                the summoner(s) to get rune pages for
 
     return    list<RunePage> | list<list<RunePage>>    the requested summoner(s)' rune pages
     """

@@ -72,7 +72,7 @@ class League(cassiopeia.type.dto.common.CassiopeiaDto):
 
         if(self.participantId): 
             try:
-                id_ = int(self.data.participantId)
+                id_ = int(self.participantId)
                 ids.add(id_)
             except(ValueError):
                 pass

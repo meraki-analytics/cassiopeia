@@ -31,6 +31,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
         """SummonerSpell    the participant's first summonerspell"""
         return cassiopeia.riotapi.get_summoner_spell(self.data.spell1id) if self.data.spell1id else none
 
+    @property
     def summoner_spell_f(self):
         """SummonerSpell    the participant's second summonerspell"""
         return cassiopeia.riotapi.get_summoner_spell(self.data.spell2id) if self.data.spell2id else none
@@ -38,7 +39,6 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def summoner_name(self):
         """str    the participant's summoner name"""
-    @property
         return self.data.summonerName
 
     @property

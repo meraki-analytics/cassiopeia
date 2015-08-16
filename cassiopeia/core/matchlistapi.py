@@ -42,7 +42,6 @@ def get_match_list(summoner, begin_index=-1, begin_time=0, end_time=0, champions
 
     # Load required data if loading policy is eager
     if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
-        ids = history.champion_ids
-        cassiopeia.riotapi.get_champions_by_id(list(ids)) if ids else None
+        cassiopeia.riotapi.get_champions() if history.champion_ids else None
 
     return [cassiopeia.type.core.matchlist.MatchReference(ref) for ref in history.matches]
