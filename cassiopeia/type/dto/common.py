@@ -4,11 +4,17 @@ import sqlalchemy.types
 import sqlalchemy.ext.declarative
 
 class CassiopeiaDto(object):
+    """A Python representation of an object returned by the RiotAPI"""
+
     def __init__(self, dictionary):
+        """
+        dictionary    dict    the JSON data returned from the Riot API as a dict
+        """
         for k,v in dictionary.items():
             setattr(self, k, v)
 
     def to_json(self):
+        """Gets a JSON representation of the object"""
         dictionary = {k: v for k,v in self.__dict__.items() if not k.startswith("_")}
         return json.dumps(dictionary, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
@@ -32,6 +38,8 @@ BaseDB = sqlalchemy.ext.declarative.declarative_base()
 
 
 class JSONEncoded(sqlalchemy.types.TypeDecorator):
+    """JSON encoded storage for SQLAlchemy"""
+
     impl = sqlalchemy.Text
 
     def process_bind_param(self, value, dialect):

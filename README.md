@@ -29,7 +29,7 @@ If you want to reference to most recent codebase from github to stay up to date 
 
 ## Dependencies
 
-Cassiopeia depends on [SQLAlchemy](http://www.sqlalchemy.org/). It should be automatically installed for you if you install with pip.
+Cassiopeia depends on [SQLAlchemy](http://www.sqlalchemy.org/). It should be automatically installed for you if you install with pip. Otherwise, do `pip install sqlalchemy`.
  
 ## Usage
 

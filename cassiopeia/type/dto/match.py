@@ -3,57 +3,48 @@ import sqlalchemy.orm
 import sqlalchemy.orm.collections
 
 import cassiopeia.type.dto.common
+import cassiopeia.type.core.common
 
+@cassiopeia.type.core.common.inheritdocs
 class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    mapId                    int                          match map ID
+    matchCreation            int                          match creation time. Designates when the team select lobby is created and/or the match is made through match making, not when the game actually starts.
+    matchDuration            int                          match duration
+    matchId                  int                          ID of the match
+    matchMode                str                          match mode (Legal values: CLASSIC, ODIN, ARAM, TUTORIAL, ONEFORALL, ASCENSION, FIRSTBLOOD, KINGPORO)
+    matchType                str                          match type (Legal values: CUSTOM_GAME, MATCHED_GAME, TUTORIAL_GAME)
+    matchVersion             str                          match version
+    participantIdentities    list<ParticipantIdentity>    participant identity information
+    participants             list<Participant>            participant information
+    platformId               str                          platform ID of the match
+    queueType                str                          match queue type (Legal values: CUSTOM, NORMAL_5x5_BLIND, RANKED_SOLO_5x5, RANKED_PREMADE_5x5, BOT_5x5, NORMAL_3x3, RANKED_PREMADE_3x3, NORMAL_5x5_DRAFT, ODIN_5x5_BLIND, ODIN_5x5_DRAFT, BOT_ODIN_5x5, BOT_5x5_INTRO, BOT_5x5_BEGINNER, BOT_5x5_INTERMEDIATE, RANKED_TEAM_3x3, RANKED_TEAM_5x5, BOT_TT_3x3, GROUP_FINDER_5x5, ARAM_5x5, ONEFORALL_5x5, FIRSTBLOOD_1x1, FIRSTBLOOD_2x2, SR_6x6, URF_5x5, ONEFORALL_MIRRORMODE_5x5, BOT_URF_5x5, NIGHTMARE_BOT_5x5_RANK1, NIGHTMARE_BOT_5x5_RANK2, NIGHTMARE_BOT_5x5_RANK5, ASCENSION_5x5, HEXAKILL, KING_PORO_5x5, COUNTER_PICK)
+    region                   str                          region where the match was played
+    season                   str                          season match was played (Legal values: PRESEASON3, SEASON3, PRESEASON2014, SEASON2014, PRESEASON2015, SEASON2015)
+    teams                    list<Team>                   team information
+    timeline                 Timeline                     match timeline data (not included by default)
+    """
     def __init__(self, dictionary):
-        # int # Match map ID
         self.mapId = dictionary.get("mapId", 0)
-
-        # int # Match creation time. Designates when the team select lobby is created and/or the match is made through match making, not when the game actually starts.
         self.matchCreation = dictionary.get("matchCreation", 0)
-
-        # int # Match duration
         self.matchDuration = dictionary.get("matchDuration", 0)
-
-        # int # ID of the match
         self.matchId = dictionary.get("matchId", 0)
-
-        # str # Match mode (Legal values: CLASSIC, ODIN, ARAM, TUTORIAL, ONEFORALL, ASCENSION, FIRSTBLOOD, KINGPORO)
         self.matchMode = dictionary.get("matchMode", "")
-
-        # str # Match type (Legal values: CUSTOM_GAME, MATCHED_GAME, TUTORIAL_GAME)
         self.matchType = dictionary.get("matchType", "")
-
-        # str # Match version
         self.matchVersion = dictionary.get("matchVersion", "")
-
-        # list<ParticipantIdentity> # Participant identity information
         self.participantIdentities = [(ParticipantIdentity(pi) if not isinstance(pi, ParticipantIdentity) else pi) for pi in dictionary.get("participantIdentities", []) if pi]
-
-        # list<Participant> # Participant information
         self.participants = [(Participant(p) if not isinstance(p, Participant) else p) for p in dictionary.get("participants", []) if p]
-
-        # str # Platform ID of the match
         self.platformId = dictionary.get("platformId", "")
-
-        # str # Match queue type (Legal values: CUSTOM, NORMAL_5x5_BLIND, RANKED_SOLO_5x5, RANKED_PREMADE_5x5, BOT_5x5, NORMAL_3x3, RANKED_PREMADE_3x3, NORMAL_5x5_DRAFT, ODIN_5x5_BLIND, ODIN_5x5_DRAFT, BOT_ODIN_5x5, BOT_5x5_INTRO, BOT_5x5_BEGINNER, BOT_5x5_INTERMEDIATE, RANKED_TEAM_3x3, RANKED_TEAM_5x5, BOT_TT_3x3, GROUP_FINDER_5x5, ARAM_5x5, ONEFORALL_5x5, FIRSTBLOOD_1x1, FIRSTBLOOD_2x2, SR_6x6, URF_5x5, ONEFORALL_MIRRORMODE_5x5, BOT_URF_5x5, NIGHTMARE_BOT_5x5_RANK1, NIGHTMARE_BOT_5x5_RANK2, NIGHTMARE_BOT_5x5_RANK5, ASCENSION_5x5, HEXAKILL, KING_PORO_5x5, COUNTER_PICK)
         self.queueType = dictionary.get("queueType", "")
-
-        # str # Region where the match was played
         self.region = dictionary.get("region", "")
-
-        # str # Season match was played (Legal values: PRESEASON3, SEASON3, PRESEASON2014, SEASON2014, PRESEASON2015, SEASON2015)
         self.season = dictionary.get("season", "")
-
-        # list<Team> # Team information
         self.teams = [(Team(t) if not isinstance(t, Team) else t) for t in dictionary.get("teams", []) if t]
-
-        # Timeline # Match timeline data (not included by default)
         val = dictionary.get("timeline", None)
         self.timeline = Timeline(val) if val and not isinstance(val, Timeline) else val
 
     @property
     def item_ids(self):
+        """Gets all item IDs contained in this object"""
         ids = set()
         for p in self.participants:
             s = p.stats
@@ -75,6 +66,7 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def champion_ids(self):
+        """Gets all champion IDs contained in this object"""
         ids = set()
         for p in self.participants:
             if(p.championId):
@@ -87,6 +79,7 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def mastery_ids(self):
+        """Gets all mastery IDs contained in this object"""
         ids = set()
         for p in self.participants:
             for m in p.masteries:
@@ -96,6 +89,7 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def rune_ids(self):
+        """Gets all rune IDs contained in this object"""
         ids = set()
         for p in self.participants:
             for r in p.runes:
@@ -105,6 +99,7 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def summoner_ids(self):
+        """Gets all summoner IDs contained in this object"""
         ids = set()
         for p in self.participantIdentities:
             if(p.player and p.player.summonerId):
@@ -113,6 +108,7 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def summoner_spell_ids(self):
+        """Gets all summoner spell IDs contained in this object"""
         ids = set()
         for p in self.participants:
             if(p.spell1Id):
@@ -122,584 +118,479 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
         return ids
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Participant(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    championId                   int                    champion ID
+    highestAchievedSeasonTier    str                    highest ranked tier achieved for the previous season, if any, otherwise null. Used to display border in game loading screen. (Legal values: CHALLENGER, MASTER, DIAMOND, PLATINUM, GOLD, SILVER, BRONZE, UNRANKED)
+    masteries                    list<Mastery>          list of mastery information
+    participantId                int                    participant ID
+    runes                        list<Rune>             list of rune information
+    spell1Id                     int                    first summoner spell ID
+    spell2Id                     int                    second summoner spell ID
+    stats                        ParticipantStats       participant statistics
+    teamId                       int                    team ID
+    timeline                     ParticipantTimeline    timeline data. Delta fields refer to values for the specified period (e.g., the gold per minute over the first 10 minutes of the game versus the second 20 minutes of the game. Diffs fields refer to the deltas versus the calculated lane opponent(s).
+    """
     def __init__(self, dictionary):
-        # int # Champion ID
         self.championId = dictionary.get("championId", 0)
-
-        # str # Highest ranked tier achieved for the previous season, if any, otherwise null. Used to display border in game loading screen. (Legal values: CHALLENGER, MASTER, DIAMOND, PLATINUM, GOLD, SILVER, BRONZE, UNRANKED)
         self.highestAchievedSeasonTier = dictionary.get("highestAchievedSeasonTier", "")
-
-        # list<Mastery> # List of mastery information
         self.masteries = [(Mastery(m) if not isinstance(m, Mastery) else m) for m in dictionary.get("masteries", []) if m]
-
-        # int # Participant ID
         self.participantId = dictionary.get("participantId", 0)
-
-        # list<Rune> # List of rune information
         self.runes = [(Rune(r) if not isinstance(r, Rune) else r) for r in dictionary.get("runes", []) if r]
-
-        # int # First summoner spell ID
         self.spell1Id = dictionary.get("spell1Id", 0)
-
-        # int # Second summoner spell ID
         self.spell2Id = dictionary.get("spell2Id", 0)
-
-        # ParticipantStats # Participant statistics
         val = dictionary.get("stats", None)
         self.stats = ParticipantStats(val) if val and not isinstance(val, ParticipantStats) else val
-
-        # int # Team ID
         self.teamId = dictionary.get("teamId", 0)
-
-        # ParticipantTimeline # Timeline data. Delta fields refer to values for the specified period (e.g., the gold per minute over the first 10 minutes of the game versus the second 20 minutes of the game. Diffs fields refer to the deltas versus the calculated lane opponent(s).
         val = dictionary.get("timeline", None)
         self.timeline = ParticipantTimeline(val) if val and not isinstance(val, ParticipantTimeline) else val
 
 
+@cassiopeia.type.core.common.inheritdocs
 class ParticipantIdentity(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    participantId    int       participant ID
+    player           Player    player information
+    """
     def __init__(self, dictionary):
-        # int # Participant ID
         self.participantId = dictionary.get("participantId", 0)
-
-        # Player # Player information
         val = dictionary.get("player", None)
         self.player = Player(val) if val and not isinstance(val, Player) else val
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Team(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    bans                    list<BannedChampion>    if game was draft mode, contains banned champion data, otherwise null
+    baronKills              int                     number of times the team killed baron
+    dominionVictoryScore    int                     if game was a dominion game, specifies the points the team had at game end, otherwise null
+    dragonKills             int                     number of times the team killed dragon
+    firstBaron              bool                    flag indicating whether or not the team got the first baron kill
+    firstBlood              bool                    flag indicating whether or not the team got first blood
+    firstDragon             bool                    flag indicating whether or not the team got the first dragon kill
+    firstInhibitor          bool                    flag indicating whether or not the team destroyed the first inhibitor
+    firstTower              bool                    flag indicating whether or not the team destroyed the first tower
+    inhibitorKills          int                     number of inhibitors the team destroyed
+    teamId                  int                     team ID
+    towerKills              int                     number of towers the team destroyed
+    vilemawKills            int                     number of times the team killed vilemaw
+    winner                  bool                    flag indicating whether or not the team won
+    """
     def __init__(self, dictionary):
-        # list<BannedChampion> # If game was draft mode, contains banned champion data, otherwise null
         self.bans = [(BannedChampion(c) if not isinstance(c, BannedChampion) else c) for c in dictionary.get("bans", []) if c]
-
-        # int # Number of times the team killed baron
         self.baronKills = dictionary.get("baronKills", 0)
-
-        # int # If game was a dominion game, specifies the points the team had at game end, otherwise null
         self.dominionVictoryScore = dictionary.get("dominionVictoryScore", 0)
-
-        # int # Number of times the team killed dragon
         self.dragonKills = dictionary.get("dragonKills", 0)
-
-        # bool # Flag indicating whether or not the team got the first baron kill
         self.firstBaron = dictionary.get("firstBaron", False)
-
-        # bool # Flag indicating whether or not the team got first blood
         self.firstBlood = dictionary.get("firstBlood", False)
-
-        # bool # Flag indicating whether or not the team got the first dragon kill
         self.firstDragon = dictionary.get("firstDragon", False)
-
-        # bool # Flag indicating whether or not the team destroyed the first inhibitor
         self.firstInhibitor = dictionary.get("firstInhibitor", False)
-
-        # bool # Flag indicating whether or not the team destroyed the first tower
         self.firstTower = dictionary.get("firstTower", False)
-
-        # int # Number of inhibitors the team destroyed
         self.inhibitorKills = dictionary.get("inhibitorKills", 0)
-
-        # int # Team ID
         self.teamId = dictionary.get("teamId", 0)
-
-        # int # Number of towers the team destroyed
         self.towerKills = dictionary.get("towerKills", 0)
-
-        # int # Number of times the team killed vilemaw
         self.vilemawKills = dictionary.get("vilemawKills", 0)
-
-        # bool # Flag indicating whether or not the team won
         self.winner = dictionary.get("winner", False)
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Timeline(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    frameInterval    int            time between each returned frame in milliseconds
+    frames           list<Frame>    list of timeline frames for the game
+    """
     def __init__(self, dictionary):
-        # int # Time between each returned frame in milliseconds.
         self.frameInterval = dictionary.get("frameInterval", 0)
-
-        # list<Frame> # List of timeline frames for the game.
         self.frames = [(Frame(f) if not isinstance(f, Frame) else f) for f in dictionary.get("frames", []) if f]
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    masteryId    int    mastery ID
+    rank         int    mastery rank
+    """
     def __init__(self, dictionary):
-        # int # Mastery ID
         self.masteryId = dictionary.get("masteryId", 0)
-
-        # int # Mastery rank
         self.rank = dictionary.get("rank", 0)
 
 
+@cassiopeia.type.core.common.inheritdocs
 class ParticipantStats(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    assists                            int     number of assists
+    champLevel                         int     champion level achieved
+    combatPlayerScore                  int     if game was a dominion game, player's combat score, otherwise 0
+    deaths                             int     number of deaths
+    doubleKills                        int     number of double kills
+    firstBloodAssist                   bool    flag indicating if participant got an assist on first blood
+    firstBloodKill                     bool    flag indicating if participant got first blood
+    firstInhibitorAssist               bool    flag indicating if participant got an assist on the first inhibitor
+    firstInhibitorKill                 bool    flag indicating if participant destroyed the first inhibitor
+    firstTowerAssist                   bool    flag indicating if participant got an assist on the first tower
+    firstTowerKill                     bool    flag indicating if participant destroyed the first tower
+    goldEarned                         int     gold earned
+    goldSpent                          int     gold spent
+    inhibitorKills                     int     number of inhibitor kills
+    item0                              int     frst item ID
+    item1                              int     second item ID
+    item2                              int     third item ID
+    item3                              int     fourth item ID
+    item4                              int     fifth item ID
+    item5                              int     sixth item ID
+    item6                              int     seventh item ID
+    killingSprees                      int     number of killing sprees
+    kills                              int     number of kills
+    largestCriticalStrike              int     largest critical strike
+    largestKillingSpree                int     largest killing spree
+    largestMultiKill                   int     largest multi kill
+    magicDamageDealt                   int     magical damage dealt
+    magicDamageDealtToChampions        int     magical damage dealt to champions
+    magicDamageTaken                   int     magic damage taken
+    minionsKilled                      int     minions killed
+    neutralMinionsKilled               int     neutral minions killed
+    neutralMinionsKilledEnemyJungle    int     neutral jungle minions killed in the enemy team's jungle
+    neutralMinionsKilledTeamJungle     int     neutral jungle minions killed in your team's jungle
+    nodeCapture                        int     if game was a dominion game, number of node captures
+    nodeCaptureAssist                  int     if game was a dominion game, number of node capture assists
+    nodeNeutralize                     int     if game was a dominion game, number of node neutralizations
+    nodeNeutralizeAssist               int     if game was a dominion game, number of node neutralization assists
+    objectivePlayerScore               int     if game was a dominion game, player's objectives score, otherwise 0
+    pentaKills                         int     number of penta kills
+    physicalDamageDealt                int     physical damage dealt
+    physicalDamageDealtToChampions     int     physical damage dealt to champions
+    physicalDamageTaken                int     physical damage taken
+    quadraKills                        int     number of quadra kills
+    sightWardsBoughtInGame             int     sight wards purchased
+    teamObjective                      int     if game was a dominion game, number of completed team objectives (i.e., quests)
+    totalDamageDealt                   int     total damage dealt
+    totalDamageDealtToChampions        int     total damage dealt to champions
+    totalDamageTaken                   int     total damage taken
+    totalHeal                          int     total heal amount
+    totalPlayerScore                   int     if game was a dominion game, player's total score, otherwise 0
+    totalScoreRank                     int     if game was a dominion game, team rank of the player's total score (e.g., 1-5)
+    totalTimeCrowdControlDealt         int     total dealt crowd control time
+    totalUnitsHealed                   int     total units healed
+    towerKills                         int     number of tower kills
+    tripleKills                        int     number of triple kills
+    trueDamageDealt                    int     true damage dealt
+    trueDamageDealtToChampions         int     true damage dealt to champions
+    trueDamageTaken                    int     true damage taken
+    unrealKills                        int     number of unreal kills
+    visionWardsBoughtInGame            int     vision wards purchased
+    wardsKilled                        int     number of wards killed
+    wardsPlaced                        int     number of wards placed
+    winner                             bool    flag indicating whether or not the participant won
+    """
     def __init__(self, dictionary):
-        # int # Number of assists
         self.assists = dictionary.get("assists", 0)
-
-        # int # Champion level achieved
         self.champLevel = dictionary.get("champLevel", 0)
-
-        # int # If game was a dominion game, player's combat score, otherwise 0
         self.combatPlayerScore = dictionary.get("combatPlayerScore", 0)
-
-        # int # Number of deaths
         self.deaths = dictionary.get("deaths", 0)
-
-        # int # Number of double kills
         self.doubleKills = dictionary.get("doubleKills", 0)
-
-        # bool # Flag indicating if participant got an assist on first blood
         self.firstBloodAssist = dictionary.get("firstBloodAssist", False)
-
-        # bool # Flag indicating if participant got first blood
         self.firstBloodKill = dictionary.get("firstBloodKill", False)
-
-        # bool # Flag indicating if participant got an assist on the first inhibitor
         self.firstInhibitorAssist = dictionary.get("firstInhibitorAssist", False)
-
-        # bool # Flag indicating if participant destroyed the first inhibitor
         self.firstInhibitorKill = dictionary.get("firstInhibitorKill", False)
-
-        # bool # Flag indicating if participant got an assist on the first tower
         self.firstTowerAssist = dictionary.get("firstTowerAssist", False)
-
-        # bool # Flag indicating if participant destroyed the first tower
         self.firstTowerKill = dictionary.get("firstTowerKill", False)
-
-        # int # Gold earned
         self.goldEarned = dictionary.get("goldEarned", 0)
-
-        # int # Gold spent
         self.goldSpent = dictionary.get("goldSpent", 0)
-
-        # int # Number of inhibitor kills
         self.inhibitorKills = dictionary.get("inhibitorKills", 0)
-
-        # int # First item ID
         self.item0 = dictionary.get("item0", 0)
-
-        # int # Second item ID
         self.item1 = dictionary.get("item1", 0)
-
-        # int # Third item ID
         self.item2 = dictionary.get("item2", 0)
-
-        # int # Fourth item ID
         self.item3 = dictionary.get("item3", 0)
-
-        # int # Fifth item ID
         self.item4 = dictionary.get("item4", 0)
-
-        # int # Sixth item ID
         self.item5 = dictionary.get("item5", 0)
-
-        # int # Seventh item ID
         self.item6 = dictionary.get("item6", 0)
-
-        # int # Number of killing sprees
         self.killingSprees = dictionary.get("killingSprees", 0)
-
-        # int # Number of kills
         self.kills = dictionary.get("kills", 0)
-
-        # int # Largest critical strike
         self.largestCriticalStrike = dictionary.get("largestCriticalStrike", 0)
-
-        # int # Largest killing spree
         self.largestKillingSpree = dictionary.get("largestKillingSpree", 0)
-
-        # int # Largest multi kill
         self.largestMultiKill = dictionary.get("largestMultiKill", 0)
-
-        # int # Magical damage dealt
         self.magicDamageDealt = dictionary.get("magicDamageDealt", 0)
-
-        # int # Magical damage dealt to champions
         self.magicDamageDealtToChampions = dictionary.get("magicDamageDealtToChampions", 0)
-
-        # int # Magic damage taken
         self.magicDamageTaken = dictionary.get("magicDamageTaken", 0)
-
-        # int # Minions killed
         self.minionsKilled = dictionary.get("minionsKilled", 0)
-
-        # int # Neutral minions killed
         self.neutralMinionsKilled = dictionary.get("neutralMinionsKilled", 0)
-
-        # int # Neutral jungle minions killed in the enemy team's jungle
         self.neutralMinionsKilledEnemyJungle = dictionary.get("neutralMinionsKilledEnemyJungle", 0)
-
-        # int # Neutral jungle minions killed in your team's jungle
         self.neutralMinionsKilledTeamJungle = dictionary.get("neutralMinionsKilledTeamJungle", 0)
-
-        # int # If game was a dominion game, number of node captures
         self.nodeCapture = dictionary.get("nodeCapture", 0)
-
-        # int # If game was a dominion game, number of node capture assists
         self.nodeCaptureAssist = dictionary.get("nodeCaptureAssist", 0)
-
-        # int # If game was a dominion game, number of node neutralizations
         self.nodeNeutralize = dictionary.get("nodeNeutralize", 0)
-
-        # int # If game was a dominion game, number of node neutralization assists
         self.nodeNeutralizeAssist = dictionary.get("nodeNeutralizeAssist", 0)
-
-        # int # If game was a dominion game, player's objectives score, otherwise 0
         self.objectivePlayerScore = dictionary.get("objectivePlayerScore", 0)
-
-        # int # Number of penta kills
         self.pentaKills = dictionary.get("pentaKills", 0)
-
-        # int # Physical damage dealt
         self.physicalDamageDealt = dictionary.get("physicalDamageDealt", 0)
-
-        # int # Physical damage dealt to champions
         self.physicalDamageDealtToChampions = dictionary.get("physicalDamageDealtToChampions", 0)
-
-        # int # Physical damage taken
         self.physicalDamageTaken = dictionary.get("physicalDamageTaken", 0)
-
-        # int # Number of quadra kills
         self.quadraKills = dictionary.get("quadraKills", 0)
-
-        # int # Sight wards purchased
         self.sightWardsBoughtInGame = dictionary.get("sightWardsBoughtInGame", 0)
-
-        # int # If game was a dominion game, number of completed team objectives (i.e., quests)
         self.teamObjective = dictionary.get("teamObjective", 0)
-
-        # int # Total damage dealt
         self.totalDamageDealt = dictionary.get("totalDamageDealt", 0)
-
-        # int # Total damage dealt to champions
         self.totalDamageDealtToChampions = dictionary.get("totalDamageDealtToChampions", 0)
-
-        # int # Total damage taken
         self.totalDamageTaken = dictionary.get("totalDamageTaken", 0)
-
-        # int # Total heal amount
         self.totalHeal = dictionary.get("totalHeal", 0)
-
-        # int # If game was a dominion game, player's total score, otherwise 0
         self.totalPlayerScore = dictionary.get("totalPlayerScore", 0)
-
-        # int # If game was a dominion game, team rank of the player's total score (e.g., 1-5)
         self.totalScoreRank = dictionary.get("totalScoreRank", 0)
-
-        # int # Total dealt crowd control time
         self.totalTimeCrowdControlDealt = dictionary.get("totalTimeCrowdControlDealt", 0)
-
-        # int # Total units healed
         self.totalUnitsHealed = dictionary.get("totalUnitsHealed", 0)
-
-        # int # Number of tower kills
         self.towerKills = dictionary.get("towerKills", 0)
-
-        # int # Number of triple kills
         self.tripleKills = dictionary.get("tripleKills", 0)
-
-        # int # True damage dealt
         self.trueDamageDealt = dictionary.get("trueDamageDealt", 0)
-
-        # int # True damage dealt to champions
         self.trueDamageDealtToChampions = dictionary.get("trueDamageDealtToChampions", 0)
-
-        # int # True damage taken
         self.trueDamageTaken = dictionary.get("trueDamageTaken", 0)
-
-        # int # Number of unreal kills
         self.unrealKills = dictionary.get("unrealKills", 0)
-
-        # int # Vision wards purchased
         self.visionWardsBoughtInGame = dictionary.get("visionWardsBoughtInGame", 0)
-
-        # int # Number of wards killed
         self.wardsKilled = dictionary.get("wardsKilled", 0)
-
-        # int # Number of wards placed
         self.wardsPlaced = dictionary.get("wardsPlaced", 0)
-
-        # bool # Flag indicating whether or not the participant won
         self.winner = dictionary.get("winner", False)
 
 
+@cassiopeia.type.core.common.inheritdocs
 class ParticipantTimeline(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    ancientGolemAssistsPerMinCounts    ParticipantTimelineData    ancient golem assists per minute timeline counts
+    ancientGolemKillsPerMinCounts      ParticipantTimelineData    ancient golem kills per minute timeline counts
+    assistedLaneDeathsPerMinDeltas     ParticipantTimelineData    assisted lane deaths per minute timeline data
+    assistedLaneKillsPerMinDeltas      ParticipantTimelineData    assisted lane kills per minute timeline data
+    baronAssistsPerMinCounts           ParticipantTimelineData    baron assists per minute timeline counts
+    baronKillsPerMinCounts             ParticipantTimelineData    baron kills per minute timeline counts
+    creepsPerMinDeltas                 ParticipantTimelineData    creeps per minute timeline data
+    csDiffPerMinDeltas                 ParticipantTimelineData    creep score difference per minute timeline data
+    damageTakenDiffPerMinDeltas        ParticipantTimelineData    damage taken difference per minute timeline data
+    damageTakenPerMinDeltas            ParticipantTimelineData    damage taken per minute timeline data
+    dragonAssistsPerMinCounts          ParticipantTimelineData    dragon assists per minute timeline counts
+    dragonKillsPerMinCounts            ParticipantTimelineData    dragon kills per minute timeline counts
+    elderLizardAssistsPerMinCounts     ParticipantTimelineData    elder lizard assists per minute timeline counts
+    elderLizardKillsPerMinCounts       ParticipantTimelineData    elder lizard kills per minute timeline counts
+    goldPerMinDeltas                   ParticipantTimelineData    gold per minute timeline data
+    inhibitorAssistsPerMinCounts       ParticipantTimelineData    inhibitor assists per minute timeline counts
+    inhibitorKillsPerMinCounts         ParticipantTimelineData    inhibitor kills per minute timeline counts
+    lane                               str                        participant's lane (Legal values: MID, MIDDLE, TOP, JUNGLE, BOT, BOTTOM)
+    role                               str                        participant's role (Legal values: DUO, NONE, SOLO, DUO_CARRY, DUO_SUPPORT)
+    towerAssistsPerMinCounts           ParticipantTimelineData    tower assists per minute timeline counts
+    towerKillsPerMinCounts             ParticipantTimelineData    tower kills per minute timeline counts
+    towerKillsPerMinDeltas             ParticipantTimelineData    tower kills per minute timeline data
+    vilemawAssistsPerMinCounts         ParticipantTimelineData    vilemaw assists per minute timeline counts
+    vilemawKillsPerMinCounts           ParticipantTimelineData    vilemaw kills per minute timeline counts
+    wardsPerMinDeltas                  ParticipantTimelineData    wards placed per minute timeline data
+    xpDiffPerMinDeltas                 ParticipantTimelineData    experience difference per minute timeline data
+    xpPerMinDeltas                     ParticipantTimelineData    experience per minute timeline data
+    """
     def __init__(self, dictionary):
-        # ParticipantTimelineData # Ancient golem assists per minute timeline counts
         val = dictionary.get("ancientGolemAssistsPerMinCounts", None)
         self.ancientGolemAssistsPerMinCounts = ParticipantTimelineData(val, "ancientGolemAssistsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Ancient golem kills per minute timeline counts
         val = dictionary.get("ancientGolemKillsPerMinCounts", None)
         self.ancientGolemKillsPerMinCounts = ParticipantTimelineData(val, "ancientGolemKillsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Assisted lane deaths per minute timeline data
         val = dictionary.get("assistedLaneDeathsPerMinDeltas", None)
         self.assistedLaneDeathsPerMinDeltas = ParticipantTimelineData(val, "assistedLaneDeathsPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Assisted lane kills per minute timeline data
         val = dictionary.get("assistedLaneKillsPerMinDeltas", None)
         self.assistedLaneKillsPerMinDeltas = ParticipantTimelineData(val, "assistedLaneKillsPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Baron assists per minute timeline counts
         val = dictionary.get("baronAssistsPerMinCounts", None)
         self.baronAssistsPerMinCounts = ParticipantTimelineData(val, "baronAssistsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Baron kills per minute timeline counts
         val = dictionary.get("baronKillsPerMinCounts", None)
         self.baronKillsPerMinCounts = ParticipantTimelineData(val, "baronKillsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Creeps per minute timeline data
         val = dictionary.get("creepsPerMinDeltas", None)
         self.creepsPerMinDeltas = ParticipantTimelineData(val, "creepsPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Creep score difference per minute timeline data
         val = dictionary.get("csDiffPerMinDeltas", None)
         self.csDiffPerMinDeltas = ParticipantTimelineData(val, "csDiffPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Damage taken difference per minute timeline data
         val = dictionary.get("damageTakenDiffPerMinDeltas", None)
         self.damageTakenDiffPerMinDeltas = ParticipantTimelineData(val, "damageTakenDiffPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Damage taken per minute timeline data
         val = dictionary.get("damageTakenPerMinDeltas", None)
         self.damageTakenPerMinDeltas = ParticipantTimelineData(val, "damageTakenPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Dragon assists per minute timeline counts
         val = dictionary.get("dragonAssistsPerMinCounts", None)
         self.dragonAssistsPerMinCounts = ParticipantTimelineData(val, "dragonAssistsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Dragon kills per minute timeline counts
         val = dictionary.get("dragonKillsPerMinCounts", None)
         self.dragonKillsPerMinCounts = ParticipantTimelineData(val, "dragonKillsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Elder lizard assists per minute timeline counts
         val = dictionary.get("elderLizardAssistsPerMinCounts", None)
         self.elderLizardAssistsPerMinCounts = ParticipantTimelineData(val, "elderLizardAssistsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Elder lizard kills per minute timeline counts
         val = dictionary.get("elderLizardKillsPerMinCounts", None)
         self.elderLizardKillsPerMinCounts = ParticipantTimelineData(val, "elderLizardKillsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Gold per minute timeline data
         val = dictionary.get("goldPerMinDeltas", None)
         self.goldPerMinDeltas = ParticipantTimelineData(val, "goldPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Inhibitor assists per minute timeline counts
         val = dictionary.get("inhibitorAssistsPerMinCounts", None)
         self.inhibitorAssistsPerMinCounts = ParticipantTimelineData(val, "inhibitorAssistsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Inhibitor kills per minute timeline counts
         val = dictionary.get("inhibitorKillsPerMinCounts", None)
         self.inhibitorKillsPerMinCounts = ParticipantTimelineData(val, "inhibitorKillsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # str # Participant's lane (Legal values: MID, MIDDLE, TOP, JUNGLE, BOT, BOTTOM)
         self.lane = dictionary.get("lane", "")
-
-        # str # Participant's role (Legal values: DUO, NONE, SOLO, DUO_CARRY, DUO_SUPPORT)
         self.role = dictionary.get("role", "")
-
-        # ParticipantTimelineData # Tower assists per minute timeline counts
         val = dictionary.get("towerAssistsPerMinCounts", None)
         self.towerAssistsPerMinCounts = ParticipantTimelineData(val, "towerAssistsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Tower kills per minute timeline counts
         val = dictionary.get("towerKillsPerMinCounts", None)
         self.towerKillsPerMinCounts = ParticipantTimelineData(val, "towerKillsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Tower kills per minute timeline data
         val = dictionary.get("towerKillsPerMinDeltas", None)
         self.towerKillsPerMinDeltas = ParticipantTimelineData(val, "towerKillsPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Vilemaw assists per minute timeline counts
         val = dictionary.get("vilemawAssistsPerMinCounts", None)
         self.vilemawAssistsPerMinCounts = ParticipantTimelineData(val, "vilemawAssistsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Vilemaw kills per minute timeline counts
         val = dictionary.get("vilemawKillsPerMinCounts", None)
         self.vilemawKillsPerMinCounts = ParticipantTimelineData(val, "vilemawKillsPerMinCounts") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Wards placed per minute timeline data
         val = dictionary.get("wardsPerMinDeltas", None)
         self.wardsPerMinDeltas = ParticipantTimelineData(val, "wardsPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Experience difference per minute timeline data
         val = dictionary.get("xpDiffPerMinDeltas", None)
         self.xpDiffPerMinDeltas = ParticipantTimelineData(val, "xpDiffPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
-
-        # ParticipantTimelineData # Experience per minute timeline data
         val = dictionary.get("xpPerMinDeltas", None)
         self.xpPerMinDeltas = ParticipantTimelineData(val, "xpPerMinDeltas") if val and not isinstance(val, ParticipantTimelineData) else val
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Rune(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    rank      int    rune rank
+    runeId    int    rune ID
+    """
     def __init__(self, dictionary):
-        # int # Rune rank
         self.rank = dictionary.get("rank", 0)
-
-        # int # Rune ID
         self.runeId = dictionary.get("runeId", 0)
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Player(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    matchHistoryUri    str    match history URI
+    profileIcon        int    profile icon ID
+    summonerId         int    summoner ID
+    summonerName       str    summoner name
+    """
     def __init__(self, dictionary):
-        # str # Match history URI
         self.matchHistoryUri = dictionary.get("matchHistoryUri", "")
-
-        # int # Profile icon ID
         self.profileIcon = dictionary.get("profileIcon", 0)
-
-        # int # Summoner ID
         self.summonerId = dictionary.get("summonerId", 0)
-
-        # str # Summoner name
         self.summonerName = dictionary.get("summonerName", "")
 
 
+@cassiopeia.type.core.common.inheritdocs
 class BannedChampion(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    championId    int    banned champion ID
+    pickTurn      int    turn during which the champion was banned
+    """
     def __init__(self, dictionary):
-        # int # Banned champion ID
         self.championId = dictionary.get("championId", 0)
-
-        # int # Turn during which the champion was banned
         self.pickTurn = dictionary.get("pickTurn", 0)
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Frame(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    events               list<Event>                    list of events for this frame
+    participantFrames    dict<str, ParticipantFrame>    map of each participant ID to the participant's information for the frame
+    timestamp            int                            represents how many milliseconds into the game the frame occurred
+    """
     def __init__(self, dictionary):
-        # list<Event> # List of events for this frame.
         self.events = [(Event(e) if not isinstance(e, Event) else e) for e in dictionary.get("events", []) if e]
-
-        # dict<str, ParticipantFrame> # Map of each participant ID to the participant's information for the frame.
         self.participantFrames = {i: ParticipantFrame(pf) if not isinstance(pf, ParticipantFrame) else pf for i, pf in dictionary.get("participantFrames", {}).items()}
-
-        # int # Represents how many milliseconds into the game the frame occurred.
         self.timestamp = dictionary.get("timestamp", 0)
 
 
+@cassiopeia.type.core.common.inheritdocs
 class ParticipantTimelineData(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    events               list<Event>                    list of events for this frame
+    participantFrames    dict<str, ParticipantFrame>    map of each participant ID to the participant's information for the frame
+    timestamp            int                            represents how many milliseconds into the game the frame occurred
+    tenToTwenty          float                          value per minute from 10 min to 20 min
+    thirtyToEnd          float                          value per minute from 30 min to the end of the game
+    twentyToThirty       float                          value per minute from 20 min to 30 min
+    zeroToTen            float                          value per minute from the beginning of the game to 10 min
+    """
     def __init__(self, dictionary, type_=None):
-        # float # Value per minute from 10 min to 20 min
         self.tenToTwenty = dictionary.get("tenToTwenty", 0.0)
-
-        # float # Value per minute from 30 min to the end of the game
         self.thirtyToEnd = dictionary.get("thirtyToEnd", 0.0)
-
-        # float # Value per minute from 20 min to 30 min
         self.twentyToThirty = dictionary.get("twentyToThirty", 0.0)
-
-        # float # Value per minute from the beginning of the game to 10 min
         self.zeroToTen = dictionary.get("zeroToTen", 0.0)
 
         self._type = type_
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Event(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    ascendedType               str          the ascended type of the event. Only present if relevant. Note that CLEAR_ASCENDED refers to when a participants kills the ascended player. (Legal values: CHAMPION_ASCENDED, CLEAR_ASCENDED, MINION_ASCENDED)
+    assistingParticipantIds    list<int>    the assisting participant IDs of the event. Only present if relevant.
+    buildingType               str          the building type of the event. Only present if relevant. (Legal values: INHIBITOR_BUILDING, TOWER_BUILDING)
+    creatorId                  int          the creator ID of the event. Only present if relevant.
+    eventType                  str          event type (Legal values: ASCENDED_EVENT, BUILDING_KILL, CAPTURE_POINT, CHAMPION_KILL, ELITE_MONSTER_KILL, ITEM_DESTROYED, ITEM_PURCHASED, ITEM_SOLD, ITEM_UNDO, PORO_KING_SUMMON, SKILL_LEVEL_UP, WARD_KILL, WARD_PLACED)
+    itemAfter                  int          the ending item ID of the event. Only present if relevant.
+    itemBefore                 int          the starting item ID of the event. Only present if relevant.
+    itemId                     int          the item ID of the event. Only present if relevant.
+    killerId                   int          the killer ID of the event. Only present if relevant. Killer ID 0 indicates a minion.
+    laneType                   str          the lane type of the event. Only present if relevant. (Legal values: BOT_LANE, MID_LANE, TOP_LANE)
+    levelUpType                str          the level up type of the event. Only present if relevant. (Legal values: EVOLVE, NORMAL)
+    monsterType                str          the monster type of the event. Only present if relevant. (Legal values: BARON_NASHOR, BLUE_GOLEM, DRAGON, RED_LIZARD, VILEMAW)
+    participantId              int          the participant ID of the event. Only present if relevant.
+    pointCaptured              str          the point captured in the event. Only present if relevant. (Legal values: POINT_A, POINT_B, POINT_C, POINT_D, POINT_E)
+    position                   Position     the position of the event. Only present if relevant.
+    skillSlot                  int          the skill slot of the event. Only present if relevant.
+    teamId                     int          the team ID of the event. Only present if relevant.
+    timestamp                  int          represents how many milliseconds into the game the event occurred.
+    towerType                  str          the tower type of the event. Only present if relevant. (Legal values: BASE_TURRET, FOUNTAIN_TURRET, INNER_TURRET, NEXUS_TURRET, OUTER_TURRET, UNDEFINED_TURRET)
+    victimId                   int          the victim ID of the event. Only present if relevant.
+    wardType                   str          the ward type of the event. Only present if relevant. (Legal values: SIGHT_WARD, TEEMO_MUSHROOM, UNDEFINED, VISION_WARD, YELLOW_TRINKET, YELLOW_TRINKET_UPGRADE)
+    """
     def __init__(self, dictionary):
-        # str # The ascended type of the event. Only present if relevant. Note that CLEAR_ASCENDED refers to when a participants kills the ascended player. (Legal values: CHAMPION_ASCENDED, CLEAR_ASCENDED, MINION_ASCENDED)
         self.ascendedType = dictionary.get("ascendedType", "")
-
-        # list<int> # The assisting participant IDs of the event. Only present if relevant.
         self.assistingParticipantIds = dictionary.get("assistingParticipantIds", [])
-
-        # str # The building type of the event. Only present if relevant. (Legal values: INHIBITOR_BUILDING, TOWER_BUILDING)
         self.buildingType = dictionary.get("buildingType", "")
-
-        # int # The creator ID of the event. Only present if relevant.
         self.creatorId = dictionary.get("creatorId", 0)
-
-        # str # Event type. (Legal values: ASCENDED_EVENT, BUILDING_KILL, CAPTURE_POINT, CHAMPION_KILL, ELITE_MONSTER_KILL, ITEM_DESTROYED, ITEM_PURCHASED, ITEM_SOLD, ITEM_UNDO, PORO_KING_SUMMON, SKILL_LEVEL_UP, WARD_KILL, WARD_PLACED)
         self.eventType = dictionary.get("eventType", "")
-
-        # int # The ending item ID of the event. Only present if relevant.
         self.itemAfter = dictionary.get("itemAfter", 0)
-
-        # int # The starting item ID of the event. Only present if relevant.
         self.itemBefore = dictionary.get("itemBefore", 0)
-
-        # int # The item ID of the event. Only present if relevant.
         self.itemId = dictionary.get("itemId", 0)
-
-        # int # The killer ID of the event. Only present if relevant. Killer ID 0 indicates a minion.
         self.killerId = dictionary.get("killerId", 0)
-
-        # str # The lane type of the event. Only present if relevant. (Legal values: BOT_LANE, MID_LANE, TOP_LANE)
         self.laneType = dictionary.get("laneType", "")
-
-        # str # The level up type of the event. Only present if relevant. (Legal values: EVOLVE, NORMAL)
         self.levelUpType = dictionary.get("levelUpType", "")
-
-        # str # The monster type of the event. Only present if relevant. (Legal values: BARON_NASHOR, BLUE_GOLEM, DRAGON, RED_LIZARD, VILEMAW)
         self.monsterType = dictionary.get("monsterType", "")
-
-        # int # The participant ID of the event. Only present if relevant.
         self.participantId = dictionary.get("participantId", 0)
-
-        # str # The point captured in the event. Only present if relevant. (Legal values: POINT_A, POINT_B, POINT_C, POINT_D, POINT_E)
         self.pointCaptured = dictionary.get("pointCaptured", "")
-
-        # Position # The position of the event. Only present if relevant.
         val = dictionary.get("position", None)
         self.position = Position(val) if val and not isinstance(val, Position) else val
-
-        # int # The skill slot of the event. Only present if relevant.
         self.skillSlot = dictionary.get("skillSlot", 0)
-
-        # int # The team ID of the event. Only present if relevant.
         self.teamId = dictionary.get("teamId", 0)
-
-        # int # Represents how many milliseconds into the game the event occurred.
         self.timestamp = dictionary.get("timestamp", 0)
-
-        # str # The tower type of the event. Only present if relevant. (Legal values: BASE_TURRET, FOUNTAIN_TURRET, INNER_TURRET, NEXUS_TURRET, OUTER_TURRET, UNDEFINED_TURRET)
         self.towerType = dictionary.get("towerType", "")
-
-        # int # The victim ID of the event. Only present if relevant.
         self.victimId = dictionary.get("victimId", 0)
-
-        # str # The ward type of the event. Only present if relevant. (Legal values: SIGHT_WARD, TEEMO_MUSHROOM, UNDEFINED, VISION_WARD, YELLOW_TRINKET, YELLOW_TRINKET_UPGRADE)
         self.wardType = dictionary.get("wardType", "")
 
 
+@cassiopeia.type.core.common.inheritdocs
 class ParticipantFrame(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    currentGold            int         participant's current gold
+    dominionScore          int         dominion score of the participant
+    jungleMinionsKilled    int         number of jungle minions killed by participant
+    level                  int         participant's current level
+    minionsKilled          int         number of minions killed by participant
+    participantId          int         participant ID
+    position               Position    participant's position
+    teamScore              int         team score of the participant
+    totalGold              int         participant's total gold
+    xp                     int         experience earned by participant
+    """
     def __init__(self, dictionary):
-        # int # Participant's current gold
         self.currentGold = dictionary.get("currentGold", 0)
-
-        # int # Dominion score of the participant
         self.dominionScore = dictionary.get("dominionScore", 0)
-
-        # int # Number of jungle minions killed by participant
         self.jungleMinionsKilled = dictionary.get("jungleMinionsKilled", 0)
-
-        # int # Participant's current level
         self.level = dictionary.get("level", 0)
-
-        # int # Number of minions killed by participant
         self.minionsKilled = dictionary.get("minionsKilled", 0)
-
-        # int # Participant ID
         self.participantId = dictionary.get("participantId", 0)
-
-        # Position # Participant's position
         val = dictionary.get("position", None)
         self.position = Position(val) if val and not isinstance(val, Position) else val
-
-        # int # Team score of the participant
         self.teamScore = dictionary.get("teamScore", 0)
-
-        # int # Participant's total gold
         self.totalGold = dictionary.get("totalGold", 0)
-
-        # int # Experience earned by participant
         self.xp = dictionary.get("xp", 0)
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Position(cassiopeia.type.dto.common.CassiopeiaDto):
+    """
+    x    int    x position
+    y    int    y position
+    """
     def __init__(self, dictionary):
-        # int # x position
         self.x = dictionary.get("x", 0)
-
-        # int # y position
         self.y = dictionary.get("y", 0)
 
 ###############################
