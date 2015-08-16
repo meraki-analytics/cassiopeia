@@ -107,6 +107,12 @@ def get_item(id_):
         return item
 
     item = cassiopeia.dto.staticdataapi.get_item(id_)
+
+    # Load required data if loading policy is eager
+    if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
+        ids = item.item_ids
+        cassiopeia.riotapi.get_items(list(ids)) if ids else None
+
     item = cassiopeia.type.core.staticdata.Item(item)
 
     cassiopeia.core.requests.data_store.store(item, id_)
@@ -165,6 +171,12 @@ def get_mastery(id_):
         return mastery
 
     mastery = cassiopeia.dto.staticdataapi.get_mastery(id_)
+
+    # Load required data if loading policy is eager
+    if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
+        ids = item.mastery_ids
+        cassiopeia.riotapi.get_masteries(list(ids)) if ids else None
+
     mastery = cassiopeia.type.core.staticdata.Mastery(mastery)
 
     cassiopeia.core.requests.data_store.store(mastery, id_)
