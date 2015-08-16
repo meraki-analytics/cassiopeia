@@ -4,9 +4,13 @@ import cassiopeia.core.requests
 import cassiopeia.type.core.common
 import cassiopeia.type.core.league
 
-# @param queue_type # cassiopeia.type.core.common.Queue # The queue type to get the challenger league for
-# @return # cassiopeia.type.core.league.League # The challenger league
 def get_challenger(queue_type=cassiopeia.type.core.common.Queue.ranked_solo):
+    """Gets the challenger league
+
+    queue_type    Queue     the queue to get the challenger league for (default Queue.ranked_solo)
+
+    return        League    the challenger league for that queue
+    """
     if(queue_type not in cassiopeia.type.core.common.ranked_queues):
         raise ValueError("Must use a ranked queue type to get ranked leagues")
 
@@ -21,9 +25,13 @@ def get_challenger(queue_type=cassiopeia.type.core.common.Queue.ranked_solo):
 
     return cassiopeia.type.core.league.League(league)
 
-# @param queue_type # cassiopeia.type.core.common.Queue # The queue type to get the master league for
-# @return # cassiopeia.type.core.league.League # The master league
 def get_master(queue_type=cassiopeia.type.core.common.Queue.ranked_solo):
+    """Gets the master league
+
+    queue_type    Queue     the queue to get the master league for (default Queue.ranked_solo)
+
+    return        League    the master league for that queue
+    """
     if(queue_type not in cassiopeia.type.core.common.ranked_queues):
         raise ValueError("Must use a ranked queue type to get ranked leagues")
 
@@ -38,8 +46,6 @@ def get_master(queue_type=cassiopeia.type.core.common.Queue.ranked_solo):
 
     return cassiopeia.type.core.league.League(league)
 
-# @param ids # list<int> or int # The summoner ID(s) to get leagues for
-# @return # list<list<cassiopeia.type.core.league.League>> or list<cassiopeia.type.core.league.League> # The leagues for the requested summoner(s)
 def __get_leagues_by_summoner_id(ids):
     leagues = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.leagueapi.get_leagues_by_summoner, 10, ids)
 
@@ -59,16 +65,18 @@ def __get_leagues_by_summoner_id(ids):
     else:
         return [[cassiopeia.type.core.league.League(league) for league in leagues[str(id_)]] for id_ in ids]
 
-# @param summoners # list<cassiopeia.type.core.summoner.Summoner> or cassiopeia.type.core.summoner.Summoner # The summoner(s) to get leagues for
-# @return # list<list<cassiopeia.type.core.league.League>> or list<cassiopeia.type.core.league.League> # The leagues for the requested summoner(s)
 def get_leagues_by_summoner(summoners):
+    """Gets the leagues that the summoner(s) belong(s) to
+
+    summoners    Summoner | list<Summoner>            the summoner(s) to get leagues for
+
+    return       list<League> | list<list<League>>    the leagues that the requested summoner(s) belong(s) to
+    """
     if(isinstance(summoners, list)):
         return __get_leagues_by_summoner_id([summoner.id for summoner in summoners])
     else:
         return __get_leagues_by_summoner_id(summoners.id)
 
-# @param ids # list<int> or int # The summoner ID(s) to get league entries for
-# @return # list<list<cassiopeia.type.core.league.League>> or list<cassiopeia.type.core.league.League> # The league entries for the requested summoner(s)
 def __get_league_entries_by_summoner_id(ids):
     leagues = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.leagueapi.get_league_entries_by_summoner, 10, ids)
 
@@ -89,16 +97,18 @@ def __get_league_entries_by_summoner_id(ids):
     else:
         return [[cassiopeia.type.core.league.League(league) for league in leagues[str(id_)]] for id_ in ids]
 
-# @param summoners # list<cassiopeia.type.core.summoner.Summoner> or cassiopeia.type.core.summoner.Summoner # The summoner(s) to get league entries for
-# @return # list<list<cassiopeia.type.core.league.League>> or list<cassiopeia.type.core.league.League> # The league entries for the requested summoner(s)
 def get_league_entries_by_summoner(summoners):
+    """Gets the leagues that the summoner(s) belong(s) to, including only the requested summoner(s)' entries
+
+    summoners    Summoner | list<Summoner>            the summoner(s) to get leagues for
+
+    return       list<League> | list<list<League>>    the leagues that the requested summoner(s) belong(s) to
+    """
     if(isinstance(summoners, list)):
         return __get_league_entries_by_summoner_id([summoner.id for summoner in summoners])
     else:
         return __get_league_entries_by_summoner_id(summoners.id)
 
-# @param ids # list<str> or str # The team ID(s) to get leagues for
-# @return # list<list<cassiopeia.type.core.league.League>> or list<cassiopeia.type.core.league.League> # The leagues for the requested team(s)
 def __get_leagues_by_team_id(ids):
     leagues = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.leagueapi.get_leagues_by_team, 10, ids)
 
@@ -121,13 +131,17 @@ def __get_leagues_by_team_id(ids):
 # @param teams # list<cassiopeia.type.core.team.Team> or cassiopeia.type.core.team.Team # The team(s) to get leagues for
 # @return # list<list<cassiopeia.type.core.league.League>> or list<cassiopeia.type.core.league.League> # The leagues for the requested team(s)
 def get_leagues_by_team(teams):
+    """Gets the leagues that the team(s) belong(s) to
+
+    teams     Team | list<Team>                    the team(s) to get leagues for
+
+    return    list<League> | list<list<League>>    the leagues that the requested team(s) belong(s) to
+    """
     if(isinstance(teams, list)):
         return __get_leagues_by_team_id([team.id for team in teams])
     else:
         return __get_leagues_by_team_id(teams.id)
 
-# @param ids # list<str> or str # The team ID(s) to get league entries for
-# @return # list<list<cassiopeia.type.core.league.League>> or list<cassiopeia.type.core.league.League> # The league entries for the requested team(s)
 def __get_league_entries_by_team_id(ids):
     leagues = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.leagueapi.get_league_entries_by_team, 10, ids)
 
@@ -147,9 +161,13 @@ def __get_league_entries_by_team_id(ids):
     else:
         return [[cassiopeia.type.core.league.League(league) for league in leagues[str(id_)]] for id_ in ids]
 
-# @param teams # list<cassiopeia.type.core.team.Team> or cassiopeia.type.core.team.Team # The team(s) to get league entries for
-# @return # list<list<cassiopeia.type.core.league.League>> or list<cassiopeia.type.core.league.League> # The league entries for the requested team(s)
 def get_league_entries_by_team(teams):
+    """Gets the leagues that the team(s) belong(s) to, including only the requested team(s)' entries
+
+    teams     Team | list<Team>                    the team(s) to get leagues for
+
+    return    list<League> | list<list<League>>    the leagues that the requested team(s) belong(s) to
+    """
     if(isinstance(teams, list)):
         return __get_league_entries_by_team_id([team.id for team in teams])
     else:

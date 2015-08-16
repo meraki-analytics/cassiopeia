@@ -2,9 +2,13 @@ import cassiopeia.dto.currentgameapi
 import cassiopeia.core.requests
 import cassiopeia.type.core.currentgame
 
-# @param summoner # cassiopeia.type.core.summoner.Summoner # The summoner to find an active game for
-# @return # cassiopeia.type.core.currentgame.Game # The summoner's current game (or None if they aren't in one)
 def get_current_game(summoner):
+    """Gets the game a summoner is currently in, if they're in one
+
+    summoner    Summoner    the summoner to find an active game for
+
+    return      Game        the game they're in (or None if they aren't in one)
+    """
     game = cassiopeia.dto.currentgameapi.get_current_game(summoner.id)
 
     # Load required data if loading policy is eager

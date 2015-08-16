@@ -5,9 +5,13 @@ import cassiopeia.type.core.common
 import cassiopeia.type.core.match
 import cassiopeia.type.core.matchlist
 
-# @param id_ # int or cassiopeia.type.core.matchlist.MatchReference # The match ID or reference to get
-# @return # cassiopeia.type.core.match.Match # The match
 def get_match(id_):
+    """Gets a match
+
+    id_       int | MatchReference      the ID of or reference to the match to get
+
+    return    Match                     the match
+    """
     if(isinstance(id_, cassiopeia.type.core.matchlist.MatchReference)):
         id_ = id_.id
 
@@ -36,9 +40,13 @@ def get_match(id_):
     cassiopeia.core.requests.data_store.store(match, id_)
     return match
 
-# @param ids # list<int> or list<cassiopeia.type.core.matchlist.MatchReference> # The match IDs or references to get
-# @return # list<cassiopeia.type.core.match.Match> # The matches
 def get_matches(ids):
+    """Gets a bunch of matches
+
+    ids       list<int> | list<MatchReference>      the IDs of or references to the matches to get
+
+    return    list<Match>                           the matches
+    """
     ids = [ref.id if isinstance(ref, cassiopeia.type.core.matchlist.MatchReference) else ref for ref in ids]
 
     matches = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.match.Match, ids, "matchId")

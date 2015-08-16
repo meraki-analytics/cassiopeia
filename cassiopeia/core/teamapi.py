@@ -3,9 +3,13 @@ import cassiopeia.dto.teamapi
 import cassiopeia.core.requests
 import cassiopeia.type.core.team
 
-# @param summoners # cassiopeia.type.core.summoner.Summoner or list<cassiopeia.type.core.summoner.Summoner> # The summoner(s) to look up teams for
-# @return # list<cassiopeia.type.core.team.Team> or list<list<cassiopeia.type.core.team.Team>> # The summoner's teams
 def get_teams_by_summoner(summoners):
+    """Gets (a) summoner(s)' teams
+
+    summoners    Summoner | list<Summoner>        the summoner(s) to get teams for
+
+    return       list<Team> | list<list<Team>>    the summoner(s)' teams
+    """
     ids = [summoner.id for summoner in summoners] if isinstance(summoners, list) else summoners.id
     teams = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.teamapi.get_teams_by_summoner_id, 10, ids)
 
@@ -22,9 +26,13 @@ def get_teams_by_summoner(summoners):
     else:
         return [[cassiopeia.type.core.team.Team(team) for team in teams[str(id_)]] for id_ in ids]
 
-# @param ids # str or list<str> # The team IDs to look up
-# @return # list<cassiopeia.type.core.team.Team> or Team # The team(s)
 def get_teams(ids):
+    """Gets team(s) by ID
+
+    ids       str | list<str>      the ID(s) of the team(s)
+
+    return    Team | list<Team>    the team(s)
+    """
     teams = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.teamapi.get_teams_by_id, 10, ids)
 
     # Load required data if loading policy is eager

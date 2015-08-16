@@ -2,8 +2,11 @@ import cassiopeia.dto.featuredgamesapi
 import cassiopeia.core.requests
 import cassiopeia.type.core.featuredgames
 
-# @return # list<cassiopeia.type.core.featuredgames.Game> # The current featured game list
 def get_featured_games():
+    """Gets the current featured game list
+
+    return    list<Game>    the featured games
+    """
     games = cassiopeia.dto.featuredgamesapi.get_featured_games()
 
     # Load required data if loading policy is eager

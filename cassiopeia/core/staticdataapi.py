@@ -9,9 +9,13 @@ _ignore_items = {0, 1080, 2037, 2039, 2040, 3005, 3039, 3123, 3128, 3131, 3160, 
 _ignore_runes = {8028}
 _ignore_summoner_spells = {10}
 
-# @param id_ # int # The ID of the champion to get
-# @return # cassiopeia.type.core.staticdata.Champion # The champion
 def get_champion_by_id(id_):
+    """Gets a champion by ID
+
+    id_       int         the ID of the champion to get
+
+    return    Champion    the champion
+    """
     champion = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Champion, id_, "id")
     if(champion):
         return champion
@@ -27,17 +31,24 @@ def get_champion_by_id(id_):
     cassiopeia.core.requests.data_store.store(champion, id_)
     return champion
 
-# @param name # str # The name of the champion to get
-# @return # cassiopeia.type.core.staticdata.Champion # The champion
 def get_champion_by_name(name):
+    """Gets a champion by name
+
+    name      str         the name of the champion to get
+
+    return    Champion    the champion
+    """
     champions = get_champions()
     for champion in champions:
         if(champion.name == name):
             return champion
     return None
 
-# @return # list<cassiopeia.type.core.staticdata.Champion> # All champions in the game
 def get_champions():
+    """Gets all the champions
+
+    return    list<Champion>    all the champions
+    """
     if(cassiopeia.core.requests.data_store.has_all(cassiopeia.type.core.staticdata.Champion)):
         return cassiopeia.core.requests.data_store.get_all(cassiopeia.type.core.staticdata.Champion)
 
@@ -52,15 +63,23 @@ def get_champions():
     cassiopeia.core.requests.data_store.store(champions, [champ.id for champ in champions], [cassiopeia.type.core.staticdata.Champion])
     return champions
 
-# @param ids # list<int> # The IDs of the champions to get
-# @return # list<cassiopeia.type.core.staticdata.Champion> # The champions
 def get_champions_by_id(ids):
+    """Gets a bunch of champions by ID
+
+    ids       list<int>         the IDs of the champions to get
+
+    return    list<Champion>    the requested champions
+    """
     get_champions()
     return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Champion, ids, "id")
 
-# @param names # list<str> # The names of the champions to get
-# @return # list<cassiopeia.type.core.staticdata.Champion> # The champions
 def get_champions_by_name(names):
+    """Gets a bunch of champions by name
+
+    names     list<str>         the names of the champions to get
+
+    return    list<Champion>    the requested champions
+    """
     indices = {names[i]: i for i in range(len(names))}
     
     champions = get_champions()
@@ -74,9 +93,13 @@ def get_champions_by_name(names):
 
     return results
 
-# @param id_ # int # The ID of the item to get
-# @return # cassiopeia.type.core.staticdata.Item # The item
 def get_item(id_):
+    """Gets an item
+
+    id_       int     the ID of the item to get
+
+    return    Item    the item
+    """
     if(id_ in _ignore_items):
         return None
 
@@ -90,9 +113,13 @@ def get_item(id_):
     cassiopeia.core.requests.data_store.store(item, id_)
     return item
 
-# @param ids # list<int> # The list of ids to limit results to
-# @return # list<cassiopeia.type.core.staticdata.Item> # The requested items (or all if no ids are provided)
 def get_items(ids=None):
+    """Gets a bunch of items (or all of them)
+
+    ids       list<int>     the IDs of the items to get (or None to get all items) (default None)
+
+    return    list<Item>    the items
+    """
     if(ids):
         get_items()
         return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Item, ids, "id")
@@ -106,17 +133,27 @@ def get_items(ids=None):
         cassiopeia.core.requests.data_store.store(items, [item.id for item in items], [cassiopeia.type.core.staticdata.Item])
         return items
 
-# @return # dict<str, str> # The locale-based string replacements for various game constants
 def get_language_strings():
+    """Gets the locale-based string replacements for various game constants
+
+    return    dict<str, str>   the replacements
+    """
     return cassiopeia.dto.staticdataapi.get_language_strings().data
 
-# @return # list<cassiopeia.type.core.staticdata.MapDetails> # Specific information about each map
 def get_map_information():
+    """Gets specific information about each map
+
+    return    list<MapDetails>    the map information
+    """
     return [cassiopeia.type.core.staticdata.MapDetails(map_[1]) for map_ in cassiopeia.dto.staticdataapi.get_maps().data.items()]
 
-# @param id_ # int # The ID of the mastery to get
-# @return # cassiopeia.type.core.staticdata.Mastery # The mastery
 def get_mastery(id_):
+    """Gets a mastery
+
+    id_       int        the ID of the mastery to get
+
+    return    Mastery    the mastery
+    """
     mastery = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Mastery, id_, "id")
     if(mastery):
         return mastery
@@ -127,9 +164,13 @@ def get_mastery(id_):
     cassiopeia.core.requests.data_store.store(mastery, id_)
     return mastery
 
-# @param ids # list<int> # The list of ids to limit results to
-# @return # list<cassiopeia.type.core.staticdata.Mastery> # The requested masteries (or all if no ids are provided)
 def get_masteries(ids=None):
+    """Gets a bunch of masteries (or all of them)
+
+    ids       list<int>        the IDs of the masteries to get (or None to get all masteries) (default None)
+
+    return    list<Mastery>    the masteries
+    """
     if(ids):
         get_masteries()
         return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Mastery, ids, "id")
@@ -143,13 +184,20 @@ def get_masteries(ids=None):
         cassiopeia.core.requests.data_store.store(masteries, [mastery.id for mastery in masteries], [cassiopeia.type.core.staticdata.Mastery])
         return masteries
 
-# @return # cassiopeia.type.core.staticdata.Realm # The realm for the current region
 def get_realm():
+    """Gets the realm for the current region
+
+    return    Realm    the realm
+    """
     return cassiopeia.type.core.staticdata.Realm(cassiopeia.dto.staticdataapi.get_realm())
 
-# @param id_ # int # The ID of the rune to get
-# @return # cassiopeia.type.core.staticdata.Rune # The rune
 def get_rune(id_):
+    """Gets a rune
+
+    id_       int     the ID of the rune to get
+
+    return    Rune    the rune
+    """
     if(id_ in _ignore_runes):
         return None
 
@@ -163,9 +211,13 @@ def get_rune(id_):
     cassiopeia.core.requests.data_store.store(rune, id_)
     return rune
 
-# @param ids # list<int> # The list of ids to limit results to
-# @return # list<cassiopeia.type.core.staticdata.Rune> # The requested runes (or all if no ids are provided)
 def get_runes(ids=None):
+    """Gets a bunch of runes (or all of them)
+
+    ids       list<int>     the IDs of the runes to get (or None to get all runes) (default None)
+
+    return    list<Rune>    the runes
+    """
     if(ids):
         get_runes()
         return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Rune, ids, "id")
@@ -179,9 +231,13 @@ def get_runes(ids=None):
         cassiopeia.core.requests.data_store.store(runes, [rune.id for rune in runes], [cassiopeia.type.core.staticdata.Rune])
         return runes
 
-# @param id_ # int # The ID of the summoner spell to get
-# @return # cassiopeia.type.core.staticdata.SummonerSpell # The summoner spell
 def get_summoner_spell(id_):
+    """Gets a summoner spell
+
+    id_       int              the ID of the summoner spell to get
+
+    return    SummonerSpell    the summoner spell
+    """
     if(id_ in _ignore_summoner_spells):
         return None
 
@@ -195,9 +251,13 @@ def get_summoner_spell(id_):
     cassiopeia.core.requests.data_store.store(summoner_spell, id_)
     return summoner_spell
 
-# @param ids # list<int> # The list of ids to limit results to
-# @return # list<cassiopeia.type.core.staticdata.SummonerSpell> # The requested summoner spells (or all if no ids are provided)
 def get_summoner_spells(ids=None):
+    """Gets a bunch of summoner spells (or all of them)
+
+    ids       list<int>              the IDs of the summoner spells to get (or None to get all summoner spells) (default None)
+
+    return    list<SummonerSpell>    the summoner spells
+    """
     if(ids):
         get_summoner_spells()
         return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.SummonerSpell, ids, "id")

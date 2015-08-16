@@ -2,9 +2,13 @@ import cassiopeia.dto.gameapi
 import cassiopeia.core.requests
 import cassiopeia.type.core.game
 
-# @param # cassiopeia.type.core.summoner.Summoner # A Summoner
-# @return # list<cassiopeia.type.core.game.Game> # The summoner's recent games
 def get_recent_games(summoner):
+    """Gets the most recent games a summoner played
+
+    summoner    Summoner      the summoner to get recent games for
+
+    return      list<Game>    the summoner's recent games
+    """
     games = cassiopeia.dto.gameapi.get_recent_games(summoner.id)
 
     # Load required data if loading policy is eager
