@@ -45,7 +45,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def kda(self):
-        """the participant's kda"""
+        """float    the participant's kda"""
         return (self.data.totalChampionKills + self.data.totalAssists) / (self.data.totalDeathsPerSession if self.data.totalDeathsPerSession else 1)
 
     @property

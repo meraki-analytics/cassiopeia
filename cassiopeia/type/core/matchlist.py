@@ -32,7 +32,7 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def lane(self):
-        """the lane that the summoner was in for the summoner that was used to  pull this match reference"""
+        """Lane    the lane that the summoner was in for the summoner that was used to  pull this match reference"""
         lane = self.data.lane
         lane = "MIDDLE" if lane == "MID" else lane
         lane = "BOTTOM" if lane == "BOT" else lane

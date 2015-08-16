@@ -166,17 +166,17 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.minionsKilled
 
     @property
-    def neutral_minions_kills(self):
+    def monster_kills(self):
         """int    the number of neutral minions this participant killed"""
         return self.data.neutralMinionsKilled
 
     @property
-    def neutral_enemy_minion_kills(self):
+    def enemy_monster_kills(self):
         """int    the number of neutral enemy minions this participant killed"""
         return self.data.neutralMinionsKilledEnemyJungle
 
     @property
-    def neutral_ally_minion_kill(self):
+    def ally_monster_kills(self):
         """int    the number of neutral ally minions this participant killed"""
         return self.data.neutralMinionsKilledYourJungle
 
@@ -186,7 +186,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.nexusKilled
 
     @property
-    def node_captures(self):
+    def node_captured(self):
         """int    dominion only. the number of nodes this participant captured"""
         return self.data.nodeCapture
 
@@ -337,7 +337,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def score_rank(self):
-        """int    well, we don't know what this one is. let us know if you figure it out."""
+        """int    if game was a dominion game, team rank of the player's total score (e.g., 1-5)"""
         return self.data.totalScoreRank
 
     @property
