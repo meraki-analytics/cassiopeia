@@ -59,7 +59,7 @@ Make sure you set your rate limit! Cassiopeia will limit you the the default dev
 
 ```python
 # 3,000 calls per 10 seconds
-riotapi.set_rate_limit(10000, 10);
+riotapi.set_rate_limit(300, 10);
 # 3,000 calls per 10 seconds AND 180,000 calls per 10 minutes
 riotapi.set_rate_limits((3000, 10), (180000, 600));
 ```
