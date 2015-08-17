@@ -132,7 +132,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def duration(self):
-        """datetime.timedelta    current duration of the game"""
+        """timedelta    current duration of the game"""
         return datetime.timedelta(seconds=self.data.gamelength)
 
     @property
@@ -147,7 +147,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def creation(self):
-        """datetime.datetime    the creation timestamp for this game"""
+        """datetime    the creation timestamp for this game"""
         return datetime.datetime.utcfromtimestamp(self.data.gamestarttime / 1000) if self.data.gamestarttime else none
 
     @property

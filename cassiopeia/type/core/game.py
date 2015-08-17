@@ -4,6 +4,7 @@ import cassiopeia.riotapi
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.game
 
+@cassiopeia.type.core.common.inheritdocs
 class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.game.RawStats
 
@@ -406,6 +407,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.win
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.game.Player
 
@@ -428,6 +430,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
         return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.teamId else None
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Game(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.game.Game
 
@@ -459,7 +462,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def creation(self):
-        """datetime.datetime    the time when this game was created"""
+        """datetime    the time when this game was created"""
         return datetime.datetime.utcfromtimestamp(self.data.createDate / 1000) if self.data.createDate else None
 
     @cassiopeia.type.core.common.lazyproperty

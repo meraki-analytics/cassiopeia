@@ -5,6 +5,7 @@ import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.match
 
+@cassiopeia.type.core.common.inheritdocs
 class Match(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.match.MatchDetail
 
@@ -36,12 +37,12 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def creation(self):
-        """datetime.datetime    when the match was created"""
+        """datetime    when the match was created"""
         return datetime.datetime.utcfromtimestamp(self.data.matchCreation / 1000) if self.data.matchCreation else None
 
     @cassiopeia.type.core.common.lazyproperty
     def duration(self):
-        """datetime.datetime    duration of the match"""
+        """datetime    duration of the match"""
         return datetime.timedelta(seconds=self.data.matchDuration)
 
     @property
@@ -120,12 +121,14 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
         return self.timeline.frames
 
 
+@cassiopeia.type.core.common.inheritdocs
 class CombinedParticipant(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, participant, identity):
         self.participant = participant
         self.identity = identity
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = CombinedParticipant
 
@@ -208,6 +211,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.identity.player.summonerName
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Team(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.match.Team
 
@@ -303,6 +307,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.winner
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Timeline(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.match.Timeline
 
@@ -324,7 +329,7 @@ class Timeline(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def frame_interval(self):
-        """datetime.timedelta    the number of milliseconds between frames"""
+        """timedelta    the number of milliseconds between frames"""
         return datetime.timedelta(milliseconds=self.data.frameInterval)
 
     @cassiopeia.type.core.common.lazyproperty
@@ -336,6 +341,7 @@ class Timeline(cassiopeia.type.core.common.CassiopeiaObject):
         return value
 
 
+@cassiopeia.type.core.common.inheritdocs
 class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.match.ParticipantStats
 
@@ -667,6 +673,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.winner
 
 
+@cassiopeia.type.core.common.inheritdocs
 class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.match.ParticipantTimeline
 
@@ -812,6 +819,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
         return ParticipantTimelineData(self.data.xpPerMinDeltas) if self.data.xpPerMinDeltas else None
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Ban(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.match.BannedChampion
 
@@ -829,6 +837,7 @@ class Ban(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.pickTurn
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Frame(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.match.Frame
     __participant_quota = 2
@@ -872,10 +881,11 @@ class Frame(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def timestamp(self):
-        """datetime.datetime    the timestamp for this match"""
+        """datetime    the timestamp for this match"""
         return datetime.timedelta(milliseconds=self.data.timestamp)
 
 
+@cassiopeia.type.core.common.inheritdocs
 class ParticipantTimelineData(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.match.ParticipantTimelineData
 
@@ -903,6 +913,7 @@ class ParticipantTimelineData(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.zeroToTen
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Event(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.match.Event
     __participant_quota = 5
@@ -1016,7 +1027,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def timestamp(self):
-        """datetime.datetime    the timestamp for this event"""
+        """datetime    the timestamp for this event"""
         return datetime.timedelta(milliseconds=self.data.timestamp)
 
     @property
@@ -1037,6 +1048,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
         return cassiopeia.type.core.common.Ward(self.data.wardType) if self.data.wardType else None
 
 
+@cassiopeia.type.core.common.inheritdocs
 class ParticipantFrame(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.match.ParticipantFrame
 
@@ -1093,6 +1105,7 @@ class ParticipantFrame(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.xp
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Position(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.match.Position
 

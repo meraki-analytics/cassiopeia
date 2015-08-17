@@ -22,7 +22,10 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.immutablemethod
     def match(self):
-        """return    Match    the full, pulled match associated with this match reference"""
+        """Gets the full information for this match
+
+        return    Match    the match
+        """
         return cassiopeia.riotapi.get_match(self)
 
     @cassiopeia.type.core.common.lazyproperty
@@ -65,7 +68,7 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def timestamp(self):
-        """datetime.datetime    the timestamp for this match"""
+        """datetime    the timestamp for this match"""
         return datetime.datetime.utcfromtimestamp(self.data.timestamp / 1000) if self.data.timestamp else none
 
 ###############################

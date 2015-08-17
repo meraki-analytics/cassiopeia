@@ -8,6 +8,7 @@ import cassiopeia.type.dto.staticdata
 # Champion Endpoints #
 ######################
 
+@cassiopeia.type.core.common.inheritdocs
 class SetItem(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.BlockItem
 
@@ -25,6 +26,7 @@ class SetItem(cassiopeia.type.core.common.CassiopeiaObject):
         return cassiopeia.riotapi.get_item(self.data.id)
 
 
+@cassiopeia.type.core.common.inheritdocs
 class ItemSet(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.Block
 
@@ -56,6 +58,7 @@ class ItemSet(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.type
 
 
+@cassiopeia.type.core.common.inheritdocs
 class SpellVariables(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.SpellVars
 
@@ -88,6 +91,7 @@ class SpellVariables(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.ranksWith
 
 
+@cassiopeia.type.core.common.inheritdocs
 class LevelTip(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.LevelTip
 
@@ -105,6 +109,7 @@ class LevelTip(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.label
 
 
+@cassiopeia.type.core.common.inheritdocs
 class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.Stats
 
@@ -212,6 +217,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.spellblockperlevel
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Skin(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.Skin
 
@@ -257,6 +263,7 @@ class Skin(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.num
 
 
+@cassiopeia.type.core.common.inheritdocs
 class RecommendedItems(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.Recommended
 
@@ -308,6 +315,7 @@ class RecommendedItems(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.type
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Image(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.Image
 
@@ -350,6 +358,7 @@ class Image(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.y
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Passive(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.Passive
 
@@ -377,6 +386,7 @@ class Passive(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.sanitizedDescription
 
 
+@cassiopeia.type.core.common.inheritdocs
 class ChampionInfo(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.Info
 
@@ -404,6 +414,7 @@ class ChampionInfo(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.magic
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.ChampionSpell
 
@@ -576,6 +587,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
         return self.__replace_variables(self.sanitized_tooltip, level, rank)
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Champion(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.Champion
 
@@ -685,6 +697,7 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
 # Item Endpoints #
 ##################
 
+@cassiopeia.type.core.common.inheritdocs
 class MetaData(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.MetaData
 
@@ -707,6 +720,7 @@ class MetaData(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.type
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Gold(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.Gold
 
@@ -734,6 +748,7 @@ class Gold(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.total
 
 
+@cassiopeia.type.core.common.inheritdocs
 class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.BasicDataStats
 
@@ -1060,6 +1075,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
         return abs(self.data.rPercentTimeDeadModPerLevel)
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Item(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.Item
 
@@ -1209,6 +1225,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
 # Map Endpoint #
 ################
 
+@cassiopeia.type.core.common.inheritdocs
 class MapDetails(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.MapDetails
 
@@ -1248,6 +1265,7 @@ class MapDetails(cassiopeia.type.core.common.CassiopeiaObject):
 # Mastery Endpoints #
 #####################
 
+@cassiopeia.type.core.common.inheritdocs
 class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.Mastery
 
@@ -1307,6 +1325,7 @@ class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
 # Realm Endpoint #
 ##################
 
+@cassiopeia.type.core.common.inheritdocs
 class Realm(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.Realm
 
@@ -1371,6 +1390,7 @@ class Realm(cassiopeia.type.core.common.CassiopeiaObject):
 # Rune Endpoints #
 ##################
 
+@cassiopeia.type.core.common.inheritdocs
 class Rune(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.Rune
 
@@ -1438,6 +1458,7 @@ class Rune(cassiopeia.type.core.common.CassiopeiaObject):
 # Summoner Spell Endpoints #
 ############################
 
+@cassiopeia.type.core.common.inheritdocs
 class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.SummonerSpell
 

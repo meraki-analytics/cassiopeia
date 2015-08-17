@@ -483,6 +483,7 @@ class ParticipantTimelineData(cassiopeia.type.dto.common.CassiopeiaDto):
 
 def sa_bind_match_summary():
     global MatchSummary
+    @cassiopeia.type.core.common.inheritdocs
     class MatchSummary(MatchSummary, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "HistoryMatch"
         mapId = sqlalchemy.Column(sqlalchemy.Integer)
@@ -501,6 +502,7 @@ def sa_bind_match_summary():
 
 def sa_bind_participant():
     global Participant
+    @cassiopeia.type.core.common.inheritdocs
     class Participant(Participant, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "HistoryParticipant"
         championId = sqlalchemy.Column(sqlalchemy.Integer)
@@ -518,6 +520,7 @@ def sa_bind_participant():
 
 def sa_bind_participant_identity():
     global ParticipantIdentity
+    @cassiopeia.type.core.common.inheritdocs
     class ParticipantIdentity(ParticipantIdentity, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "HistoryParticipantIdentity"
         participantId = sqlalchemy.Column(sqlalchemy.Integer)
@@ -527,6 +530,7 @@ def sa_bind_participant_identity():
 
 def sa_bind_mastery():
     global Mastery
+    @cassiopeia.type.core.common.inheritdocs
     class Mastery(Mastery, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "HistoryMastery"
         masteryId = sqlalchemy.Column(sqlalchemy.Integer)
@@ -536,6 +540,7 @@ def sa_bind_mastery():
 
 def sa_bind_participant_stats():
     global ParticipantStats
+    @cassiopeia.type.core.common.inheritdocs
     class ParticipantStats(ParticipantStats, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "HistoryParticipantStats"
         assists = sqlalchemy.Column(sqlalchemy.Integer)
@@ -606,6 +611,7 @@ def sa_bind_participant_stats():
 
 def sa_bind_participant_timeline():
     global ParticipantTimeline
+    @cassiopeia.type.core.common.inheritdocs
     class ParticipantTimeline(ParticipantTimeline, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "HistoryParticipantTimeline"
         ancientGolemAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.matchhistory.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.matchhistory.ParticipantTimeline._id==cassiopeia.type.dto.matchhistory.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.matchhistory.ParticipantTimelineData._type=='ancientGolemAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
@@ -640,6 +646,7 @@ def sa_bind_participant_timeline():
 
 def sa_bind_rune():
     global Rune
+    @cassiopeia.type.core.common.inheritdocs
     class Rune(Rune, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "HistoryRune"
         rank = sqlalchemy.Column(sqlalchemy.Integer)
@@ -649,6 +656,7 @@ def sa_bind_rune():
 
 def sa_bind_player():
     global Player
+    @cassiopeia.type.core.common.inheritdocs
     class Player(Player, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "HistoryPlayer"
         matchHistoryUri = sqlalchemy.Column(sqlalchemy.String(50))
@@ -660,6 +668,7 @@ def sa_bind_player():
 
 def sa_bind_participant_timeline_data():
     global ParticipantTimelineData
+    @cassiopeia.type.core.common.inheritdocs
     class ParticipantTimelineData(ParticipantTimelineData, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "HistoryParticipantTimelineData"
         tenToTwenty = sqlalchemy.Column(sqlalchemy.Float)

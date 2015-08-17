@@ -54,6 +54,7 @@ class MatchReference(cassiopeia.type.dto.common.CassiopeiaDto):
 
 def sa_bind_match_reference():
     global MatchReference
+    @cassiopeia.type.core.common.inheritdocs
     class MatchReference(MatchReference, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MatchReference"
         champion = sqlalchemy.Column(sqlalchemy.Integer)

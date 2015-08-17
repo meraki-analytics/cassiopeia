@@ -69,7 +69,7 @@ class ShardStatus(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def platform(self):
-        """Platform    the platform (ie server) for this match"""
+        """Platform    the platform (i.e. server) for this match"""
         return cassiopeia.type.core.common.Platform(self.data.region_tag.upper()) if self.data.region_tag else None
 
     @cassiopeia.type.core.common.lazyproperty

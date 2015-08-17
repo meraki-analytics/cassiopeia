@@ -4,6 +4,7 @@ import cassiopeia.riotapi
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.summoner
 
+@cassiopeia.type.core.common.inheritdocs
 class RunePage(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.summoner.RunePage
 
@@ -56,6 +57,7 @@ class RunePage(cassiopeia.type.core.common.CassiopeiaObject):
         fetched = cassiopeia.riotapi.get_runes(list(runes.keys()))
         return {rune: runes[rune.id] for rune in fetched}
 
+@cassiopeia.type.core.common.inheritdocs
 class MasteryPage(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.summoner.MasteryPage
 
@@ -106,6 +108,7 @@ class MasteryPage(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.name
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.summoner.Summoner
 
@@ -138,7 +141,7 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def modify_date(self):
-        """datetime.datetime    the date this summoner was last modified specified as epoch milliseconds. The following events will update this timestamp: profile icon change, playing the tutorial or advanced tutorial, finishing a game, summoner name change"""
+        """datetime    the date this summoner was last modified specified as epoch milliseconds. The following events will update this timestamp: profile icon change, playing the tutorial or advanced tutorial, finishing a game, summoner name change"""
         return datetime.datetime.utcfromtimestamp(self.data.revisionDate / 1000) if self.data.revisionDate else None
 
     @property

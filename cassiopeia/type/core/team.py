@@ -4,6 +4,7 @@ import cassiopeia.riotapi
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.team
 
+@cassiopeia.type.core.common.inheritdocs
 class Team(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.team.Team
 
@@ -30,7 +31,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def creation(self):
-        """datetime.datetime    the creation date of the team"""
+        """datetime    the creation date of the team"""
         return datetime.datetime.utcfromtimestamp(self.data.createDate / 1000) if self.data.createDate else None
 
     @property
@@ -40,17 +41,17 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def last_game(self):
-        """datetime.datetime    the date and time for the team's last game in epoch milliseconds"""
+        """datetime    the date and time for the team's last game in epoch milliseconds"""
         return datetime.datetime.utcfromtimestamp(self.data.lastGameDate / 1000) if self.data.lastGameDate else None
 
     @cassiopeia.type.core.common.lazyproperty
     def last_join(self):
-        """datetime.datetime    the date and time for when the most recent team member joined in epoch milliseconds"""
+        """datetime    the date and time for when the most recent team member joined in epoch milliseconds"""
         return datetime.datetime.utcfromtimestamp(self.data.lastJoinDate / 1000) if self.data.lastJoinDate else None
 
     @cassiopeia.type.core.common.lazyproperty
     def last_queue(self):
-        """datetime.datetime    the date the team last joined the ranked team queue in epoch milliseconds"""
+        """datetime    the date the team last joined the ranked team queue in epoch milliseconds"""
         return datetime.datetime.utcfromtimestamp(self.data.lastJoinedRankedTeamQueueDate / 1000) if self.data.lastJoinedRankedTeamQueueDate else None
 
     @cassiopeia.type.core.common.lazyproperty
@@ -60,7 +61,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def modify(self):
-        """datetime.datetime    the date that team was last modified specified as epoch milliseconds"""
+        """datetime    the date that team was last modified specified as epoch milliseconds"""
         return datetime.datetime.utcfromtimestamp(self.data.modifyDate / 1000) if self.data.modifyDate else None
 
     @property
@@ -80,7 +81,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def second_to_last_join(self):
-        """datetime.datetime    the date the second to last member joined specified as epoch milliseconds"""
+        """datetime    the date the second to last member joined specified as epoch milliseconds"""
         return datetime.datetime.utcfromtimestamp(self.data.secondLastJoinDate / 1000) if self.data.secondLastJoinDate else None
 
     @property
@@ -100,7 +101,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def third_to_last_join(self):
-        """datetime.datetime    the date the third to last member joined specified as epoch milliseconds"""
+        """datetime    the date the third to last member joined specified as epoch milliseconds"""
         return datetime.datetime.utcfromtimestamp(self.data.thirdLastJoinDate / 1000) if self.data.thirdLastJoinDate else None
 
     @cassiopeia.type.core.common.immutablemethod
@@ -120,6 +121,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
         return cassiopeia.riotapi.get_league_entries_by_team(self)
 
 
+@cassiopeia.type.core.common.inheritdocs
 class MatchSummary(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.team.MatchHistorySummary
 
@@ -138,7 +140,7 @@ class MatchSummary(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def date(self):
-        """datetime.datetime    the date that match was completed specified as epoch milliseconds"""
+        """datetime    the date that match was completed specified as epoch milliseconds"""
         return datetime.datetime.utcfromtimestamp(self.data.date / 1000) if self.data.date else None
 
     @property
@@ -195,6 +197,7 @@ class MatchSummary(cassiopeia.type.core.common.CassiopeiaObject):
         return cassiopeia.riotapi.get_match(self.id)
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.team.TeamStatDetail
 
@@ -222,6 +225,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.wins
 
 
+@cassiopeia.type.core.common.inheritdocs
 class TeamMember(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.team.TeamMemberInfo
 
@@ -230,12 +234,12 @@ class TeamMember(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def invite(self):
-        """datetime.datetime    the date this team member was invited to team specified as epoch milliseconds"""
+        """datetime    the date this team member was invited to team specified as epoch milliseconds"""
         return datetime.datetime.utcfromtimestamp(self.data.inviteDate / 1000) if self.data.inviteDate else None
 
     @cassiopeia.type.core.common.lazyproperty
     def join(self):
-        """datetime.datetime    the date this team member joined the team specified as epoch milliseconds"""
+        """datetime    the date this team member joined the team specified as epoch milliseconds"""
         return datetime.datetime.utcfromtimestamp(self.data.joinDate / 1000) if self.data.joinDate else None
 
     @property

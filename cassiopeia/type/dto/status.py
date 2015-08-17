@@ -109,6 +109,7 @@ class ShardStatus(cassiopeia.type.dto.common.CassiopeiaDto):
 
 def sa_bind_shard():
     global Shard
+    @cassiopeia.type.core.common.inheritdocs
     class Shard(Shard, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "Shard"
         hostname = sqlalchemy.Column(sqlalchemy.String(50))
@@ -119,6 +120,7 @@ def sa_bind_shard():
 
 def sa_bind_translation():
     global Translation
+    @cassiopeia.type.core.common.inheritdocs
     class Translation(Translation, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "Translation"
         content = sqlalchemy.Column(sqlalchemy.Text)
@@ -129,6 +131,7 @@ def sa_bind_translation():
 
 def sa_bind_message():
     global Message
+    @cassiopeia.type.core.common.inheritdocs
     class Message(Message, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "Message"
         author = sqlalchemy.Column(sqlalchemy.String(30))
@@ -142,6 +145,7 @@ def sa_bind_message():
 
 def sa_bind_incident():
     global Incident
+    @cassiopeia.type.core.common.inheritdocs
     class Incident(Incident, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "Incident"
         active = sqlalchemy.Column(sqlalchemy.Boolean)
@@ -152,6 +156,7 @@ def sa_bind_incident():
 
 def sa_bind_service():
     global Service
+    @cassiopeia.type.core.common.inheritdocs
     class Service(Service, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "Service"
         incidents = sqlalchemy.orm.relationship("cassiopeia.type.dto.status.Incident", cascade="all, delete-orphan", passive_deletes=True)
@@ -163,6 +168,7 @@ def sa_bind_service():
 
 def sa_bind_shard_status():
     global ShardStatus
+    @cassiopeia.type.core.common.inheritdocs
     class ShardStatus(ShardStatus, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "ShardStatus"
         hostname = sqlalchemy.Column(sqlalchemy.String(50))

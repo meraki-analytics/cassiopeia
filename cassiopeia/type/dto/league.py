@@ -111,6 +111,7 @@ class League(cassiopeia.type.dto.common.CassiopeiaDto):
 
 def sa_bind_mini_series():
     global MiniSeries
+    @cassiopeia.type.core.common.inheritdocs
     class MiniSeries(MiniSeries, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MiniSeries"
         losses = sqlalchemy.Column(sqlalchemy.Integer)
@@ -122,6 +123,7 @@ def sa_bind_mini_series():
 
 def sa_bind_league_entry():
     global LeagueEntry
+    @cassiopeia.type.core.common.inheritdocs
     class LeagueEntry(LeagueEntry, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "LeagueEntry"
         division = sqlalchemy.Column(sqlalchemy.String(30))
@@ -140,6 +142,7 @@ def sa_bind_league_entry():
 
 def sa_bind_league():
     global League
+    @cassiopeia.type.core.common.inheritdocs
     class League(League, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "League"
         entries = sqlalchemy.orm.relationship("cassiopeia.type.dto.league.LeagueEntry", cascade="all, delete-orphan", passive_deletes=True)

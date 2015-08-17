@@ -44,6 +44,7 @@ class ChampionList(cassiopeia.type.dto.common.CassiopeiaDto):
 
 def sa_bind_champion():
     global Champion
+    @cassiopeia.type.core.common.inheritdocs
     class Champion(Champion, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "ChampionStatus"
         active = sqlalchemy.Column(sqlalchemy.Boolean)
