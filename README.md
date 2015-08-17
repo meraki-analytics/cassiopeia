@@ -33,7 +33,7 @@ Cassiopeia depends on [SQLAlchemy](http://www.sqlalchemy.org/). It should be aut
  
 ## Usage
 
-Here's an example of a few basic uses of the API. The full PyDoc can be found at http://robrua.github.io/cassiopeia/.
+Here's an example of a few basic uses of the API. The full documentation can be found at http://robrua.github.io/cassiopeia/.
 
 ```python
 import random
@@ -96,7 +96,7 @@ a_challenger = challenger_league.entries[0].playerOrTeamName
 print("He's much better at writing Python code than he is a LoL. He'll never be as good as {name}.".format(name=a_challenger))
 ```
 
-## PyDoc
+## Documentation
 [Found Here](http://robrua.github.io/cassiopeia/)
 
 ## Download
