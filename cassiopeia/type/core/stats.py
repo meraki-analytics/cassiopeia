@@ -22,7 +22,7 @@ class StatsSummary(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def modify_date(self):
-        """datetime.datetime    the date when the stats were last updated (in epoch milliseconds)"""
+        """datetime    the date when the stats were last updated (in epoch milliseconds)"""
         return datetime.datetime.utcfromtimestamp(self.data.modifyDate / 1000) if self.data.modifyDate else None
 
     @property

@@ -160,6 +160,7 @@ class CurrentGameInfo(cassiopeia.type.dto.common.CassiopeiaDto):
 
 def sa_bind_rune():
     global Rune
+    @cassiopeia.type.core.common.inheritdocs
     class Rune(Rune, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "CurrentGameRune"
         count = sqlalchemy.Column(sqlalchemy.Integer)
@@ -169,6 +170,7 @@ def sa_bind_rune():
 
 def sa_bind_mastery():
     global Mastery
+    @cassiopeia.type.core.common.inheritdocs
     class Mastery(Mastery, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "CurrentGameMastery"
         masteryId = sqlalchemy.Column(sqlalchemy.Integer)
@@ -178,6 +180,7 @@ def sa_bind_mastery():
 
 def sa_bind_observer():
     global Observer
+    @cassiopeia.type.core.common.inheritdocs
     class Observer(Observer, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "CurrentGameObserver"
         encryptionKey = sqlalchemy.Column(sqlalchemy.String(50))
@@ -186,6 +189,7 @@ def sa_bind_observer():
 
 def sa_bind_current_game_participant():
     global CurrentGameParticipant
+    @cassiopeia.type.core.common.inheritdocs
     class CurrentGameParticipant(CurrentGameParticipant, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "CurrentGameParticipant"
         bot = sqlalchemy.Column(sqlalchemy.Boolean)
@@ -203,6 +207,7 @@ def sa_bind_current_game_participant():
 
 def sa_bind_banned_champion():
     global BannedChampion
+    @cassiopeia.type.core.common.inheritdocs
     class BannedChampion(BannedChampion, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "CurrentGameBannedChampion"
         championId = sqlalchemy.Column(sqlalchemy.Integer)
@@ -213,6 +218,7 @@ def sa_bind_banned_champion():
 
 def sa_bind_current_game_info():
     global CurrentGameInfo
+    @cassiopeia.type.core.common.inheritdocs
     class CurrentGameInfo(CurrentGameInfo, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "CurrentGameInfo"
         bannedChampions = sqlalchemy.orm.relationship("cassiopeia.type.dto.currentgame.BannedChampion", cascade="all, delete-orphan", passive_deletes=True)

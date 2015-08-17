@@ -134,6 +134,7 @@ class Summoner(cassiopeia.type.dto.common.CassiopeiaDto):
 
 def sa_bind_rune_page():
     global RunePage
+    @cassiopeia.type.core.common.inheritdocs
     class RunePage(RunePage, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "RunePage"
         current = sqlalchemy.Column(sqlalchemy.Boolean)
@@ -143,6 +144,7 @@ def sa_bind_rune_page():
 
 def sa_bind_rune_slot():
     global RuneSlot
+    @cassiopeia.type.core.common.inheritdocs
     class RuneSlot(RuneSlot, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "RuneSlot"
         runeId = sqlalchemy.Column(sqlalchemy.Integer)
@@ -152,6 +154,7 @@ def sa_bind_rune_slot():
 
 def sa_bind_mastery_page():
     global MasteryPage
+    @cassiopeia.type.core.common.inheritdocs
     class MasteryPage(MasteryPage, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MasteryPage"
         current = sqlalchemy.Column(sqlalchemy.Boolean)
@@ -161,6 +164,7 @@ def sa_bind_mastery_page():
 
 def sa_bind_mastery():
     global Mastery
+    @cassiopeia.type.core.common.inheritdocs
     class Mastery(Mastery, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MasterySlot"
         id = sqlalchemy.Column(sqlalchemy.Integer)
@@ -170,6 +174,7 @@ def sa_bind_mastery():
 
 def sa_bind_summoner():
     global Summoner
+    @cassiopeia.type.core.common.inheritdocs
     class Summoner(Summoner, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "Summoner"
         id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)

@@ -190,6 +190,7 @@ class ChampionStats(cassiopeia.type.dto.common.CassiopeiaDto):
 
 def sa_bind_player_stats_summary():
     global PlayerStatsSummary
+    @cassiopeia.type.core.common.inheritdocs
     class PlayerStatsSummary(PlayerStatsSummary, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "PlayerStatsSummary"
         aggregatedStats = sqlalchemy.orm.relationship("cassiopeia.type.dto.stats.AggregatedStats", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
@@ -201,6 +202,7 @@ def sa_bind_player_stats_summary():
 
 def sa_bind_aggregated_stats():
     global AggregatedStats
+    @cassiopeia.type.core.common.inheritdocs
     class AggregatedStats(AggregatedStats, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "AggregatedStats"
         averageAssists = sqlalchemy.Column(sqlalchemy.Integer)

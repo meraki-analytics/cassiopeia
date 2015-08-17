@@ -134,6 +134,7 @@ class FeaturedGames(cassiopeia.type.dto.common.CassiopeiaDto):
 
 def sa_bind_participant():
     global Participant
+    @cassiopeia.type.core.common.inheritdocs
     class Participant(Participant, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "FeaturedGameParticipant"
         bot = sqlalchemy.Column(sqlalchemy.Boolean)
@@ -148,6 +149,7 @@ def sa_bind_participant():
 
 def sa_bind_observer():
     global Observer
+    @cassiopeia.type.core.common.inheritdocs
     class Observer(Observer, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "FeaturedGameObserver"
         encryptionKey = sqlalchemy.Column(sqlalchemy.String(50))
@@ -156,6 +158,7 @@ def sa_bind_observer():
 
 def sa_bind_banned_champion():
     global BannedChampion
+    @cassiopeia.type.core.common.inheritdocs
     class BannedChampion(BannedChampion, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "FeaturedGameBannedChampion"
         championId = sqlalchemy.Column(sqlalchemy.Integer)
@@ -166,6 +169,7 @@ def sa_bind_banned_champion():
 
 def sa_bind_featured_game_info():
     global FeaturedGameInfo
+    @cassiopeia.type.core.common.inheritdocs
     class FeaturedGameInfo(FeaturedGameInfo, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "FeaturedGameInfo"
         bannedChampions = sqlalchemy.orm.relationship("cassiopeia.type.dto.featuredgames.BannedChampion", cascade="all, delete-orphan", passive_deletes=True)

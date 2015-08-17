@@ -5,6 +5,7 @@ import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.matchhistory
 
+@cassiopeia.type.core.common.inheritdocs
 class MatchSummary(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.matchhistory.MatchSummary
 
@@ -31,7 +32,10 @@ class MatchSummary(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.immutablemethod
     def match(self):
-        """return    Match    full match information for this match"""
+        """Gets the full information for this match
+
+        return    Match    the match
+        """
         return cassiopeia.riotapi.get_match(self.id)
 
     @property
@@ -41,12 +45,12 @@ class MatchSummary(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def creation(self):
-        """datetime.datetime    when the match was created"""
+        """datetime    when the match was created"""
         return datetime.datetime.utcfromtimestamp(self.data.matchCreation / 1000) if self.data.matchCreation else None
 
     @cassiopeia.type.core.common.lazyproperty
     def duration(self):
-        """datetime.datetime    duration of the match"""
+        """datetime    duration of the match"""
         return datetime.timedelta(seconds=self.data.matchDuration)
 
     @property
@@ -99,12 +103,14 @@ class MatchSummary(cassiopeia.type.core.common.CassiopeiaObject):
         return cassiopeia.type.core.common.Season(self.data.season) if self.data.season else None
 
 
+@cassiopeia.type.core.common.inheritdocs
 class CombinedParticipant(cassiopeia.type.dto.common.CassiopeiaDto):
     def __init__(self, participant, identity):
         self.participant = participant
         self.identity = identity
 
 
+@cassiopeia.type.core.common.inheritdocs
 class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = CombinedParticipant
 
@@ -182,6 +188,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
         return cassiopeia.riotapi.get_summoner_by_id(self.data.identity.player.summonerId) if self.data.identity.player and self.data.identity.player.summonerId else None
 
 
+@cassiopeia.type.core.common.inheritdocs
 class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.matchhistory.ParticipantStats
 
@@ -514,6 +521,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.winner
 
 
+@cassiopeia.type.core.common.inheritdocs
 class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.matchhistory.ParticipantTimeline
 
@@ -659,6 +667,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
         return ParticipantTimelineData(self.data.xpPerMinDeltas) if self.data.xpPerMinDeltas else None
         
 
+@cassiopeia.type.core.common.inheritdocs
 class ParticipantTimelineData(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.matchhistory.ParticipantTimelineData
     

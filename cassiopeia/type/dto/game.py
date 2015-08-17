@@ -314,6 +314,7 @@ class RecentGames(cassiopeia.type.dto.common.CassiopeiaDto):
 
 def sa_bind_raw_stats():
     global RawStats
+    @cassiopeia.type.core.common.inheritdocs
     class RawStats(RawStats, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "GameRawStats"
         assists = sqlalchemy.Column(sqlalchemy.Integer)
@@ -399,6 +400,7 @@ def sa_bind_raw_stats():
 
 def sa_bind_player():
     global Player
+    @cassiopeia.type.core.common.inheritdocs
     class Player(Player, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "GamePlayer"
         championId = sqlalchemy.Column(sqlalchemy.Integer)
@@ -409,6 +411,7 @@ def sa_bind_player():
 
 def sa_bind_game():
     global Game
+    @cassiopeia.type.core.common.inheritdocs
     class Game(Game, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "Game"
         championId = sqlalchemy.Column(sqlalchemy.Integer)
