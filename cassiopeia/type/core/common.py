@@ -14,7 +14,10 @@ class CassiopeiaObject(object):
         self.data = data
 
     def to_json(self):
-        """str    a JSON representation of the object"""
+        """Gets a JSON representation of the object
+        
+        return    str    a JSON representation of the object
+        """
         return self.data.to_json()
 
     def __str__(self):
