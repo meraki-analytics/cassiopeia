@@ -14,7 +14,7 @@ class CassiopeiaObject(object):
         self.data = data
 
     def to_json(self):
-        """Gets a JSON representation of the object"""
+        """str    a JSON representation of the object"""
         return self.data.to_json()
 
     def __str__(self):
@@ -65,7 +65,6 @@ class immutablemethod(object):
         method    function    the method to make immutable
         """
         self.method = method
-        self.__doc__ = method.__doc__
 
     def __set__(self, obj, value):
         raise AttributeError("can't set method")
@@ -76,6 +75,7 @@ class immutablemethod(object):
     def __get__(self, obj, type=None):
         def curried(*args, **kwargs):
             return self.method(obj, *args, **kwargs)
+        curried.__doc__ = self.method.__doc__
         return curried
 
 
