@@ -52,7 +52,7 @@ print("He enjoys playing LoL on all different champions, like {name}.".format(na
 
 challenger_league = riotapi.get_challenger()
 best_na = challenger_league[0].summoner
-print("He's much better at writing Python code than he is a LoL. He'll never be as good as {name}.".format(name=best_na.name))
+print("He's much better at writing Python code than he is at LoL. He'll never be as good as {name}.".format(name=best_na.name))
 ```
 
 Make sure you set your rate limit! Cassiopeia will limit you the the default development limit until you give it your production limit (if you have one).
@@ -93,7 +93,7 @@ print("He enjoys playing LoL on all different champions, like {name}.".format(na
 
 challenger_league = baseriotapi.get_challenger("RANKED_SOLO_5x5")
 a_challenger = challenger_league.entries[0].playerOrTeamName
-print("He's much better at writing Python code than he is a LoL. He'll never be as good as {name}.".format(name=a_challenger))
+print("He's much better at writing Python code than he is at LoL. He'll never be as good as {name}.".format(name=a_challenger))
 ```
 
 ## Documentation
