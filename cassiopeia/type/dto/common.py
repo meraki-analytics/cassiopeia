@@ -14,7 +14,10 @@ class CassiopeiaDto(object):
             setattr(self, k, v)
 
     def to_json(self):
-        """Gets a JSON representation of the object"""
+        """Gets a JSON representation of the object
+        
+        return    str    a JSON representation of the object
+        """
         dictionary = {k: v for k,v in self.__dict__.items() if not k.startswith("_")}
         return json.dumps(dictionary, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
