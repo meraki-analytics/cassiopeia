@@ -43,5 +43,5 @@ class ChampionStatus(cassiopeia.type.core.common.CassiopeiaObject):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_rebind_all():
+def _sa_rebind_all():
     ChampionStatus.dto_type = cassiopeia.type.dto.champion.Champion

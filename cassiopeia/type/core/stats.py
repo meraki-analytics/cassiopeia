@@ -332,6 +332,6 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_rebind_all():
+def _sa_rebind_all():
     StatsSummary.dto_type = cassiopeia.type.dto.stats.PlayerStatsSummary
     AggregatedStats.dto_type = cassiopeia.type.dto.stats.AggregatedStats

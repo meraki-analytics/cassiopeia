@@ -179,7 +179,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_rebind_all():
+def _sa_rebind_all():
     Participant.dto_type = cassiopeia.type.dto.currentgame.CurrentGameParticipant
     Ban.dto_type = cassiopeia.type.dto.currentgame.BannedChampion
     Game.dto_type = cassiopeia.type.dto.currentgame.CurrentGameInfo

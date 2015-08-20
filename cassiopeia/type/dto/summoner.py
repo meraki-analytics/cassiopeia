@@ -132,7 +132,7 @@ class Summoner(cassiopeia.type.dto.common.CassiopeiaDto):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_bind_rune_page():
+def _sa_bind_rune_page():
     global RunePage
     @cassiopeia.type.core.common.inheritdocs
     class RunePage(RunePage, cassiopeia.type.dto.common.BaseDB):
@@ -142,7 +142,7 @@ def sa_bind_rune_page():
         name = sqlalchemy.Column(sqlalchemy.String(50))
         slots = sqlalchemy.orm.relationship("cassiopeia.type.dto.summoner.RuneSlot", cascade="all, delete-orphan, delete, merge", passive_deletes=True)
 
-def sa_bind_rune_slot():
+def _sa_bind_rune_slot():
     global RuneSlot
     @cassiopeia.type.core.common.inheritdocs
     class RuneSlot(RuneSlot, cassiopeia.type.dto.common.BaseDB):
@@ -152,7 +152,7 @@ def sa_bind_rune_slot():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _page_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("RunePage.id", ondelete="CASCADE"))
 
-def sa_bind_mastery_page():
+def _sa_bind_mastery_page():
     global MasteryPage
     @cassiopeia.type.core.common.inheritdocs
     class MasteryPage(MasteryPage, cassiopeia.type.dto.common.BaseDB):
@@ -162,7 +162,7 @@ def sa_bind_mastery_page():
         masteries = sqlalchemy.orm.relationship("cassiopeia.type.dto.summoner.Mastery", cascade="all, delete-orphan, delete, merge", passive_deletes=True)
         name = sqlalchemy.Column(sqlalchemy.String(50))
 
-def sa_bind_mastery():
+def _sa_bind_mastery():
     global Mastery
     @cassiopeia.type.core.common.inheritdocs
     class Mastery(Mastery, cassiopeia.type.dto.common.BaseDB):
@@ -172,7 +172,7 @@ def sa_bind_mastery():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _page_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MasteryPage.id", ondelete="CASCADE"))
 
-def sa_bind_summoner():
+def _sa_bind_summoner():
     global Summoner
     @cassiopeia.type.core.common.inheritdocs
     class Summoner(Summoner, cassiopeia.type.dto.common.BaseDB):
@@ -183,9 +183,9 @@ def sa_bind_summoner():
         revisionDate = sqlalchemy.Column(sqlalchemy.BigInteger)
         summonerLevel = sqlalchemy.Column(sqlalchemy.Integer)
 
-def sa_bind_all():
-    sa_bind_rune_page()
-    sa_bind_rune_slot()
-    sa_bind_mastery_page()
-    sa_bind_mastery()
-    sa_bind_summoner()
+def _sa_bind_all():
+    _sa_bind_rune_page()
+    _sa_bind_rune_slot()
+    _sa_bind_mastery_page()
+    _sa_bind_mastery()
+    _sa_bind_summoner()

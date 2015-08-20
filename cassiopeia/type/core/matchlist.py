@@ -75,5 +75,5 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_rebind_all():
+def _sa_rebind_all():
     MatchReference.dto_type = cassiopeia.type.dto.matchlist.MatchReference

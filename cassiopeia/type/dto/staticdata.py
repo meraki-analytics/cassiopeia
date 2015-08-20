@@ -966,7 +966,7 @@ class SummonerSpellList(cassiopeia.type.dto.common.CassiopeiaDto):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_bind_block_item():
+def _sa_bind_block_item():
     global BlockItem
     @cassiopeia.type.core.common.inheritdocs
     class BlockItem(BlockItem, cassiopeia.type.dto.common.BaseDB):
@@ -976,7 +976,7 @@ def sa_bind_block_item():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _block_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Block._id", ondelete="CASCADE"))
 
-def sa_bind_block():
+def _sa_bind_block():
     global Block
     @cassiopeia.type.core.common.inheritdocs
     class Block(Block, cassiopeia.type.dto.common.BaseDB):
@@ -987,7 +987,7 @@ def sa_bind_block():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _recommended_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Recommended._id", ondelete="CASCADE"))
 
-def sa_bind_spell_vars():
+def _sa_bind_spell_vars():
     global SpellVars
     @cassiopeia.type.core.common.inheritdocs
     class SpellVars(SpellVars, cassiopeia.type.dto.common.BaseDB):
@@ -1001,7 +1001,7 @@ def sa_bind_spell_vars():
         _c_spell_key = sqlalchemy.Column(sqlalchemy.String(30), sqlalchemy.ForeignKey("ChampionSpell.key", ondelete="CASCADE"))
         _s_spell_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("SummonerSpell.id", ondelete="CASCADE"))
 
-def sa_bind_level_tip():
+def _sa_bind_level_tip():
     global LevelTip
     @cassiopeia.type.core.common.inheritdocs
     class LevelTip(LevelTip, cassiopeia.type.dto.common.BaseDB):
@@ -1012,7 +1012,7 @@ def sa_bind_level_tip():
         _c_spell_key = sqlalchemy.Column(sqlalchemy.String(30), sqlalchemy.ForeignKey("ChampionSpell.key", ondelete="CASCADE"))
         _s_spell_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("SummonerSpell.id", ondelete="CASCADE"))
 
-def sa_bind_stats():
+def _sa_bind_stats():
     global Stats
     @cassiopeia.type.core.common.inheritdocs
     class Stats(Stats, cassiopeia.type.dto.common.BaseDB):
@@ -1042,7 +1042,7 @@ def sa_bind_stats():
         _rune_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Rune.id", ondelete="CASCADE"))
         _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id", ondelete="CASCADE"))
 
-def sa_bind_skin():
+def _sa_bind_skin():
     global Skin
     @cassiopeia.type.core.common.inheritdocs
     class Skin(Skin, cassiopeia.type.dto.common.BaseDB):
@@ -1052,7 +1052,7 @@ def sa_bind_skin():
         num = sqlalchemy.Column(sqlalchemy.Integer)
         _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id", ondelete="CASCADE"))
 
-def sa_bind_recommended():
+def _sa_bind_recommended():
     global Recommended
     @cassiopeia.type.core.common.inheritdocs
     class Recommended(Recommended, cassiopeia.type.dto.common.BaseDB):
@@ -1067,7 +1067,7 @@ def sa_bind_recommended():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id", ondelete="CASCADE"))
 
-def sa_bind_image():
+def _sa_bind_image():
     global Image
     @cassiopeia.type.core.common.inheritdocs
     class Image(Image, cassiopeia.type.dto.common.BaseDB):
@@ -1090,7 +1090,7 @@ def sa_bind_image():
         _rune_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Rune.id", ondelete="CASCADE"))
         _s_spell_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("SummonerSpell.id", ondelete="CASCADE"))
 
-def sa_bind_passive():
+def _sa_bind_passive():
     global Passive
     @cassiopeia.type.core.common.inheritdocs
     class Passive(Passive, cassiopeia.type.dto.common.BaseDB):
@@ -1102,7 +1102,7 @@ def sa_bind_passive():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id", ondelete="CASCADE"))
 
-def sa_bind_info():
+def _sa_bind_info():
     global Info
     @cassiopeia.type.core.common.inheritdocs
     class Info(Info, cassiopeia.type.dto.common.BaseDB):
@@ -1114,7 +1114,7 @@ def sa_bind_info():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id", ondelete="CASCADE"))
 
-def sa_bind_champion_spell():
+def _sa_bind_champion_spell():
     global ChampionSpell
     @cassiopeia.type.core.common.inheritdocs
     class ChampionSpell(ChampionSpell, cassiopeia.type.dto.common.BaseDB):
@@ -1142,7 +1142,7 @@ def sa_bind_champion_spell():
         vars = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.SpellVars", cascade="all, delete-orphan", passive_deletes=True)
         _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id", ondelete="CASCADE"))
 
-def sa_bind_champion():
+def _sa_bind_champion():
     global Champion
     @cassiopeia.type.core.common.inheritdocs
     class Champion(Champion, cassiopeia.type.dto.common.BaseDB):
@@ -1165,7 +1165,7 @@ def sa_bind_champion():
         tags = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
         title = sqlalchemy.Column(sqlalchemy.String(50))
 
-def sa_bind_meta_data():
+def _sa_bind_meta_data():
     global MetaData
     @cassiopeia.type.core.common.inheritdocs
     class MetaData(MetaData, cassiopeia.type.dto.common.BaseDB):
@@ -1177,7 +1177,7 @@ def sa_bind_meta_data():
         _item_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Item.id", ondelete="CASCADE"))
         _rune_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Rune.id", ondelete="CASCADE"))
 
-def sa_bind_gold():
+def _sa_bind_gold():
     global Gold
     @cassiopeia.type.core.common.inheritdocs
     class Gold(Gold, cassiopeia.type.dto.common.BaseDB):
@@ -1189,7 +1189,7 @@ def sa_bind_gold():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _item_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Item.id", ondelete="CASCADE"))
 
-def sa_bind_basic_data_stats():
+def _sa_bind_basic_data_stats():
     global BasicDataStats
     @cassiopeia.type.core.common.inheritdocs
     class BasicDataStats(BasicDataStats, cassiopeia.type.dto.common.BaseDB):
@@ -1263,7 +1263,7 @@ def sa_bind_basic_data_stats():
         _item_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Item.id", ondelete="CASCADE"))
         _rune_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Rune.id", ondelete="CASCADE"))
 
-def sa_bind_item():
+def _sa_bind_item():
     global Item
     @cassiopeia.type.core.common.inheritdocs
     class Item(Item, cassiopeia.type.dto.common.BaseDB):
@@ -1292,7 +1292,7 @@ def sa_bind_item():
         stats = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.BasicDataStats", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
         tags = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
 
-def sa_bind_map_details():
+def _sa_bind_map_details():
     global MapDetails
     @cassiopeia.type.core.common.inheritdocs
     class MapDetails(MapDetails, cassiopeia.type.dto.common.BaseDB):
@@ -1302,7 +1302,7 @@ def sa_bind_map_details():
         mapName = sqlalchemy.Column(sqlalchemy.String(30))
         unpurchasableItemList = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
 
-def sa_bind_mastery():
+def _sa_bind_mastery():
     global Mastery
     @cassiopeia.type.core.common.inheritdocs
     class Mastery(Mastery, cassiopeia.type.dto.common.BaseDB):
@@ -1316,7 +1316,7 @@ def sa_bind_mastery():
         ranks = sqlalchemy.Column(sqlalchemy.Integer)
         sanitizedDescription = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
 
-def sa_bind_realm():
+def _sa_bind_realm():
     global Realm
     @cassiopeia.type.core.common.inheritdocs
     class Realm(Realm, cassiopeia.type.dto.common.BaseDB):
@@ -1331,7 +1331,7 @@ def sa_bind_realm():
         store = sqlalchemy.Column(sqlalchemy.String(30))
         v = sqlalchemy.Column(sqlalchemy.String(30))
 
-def sa_bind_rune():
+def _sa_bind_rune():
     global Rune
     @cassiopeia.type.core.common.inheritdocs
     class Rune(Rune, cassiopeia.type.dto.common.BaseDB):
@@ -1359,7 +1359,7 @@ def sa_bind_rune():
         stats = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.BasicDataStats", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
         tags = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
 
-def sa_bind_summoner_spell():
+def _sa_bind_summoner_spell():
     global SummonerSpell
     @cassiopeia.type.core.common.inheritdocs
     class SummonerSpell(SummonerSpell, cassiopeia.type.dto.common.BaseDB):
@@ -1388,25 +1388,25 @@ def sa_bind_summoner_spell():
         tooltip = sqlalchemy.Column(sqlalchemy.Text)
         vars = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.SpellVars", cascade="all, delete-orphan", passive_deletes=True)
 
-def sa_bind_all():
-    sa_bind_block_item()
-    sa_bind_block()
-    sa_bind_spell_vars()
-    sa_bind_level_tip()
-    sa_bind_stats()
-    sa_bind_skin()
-    sa_bind_recommended()
-    sa_bind_image()
-    sa_bind_passive()
-    sa_bind_info()
-    sa_bind_champion_spell()
-    sa_bind_champion()
-    sa_bind_meta_data()
-    sa_bind_gold()
-    sa_bind_basic_data_stats()
-    sa_bind_item()
-    sa_bind_map_details()
-    sa_bind_mastery()
-    sa_bind_realm()
-    sa_bind_rune()
-    sa_bind_summoner_spell()
+def _sa_bind_all():
+    _sa_bind_block_item()
+    _sa_bind_block()
+    _sa_bind_spell_vars()
+    _sa_bind_level_tip()
+    _sa_bind_stats()
+    _sa_bind_skin()
+    _sa_bind_recommended()
+    _sa_bind_image()
+    _sa_bind_passive()
+    _sa_bind_info()
+    _sa_bind_champion_spell()
+    _sa_bind_champion()
+    _sa_bind_meta_data()
+    _sa_bind_gold()
+    _sa_bind_basic_data_stats()
+    _sa_bind_item()
+    _sa_bind_map_details()
+    _sa_bind_mastery()
+    _sa_bind_realm()
+    _sa_bind_rune()
+    _sa_bind_summoner_spell()

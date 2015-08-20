@@ -42,7 +42,7 @@ class ChampionList(cassiopeia.type.dto.common.CassiopeiaDto):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_bind_champion():
+def _sa_bind_champion():
     global Champion
     @cassiopeia.type.core.common.inheritdocs
     class Champion(Champion, cassiopeia.type.dto.common.BaseDB):
@@ -54,5 +54,5 @@ def sa_bind_champion():
         id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         rankedPlayEnabled = sqlalchemy.Column(sqlalchemy.Boolean)
 
-def sa_bind_all():
-    sa_bind_champion()
+def _sa_bind_all():
+    _sa_bind_champion()

@@ -132,7 +132,7 @@ class FeaturedGames(cassiopeia.type.dto.common.CassiopeiaDto):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_bind_participant():
+def _sa_bind_participant():
     global Participant
     @cassiopeia.type.core.common.inheritdocs
     class Participant(Participant, cassiopeia.type.dto.common.BaseDB):
@@ -147,7 +147,7 @@ def sa_bind_participant():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("FeaturedGameInfo.gameId", ondelete="CASCADE"))
 
-def sa_bind_observer():
+def _sa_bind_observer():
     global Observer
     @cassiopeia.type.core.common.inheritdocs
     class Observer(Observer, cassiopeia.type.dto.common.BaseDB):
@@ -156,7 +156,7 @@ def sa_bind_observer():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("FeaturedGameInfo.gameId", ondelete="CASCADE"))
 
-def sa_bind_banned_champion():
+def _sa_bind_banned_champion():
     global BannedChampion
     @cassiopeia.type.core.common.inheritdocs
     class BannedChampion(BannedChampion, cassiopeia.type.dto.common.BaseDB):
@@ -167,7 +167,7 @@ def sa_bind_banned_champion():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("FeaturedGameInfo.gameId", ondelete="CASCADE"))
 
-def sa_bind_featured_game_info():
+def _sa_bind_featured_game_info():
     global FeaturedGameInfo
     @cassiopeia.type.core.common.inheritdocs
     class FeaturedGameInfo(FeaturedGameInfo, cassiopeia.type.dto.common.BaseDB):
@@ -184,8 +184,8 @@ def sa_bind_featured_game_info():
         participants = sqlalchemy.orm.relationship("cassiopeia.type.dto.featuredgames.Participant", cascade="all, delete-orphan", passive_deletes=True)
         platformId = sqlalchemy.Column(sqlalchemy.String(30))
 
-def sa_bind_all():
-    sa_bind_participant()
-    sa_bind_observer()
-    sa_bind_banned_champion()
-    sa_bind_featured_game_info()
+def _sa_bind_all():
+    _sa_bind_participant()
+    _sa_bind_observer()
+    _sa_bind_banned_champion()
+    _sa_bind_featured_game_info()

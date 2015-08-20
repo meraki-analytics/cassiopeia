@@ -109,7 +109,7 @@ class League(cassiopeia.type.dto.common.CassiopeiaDto):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_bind_mini_series():
+def _sa_bind_mini_series():
     global MiniSeries
     @cassiopeia.type.core.common.inheritdocs
     class MiniSeries(MiniSeries, cassiopeia.type.dto.common.BaseDB):
@@ -121,7 +121,7 @@ def sa_bind_mini_series():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _entry_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("LeagueEntry._id", ondelete="CASCADE"))
 
-def sa_bind_league_entry():
+def _sa_bind_league_entry():
     global LeagueEntry
     @cassiopeia.type.core.common.inheritdocs
     class LeagueEntry(LeagueEntry, cassiopeia.type.dto.common.BaseDB):
@@ -140,7 +140,7 @@ def sa_bind_league_entry():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _league_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("League._id", ondelete="CASCADE"))
 
-def sa_bind_league():
+def _sa_bind_league():
     global League
     @cassiopeia.type.core.common.inheritdocs
     class League(League, cassiopeia.type.dto.common.BaseDB):
@@ -152,7 +152,7 @@ def sa_bind_league():
         tier = sqlalchemy.Column(sqlalchemy.String(30))
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
 
-def sa_bind_all():
-    sa_bind_mini_series()
-    sa_bind_league_entry()
-    sa_bind_league()
+def _sa_bind_all():
+    _sa_bind_mini_series()
+    _sa_bind_league_entry()
+    _sa_bind_league()

@@ -158,7 +158,7 @@ class CurrentGameInfo(cassiopeia.type.dto.common.CassiopeiaDto):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_bind_rune():
+def _sa_bind_rune():
     global Rune
     @cassiopeia.type.core.common.inheritdocs
     class Rune(Rune, cassiopeia.type.dto.common.BaseDB):
@@ -168,7 +168,7 @@ def sa_bind_rune():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("CurrentGameParticipant._id", ondelete="CASCADE"))
 
-def sa_bind_mastery():
+def _sa_bind_mastery():
     global Mastery
     @cassiopeia.type.core.common.inheritdocs
     class Mastery(Mastery, cassiopeia.type.dto.common.BaseDB):
@@ -178,7 +178,7 @@ def sa_bind_mastery():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("CurrentGameParticipant._id", ondelete="CASCADE"))
 
-def sa_bind_observer():
+def _sa_bind_observer():
     global Observer
     @cassiopeia.type.core.common.inheritdocs
     class Observer(Observer, cassiopeia.type.dto.common.BaseDB):
@@ -187,7 +187,7 @@ def sa_bind_observer():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("CurrentGameInfo.gameId", ondelete="CASCADE"))
 
-def sa_bind_current_game_participant():
+def _sa_bind_current_game_participant():
     global CurrentGameParticipant
     @cassiopeia.type.core.common.inheritdocs
     class CurrentGameParticipant(CurrentGameParticipant, cassiopeia.type.dto.common.BaseDB):
@@ -205,7 +205,7 @@ def sa_bind_current_game_participant():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("CurrentGameInfo.gameId", ondelete="CASCADE"))
 
-def sa_bind_banned_champion():
+def _sa_bind_banned_champion():
     global BannedChampion
     @cassiopeia.type.core.common.inheritdocs
     class BannedChampion(BannedChampion, cassiopeia.type.dto.common.BaseDB):
@@ -216,7 +216,7 @@ def sa_bind_banned_champion():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("CurrentGameInfo.gameId", ondelete="CASCADE"))
 
-def sa_bind_current_game_info():
+def _sa_bind_current_game_info():
     global CurrentGameInfo
     @cassiopeia.type.core.common.inheritdocs
     class CurrentGameInfo(CurrentGameInfo, cassiopeia.type.dto.common.BaseDB):
@@ -233,10 +233,10 @@ def sa_bind_current_game_info():
         participants = sqlalchemy.orm.relationship("cassiopeia.type.dto.currentgame.CurrentGameParticipant", cascade="all, delete-orphan", passive_deletes=True)
         platformId = sqlalchemy.Column(sqlalchemy.String(30))
 
-def sa_bind_all():
-    sa_bind_rune()
-    sa_bind_mastery()
-    sa_bind_observer()
-    sa_bind_current_game_participant()
-    sa_bind_banned_champion()
-    sa_bind_current_game_info()
+def _sa_bind_all():
+    _sa_bind_rune()
+    _sa_bind_mastery()
+    _sa_bind_observer()
+    _sa_bind_current_game_participant()
+    _sa_bind_banned_champion()
+    _sa_bind_current_game_info()
