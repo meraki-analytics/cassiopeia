@@ -52,7 +52,7 @@ class MatchReference(cassiopeia.type.dto.common.CassiopeiaDto):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_bind_match_reference():
+def _sa_bind_match_reference():
     global MatchReference
     @cassiopeia.type.core.common.inheritdocs
     class MatchReference(MatchReference, cassiopeia.type.dto.common.BaseDB):
@@ -66,5 +66,5 @@ def sa_bind_match_reference():
         season = sqlalchemy.Column(sqlalchemy.String(30))
         timestamp = sqlalchemy.Column(sqlalchemy.BigInteger)
 
-def sa_bind_all():
-    sa_bind_match_reference()
+def _sa_bind_all():
+    _sa_bind_match_reference()

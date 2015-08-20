@@ -122,7 +122,7 @@ class TeamMemberInfo(cassiopeia.type.dto.common.CassiopeiaDto):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_bind_team():
+def _sa_bind_team():
     global Team
     @cassiopeia.type.core.common.inheritdocs
     class Team(Team, cassiopeia.type.dto.common.BaseDB):
@@ -142,7 +142,7 @@ def sa_bind_team():
         teamStatDetails = sqlalchemy.orm.relationship("cassiopeia.type.dto.team.TeamStatDetail", cascade="all, delete-orphan", passive_deletes=True)
         thirdLastJoinDate = sqlalchemy.Column(sqlalchemy.BigInteger)
 
-def sa_bind_match_history_summary():
+def _sa_bind_match_history_summary():
     global MatchHistorySummary
     @cassiopeia.type.core.common.inheritdocs
     class MatchHistorySummary(MatchHistorySummary, cassiopeia.type.dto.common.BaseDB):
@@ -161,7 +161,7 @@ def sa_bind_match_history_summary():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _team_id = sqlalchemy.Column(sqlalchemy.String(50), sqlalchemy.ForeignKey("Team.fullId", ondelete="CASCADE"))
 
-def sa_bind_roster():
+def _sa_bind_roster():
     global Roster
     @cassiopeia.type.core.common.inheritdocs
     class Roster(Roster, cassiopeia.type.dto.common.BaseDB):
@@ -171,7 +171,7 @@ def sa_bind_roster():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _team_id = sqlalchemy.Column(sqlalchemy.String(50), sqlalchemy.ForeignKey("Team.fullId", ondelete="CASCADE"))
 
-def sa_bind_team_stat_detail():
+def _sa_bind_team_stat_detail():
     global TeamStatDetail
     @cassiopeia.type.core.common.inheritdocs
     class TeamStatDetail(TeamStatDetail, cassiopeia.type.dto.common.BaseDB):
@@ -183,7 +183,7 @@ def sa_bind_team_stat_detail():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _team_id = sqlalchemy.Column(sqlalchemy.String(50), sqlalchemy.ForeignKey("Team.fullId", ondelete="CASCADE"))
 
-def sa_bind_team_member_info():
+def _sa_bind_team_member_info():
     global TeamMemberInfo
     @cassiopeia.type.core.common.inheritdocs
     class TeamMemberInfo(TeamMemberInfo, cassiopeia.type.dto.common.BaseDB):
@@ -195,9 +195,9 @@ def sa_bind_team_member_info():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _roster_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Roster._id", ondelete="CASCADE"))
 
-def sa_bind_all():
-    sa_bind_team()
-    sa_bind_match_history_summary()
-    sa_bind_roster()
-    sa_bind_team_stat_detail()
-    sa_bind_team_member_info()
+def _sa_bind_all():
+    _sa_bind_team()
+    _sa_bind_match_history_summary()
+    _sa_bind_roster()
+    _sa_bind_team_stat_detail()
+    _sa_bind_team_member_info()

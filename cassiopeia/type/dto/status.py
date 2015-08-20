@@ -107,7 +107,7 @@ class ShardStatus(cassiopeia.type.dto.common.CassiopeiaDto):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_bind_shard():
+def _sa_bind_shard():
     global Shard
     @cassiopeia.type.core.common.inheritdocs
     class Shard(Shard, cassiopeia.type.dto.common.BaseDB):
@@ -118,7 +118,7 @@ def sa_bind_shard():
         region_tag = sqlalchemy.Column(sqlalchemy.String(30), primary_key=True)
         slug = sqlalchemy.Column(sqlalchemy.String(30))
 
-def sa_bind_translation():
+def _sa_bind_translation():
     global Translation
     @cassiopeia.type.core.common.inheritdocs
     class Translation(Translation, cassiopeia.type.dto.common.BaseDB):
@@ -129,7 +129,7 @@ def sa_bind_translation():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _message_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Message.id", ondelete="CASCADE"))
 
-def sa_bind_message():
+def _sa_bind_message():
     global Message
     @cassiopeia.type.core.common.inheritdocs
     class Message(Message, cassiopeia.type.dto.common.BaseDB):
@@ -143,7 +143,7 @@ def sa_bind_message():
         updated_at = sqlalchemy.Column(sqlalchemy.String(30))
         _incident_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Incident.id", ondelete="CASCADE"))
 
-def sa_bind_incident():
+def _sa_bind_incident():
     global Incident
     @cassiopeia.type.core.common.inheritdocs
     class Incident(Incident, cassiopeia.type.dto.common.BaseDB):
@@ -154,7 +154,7 @@ def sa_bind_incident():
         updates = sqlalchemy.orm.relationship("cassiopeia.type.dto.status.Message", cascade="all, delete-orphan", passive_deletes=True)
         _service_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Service._id", ondelete="CASCADE"))
 
-def sa_bind_service():
+def _sa_bind_service():
     global Service
     @cassiopeia.type.core.common.inheritdocs
     class Service(Service, cassiopeia.type.dto.common.BaseDB):
@@ -166,7 +166,7 @@ def sa_bind_service():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _shard_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("ShardStatus._id", ondelete="CASCADE"))
 
-def sa_bind_shard_status():
+def _sa_bind_shard_status():
     global ShardStatus
     @cassiopeia.type.core.common.inheritdocs
     class ShardStatus(ShardStatus, cassiopeia.type.dto.common.BaseDB):
@@ -179,10 +179,10 @@ def sa_bind_shard_status():
         slug = sqlalchemy.Column(sqlalchemy.String(30))
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
 
-def sa_bind_all():
-    sa_bind_shard()
-    sa_bind_translation()
-    sa_bind_message()
-    sa_bind_incident()
-    sa_bind_service()
-    sa_bind_shard_status()
+def _sa_bind_all():
+    _sa_bind_shard()
+    _sa_bind_translation()
+    _sa_bind_message()
+    _sa_bind_incident()
+    _sa_bind_service()
+    _sa_bind_shard_status()

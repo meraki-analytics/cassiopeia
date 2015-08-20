@@ -200,7 +200,7 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_rebind_all():
+def _sa_rebind_all():
     Series.dto_type = cassiopeia.type.dto.league.MiniSeries
     Entry.dto_type = cassiopeia.type.dto.league.LeagueEntry
     League.dto_type = cassiopeia.type.dto.league.League

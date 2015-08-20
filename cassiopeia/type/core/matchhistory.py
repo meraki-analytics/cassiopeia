@@ -698,7 +698,7 @@ class ParticipantTimelineData(cassiopeia.type.core.common.CassiopeiaObject):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_rebind_all():
+def _sa_rebind_all():
     MatchSummary.dto_type = cassiopeia.type.dto.matchhistory.MatchSummary
     ParticipantStats.dto_type = cassiopeia.type.dto.matchhistory.ParticipantStats
     ParticipantTimeline.dto_type = cassiopeia.type.dto.matchhistory.ParticipantTimeline

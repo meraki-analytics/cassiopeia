@@ -188,7 +188,7 @@ class ChampionStats(cassiopeia.type.dto.common.CassiopeiaDto):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_bind_player_stats_summary():
+def _sa_bind_player_stats_summary():
     global PlayerStatsSummary
     @cassiopeia.type.core.common.inheritdocs
     class PlayerStatsSummary(PlayerStatsSummary, cassiopeia.type.dto.common.BaseDB):
@@ -200,7 +200,7 @@ def sa_bind_player_stats_summary():
         wins = sqlalchemy.Column(sqlalchemy.Integer)
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
 
-def sa_bind_aggregated_stats():
+def _sa_bind_aggregated_stats():
     global AggregatedStats
     @cassiopeia.type.core.common.inheritdocs
     class AggregatedStats(AggregatedStats, cassiopeia.type.dto.common.BaseDB):
@@ -264,6 +264,6 @@ def sa_bind_aggregated_stats():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _summary_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("PlayerStatsSummary._id", ondelete="CASCADE"))
 
-def sa_bind_all():
-    sa_bind_player_stats_summary()
-    sa_bind_aggregated_stats()
+def _sa_bind_all():
+    _sa_bind_player_stats_summary()
+    _sa_bind_aggregated_stats()

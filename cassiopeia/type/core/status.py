@@ -253,7 +253,7 @@ class Translation(cassiopeia.type.core.common.CassiopeiaObject):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_rebind_all():
+def _sa_rebind_all():
     Shard.dto_type = cassiopeia.type.dto.status.Shard
     ShardStatus.dto_type = cassiopeia.type.dto.status.ShardStatus
     Service.dto_type = cassiopeia.type.dto.status.Service

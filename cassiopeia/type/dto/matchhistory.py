@@ -481,7 +481,7 @@ class ParticipantTimelineData(cassiopeia.type.dto.common.CassiopeiaDto):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_bind_match_summary():
+def _sa_bind_match_summary():
     global MatchSummary
     @cassiopeia.type.core.common.inheritdocs
     class MatchSummary(MatchSummary, cassiopeia.type.dto.common.BaseDB):
@@ -500,7 +500,7 @@ def sa_bind_match_summary():
         region = sqlalchemy.Column(sqlalchemy.String(30))
         season = sqlalchemy.Column(sqlalchemy.String(30))
 
-def sa_bind_participant():
+def _sa_bind_participant():
     global Participant
     @cassiopeia.type.core.common.inheritdocs
     class Participant(Participant, cassiopeia.type.dto.common.BaseDB):
@@ -518,7 +518,7 @@ def sa_bind_participant():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("HistoryMatch.matchId", ondelete="CASCADE"))
 
-def sa_bind_participant_identity():
+def _sa_bind_participant_identity():
     global ParticipantIdentity
     @cassiopeia.type.core.common.inheritdocs
     class ParticipantIdentity(ParticipantIdentity, cassiopeia.type.dto.common.BaseDB):
@@ -528,7 +528,7 @@ def sa_bind_participant_identity():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("HistoryMatch.matchId", ondelete="CASCADE"))
 
-def sa_bind_mastery():
+def _sa_bind_mastery():
     global Mastery
     @cassiopeia.type.core.common.inheritdocs
     class Mastery(Mastery, cassiopeia.type.dto.common.BaseDB):
@@ -538,7 +538,7 @@ def sa_bind_mastery():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("HistoryParticipant._id", ondelete="CASCADE"))
 
-def sa_bind_participant_stats():
+def _sa_bind_participant_stats():
     global ParticipantStats
     @cassiopeia.type.core.common.inheritdocs
     class ParticipantStats(ParticipantStats, cassiopeia.type.dto.common.BaseDB):
@@ -609,7 +609,7 @@ def sa_bind_participant_stats():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("HistoryParticipant._id", ondelete="CASCADE"))
 
-def sa_bind_participant_timeline():
+def _sa_bind_participant_timeline():
     global ParticipantTimeline
     @cassiopeia.type.core.common.inheritdocs
     class ParticipantTimeline(ParticipantTimeline, cassiopeia.type.dto.common.BaseDB):
@@ -644,7 +644,7 @@ def sa_bind_participant_timeline():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("HistoryParticipant._id", ondelete="CASCADE"))
 
-def sa_bind_rune():
+def _sa_bind_rune():
     global Rune
     @cassiopeia.type.core.common.inheritdocs
     class Rune(Rune, cassiopeia.type.dto.common.BaseDB):
@@ -654,7 +654,7 @@ def sa_bind_rune():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("HistoryParticipant._id", ondelete="CASCADE"))
 
-def sa_bind_player():
+def _sa_bind_player():
     global Player
     @cassiopeia.type.core.common.inheritdocs
     class Player(Player, cassiopeia.type.dto.common.BaseDB):
@@ -666,7 +666,7 @@ def sa_bind_player():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("HistoryParticipantIdentity._id", ondelete="CASCADE"))
 
-def sa_bind_participant_timeline_data():
+def _sa_bind_participant_timeline_data():
     global ParticipantTimelineData
     @cassiopeia.type.core.common.inheritdocs
     class ParticipantTimelineData(ParticipantTimelineData, cassiopeia.type.dto.common.BaseDB):
@@ -679,13 +679,13 @@ def sa_bind_participant_timeline_data():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _timeline_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("HistoryParticipantTimeline._id", ondelete="CASCADE"))
 
-def sa_bind_all():
-    sa_bind_match_summary()
-    sa_bind_participant()
-    sa_bind_participant_identity()
-    sa_bind_mastery()
-    sa_bind_participant_stats()
-    sa_bind_participant_timeline()
-    sa_bind_rune()
-    sa_bind_player()
-    sa_bind_participant_timeline_data()
+def _sa_bind_all():
+    _sa_bind_match_summary()
+    _sa_bind_participant()
+    _sa_bind_participant_identity()
+    _sa_bind_mastery()
+    _sa_bind_participant_stats()
+    _sa_bind_participant_timeline()
+    _sa_bind_rune()
+    _sa_bind_player()
+    _sa_bind_participant_timeline_data()

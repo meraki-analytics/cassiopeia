@@ -1126,7 +1126,7 @@ class Position(cassiopeia.type.core.common.CassiopeiaObject):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_rebind_all():
+def _sa_rebind_all():
     Match.dto_type = cassiopeia.type.dto.match.MatchDetail
     Team.dto_type = cassiopeia.type.dto.match.Team
     Timeline.dto_type = cassiopeia.type.dto.match.Timeline

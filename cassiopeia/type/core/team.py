@@ -256,7 +256,7 @@ class TeamMember(cassiopeia.type.core.common.CassiopeiaObject):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_rebind_all():
+def _sa_rebind_all():
     Team.dto_type = cassiopeia.type.dto.team.Team
     MatchSummary.dto_type = cassiopeia.type.dto.team.MatchHistorySummary
     Stats.dto_type = cassiopeia.type.dto.team.TeamStatDetail

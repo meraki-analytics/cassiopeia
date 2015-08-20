@@ -1623,7 +1623,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_rebind_all():
+def _sa_rebind_all():
     SetItem.dto_type = cassiopeia.type.dto.staticdata.BlockItem
     ItemSet.dto_type = cassiopeia.type.dto.staticdata.Block
     SpellVariables.dto_type = cassiopeia.type.dto.staticdata.SpellVars

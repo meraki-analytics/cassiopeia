@@ -256,7 +256,7 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
 # Dynamic SQLAlchemy bindings #
 ###############################
 
-def sa_rebind_all():
+def _sa_rebind_all():
     RunePage.dto_type = cassiopeia.type.dto.summoner.RunePage
     MasteryPage.dto_type = cassiopeia.type.dto.summoner.MasteryPage
     Summoner.dto_type = cassiopeia.type.dto.summoner.Summoner
