@@ -44,7 +44,7 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def id(self):
         """int    the match id for this match"""
-        return self.data.matchid
+        return self.data.matchId
 
     @property
     def platform(self):
