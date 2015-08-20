@@ -28,11 +28,11 @@ def get_match_list(summoner, begin_index=-1, begin_time=0, end_time=0, champions
     if(isinstance(begin_time, datetime.datetime)):
         epoch = datetime.datetime.utcfromtimestamp(0)
         delta = begin_time - epoch
-        begin_time = delta.total_seconds() * 1000
+        begin_time = int(delta.total_seconds() * 1000)
     if(isinstance(end_time, datetime.datetime)):
         epoch = datetime.datetime.utcfromtimestamp(0)
         delta = end_time - epoch
-        end_time = delta.total_seconds() * 1000
+        end_time = int(delta.total_seconds() * 1000)
 
     champion_ids = [champion.id for champion in champions] if isinstance(champions, list) else champions.id if champions else None
     queues = [queue.value for queue in ranked_queues] if isinstance(ranked_queues, list) else ranked_queues.value if ranked_queues else None
