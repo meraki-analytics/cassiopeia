@@ -66,12 +66,11 @@ def get(request, params={}, static=False, include_base=True):
     except urllib.error.HTTPError as e:
         # Reset rate limiter and retry on 429 (rate limit exceeded)
         if(e.code == 429 and rate_limiter):
-            if e.headers["Retry-After"]:
-                rate_limiter.reset_in(int(e.headers["Retry-After"]) + 1)
-            else:
-                # Retry-After headers weren't sent, back-off for 1 second and try again
-                rate_limiter.reset_in(1)
-
+            retry_after = 1
+            if(e.headers["Retry-After"]):
+                retry_after += int(e.headers["Retry-After"])
+                
+            rate_limiter.reset_in(retry_after)
             return get(request, params, static)
         else:
             raise cassiopeia.type.api.exception.APIError("Server returned error {code} on call: {url}".format(code=e.code, url=url), e.code)
