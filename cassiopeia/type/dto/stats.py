@@ -11,7 +11,7 @@ class PlayerStatsSummaryList(cassiopeia.type.dto.common.CassiopeiaDto):
     summonerId             int                         summoner ID
     """
     def __init__(self, dictionary):
-        self.playerStatSummaries = [(PlayerStatsSummary(pss) if not isinstance(pss, PlayerStatsSummary) else pss) for pss in dictionary.get("playerStatSummaries", None) if pss]
+        self.playerStatSummaries = [(PlayerStatsSummary(pss) if not isinstance(pss, PlayerStatsSummary) else pss) for pss in dictionary.get("playerStatSummaries", []) if pss]
         self.summonerId = dictionary.get("summonerId", 0)
 
 
