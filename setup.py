@@ -4,11 +4,10 @@ from setuptools import setup, find_packages
 
 setup(
     name="cassiopeia",
-    version="0.0.2",
+    version="0.0.3",
     author="Rob Rua",
     author_email="robrua@alumni.cmu.edu",
     url="https://github.com/robrua/cassiopeia",
-    download_url="https://github.com/robrua/cassiopeia/tarball/0.0.2",
     description="Riot Games Developer API Wrapper (3rd Party)",
     keywords=["LoL", "League of Legends", "Riot Game", "API", "REST"],
     classifiers=[
