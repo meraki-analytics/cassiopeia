@@ -690,7 +690,10 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.immutablemethod
     def status(self):
-        """ChampionStatus    the current status of this champion (if they are disabled, etc)"""
+        """Gets the status for this champion (whether they are disabled, etc.)
+
+        return      ChampionStatus    the champion's status
+        """
         return cassiopeia.riotapi.get_champion_status(self)
 
 ##################

@@ -1,5 +1,6 @@
 import enum
 import json
+import weakref
 
 import cassiopeia.type.api.exception
 
@@ -32,6 +33,20 @@ class CassiopeiaObject(object):
     def __hash__(self):
         return hash(id(self))
 
+class WeakDict(dict):
+    pass
+
+class WeakList(list):
+    pass
+
+class WeakSet(set):
+    pass
+
+weak_types = {
+    dict: WeakDict,
+    list: WeakList,
+    set: WeakSet
+}
 
 class lazyproperty(object):
     """Makes a property load only once and store the result value to be returned to all later calls
@@ -42,7 +57,7 @@ class lazyproperty(object):
         method    function    the method to turn into a lazy property
         """
         self.method = method
-        self.values = {}
+        self.values = weakref.WeakKeyDictionary()
         self.__doc__ = method.__doc__
 
     def __set__(self, obj, value):
@@ -51,12 +66,18 @@ class lazyproperty(object):
     def __delete__(self, obj):
         raise AttributeError("can't delete attribute")
 
-    def __get__(self, obj, type=None):
+    def __get__(self, obj, t=None):
         try:
-            return self.values[obj]
+            return self.values[obj]()
         except(KeyError):
-            self.values[obj] = self.method(obj)
-            return self.values[obj]
+            result = self.method(obj)
+            try:
+                result = weak_types[type(result)](result)
+            except KeyError:
+                pass
+
+            self.values[obj] = weakref.ref(result)
+            return self.values[obj]()
 
 
 class immutablemethod(object):
