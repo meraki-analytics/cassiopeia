@@ -1,6 +1,7 @@
 import enum
 import json
 import weakref
+import functools
 
 import cassiopeia.type.api.exception
 
@@ -48,10 +49,7 @@ weak_types = {
     set: WeakSet
 }
 
-class lazyproperty(object):
-    """Makes a property load only once and store the result value to be returned to all later calls
-    @decorator
-    """
+class LazyProperty(object):
     def __init__(self, method):
         """
         method    function    the method to turn into a lazy property
@@ -79,6 +77,21 @@ class lazyproperty(object):
             self.values[obj] = weakref.ref(result)
             return self.values[obj]()
 
+def lazyproperty(method):
+    """Makes a property load only once and store the result value to be returned to all later calls
+
+    method    function    the method to turn into a lazy property
+
+    return    function    the method as a lazy property
+    """
+    prop = LazyProperty(method)
+
+    @property
+    @functools.wraps(method)
+    def lazy(self):
+        return prop.__get__(self)
+
+    return lazy
 
 class immutablemethod(object):
     """Makes a method un-deletable and un-repleacable
@@ -97,9 +110,9 @@ class immutablemethod(object):
         raise AttributeError("can't delete method")
 
     def __get__(self, obj, type=None):
+        @functools.wraps(self.method)
         def curried(*args, **kwargs):
             return self.method(obj, *args, **kwargs)
-        curried.__doc__ = self.method.__doc__
         return curried
 
 
