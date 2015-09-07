@@ -34,20 +34,6 @@ class CassiopeiaObject(object):
     def __hash__(self):
         return hash(id(self))
 
-class WeakDict(dict):
-    pass
-
-class WeakList(list):
-    pass
-
-class WeakSet(set):
-    pass
-
-weak_types = {
-    dict: WeakDict,
-    list: WeakList,
-    set: WeakSet
-}
 
 class LazyProperty(object):
     def __init__(self, method):
@@ -56,7 +42,6 @@ class LazyProperty(object):
         """
         self.method = method
         self.values = weakref.WeakKeyDictionary()
-        self.__doc__ = method.__doc__
 
     def __set__(self, obj, value):
         raise AttributeError("can't set attribute")
@@ -66,16 +51,11 @@ class LazyProperty(object):
 
     def __get__(self, obj, t=None):
         try:
-            return self.values[obj]()
+            return self.values[obj]
         except(KeyError):
-            result = self.method(obj)
-            try:
-                result = weak_types[type(result)](result)
-            except KeyError:
-                pass
+            self.values[obj] = self.method(obj)
+            return self.values[obj]
 
-            self.values[obj] = weakref.ref(result)
-            return self.values[obj]()
 
 def lazyproperty(method):
     """Makes a property load only once and store the result value to be returned to all later calls
@@ -92,6 +72,7 @@ def lazyproperty(method):
         return prop.__get__(self)
 
     return lazy
+
 
 class immutablemethod(object):
     """Makes a method un-deletable and un-repleacable
