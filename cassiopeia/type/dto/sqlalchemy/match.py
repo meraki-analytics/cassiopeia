@@ -3,6 +3,7 @@ import sqlalchemy.orm
 import sqlalchemy.orm.collections
 
 from cassiopeia.type.dto.match import *
+from cassiopeia.type.dto.sqlalchemy.common import *
 
 ###############################
 # Dynamic SQLAlchemy bindings #
@@ -11,7 +12,7 @@ from cassiopeia.type.dto.match import *
 def _sa_bind_match_detail():
     global MatchDetail
     @cassiopeia.type.core.common.inheritdocs
-    class MatchDetail(MatchDetail, cassiopeia.type.dto.common.BaseDB):
+    class MatchDetail(MatchDetail, cassiopeia.type.dto.sqlalchemy.common.BaseDB):
         __tablename__ = "MatchDetail"
         mapId = sqlalchemy.Column(sqlalchemy.Integer)
         matchCreation = sqlalchemy.Column(sqlalchemy.BigInteger)
@@ -32,7 +33,7 @@ def _sa_bind_match_detail():
 def _sa_bind_participant():
     global Participant
     @cassiopeia.type.core.common.inheritdocs
-    class Participant(Participant, cassiopeia.type.dto.common.BaseDB):
+    class Participant(Participant, cassiopeia.type.dto.sqlalchemy.common.BaseDB):
         __tablename__ = "MatchParticipant"
         championId = sqlalchemy.Column(sqlalchemy.Integer)
         highestAchievedSeasonTier = sqlalchemy.Column(sqlalchemy.String(30))
@@ -50,7 +51,7 @@ def _sa_bind_participant():
 def _sa_bind_participant_identity():
     global ParticipantIdentity
     @cassiopeia.type.core.common.inheritdocs
-    class ParticipantIdentity(ParticipantIdentity, cassiopeia.type.dto.common.BaseDB):
+    class ParticipantIdentity(ParticipantIdentity, cassiopeia.type.dto.sqlalchemy.common.BaseDB):
         __tablename__ = "MatchParticipantIdentity"
         participantId = sqlalchemy.Column(sqlalchemy.Integer)
         player = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Player", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
@@ -60,7 +61,7 @@ def _sa_bind_participant_identity():
 def _sa_bind_team():
     global Team
     @cassiopeia.type.core.common.inheritdocs
-    class Team(Team, cassiopeia.type.dto.common.BaseDB):
+    class Team(Team, cassiopeia.type.dto.sqlalchemy.common.BaseDB):
         __tablename__ = "MatchTeam"
         bans = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.BannedChampion", cascade="all, delete-orphan", passive_deletes=True)
         baronKills = sqlalchemy.Column(sqlalchemy.Integer)
@@ -82,7 +83,7 @@ def _sa_bind_team():
 def _sa_bind_timeline():
     global Timeline
     @cassiopeia.type.core.common.inheritdocs
-    class Timeline(Timeline, cassiopeia.type.dto.common.BaseDB):
+    class Timeline(Timeline, cassiopeia.type.dto.sqlalchemy.common.BaseDB):
         __tablename__ = "MatchTimeline"
         frameInterval = sqlalchemy.Column(sqlalchemy.Integer)
         frames = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Frame", cascade="all, delete-orphan", passive_deletes=True)
@@ -92,7 +93,7 @@ def _sa_bind_timeline():
 def _sa_bind_mastery():
     global Mastery
     @cassiopeia.type.core.common.inheritdocs
-    class Mastery(Mastery, cassiopeia.type.dto.common.BaseDB):
+    class Mastery(Mastery, cassiopeia.type.dto.sqlalchemy.common.BaseDB):
         __tablename__ = "MatchMastery"
         masteryId = sqlalchemy.Column(sqlalchemy.Integer)
         rank = sqlalchemy.Column(sqlalchemy.Integer)
@@ -102,7 +103,7 @@ def _sa_bind_mastery():
 def _sa_bind_participant_stats():
     global ParticipantStats
     @cassiopeia.type.core.common.inheritdocs
-    class ParticipantStats(ParticipantStats, cassiopeia.type.dto.common.BaseDB):
+    class ParticipantStats(ParticipantStats, cassiopeia.type.dto.sqlalchemy.common.BaseDB):
         __tablename__ = "MatchParticipantStats"
         assists = sqlalchemy.Column(sqlalchemy.Integer)
         champLevel = sqlalchemy.Column(sqlalchemy.Integer)
@@ -173,7 +174,7 @@ def _sa_bind_participant_stats():
 def _sa_bind_participant_timeline():
     global ParticipantTimeline
     @cassiopeia.type.core.common.inheritdocs
-    class ParticipantTimeline(ParticipantTimeline, cassiopeia.type.dto.common.BaseDB):
+    class ParticipantTimeline(ParticipantTimeline, cassiopeia.type.dto.sqlalchemy.common.BaseDB):
         __tablename__ = "MatchParticipantTimeline"
         ancientGolemAssistsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='ancientGolemAssistsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
         ancientGolemKillsPerMinCounts = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimelineData", primaryjoin="and_(cassiopeia.type.dto.match.ParticipantTimeline._id==cassiopeia.type.dto.match.ParticipantTimelineData._timeline_id, cassiopeia.type.dto.match.ParticipantTimelineData._type=='ancientGolemKillsPerMinCounts')", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
@@ -208,7 +209,7 @@ def _sa_bind_participant_timeline():
 def _sa_bind_rune():
     global Rune
     @cassiopeia.type.core.common.inheritdocs
-    class Rune(Rune, cassiopeia.type.dto.common.BaseDB):
+    class Rune(Rune, cassiopeia.type.dto.sqlalchemy.common.BaseDB):
         __tablename__ = "MatchRune"
         rank = sqlalchemy.Column(sqlalchemy.Integer)
         runeId = sqlalchemy.Column(sqlalchemy.Integer)
@@ -218,7 +219,7 @@ def _sa_bind_rune():
 def _sa_bind_player():
     global Player
     @cassiopeia.type.core.common.inheritdocs
-    class Player(Player, cassiopeia.type.dto.common.BaseDB):
+    class Player(Player, cassiopeia.type.dto.sqlalchemy.common.BaseDB):
         __tablename__ = "MatchPlayer"
         matchHistoryUri = sqlalchemy.Column(sqlalchemy.String(50))
         profileIcon = sqlalchemy.Column(sqlalchemy.Integer)
@@ -230,7 +231,7 @@ def _sa_bind_player():
 def _sa_bind_banned_champion():
     global BannedChampion
     @cassiopeia.type.core.common.inheritdocs
-    class BannedChampion(BannedChampion, cassiopeia.type.dto.common.BaseDB):
+    class BannedChampion(BannedChampion, cassiopeia.type.dto.sqlalchemy.common.BaseDB):
         __tablename__ = "MatchBannedChampion"
         championId = sqlalchemy.Column(sqlalchemy.Integer)
         pickTurn = sqlalchemy.Column(sqlalchemy.Integer)
@@ -240,7 +241,7 @@ def _sa_bind_banned_champion():
 def _sa_bind_frame():
     global Frame
     @cassiopeia.type.core.common.inheritdocs
-    class Frame(Frame, cassiopeia.type.dto.common.BaseDB):
+    class Frame(Frame, cassiopeia.type.dto.sqlalchemy.common.BaseDB):
         __tablename__ = "MatchFrame"
         events = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Event", cascade="all, delete-orphan", passive_deletes=True)
         participantFrames = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantFrame", collection_class=sqlalchemy.orm.collections.mapped_collection(lambda p: str(p.participantId)), cascade="all, delete-orphan", passive_deletes=True) # OR I HAVE NO IDEA
@@ -251,7 +252,7 @@ def _sa_bind_frame():
 def _sa_bind_participant_timeline_data():
     global ParticipantTimelineData
     @cassiopeia.type.core.common.inheritdocs
-    class ParticipantTimelineData(ParticipantTimelineData, cassiopeia.type.dto.common.BaseDB):
+    class ParticipantTimelineData(ParticipantTimelineData, cassiopeia.type.dto.sqlalchemy.common.BaseDB):
         __tablename__ = "MatchParticipantTimelineData"
         tenToTwenty = sqlalchemy.Column(sqlalchemy.Float)
         thirtyToEnd = sqlalchemy.Column(sqlalchemy.Float)
@@ -264,7 +265,7 @@ def _sa_bind_participant_timeline_data():
 def _sa_bind_event():
     global Event
     @cassiopeia.type.core.common.inheritdocs
-    class Event(Event, cassiopeia.type.dto.common.BaseDB):
+    class Event(Event, cassiopeia.type.dto.sqlalchemy.common.BaseDB):
         __tablename__ = "MatchEvent"
         ascendedType = sqlalchemy.Column(sqlalchemy.String(30))
         assistingParticipantIds = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
@@ -293,7 +294,7 @@ def _sa_bind_event():
 def _sa_bind_participant_frame():
     global ParticipantFrame
     @cassiopeia.type.core.common.inheritdocs
-    class ParticipantFrame(ParticipantFrame, cassiopeia.type.dto.common.BaseDB):
+    class ParticipantFrame(ParticipantFrame, cassiopeia.type.dto.sqlalchemy.common.BaseDB):
         __tablename__ = "MatchParticipantFrame"
         currentGold = sqlalchemy.Column(sqlalchemy.Integer)
         dominionScore = sqlalchemy.Column(sqlalchemy.Integer)
@@ -311,7 +312,7 @@ def _sa_bind_participant_frame():
 def _sa_bind_position():
     global Position
     @cassiopeia.type.core.common.inheritdocs
-    class Position(Position, cassiopeia.type.dto.common.BaseDB):
+    class Position(Position, cassiopeia.type.dto.sqlalchemy.common.BaseDB):
         __tablename__ = "MatchPosition"
         x = sqlalchemy.Column(sqlalchemy.Integer)
         y = sqlalchemy.Column(sqlalchemy.Integer)
