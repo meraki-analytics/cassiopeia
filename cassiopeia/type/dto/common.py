@@ -1,7 +1,4 @@
 import json
-import sqlalchemy
-import sqlalchemy.types
-import sqlalchemy.ext.declarative
 
 class CassiopeiaDto(object):
     """A Python representation of an object returned by the RiotAPI"""
@@ -35,20 +32,3 @@ class CassiopeiaDto(object):
 
     def __hash__(self):
         return hash(id(self))
-
-BaseDB = sqlalchemy.ext.declarative.declarative_base()
-
-class JSONEncoded(sqlalchemy.types.TypeDecorator):
-    """JSON encoded storage for SQLAlchemy"""
-
-    impl = sqlalchemy.Text
-
-    def process_bind_param(self, value, dialect):
-        if value is not None:
-            value = json.dumps(value)
-        return value
-
-    def process_result_value(self, value, dialect):
-        if value is not None:
-            value = json.loads(value)
-        return value
