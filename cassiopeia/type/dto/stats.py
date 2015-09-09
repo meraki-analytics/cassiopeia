@@ -1,8 +1,9 @@
-import sqlalchemy
-import sqlalchemy.orm
-
 import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
+
+if cassiopeia.type.dto.common.sqlalchemy_imported:
+    import sqlalchemy
+    import sqlalchemy.orm
 
 @cassiopeia.type.core.common.inheritdocs
 class PlayerStatsSummaryList(cassiopeia.type.dto.common.CassiopeiaDto):

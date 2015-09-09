@@ -1,9 +1,10 @@
-import sqlalchemy
-import sqlalchemy.orm
-import sqlalchemy.orm.collections
-
 import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
+
+if cassiopeia.type.dto.common.sqlalchemy_imported:
+    import sqlalchemy
+    import sqlalchemy.orm
+    import sqlalchemy.orm.collections
 
 @cassiopeia.type.core.common.inheritdocs
 class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
