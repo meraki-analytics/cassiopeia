@@ -1,8 +1,66 @@
 from cassiopeia.type.dto.pure.common import CassiopeiaDto
 import cassiopeia.type.core.common
 
+
 @cassiopeia.type.core.common.inheritdocs
-class MatchDetail(CassiopeiaDto):
+class PlayerHistory(CassiopeiaDto):
+    """
+    matches    list<MatchSummary>    list of matches for the player
+    """
+    def __init__(self, dictionary):
+        self.matches = [(MatchSummary(match) if not isinstance(match, MatchSummary) else match) for match in dictionary.get("matches", []) if match]
+
+    @property
+    def champion_ids(self):
+        """Gets all champiopn IDs contained in this object"""
+        ids = set()
+        for m in self.matches:
+            ids = ids | m.champion_ids
+        return ids
+
+    @property
+    def item_ids(self):
+        """Gets all item IDs contained in this object"""
+        ids = set()
+        for m in self.matches:
+            ids = ids | m.item_ids
+        return ids
+
+    @property
+    def mastery_ids(self):
+        """Gets all mastery IDs contained in this object"""
+        ids = set()
+        for m in self.matches:
+            ids = ids | m.mastery_ids
+        return ids
+
+    @property
+    def rune_ids(self):
+        """Gets all rune IDs contained in this object"""
+        ids = set()
+        for m in self.matches:
+            ids = ids | m.rune_ids
+        return ids
+
+    @property
+    def summoner_ids(self):
+        """Gets all summoner IDs contained in this object"""
+        ids = set()
+        for m in self.matches:
+            ids = ids | m.summoner_ids
+        return ids
+
+    @property
+    def summoner_spell_ids(self):
+        """Gets all summoner spell IDs contained in this object"""
+        ids = set()
+        for m in self.matches:
+            ids = ids | m.summoner_spell_ids
+        return ids
+
+
+@cassiopeia.type.core.common.inheritdocs
+class MatchSummary(CassiopeiaDto):
     """
     mapId                    int                          match map ID
     matchCreation            int                          match creation time. Designates when the team select lobby is created and/or the match is made through match making, not when the game actually starts.
@@ -17,8 +75,6 @@ class MatchDetail(CassiopeiaDto):
     queueType                str                          match queue type (Legal values: CUSTOM, NORMAL_5x5_BLIND, RANKED_SOLO_5x5, RANKED_PREMADE_5x5, BOT_5x5, NORMAL_3x3, RANKED_PREMADE_3x3, NORMAL_5x5_DRAFT, ODIN_5x5_BLIND, ODIN_5x5_DRAFT, BOT_ODIN_5x5, BOT_5x5_INTRO, BOT_5x5_BEGINNER, BOT_5x5_INTERMEDIATE, RANKED_TEAM_3x3, RANKED_TEAM_5x5, BOT_TT_3x3, GROUP_FINDER_5x5, ARAM_5x5, ONEFORALL_5x5, FIRSTBLOOD_1x1, FIRSTBLOOD_2x2, SR_6x6, URF_5x5, ONEFORALL_MIRRORMODE_5x5, BOT_URF_5x5, NIGHTMARE_BOT_5x5_RANK1, NIGHTMARE_BOT_5x5_RANK2, NIGHTMARE_BOT_5x5_RANK5, ASCENSION_5x5, HEXAKILL, KING_PORO_5x5, COUNTER_PICK)
     region                   str                          region where the match was played
     season                   str                          season match was played (Legal values: PRESEASON3, SEASON3, PRESEASON2014, SEASON2014, PRESEASON2015, SEASON2015)
-    teams                    list<Team>                   team information
-    timeline                 Timeline                     match timeline data (not included by default)
     """
     def __init__(self, dictionary):
         self.mapId = dictionary.get("mapId", 0)
@@ -34,9 +90,6 @@ class MatchDetail(CassiopeiaDto):
         self.queueType = dictionary.get("queueType", "")
         self.region = dictionary.get("region", "")
         self.season = dictionary.get("season", "")
-        self.teams = [(Team(t) if not isinstance(t, Team) else t) for t in dictionary.get("teams", []) if t]
-        val = dictionary.get("timeline", None)
-        self.timeline = Timeline(val) if val and not isinstance(val, Timeline) else val
 
     @property
     def item_ids(self):
@@ -67,10 +120,6 @@ class MatchDetail(CassiopeiaDto):
         for p in self.participants:
             if(p.championId):
                 ids.add(p.championId)
-        for t in self.teams:
-            for b in t.bans:
-                if(b.championId):
-                    ids.add(b.championId)
         return ids
 
     @property
@@ -156,52 +205,6 @@ class ParticipantIdentity(CassiopeiaDto):
 
 
 @cassiopeia.type.core.common.inheritdocs
-class Team(CassiopeiaDto):
-    """
-    bans                    list<BannedChampion>    if game was draft mode, contains banned champion data, otherwise null
-    baronKills              int                     number of times the team killed baron
-    dominionVictoryScore    int                     if game was a dominion game, specifies the points the team had at game end, otherwise null
-    dragonKills             int                     number of times the team killed dragon
-    firstBaron              bool                    flag indicating whether or not the team got the first baron kill
-    firstBlood              bool                    flag indicating whether or not the team got first blood
-    firstDragon             bool                    flag indicating whether or not the team got the first dragon kill
-    firstInhibitor          bool                    flag indicating whether or not the team destroyed the first inhibitor
-    firstTower              bool                    flag indicating whether or not the team destroyed the first tower
-    inhibitorKills          int                     number of inhibitors the team destroyed
-    teamId                  int                     team ID
-    towerKills              int                     number of towers the team destroyed
-    vilemawKills            int                     number of times the team killed vilemaw
-    winner                  bool                    flag indicating whether or not the team won
-    """
-    def __init__(self, dictionary):
-        self.bans = [(BannedChampion(c) if not isinstance(c, BannedChampion) else c) for c in dictionary.get("bans", []) if c]
-        self.baronKills = dictionary.get("baronKills", 0)
-        self.dominionVictoryScore = dictionary.get("dominionVictoryScore", 0)
-        self.dragonKills = dictionary.get("dragonKills", 0)
-        self.firstBaron = dictionary.get("firstBaron", False)
-        self.firstBlood = dictionary.get("firstBlood", False)
-        self.firstDragon = dictionary.get("firstDragon", False)
-        self.firstInhibitor = dictionary.get("firstInhibitor", False)
-        self.firstTower = dictionary.get("firstTower", False)
-        self.inhibitorKills = dictionary.get("inhibitorKills", 0)
-        self.teamId = dictionary.get("teamId", 0)
-        self.towerKills = dictionary.get("towerKills", 0)
-        self.vilemawKills = dictionary.get("vilemawKills", 0)
-        self.winner = dictionary.get("winner", False)
-
-
-@cassiopeia.type.core.common.inheritdocs
-class Timeline(CassiopeiaDto):
-    """
-    frameInterval    int            time between each returned frame in milliseconds
-    frames           list<Frame>    list of timeline frames for the game
-    """
-    def __init__(self, dictionary):
-        self.frameInterval = dictionary.get("frameInterval", 0)
-        self.frames = [(Frame(f) if not isinstance(f, Frame) else f) for f in dictionary.get("frames", []) if f]
-
-
-@cassiopeia.type.core.common.inheritdocs
 class Mastery(CassiopeiaDto):
     """
     masteryId    int    mastery ID
@@ -229,7 +232,7 @@ class ParticipantStats(CassiopeiaDto):
     goldEarned                         int     gold earned
     goldSpent                          int     gold spent
     inhibitorKills                     int     number of inhibitor kills
-    item0                              int     frst item ID
+    item0                              int     first item ID
     item1                              int     second item ID
     item2                              int     third item ID
     item3                              int     fourth item ID
@@ -458,39 +461,12 @@ class Player(CassiopeiaDto):
 
 
 @cassiopeia.type.core.common.inheritdocs
-class BannedChampion(CassiopeiaDto):
-    """
-    championId    int    banned champion ID
-    pickTurn      int    turn during which the champion was banned
-    """
-    def __init__(self, dictionary):
-        self.championId = dictionary.get("championId", 0)
-        self.pickTurn = dictionary.get("pickTurn", 0)
-
-
-@cassiopeia.type.core.common.inheritdocs
-class Frame(CassiopeiaDto):
-    """
-    events               list<Event>                    list of events for this frame
-    participantFrames    dict<str, ParticipantFrame>    map of each participant ID to the participant's information for the frame
-    timestamp            int                            represents how many milliseconds into the game the frame occurred
-    """
-    def __init__(self, dictionary):
-        self.events = [(Event(e) if not isinstance(e, Event) else e) for e in dictionary.get("events", []) if e]
-        self.participantFrames = {i: ParticipantFrame(pf) if not isinstance(pf, ParticipantFrame) else pf for i, pf in dictionary.get("participantFrames", {}).items()}
-        self.timestamp = dictionary.get("timestamp", 0)
-
-
-@cassiopeia.type.core.common.inheritdocs
 class ParticipantTimelineData(CassiopeiaDto):
     """
-    events               list<Event>                    list of events for this frame
-    participantFrames    dict<str, ParticipantFrame>    map of each participant ID to the participant's information for the frame
-    timestamp            int                            represents how many milliseconds into the game the frame occurred
-    tenToTwenty          float                          value per minute from 10 min to 20 min
-    thirtyToEnd          float                          value per minute from 30 min to the end of the game
-    twentyToThirty       float                          value per minute from 20 min to 30 min
-    zeroToTen            float                          value per minute from the beginning of the game to 10 min
+    tenToTwenty       float    value per minute from 10 min to 20 min
+    thirtyToEnd       float    value per minute from 30 min to the end of the game
+    twentyToThirty    float    value per minute from 20 min to 30 min
+    zeroToTen         float    value per minute from 20 min to 30 min
     """
     def __init__(self, dictionary, type_=None):
         self.tenToTwenty = dictionary.get("tenToTwenty", 0.0)
@@ -498,92 +474,3 @@ class ParticipantTimelineData(CassiopeiaDto):
         self.twentyToThirty = dictionary.get("twentyToThirty", 0.0)
         self.zeroToTen = dictionary.get("zeroToTen", 0.0)
         self._type = type_
-
-
-@cassiopeia.type.core.common.inheritdocs
-class Event(CassiopeiaDto):
-    """
-    ascendedType               str          the ascended type of the event. Only present if relevant. Note that CLEAR_ASCENDED refers to when a participants kills the ascended player. (Legal values: CHAMPION_ASCENDED, CLEAR_ASCENDED, MINION_ASCENDED)
-    assistingParticipantIds    list<int>    the assisting participant IDs of the event. Only present if relevant.
-    buildingType               str          the building type of the event. Only present if relevant. (Legal values: INHIBITOR_BUILDING, TOWER_BUILDING)
-    creatorId                  int          the creator ID of the event. Only present if relevant.
-    eventType                  str          event type (Legal values: ASCENDED_EVENT, BUILDING_KILL, CAPTURE_POINT, CHAMPION_KILL, ELITE_MONSTER_KILL, ITEM_DESTROYED, ITEM_PURCHASED, ITEM_SOLD, ITEM_UNDO, PORO_KING_SUMMON, SKILL_LEVEL_UP, WARD_KILL, WARD_PLACED)
-    itemAfter                  int          the ending item ID of the event. Only present if relevant.
-    itemBefore                 int          the starting item ID of the event. Only present if relevant.
-    itemId                     int          the item ID of the event. Only present if relevant.
-    killerId                   int          the killer ID of the event. Only present if relevant. Killer ID 0 indicates a minion.
-    laneType                   str          the lane type of the event. Only present if relevant. (Legal values: BOT_LANE, MID_LANE, TOP_LANE)
-    levelUpType                str          the level up type of the event. Only present if relevant. (Legal values: EVOLVE, NORMAL)
-    monsterType                str          the monster type of the event. Only present if relevant. (Legal values: BARON_NASHOR, BLUE_GOLEM, DRAGON, RED_LIZARD, VILEMAW)
-    participantId              int          the participant ID of the event. Only present if relevant.
-    pointCaptured              str          the point captured in the event. Only present if relevant. (Legal values: POINT_A, POINT_B, POINT_C, POINT_D, POINT_E)
-    position                   Position     the position of the event. Only present if relevant.
-    skillSlot                  int          the skill slot of the event. Only present if relevant.
-    teamId                     int          the team ID of the event. Only present if relevant.
-    timestamp                  int          represents how many milliseconds into the game the event occurred.
-    towerType                  str          the tower type of the event. Only present if relevant. (Legal values: BASE_TURRET, FOUNTAIN_TURRET, INNER_TURRET, NEXUS_TURRET, OUTER_TURRET, UNDEFINED_TURRET)
-    victimId                   int          the victim ID of the event. Only present if relevant.
-    wardType                   str          the ward type of the event. Only present if relevant. (Legal values: SIGHT_WARD, TEEMO_MUSHROOM, UNDEFINED, VISION_WARD, YELLOW_TRINKET, YELLOW_TRINKET_UPGRADE)
-    """
-    def __init__(self, dictionary):
-        self.ascendedType = dictionary.get("ascendedType", "")
-        self.assistingParticipantIds = dictionary.get("assistingParticipantIds", [])
-        self.buildingType = dictionary.get("buildingType", "")
-        self.creatorId = dictionary.get("creatorId", 0)
-        self.eventType = dictionary.get("eventType", "")
-        self.itemAfter = dictionary.get("itemAfter", 0)
-        self.itemBefore = dictionary.get("itemBefore", 0)
-        self.itemId = dictionary.get("itemId", 0)
-        self.killerId = dictionary.get("killerId", 0)
-        self.laneType = dictionary.get("laneType", "")
-        self.levelUpType = dictionary.get("levelUpType", "")
-        self.monsterType = dictionary.get("monsterType", "")
-        self.participantId = dictionary.get("participantId", 0)
-        self.pointCaptured = dictionary.get("pointCaptured", "")
-        val = dictionary.get("position", None)
-        self.position = Position(val) if val and not isinstance(val, Position) else val
-        self.skillSlot = dictionary.get("skillSlot", 0)
-        self.teamId = dictionary.get("teamId", 0)
-        self.timestamp = dictionary.get("timestamp", 0)
-        self.towerType = dictionary.get("towerType", "")
-        self.victimId = dictionary.get("victimId", 0)
-        self.wardType = dictionary.get("wardType", "")
-
-
-@cassiopeia.type.core.common.inheritdocs
-class ParticipantFrame(CassiopeiaDto):
-    """
-    currentGold            int         participant's current gold
-    dominionScore          int         dominion score of the participant
-    jungleMinionsKilled    int         number of jungle minions killed by participant
-    level                  int         participant's current level
-    minionsKilled          int         number of minions killed by participant
-    participantId          int         participant ID
-    position               Position    participant's position
-    teamScore              int         team score of the participant
-    totalGold              int         participant's total gold
-    xp                     int         experience earned by participant
-    """
-    def __init__(self, dictionary):
-        self.currentGold = dictionary.get("currentGold", 0)
-        self.dominionScore = dictionary.get("dominionScore", 0)
-        self.jungleMinionsKilled = dictionary.get("jungleMinionsKilled", 0)
-        self.level = dictionary.get("level", 0)
-        self.minionsKilled = dictionary.get("minionsKilled", 0)
-        self.participantId = dictionary.get("participantId", 0)
-        val = dictionary.get("position", None)
-        self.position = Position(val) if val and not isinstance(val, Position) else val
-        self.teamScore = dictionary.get("teamScore", 0)
-        self.totalGold = dictionary.get("totalGold", 0)
-        self.xp = dictionary.get("xp", 0)
-
-
-@cassiopeia.type.core.common.inheritdocs
-class Position(CassiopeiaDto):
-    """
-    x    int    x position
-    y    int    y position
-    """
-    def __init__(self, dictionary):
-        self.x = dictionary.get("x", 0)
-        self.y = dictionary.get("y", 0)

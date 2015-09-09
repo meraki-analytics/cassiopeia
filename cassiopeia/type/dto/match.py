@@ -2,8 +2,9 @@ import sqlalchemy
 import sqlalchemy.orm
 import sqlalchemy.orm.collections
 
+import cassiopeia.type.dto.common
+
 from cassiopeia.type.dto.pure.match import *
-from cassiopeia.type.dto.common import *
 
 ###############################
 # Dynamic SQLAlchemy bindings #
