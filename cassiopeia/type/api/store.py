@@ -4,7 +4,7 @@ import os.path
 import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
-if cassiopeia.type.dto.common.sqlalchemy_imported:
+if(cassiopeia.type.dto.common.sqlalchemy_imported):
     import sqlalchemy
     import sqlalchemy.orm
 
@@ -144,7 +144,7 @@ class Cache(DataStore):
 # SQLAlchemy resources #
 ########################
 
-if cassiopeia.type.dto.common.sqlalchemy_imported:
+if(cassiopeia.type.dto.common.sqlalchemy_imported):
     class HasAllStatus(cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "HasAll"
         class_ = sqlalchemy.Column(sqlalchemy.String(50), primary_key=True)
@@ -249,41 +249,41 @@ if cassiopeia.type.dto.common.sqlalchemy_imported:
             self.session.close()
             self.db.dispose()
 
-    __sa_bound = False
-    def _sa_bind_typesystem():
-        """Dynamically binds the typesystem with SQLAlchemy bindings"""
-        global __sa_bound
-        if(__sa_bound):
-            return
+__sa_bound = False
+def _sa_bind_typesystem():
+    """Dynamically binds the typesystem with SQLAlchemy bindings"""
+    global __sa_bound
+    if(__sa_bound):
+        return
 
-        import cassiopeia.type.dto.champion, cassiopeia.type.dto.currentgame, cassiopeia.type.dto.featuredgames, cassiopeia.type.dto.game, cassiopeia.type.dto.league, cassiopeia.type.dto.match, cassiopeia.type.dto.matchhistory, cassiopeia.type.dto.matchlist, cassiopeia.type.dto.staticdata, cassiopeia.type.dto.stats, cassiopeia.type.dto.status, cassiopeia.type.dto.summoner, cassiopeia.type.dto.team
-        cassiopeia.type.dto.champion._sa_bind_all()
-        cassiopeia.type.dto.currentgame._sa_bind_all()
-        cassiopeia.type.dto.featuredgames._sa_bind_all()
-        cassiopeia.type.dto.game._sa_bind_all()
-        cassiopeia.type.dto.league._sa_bind_all()
-        cassiopeia.type.dto.match._sa_bind_all()
-        cassiopeia.type.dto.matchhistory._sa_bind_all()
-        cassiopeia.type.dto.matchlist._sa_bind_all()
-        cassiopeia.type.dto.staticdata._sa_bind_all()
-        cassiopeia.type.dto.stats._sa_bind_all()
-        cassiopeia.type.dto.status._sa_bind_all()
-        cassiopeia.type.dto.summoner._sa_bind_all()
-        cassiopeia.type.dto.team._sa_bind_all()
+    import cassiopeia.type.dto.champion, cassiopeia.type.dto.currentgame, cassiopeia.type.dto.featuredgames, cassiopeia.type.dto.game, cassiopeia.type.dto.league, cassiopeia.type.dto.match, cassiopeia.type.dto.matchhistory, cassiopeia.type.dto.matchlist, cassiopeia.type.dto.staticdata, cassiopeia.type.dto.stats, cassiopeia.type.dto.status, cassiopeia.type.dto.summoner, cassiopeia.type.dto.team
+    cassiopeia.type.dto.champion._sa_bind_all()
+    cassiopeia.type.dto.currentgame._sa_bind_all()
+    cassiopeia.type.dto.featuredgames._sa_bind_all()
+    cassiopeia.type.dto.game._sa_bind_all()
+    cassiopeia.type.dto.league._sa_bind_all()
+    cassiopeia.type.dto.match._sa_bind_all()
+    cassiopeia.type.dto.matchhistory._sa_bind_all()
+    cassiopeia.type.dto.matchlist._sa_bind_all()
+    cassiopeia.type.dto.staticdata._sa_bind_all()
+    cassiopeia.type.dto.stats._sa_bind_all()
+    cassiopeia.type.dto.status._sa_bind_all()
+    cassiopeia.type.dto.summoner._sa_bind_all()
+    cassiopeia.type.dto.team._sa_bind_all()
 
-        import cassiopeia.type.core.champion, cassiopeia.type.core.currentgame, cassiopeia.type.core.featuredgames, cassiopeia.type.core.game, cassiopeia.type.core.league, cassiopeia.type.core.match, cassiopeia.type.core.matchhistory, cassiopeia.type.core.matchlist, cassiopeia.type.core.staticdata, cassiopeia.type.core.stats, cassiopeia.type.core.status, cassiopeia.type.core.summoner, cassiopeia.type.core.team
-        cassiopeia.type.core.champion._sa_rebind_all()
-        cassiopeia.type.core.currentgame._sa_rebind_all()
-        cassiopeia.type.core.featuredgames._sa_rebind_all()
-        cassiopeia.type.core.game._sa_rebind_all()
-        cassiopeia.type.core.league._sa_rebind_all()
-        cassiopeia.type.core.match._sa_rebind_all()
-        cassiopeia.type.core.matchhistory._sa_rebind_all()
-        cassiopeia.type.core.matchlist._sa_rebind_all()
-        cassiopeia.type.core.staticdata._sa_rebind_all()
-        cassiopeia.type.core.stats._sa_rebind_all()
-        cassiopeia.type.core.status._sa_rebind_all()
-        cassiopeia.type.core.summoner._sa_rebind_all()
-        cassiopeia.type.core.team._sa_rebind_all()
+    import cassiopeia.type.core.champion, cassiopeia.type.core.currentgame, cassiopeia.type.core.featuredgames, cassiopeia.type.core.game, cassiopeia.type.core.league, cassiopeia.type.core.match, cassiopeia.type.core.matchhistory, cassiopeia.type.core.matchlist, cassiopeia.type.core.staticdata, cassiopeia.type.core.stats, cassiopeia.type.core.status, cassiopeia.type.core.summoner, cassiopeia.type.core.team
+    cassiopeia.type.core.champion._sa_rebind_all()
+    cassiopeia.type.core.currentgame._sa_rebind_all()
+    cassiopeia.type.core.featuredgames._sa_rebind_all()
+    cassiopeia.type.core.game._sa_rebind_all()
+    cassiopeia.type.core.league._sa_rebind_all()
+    cassiopeia.type.core.match._sa_rebind_all()
+    cassiopeia.type.core.matchhistory._sa_rebind_all()
+    cassiopeia.type.core.matchlist._sa_rebind_all()
+    cassiopeia.type.core.staticdata._sa_rebind_all()
+    cassiopeia.type.core.stats._sa_rebind_all()
+    cassiopeia.type.core.status._sa_rebind_all()
+    cassiopeia.type.core.summoner._sa_rebind_all()
+    cassiopeia.type.core.team._sa_rebind_all()
 
-        __sa_bound = True
+    __sa_bound = True
