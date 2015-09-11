@@ -1,4 +1,5 @@
 import json
+
 try:
     import sqlalchemy
     import sqlalchemy.types
@@ -40,7 +41,7 @@ class CassiopeiaDto(object):
     def __hash__(self):
         return hash(id(self))
 
-if sqlalchemy_imported:
+if(sqlalchemy_imported):
     BaseDB = sqlalchemy.ext.declarative.declarative_base()
 
     class JSONEncoded(sqlalchemy.types.TypeDecorator):
