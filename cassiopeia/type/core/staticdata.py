@@ -1271,7 +1271,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
                         if getattr(self.stats, attr, 0.0) != 0:
                             cats.add(cat_name)
                             cats.add(subcat)
-        return cats
+        return list(cats)
 
 
 
