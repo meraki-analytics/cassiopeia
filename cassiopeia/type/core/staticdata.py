@@ -1224,6 +1224,57 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
         """list<str>    this item's tags for sorting items"""
         return self.data.tags
 
+    @cassiopeia.type.core.common.lazyproperty
+    def categories(self):
+        # Item categories
+        # Left out these: attack_range, percent_time_dead, percent_time_dead_per_level, time_dead, time_dead_per_level, gold_per_ten, starting_gold, percent_xp_bonus, 'xp_bonus'
+        item_categories = {
+            "Defense": {
+                "Health": ['base_health','health','percent_health','health_regen','health_regen_per_level','bonus_health_regen','percent_health_regen','health_per_level','base_health_regen','bonus_health'],
+                "Armor": ['armor','bonus_armor','armor_per_level','base_armor','percent_armor'],
+                "Magic Resist": ['magic_resist_per_level','base_magic_resist','magic_resist','percent_magic_resist','bonus_magic_resist'],
+                "Tenacity": ['percent_crowd_control_reduction'],
+                "Other": ['dodge_chance', 'dodge_chance_per_level','block','percent_block']
+            },
+            "Attack": {
+                "Damage": ['bonus_attack_damage','attack_damage','base_attack_damage','percent_attack_damage','percent_total_damage_increase','attack_damage_per_level'],
+                "Critical Strike": ['percent_critical_strike_damage','critical_strike_chance_level','critical_strike_damage','critical_strike_damage_per_level','critical_strike_chance','critical_strike_chance_per_level'],
+                "Attack Speed": ['percent_attack_speed','attack_speed','bonus_attack_speed','attack_speed_per_level','base_attack_speed','percent_attack_speed_per_level'],
+                "Life Steal": ['life_steal'],
+                "Other": ['armor_penetration','percent_armor_penetration','armor_penetration_per_level','percent_armor_penetration_per_level','magic_penetration','percent_magic_penetration','magic_penetration_per_level','percent_magic_pen_per_level']
+            },
+            "Magic": {
+                "Ability Power": ['ability_power','ability_power_per_level','percent_ability_power'],
+                "Cooldown Reduction": ['item_cooldown_reduction','cooldown_reduction_per_level','cooldown_reduction'],
+                "Spell Vamp": ['spell_vamp'],
+                "Mana": ['base_mana','bonus_mana','energy_per_level','energy','mana_per_level', 'mana','percent_mana'],
+                "Mana Regen": ['base_mana_regen','bonus_mana_regen','mana_regen_per_level','percent_mana_regen','mana_regen','energy_regen','energy_regen_per_level'],
+                "Other": []
+            },
+            "Movement": {
+                "Boots": ['out_of_combat_movespeed','percent_movespeed','movespeed_per_level','movespeed','percent_movespeed_per_level'],
+                "Other Movement Items": ['out_of_combat_movespeed','percent_movespeed','movespeed_per_level','movespeed','percent_movespeed_per_level'],
+                "Other": []
+            },
+        }
+
+        # Add the item categories to each item
+        # TODO Fix boots
+        if self.consumable:
+            cats = set('Consumable')
+        else:
+            cats = set()
+        if self.stats is not None:
+            for cat_name,cat in item_categories.items():
+                for subcat,attr_list in cat.items():
+                    for attr in attr_list:
+                        if getattr(self.stats, attr, 0.0) != 0:
+                            cats.add(cat_name)
+                            cats.add(subcat)
+        return cats
+
+
+
 ################
 # Map Endpoint #
 ################
