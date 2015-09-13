@@ -18,13 +18,16 @@ class CassiopeiaDto(object):
         for k,v in dictionary.items():
             setattr(self, k, v)
 
-    def to_json(self):
+    def to_json(self, **kwargs):
         """Gets a JSON representation of the object
         
         return    str    a JSON representation of the object
         """
         dictionary = {k: v for k,v in self.__dict__.items() if not k.startswith("_")}
-        return json.dumps(dictionary, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+        default = kwargs.get('default', lambda o: o.__dict__)
+        sort_keys=kwargs.get('sort_keys', True)
+        indent=kwargs.get('indent', 4)
+        return json.dumps(dictionary, default=default, sort_keys=sort_keys, indent=indent)
 
     def __str__(self):
         return self.to_json()
