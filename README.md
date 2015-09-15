@@ -12,7 +12,7 @@ Cassiopeia is the sister library to [Orianna](https://github.com/robrua/Orianna)
 - Replaces foreign key ID values with the referenced object
 - Option to lazy load referenced objects right when you need them or batch them up and eagerly load them to minimize API calls
 - Caches static data and summoner information to accelerate access and reduce API load
-- Automatic databasing using [SQLAlchemy](http://www.sqlalchemy.org/)
+- Available automatic databasing using [SQLAlchemy](http://www.sqlalchemy.org/)
 
 ## Features (baseriotapi)
 
