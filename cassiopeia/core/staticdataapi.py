@@ -117,7 +117,7 @@ def get_items(ids=None):
 
     return    list<Item>    the items
     """
-    if(ids):
+    if(ids is not None):
         get_items()
         return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Item, ids, "id")
     else:
@@ -180,7 +180,7 @@ def get_masteries(ids=None):
 
     return    list<Mastery>    the masteries
     """
-    if(ids):
+    if(ids is not None):
         get_masteries()
         return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Mastery, ids, "id")
     else:
@@ -227,7 +227,7 @@ def get_runes(ids=None):
 
     return    list<Rune>    the runes
     """
-    if(ids):
+    if(ids is not None):
         get_runes()
         return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Rune, ids, "id")
     else:
@@ -267,7 +267,7 @@ def get_summoner_spells(ids=None):
 
     return    list<SummonerSpell>    the summoner spells
     """
-    if(ids):
+    if(ids is not None):
         get_summoner_spells()
         return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.SummonerSpell, ids, "id")
     else:
