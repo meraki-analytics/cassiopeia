@@ -89,8 +89,11 @@ def get_summoner_by_name(name):
     if(summoner):
         return summoner
 
-    summoner = cassiopeia.dto.summonerapi.get_summoners_by_name(urllib.parse.quote(name))[__standardize(name)]
-    summoner = cassiopeia.type.core.summoner.Summoner(summoner)
+    try:
+        summoner = cassiopeia.dto.summonerapi.get_summoners_by_name(urllib.parse.quote(name))[__standardize(name)]
+        summoner = cassiopeia.type.core.summoner.Summoner(summoner)
+    except KeyError:
+        return None
 
     cassiopeia.core.requests.data_store.store(summoner, name)
     cassiopeia.core.requests.data_store.store(summoner, summoner.id)
@@ -150,9 +153,12 @@ def get_summoners_by_name(names):
     # Make requests to get them
     new = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.summonerapi.get_summoners_by_name, 40, [urllib.parse.quote(name) for name in missing])
     for i in range(len(missing)):
-        summoner = cassiopeia.type.core.summoner.Summoner(new[__standardize(missing[i])])
+        try:
+            summoner = cassiopeia.type.core.summoner.Summoner(new[__standardize(missing[i])])
+            missing[i] = summoner
+        except KeyError:
+            summoner = None
         summoners[loc[i]] = summoner
-        missing[i] = summoner
 
     cassiopeia.core.requests.data_store.store(missing, [summoner.id for summoner in missing])
     cassiopeia.core.requests.data_store.store(missing, [summoner.name for summoner in missing])
