@@ -1,5 +1,3 @@
-import urllib.parse
-
 import cassiopeia.riotapi
 import cassiopeia.dto.summonerapi
 import cassiopeia.core.requests
@@ -93,7 +91,7 @@ def get_summoner_by_name(name):
         return summoner
 
     try:
-        summoner = cassiopeia.dto.summonerapi.get_summoners_by_name(urllib.parse.quote(name))[__standardize(name)]
+        summoner = cassiopeia.dto.summonerapi.get_summoners_by_name(name)[__standardize(name)]
         summoner = cassiopeia.type.core.summoner.Summoner(summoner)
     except KeyError:
         return None
@@ -158,7 +156,7 @@ def get_summoners_by_name(names):
         return summoners
 
     # Make requests to get them
-    new = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.summonerapi.get_summoners_by_name, 40, [urllib.parse.quote(name) for name in missing])
+    new = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.summonerapi.get_summoners_by_name, 40, missing)
     to_store = []
     for i in range(len(missing)):
         try:
