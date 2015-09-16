@@ -1,3 +1,5 @@
+import urllib.parse
+
 import cassiopeia.dto.requests
 import cassiopeia.type.dto.summoner
 
@@ -12,7 +14,7 @@ def get_summoners_by_name(summoner_names):
     if(isinstance(summoner_names, list) and len(summoner_names) > 40):
         raise ValueError("Can only get up to 40 summoners at once.")
 
-    name_string = ",".join(str(x) for x in summoner_names) if isinstance(summoner_names, list) else str(summoner_names)
+    name_string = ",".join(urllib.parse.quote(str(x)) for x in summoner_names) if isinstance(summoner_names, list) else urllib.parse.quote(str(summoner_names))
 
     # Get JSON response
     request = "{version}/summoner/by-name/{names}".format(version=cassiopeia.dto.requests.api_versions["summoner"], names=name_string)
