@@ -163,7 +163,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def observer_token(self):
         """str    the token associated with the observer for this game"""
-        return self.data.observers.encryptionkey
+        return self.data.observers.encryptionKey
 
     @cassiopeia.type.core.common.lazyproperty
     def participants(self):
