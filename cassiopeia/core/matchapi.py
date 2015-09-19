@@ -5,21 +5,22 @@ import cassiopeia.type.core.common
 import cassiopeia.type.core.match
 import cassiopeia.type.core.matchlist
 
-def get_match(id_):
+def get_match(id_, include_timeline=True):
     """Gets a match
 
-    id_       int | MatchReference      the ID of or reference to the match to get
+    id_                 int | MatchReference    the ID of or reference to the match to get
+    include_timeline    bool                    whether to include timeline data in the returned match
 
-    return    Match                     the match
+    return              Match                   the match
     """
     if(isinstance(id_, cassiopeia.type.core.matchlist.MatchReference)):
         id_ = id_.id
 
     match = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.match.Match, id_, "matchId")
-    if(match):
+    if(match and (match.timeline or not include_timeline)):
         return match
 
-    match = cassiopeia.dto.matchapi.get_match(id_)
+    match = cassiopeia.dto.matchapi.get_match(id_, include_timeline)
 
     # Load required data if loading policy is eager
     if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
@@ -35,12 +36,13 @@ def get_match(id_):
     cassiopeia.core.requests.data_store.store(match, id_)
     return match
 
-def get_matches(ids):
+def get_matches(ids, include_timeline=True):
     """Gets a bunch of matches
 
-    ids       list<int> | list<MatchReference>      the IDs of or references to the matches to get
+    ids                 list<int> | list<MatchReference>    the IDs of or references to the matches to get
+    include_timeline    bool                                whether to include timeline data in the returned match
 
-    return    list<Match>                           the matches
+    return              list<Match>                         the matches
     """
     ids = [ref.id if isinstance(ref, cassiopeia.type.core.matchlist.MatchReference) else ref for ref in ids]
 
@@ -50,7 +52,7 @@ def get_matches(ids):
     missing = []
     loc = []
     for i in range(len(ids)):
-        if(not matches[i]):
+        if(not matches[i] or (include_timeline and not matches[i].timeline)):
             missing.append(ids[i])
             loc.append(i)
 
