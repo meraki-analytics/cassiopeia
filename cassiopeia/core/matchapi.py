@@ -40,7 +40,7 @@ def get_matches(ids, include_timeline=True):
     """Gets a bunch of matches
 
     ids                 list<int> | list<MatchReference>    the IDs of or references to the matches to get
-    include_timeline    bool                                whether to include timeline data in the returned match
+    include_timeline    bool                                whether to include timeline data in the returned matches
 
     return              list<Match>                         the matches
     """

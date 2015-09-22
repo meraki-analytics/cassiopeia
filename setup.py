@@ -4,12 +4,12 @@ from setuptools import setup, find_packages
 
 setup(
     name="cassiopeia",
-    version="0.0.6",
+    version="0.0.7",
     author="Rob Rua",
     author_email="robrua@alumni.cmu.edu",
     url="https://github.com/robrua/cassiopeia",
     description="Riot Games Developer API Wrapper (3rd Party)",
-    keywords=["LoL", "League of Legends", "Riot Game", "API", "REST"],
+    keywords=["LoL", "League of Legends", "Riot Games", "API", "REST"],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Programming Language :: Python :: 3",
