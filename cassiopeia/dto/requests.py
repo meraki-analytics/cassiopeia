@@ -19,7 +19,6 @@ api_versions = {
     "staticdata": "v1.2",
     "status": "v1.0",
     "match": "v2.2",
-    "matchhistory": "v2.2",
     "matchlist": "v2.2",
     "stats": "v1.3",
     "summoner": "v1.4",

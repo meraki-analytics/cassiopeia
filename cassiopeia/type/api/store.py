@@ -256,14 +256,13 @@ def _sa_bind_typesystem():
     if(__sa_bound):
         return
 
-    import cassiopeia.type.dto.champion, cassiopeia.type.dto.currentgame, cassiopeia.type.dto.featuredgames, cassiopeia.type.dto.game, cassiopeia.type.dto.league, cassiopeia.type.dto.match, cassiopeia.type.dto.matchhistory, cassiopeia.type.dto.matchlist, cassiopeia.type.dto.staticdata, cassiopeia.type.dto.stats, cassiopeia.type.dto.status, cassiopeia.type.dto.summoner, cassiopeia.type.dto.team
+    import cassiopeia.type.dto.champion, cassiopeia.type.dto.currentgame, cassiopeia.type.dto.featuredgames, cassiopeia.type.dto.game, cassiopeia.type.dto.league, cassiopeia.type.dto.match, cassiopeia.type.dto.matchlist, cassiopeia.type.dto.staticdata, cassiopeia.type.dto.stats, cassiopeia.type.dto.status, cassiopeia.type.dto.summoner, cassiopeia.type.dto.team
     cassiopeia.type.dto.champion._sa_bind_all()
     cassiopeia.type.dto.currentgame._sa_bind_all()
     cassiopeia.type.dto.featuredgames._sa_bind_all()
     cassiopeia.type.dto.game._sa_bind_all()
     cassiopeia.type.dto.league._sa_bind_all()
     cassiopeia.type.dto.match._sa_bind_all()
-    cassiopeia.type.dto.matchhistory._sa_bind_all()
     cassiopeia.type.dto.matchlist._sa_bind_all()
     cassiopeia.type.dto.staticdata._sa_bind_all()
     cassiopeia.type.dto.stats._sa_bind_all()
@@ -271,14 +270,13 @@ def _sa_bind_typesystem():
     cassiopeia.type.dto.summoner._sa_bind_all()
     cassiopeia.type.dto.team._sa_bind_all()
 
-    import cassiopeia.type.core.champion, cassiopeia.type.core.currentgame, cassiopeia.type.core.featuredgames, cassiopeia.type.core.game, cassiopeia.type.core.league, cassiopeia.type.core.match, cassiopeia.type.core.matchhistory, cassiopeia.type.core.matchlist, cassiopeia.type.core.staticdata, cassiopeia.type.core.stats, cassiopeia.type.core.status, cassiopeia.type.core.summoner, cassiopeia.type.core.team
+    import cassiopeia.type.core.champion, cassiopeia.type.core.currentgame, cassiopeia.type.core.featuredgames, cassiopeia.type.core.game, cassiopeia.type.core.league, cassiopeia.type.core.match, cassiopeia.type.core.matchlist, cassiopeia.type.core.staticdata, cassiopeia.type.core.stats, cassiopeia.type.core.status, cassiopeia.type.core.summoner, cassiopeia.type.core.team
     cassiopeia.type.core.champion._sa_rebind_all()
     cassiopeia.type.core.currentgame._sa_rebind_all()
     cassiopeia.type.core.featuredgames._sa_rebind_all()
     cassiopeia.type.core.game._sa_rebind_all()
     cassiopeia.type.core.league._sa_rebind_all()
     cassiopeia.type.core.match._sa_rebind_all()
-    cassiopeia.type.core.matchhistory._sa_rebind_all()
     cassiopeia.type.core.matchlist._sa_rebind_all()
     cassiopeia.type.core.staticdata._sa_rebind_all()
     cassiopeia.type.core.stats._sa_rebind_all()
