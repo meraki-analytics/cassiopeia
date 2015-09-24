@@ -21,12 +21,14 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
         return hash(self.id)
 
     @cassiopeia.type.core.common.immutablemethod
-    def match(self):
+    def match(self, include_timeline=True):
         """Gets the full information for this match
 
-        return    Match    the match
+        include_timeline    bool     whether to include timeline data in the returned match
+
+        return              Match    the match
         """
-        return cassiopeia.riotapi.get_match(self)
+        return cassiopeia.riotapi.get_match(self, include_timeline)
 
     @cassiopeia.type.core.common.lazyproperty
     def champion(self):
