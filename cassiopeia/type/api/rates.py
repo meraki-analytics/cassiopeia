@@ -73,8 +73,10 @@ class SingleRateLimiter(object):
 
         seconds    int    the number of seconds to wait before resetting
         """
-        if(self.resetter):
+        try:
             self.resetter.cancel()
+		except AttributeError:
+			pass
 
         self._drain()
         self.resetter = threading.Timer(seconds, self._reset)
