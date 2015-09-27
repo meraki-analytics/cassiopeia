@@ -73,6 +73,8 @@ class SingleRateLimiter(object):
 
         seconds    int    the number of seconds to wait before resetting
         """
+        self.lock.acquire()
+
         if(self.resetter):
             self.resetter.cancel()
 
@@ -80,6 +82,8 @@ class SingleRateLimiter(object):
         self.resetter = threading.Timer(seconds, self._reset)
         self.resetter.daemon = True
         self.resetter.start()
+
+        self.lock.release()
 
 
 class MultiRateLimiter(object):
