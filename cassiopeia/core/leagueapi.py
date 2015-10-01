@@ -63,7 +63,7 @@ def __get_leagues_by_summoner_id(ids):
     if(not isinstance(ids, list)):
         return [cassiopeia.type.core.league.League(league) for league in leagues[str(ids)]]
     else:
-        return [[cassiopeia.type.core.league.League(league) for league in leagues[str(id_)]] for id_ in ids]
+        return [[cassiopeia.type.core.league.League(league) for league in leagues.get(str(id_), []) if leagues.get(str(id_), [])] for id_ in ids]
 
 def get_leagues_by_summoner(summoners):
     """Gets the leagues that the summoner(s) belong(s) to. You probably don't want to call this with LoadPolicy.eager set.
@@ -94,7 +94,7 @@ def __get_league_entries_by_summoner_id(ids):
     if(not isinstance(ids, list)):
         return [cassiopeia.type.core.league.League(league) for league in leagues[str(ids)]]
     else:
-        return [[cassiopeia.type.core.league.League(league) for league in leagues[str(id_)]] for id_ in ids]
+        return [[cassiopeia.type.core.league.League(league) for league in leagues.get(str(id_), []) if leagues.get(str(id_), [])] for id_ in ids]
 
 def get_league_entries_by_summoner(summoners):
     """Gets the leagues that the summoner(s) belong(s) to, including only the requested summoner(s)' entries
@@ -123,9 +123,9 @@ def __get_leagues_by_team_id(ids):
         cassiopeia.riotapi.get_teams(list(team_ids)) if team_ids else None
 
     if(not isinstance(ids, list)):
-        return [cassiopeia.type.core.league.League(league) for league in leagues[str(ids)]]
+        return [cassiopeia.type.core.league.League(league) for league in leagues[ids]]
     else:
-        return [[cassiopeia.type.core.league.League(league) for league in leagues[str(id_)]] for id_ in ids]
+        return [[cassiopeia.type.core.league.League(league) for league in leagues.get(id_, []) if leagues.get(id_, [])] for id_ in ids]
 
 def get_leagues_by_team(teams):
     """Gets the leagues that the team(s) belong(s) to. You probably don't want to call this with LoadPolicy.eager set.
@@ -154,9 +154,9 @@ def __get_league_entries_by_team_id(ids):
         cassiopeia.riotapi.get_teams(list(team_ids)) if team_ids else None
 
     if(not isinstance(ids, list)):
-        return [cassiopeia.type.core.league.League(league) for league in leagues[str(ids)]]
+        return [cassiopeia.type.core.league.League(league) for league in leagues[ids]]
     else:
-        return [[cassiopeia.type.core.league.League(league) for league in leagues[str(id_)]] for id_ in ids]
+        return [[cassiopeia.type.core.league.League(league) for league in leagues.get(id_, []) if leagues.get(id_, [])] for id_ in ids]
 
 def get_league_entries_by_team(teams):
     """Gets the leagues that the team(s) belong(s) to, including only the requested team(s)' entries
