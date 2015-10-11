@@ -112,7 +112,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def timeline(self):
-        """ParticipantTimeline    the participant's timeline"""
+        """Timeline    the timeline of the match"""
         return Timeline(self.data.timeline, self.participants) if self.data.timeline else None
 
     @cassiopeia.type.core.common.lazyproperty
