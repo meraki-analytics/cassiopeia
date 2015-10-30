@@ -19,10 +19,13 @@ def get_match_list(summoner, begin_index=-1, begin_time=0, end_time=0, champions
 
     return          list<MatchSummary>           the summoner's match history
     """
-    if(ranked_queues):
+    if(ranked_queues and isinstance(ranked_queues, list)):
         for queue in ranked_queues:
             if queue not in cassiopeia.type.core.common.ranked_queues:
                 raise ValueError("{queue} is not a ranked queue".format(queue=queue))
+    elif(ranked_queues):
+        if ranked_queues not in cassiopeia.type.core.common.ranked_queues:
+            raise ValueError("{queue} is not a ranked queue".format(queue=ranked_queues))
 
     # Convert core types to API-ready types
     if(isinstance(begin_time, datetime.datetime)):
