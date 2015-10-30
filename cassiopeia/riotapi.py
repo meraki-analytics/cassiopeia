@@ -2,6 +2,8 @@
 This is the primary entry point for Cassiopeia. Accesses the LoL REST API (https://developer.riotgames.com/) and provides the results in easy-to-use Python objects.
 """
 
+import urllib.request
+
 import cassiopeia.dto.requests
 import cassiopeia.type.api.rates
 import cassiopeia.dto.staticdataapi
@@ -66,10 +68,10 @@ def set_proxy(url, port=80):
     """
     if(url):
         cassiopeia.dto.requests.proxy = urllib.request.ProxyHandler({"https": "https://{url}:{port}".format(url=url, port=port)})
-        urllib.request.install_opener(urllib.request.build_opener(proxy))
+        urllib.request.install_opener(urllib.request.build_opener(cassiopeia.dto.requests.proxy))
     else:
         cassiopeia.dto.requests.proxy = urllib.request.ProxyHandler({})
-        urllib.request.install_opener(urllib.request.build_opener(proxy))
+        urllib.request.install_opener(urllib.request.build_opener(cassiopeia.dto.requests.proxy))
 
 def set_locale(locale):
     """Sets the locale (language) to use for calls to the Riot API. Use get_languages() to find valid locales.
