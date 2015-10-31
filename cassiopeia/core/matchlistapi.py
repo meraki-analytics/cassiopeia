@@ -17,7 +17,7 @@ def get_match_list(summoner, begin_index=-1, begin_time=0, end_time=0, champions
     ranked_queue    Queue | list<Queue>          the ranked queue(s) to limit the results to (default None)
     seasons         Season | list<Season>        the season(s) to limit the results to (default None)
 
-    return          list<MatchSummary>           the summoner's match history
+    return          list<MatchReference>         the summoner's match history
     """
     if(ranked_queues and isinstance(ranked_queues, list)):
         for queue in ranked_queues:
