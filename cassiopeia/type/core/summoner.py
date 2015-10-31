@@ -216,7 +216,7 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
         ranked_queue    Queue | list<Queue>          the ranked queue(s) to limit the results to (default None)
         seasons         Season | list<Season>        the season(s) to limit the results to (default None)
 
-        return          list<MatchSummary>           the summoner's match history
+        return          list<MatchReference>           the summoner's match history
         """
         return cassiopeia.riotapi.get_match_list(self, begin_index, begin_time, end_time, champions, ranked_queues, seasons)
 
