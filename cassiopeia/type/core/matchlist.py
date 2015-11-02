@@ -51,12 +51,12 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def platform(self):
         """Platform    the platform (ie server) for this match"""
-        return cassiopeia.type.core.common.platform(self.data.platformid) if self.data.platformid else none
+        return cassiopeia.type.core.common.Platform(self.data.platformid) if self.data.platformid else none
 
     @property
     def queue(self):
         """Queue    the queue type for this match"""
-        return cassiopeia.type.core.common.queue(self.data.queue) if self.data.queue else none
+        return cassiopeia.type.core.common.Queue(self.data.queue) if self.data.queue else none
 
     @property
     def role(self):
@@ -66,7 +66,7 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def season(self):
         """Season    the season that this match was played in"""
-        return cassiopeia.type.core.common.season(self.data.season) if self.data.season else none
+        return cassiopeia.type.core.common.Season(self.data.season) if self.data.season else none
 
     @cassiopeia.type.core.common.lazyproperty
     def timestamp(self):
