@@ -69,7 +69,6 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def side(self):
         """Side    which side of the map the participant is on"""
-        #Changed cassiopeia.type.core.common.side -> cassiopeia.type.core.common.Side
         return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.teamId else none
 
 
@@ -93,7 +92,6 @@ class Ban(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def side(self):
         """Side    which side banned this champion"""
-        #Changed cassiopeia.type.core.common.side -> cassiopeia.type.core.common.Side
         return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.teamId else none
 
 
@@ -140,7 +138,6 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def mode(self):
         """GameMode    what game mode is being played in this game"""
-        #cassiopeia.type.core.common.gamemode -> cassiopeia.type.core.common.GameMode
         return cassiopeia.type.core.common.GameMode(self.data.gameMode) if self.data.gameMode else none
 
     @property
@@ -156,13 +153,11 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def type(self):
         """GameType    the game type"""
-        #cassiopeia.type.core.common.gametype -> cassiopeia.type.core.common.GameType
         return cassiopeia.type.core.common.GameType(self.data.gameType) if self.data.gameType else none
 
     @property
     def map(self):
         """Map    the map for this game"""
-        #cassiopeia.type.core.common.map -> cassiopeia.type.core.common.Map
         return cassiopeia.type.core.common.Map(self.data.mapId) if self.data.mapId else none
 
     @property
@@ -178,7 +173,6 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def platform(self):
         """Platform    which platform (ie server) the game is being played on"""
-        #cassiopeia.type.core.common.platform -> cassiopeia.type.core.common.Platform
         return cassiopeia.type.core.common.Platform(self.data.platformId) if self.data.platformId else none
 
 ###############################
