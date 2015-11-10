@@ -69,7 +69,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def side(self):
         """Side    which side of the map the participant is on"""
-        return cassiopeia.type.core.common.side(self.data.teamId) if self.data.teamId else none
+        return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.teamId else none
 
 
 @cassiopeia.type.core.common.inheritdocs
@@ -92,7 +92,7 @@ class Ban(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def side(self):
         """Side    which side banned this champion"""
-        return cassiopeia.type.core.common.side(self.data.teamId) if self.data.teamId else none
+        return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.teamId else none
 
 
 @cassiopeia.type.core.common.inheritdocs
@@ -138,7 +138,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def mode(self):
         """GameMode    what game mode is being played in this game"""
-        return cassiopeia.type.core.common.gamemode(self.data.gameMode) if self.data.gameMode else none
+        return cassiopeia.type.core.common.GameMode(self.data.gameMode) if self.data.gameMode else none
 
     @property
     def queue(self):
@@ -153,12 +153,12 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def type(self):
         """GameType    the game type"""
-        return cassiopeia.type.core.common.gametype(self.data.gameType) if self.data.gameType else none
+        return cassiopeia.type.core.common.GameType(self.data.gameType) if self.data.gameType else none
 
     @property
     def map(self):
         """Map    the map for this game"""
-        return cassiopeia.type.core.common.map(self.data.mapId) if self.data.mapId else none
+        return cassiopeia.type.core.common.Map(self.data.mapId) if self.data.mapId else none
 
     @property
     def observer_token(self):
@@ -173,7 +173,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def platform(self):
         """Platform    which platform (ie server) the game is being played on"""
-        return cassiopeia.type.core.common.platform(self.data.platformId) if self.data.platformId else none
+        return cassiopeia.type.core.common.Platform(self.data.platformId) if self.data.platformId else none
 
 ###############################
 # Dynamic SQLAlchemy bindings #
