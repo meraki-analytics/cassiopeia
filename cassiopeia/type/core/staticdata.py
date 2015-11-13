@@ -157,7 +157,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.crit
 
     @property
-    def critical_strike_chance_level(self):
+    def critical_strike_chance_per_level(self):
         """float    crititical strike chance per level"""
         return self.data.critperlevel
 
@@ -1235,7 +1235,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
         },
         "Attack": {
             "Damage": ["bonus_attack_damage", "attack_damage", "base_attack_damage", "percent_attack_damage", "percent_total_damage_increase", "attack_damage_per_level"],
-            "Critical Strike": ["percent_critical_strike_damage", "critical_strike_chance_level", "critical_strike_damage", "critical_strike_damage_per_level", "critical_strike_chance", "critical_strike_chance_per_level"],
+            "Critical Strike": ["percent_critical_strike_damage", "critical_strike_chance_per_level", "critical_strike_damage", "critical_strike_damage_per_level", "critical_strike_chance", "critical_strike_chance_per_level"],
             "Attack Speed": ["percent_attack_speed", "attack_speed", "bonus_attack_speed", "attack_speed_per_level", "base_attack_speed", "percent_attack_speed_per_level"],
             "Life Steal": ["life_steal"],
             "Other": ["armor_penetration", "percent_armor_penetration", "armor_penetration_per_level", "percent_armor_penetration_per_level", "magic_penetration", "percent_magic_penetration", "magic_penetration_per_level", "percent_magic_pen_per_level"]
