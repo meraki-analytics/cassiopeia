@@ -83,8 +83,10 @@ def set_locale(locale):
 def set_load_policy(policy):
     """Sets the load policy to use. Keep your load policy in mind when making calls, as different policies are better for different applications.
 
-    policy    str    the locale to use for calls to the API
+    policy    str | cassiopeia.type.core.common.LoadPolicy    the load policy to use for calls to the API
     """
+    if(isinstance(policy, str)):
+        policy = cassiopeia.type.core.common.LoadPolicy(policy.upper())
     cassiopeia.core.requests.load_policy = policy
 
 def set_data_store(store):
