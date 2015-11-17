@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="cassiopeia",
-    version="0.0.7",
+    version="0.0.8",
     author="Rob Rua",
     author_email="robrua@alumni.cmu.edu",
     url="https://github.com/robrua/cassiopeia",
