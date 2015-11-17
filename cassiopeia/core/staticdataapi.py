@@ -4,7 +4,6 @@ import cassiopeia.core.requests
 import cassiopeia.type.core.common
 import cassiopeia.type.core.staticdata
 
-_ignore_items = {0, 1080, 2037, 2039, 2040, 3005, 3039, 3123, 3128, 3131, 3160, 3166, 3167, 3168, 3169, 3175, 3176, 3171, 3186, 3188, 3205, 3206, 3207, 3209, 3210, 3405, 3406, 3407, 3408, 3409, 3410, 3411, 3412, 3413, 3414, 3415, 3416, 3417, 3419, 3420}
 _ignore_runes = {8028}
 _ignore_summoner_spells = {10}
 
@@ -97,18 +96,8 @@ def get_item(id_):
 
     return    Item    the item
     """
-    if(id_ in _ignore_items):
-        return None
-
-    item = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Item, id_, "id")
-    if(item):
-        return item
-
-    items = cassiopeia.riotapi.get_items()
-    try:
-        return next(filter(lambda item: item.id == id_, items))
-    except StopIteration:
-        return None
+    get_items()
+    return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Item, id_, "id")
 
 def get_items(ids=None):
     """Gets a bunch of items (or all of them)
