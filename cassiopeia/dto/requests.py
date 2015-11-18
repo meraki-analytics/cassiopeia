@@ -6,6 +6,7 @@ import urllib.parse
 import urllib.request
 import urllib.error
 import json
+import zlib
 
 import cassiopeia.type.api.exception
 import cassiopeia.type.api.rates
@@ -87,7 +88,11 @@ def executeRequest(url):
     response = None
     try:
         response = urllib.request.urlopen(url)
-        content = response.read().decode(encoding="UTF-8")
+        request = urllib.request.Request(url)
+        request.add_header("Accept-Encoding", "gzip")
+        response = urllib.request.urlopen(request)
+        content = response.read()
+        content = zlib.decompress(content, zlib.MAX_WBITS | 16).decode(encoding="UTF-8")
         return content
     finally:
         if(response): 
