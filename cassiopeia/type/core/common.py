@@ -274,6 +274,8 @@ class Season(enum.Enum):
     season_4 = "SEASON2014"
     preseason_5 = "PRESEASON2015"
     season_5 = "SEASON2015"
+    preseason_6 = "PRESEASON2016"
+    season_6 = "SEASON2016"
 
 stats_seasons = {Season.season_3, Season.season_4, Season.season_5}
 
