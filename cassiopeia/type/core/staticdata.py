@@ -1130,6 +1130,11 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.description
 
     @property
+    def effect(self):
+        """dict<str, bool>    the item's effects"""
+        return self.effect
+    
+    @property
     def components(self):
         """list<Item>    the components for this item"""
         return cassiopeia.riotapi.get_items([int(id_) for id_ in self.data.from_])
