@@ -1277,6 +1277,7 @@ def _sa_bind_item():
         consumed = sqlalchemy.Column(sqlalchemy.Boolean)
         depth = sqlalchemy.Column(sqlalchemy.Integer)
         description = sqlalchemy.Column(sqlalchemy.Text)
+        effect = sqlalchemy.Column(sqlalchemy.JSONEncoded)
         from_ = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
         gold = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Gold", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
         group = sqlalchemy.Column(sqlalchemy.String(30))
