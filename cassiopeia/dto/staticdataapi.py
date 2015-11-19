@@ -31,6 +31,21 @@ def get_champions():
 
     return cassiopeia.type.dto.staticdata.ChampionList(cassiopeia.dto.requests.get(request, params, True))
 
+def get_item(id_):
+    """https://developer.riotgames.com/api/methods#!/968/3319
+
+    id_       int     the ID of the item to get
+
+    return    Item    the item
+    """
+    request = "{version}/item/{id_}".format(version=cassiopeia.dto.requests.api_versions["staticdata"], id_=id_)
+
+    params = {"itemData": "all"}
+    if(_locale):
+        params["locale"] = _locale
+
+    return cassiopeia.type.dto.staticdata.Item(cassiopeia.dto.requests.get(request, params, True))
+
 def get_items():
     """https://developer.riotgames.com/api/methods#!/968/3314
 
