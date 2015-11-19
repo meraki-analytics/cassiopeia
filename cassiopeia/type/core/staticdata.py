@@ -144,7 +144,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def attack_speed(self):
         """float    attack speed"""
-        return 0.625/(1.0+self.data.attackspeedoffset)
+        return 0.625 / (1.0 + self.data.attackspeedoffset)
 
     @property
     def percent_attack_speed_per_level(self):
