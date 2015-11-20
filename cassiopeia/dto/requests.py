@@ -87,7 +87,6 @@ def executeRequest(url):
 
     response = None
     try:
-        response = urllib.request.urlopen(url)
         request = urllib.request.Request(url)
         request.add_header("Accept-Encoding", "gzip")
         response = urllib.request.urlopen(request)
