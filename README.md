@@ -61,7 +61,7 @@ Make sure you set your rate limit! Cassiopeia will limit you the the default dev
 # 3,000 calls per 10 seconds
 riotapi.set_rate_limit(3000, 10);
 # 3,000 calls per 10 seconds AND 180,000 calls per 10 minutes
-riotapi.set_rate_limits((3000, 10), (180000, 600));
+riotapi.set_rate_limits((3000, 10), (180000, 600))
 ```
 
 You can also set a load policy for filling in foreign key values to optimize internal call usage. Eager will load everything ASAP, and will batch together calls where possible to minimize call usage. Lazy will load things as you ask for them, so you can save calls if you don't use some values, but it won't be able to take as much advantage of bulk loading.
@@ -70,8 +70,8 @@ You can also set a load policy for filling in foreign key values to optimize int
 from cassiopeia.type.core.common import LoadPolicy
 
 # Eager loading is the default strategy
-riotapi.set_load_policy(LoadPolicy.eager);
-riotapi.set_load_policy(LoadPolicy.lazy);
+riotapi.set_load_policy(LoadPolicy.eager)
+riotapi.set_load_policy(LoadPolicy.lazy)
 ```
 
 Or, if you don't want all the bells and whistles and you'd just like to access the Riot API as the specification says, you can use baseriotapi.
