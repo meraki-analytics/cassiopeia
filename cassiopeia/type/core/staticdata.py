@@ -1176,8 +1176,8 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def maps(self):
-        """dict<str, bool>    well, we don't know what this one is. let us know if you figure it out."""
-        return self.data.maps
+        """dict<Map, bool>    a listing of whether this item is available on each map"""
+        return {cassiopeia.type.core.common.Map(int(id_)): allowed for id_, allowed in self.data.maps.items()}
 
     @property
     def name(self):
