@@ -26,6 +26,8 @@ setup(
     packages=find_packages(),
     zip_safe=True,
     install_requires=[
-        "sqlalchemy"
+        "sqlalchemy",
+        "future==0.15.2",
+        "enum34==1.1.1",
     ]
 )
