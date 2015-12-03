@@ -1,6 +1,3 @@
-import pickle
-import os.path
-
 import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
