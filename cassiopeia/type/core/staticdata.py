@@ -1172,7 +1172,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def component_of(self):
         """list<Item>    the items this one is a component of"""
-        return riotapi.get_items([int(id_) for id_ in self.data.into])
+        return cassiopeia.riotapi.get_items([int(id_) for id_ in self.data.into])
 
     @property
     def maps(self):
