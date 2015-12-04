@@ -1,6 +1,20 @@
 #!/usr/bin/env python
 
+import sys
+
 from setuptools import setup, find_packages
+
+
+install_requires = [
+    "sqlalchemy"
+]
+
+# Install python 2.7 dependencies
+if sys.version_info.major == 2:
+    install_requires += [
+        "future==0.15.2",
+        "enum34==1.1.1",
+    ]
 
 setup(
     name="cassiopeia",
@@ -25,9 +39,5 @@ setup(
     license="MIT",
     packages=find_packages(),
     zip_safe=True,
-    install_requires=[
-        "sqlalchemy",
-        "future==0.15.2",
-        "enum34==1.1.1",
-    ]
+    install_requires=install_requires
 )
