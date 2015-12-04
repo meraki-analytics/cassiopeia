@@ -10,7 +10,7 @@ install_requires = [
 ]
 
 # Install python 2.7 dependencies
-if sys.version_info.major == 2:
+if(sys.version_info.major == 2):
     install_requires += [
         "future==0.15.2",
         "enum34==1.1.1",
