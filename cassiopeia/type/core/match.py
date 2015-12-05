@@ -5,6 +5,9 @@ import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.match
 
+from future.builtins.misc import super
+
+
 @cassiopeia.type.core.common.inheritdocs
 class Match(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.match.MatchDetail
