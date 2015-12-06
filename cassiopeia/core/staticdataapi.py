@@ -166,7 +166,7 @@ def get_mastery(id_):
 
     # Load required data if loading policy is eager
     if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
-        cassiopeia.riotapi.get_masteries() if item.mastery_ids else None
+        cassiopeia.riotapi.get_masteries() if mastery.mastery_ids else None
 
     mastery = cassiopeia.type.core.staticdata.Mastery(mastery)
 
