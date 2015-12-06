@@ -36,7 +36,7 @@ def set_region(region):
     region    str | cassiopeia.type.core.common.Region    the region to query against
     """
     if(isinstance(region, str)):
-        region = cassiopeia.type.core.common.Region(region.upper())
+        region = cassiopeia.type.core.common.Region(region.lower())
     cassiopeia.dto.requests.region = region.value
 
 def print_calls(on):
