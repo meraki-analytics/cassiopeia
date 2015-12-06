@@ -67,8 +67,15 @@ def get_champions_by_id(ids):
 
     return    list<Champion>    the requested champions
     """
-    get_champions()
-    return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Champion, ids, "id")
+    champions = {champ.id: champ for champ in get_champions()}
+    results = []
+    for id_ in ids:
+        try:
+            champ = champions[id_]
+        except KeyError:
+            champ = None
+        results.append(champ)
+    return results
 
 def get_champions_by_name(names):
     """Gets a bunch of champions by name
