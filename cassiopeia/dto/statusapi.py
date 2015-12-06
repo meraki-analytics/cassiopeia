@@ -14,5 +14,5 @@ def get_shard():
 
     return    ShardStatus    the status of the current region's shard
     """
-    request = "http://status.leagueoflegends.com/shards/{region}".format(region=cassiopeia.dto.requests.region.lower())
+    request = "http://status.leagueoflegends.com/shards/{region}".format(region=cassiopeia.dto.requests.region)
     return cassiopeia.type.dto.status.ShardStatus(cassiopeia.dto.requests.get(request, static=True, include_base=False))
