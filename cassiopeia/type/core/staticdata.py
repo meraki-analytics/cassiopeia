@@ -758,8 +758,8 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def __init__(self, data, scraped_stats={}):
         super().__init__(data)
         for k,v in scraped_stats.items():
-            if 'percent' in k and v > 1.0:
-                scraped_stats[k] = v/100.0
+            if("percent" in k and v > 1.0):
+                scraped_stats[k] = v / 100.0
         self.__scraped_stats = scraped_stats
 
     def __str__(self):
