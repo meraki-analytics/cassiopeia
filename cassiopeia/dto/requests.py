@@ -6,6 +6,7 @@ import urllib.parse
 import urllib.request
 import urllib.error
 import json
+import zlib
 
 import cassiopeia.type.api.exception
 import cassiopeia.type.api.rates
@@ -46,8 +47,8 @@ def get(request, params={}, static=False, include_base=True):
         raise cassiopeia.type.api.exception.CassiopeiaException("Region must be set before the API can be queried.")
 
     # Set server and rgn
-    server = "global" if static else region.lower()
-    rgn = ("static-data/{region}" if static else "{region}").format(region=region.lower())
+    server = "global" if static else region
+    rgn = ("static-data/{region}" if static else "{region}").format(region=region)
 
     # Encode params
     params["api_key"] = api_key
@@ -86,8 +87,11 @@ def executeRequest(url):
 
     response = None
     try:
-        response = urllib.request.urlopen(url)
-        content = response.read().decode(encoding="UTF-8")
+        request = urllib.request.Request(url)
+        request.add_header("Accept-Encoding", "gzip")
+        response = urllib.request.urlopen(request)
+        content = response.read()
+        content = zlib.decompress(content, zlib.MAX_WBITS | 16).decode(encoding="UTF-8")
         return content
     finally:
         if(response): 

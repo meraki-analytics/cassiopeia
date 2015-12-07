@@ -1,6 +1,3 @@
-import pickle
-import os.path
-
 import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
@@ -56,6 +53,31 @@ class DataStore(object):
         keys             any | list<any>    the keys to store those values with
         complete_sets    list<type>         include any types for which it should be marked that all possible values are stored
         """
+        pass
+
+#######################
+# Void Store resouces #
+#######################
+
+@cassiopeia.type.core.common.inheritdocs
+class VoidDataStore(DataStore):
+    """A mock cache that doesn't actually store anything"""
+
+    def has_all(self, class_):
+        return False
+
+    def get_all(self, class_):
+        return []
+
+    def iterate(self, class_):
+        return iter([])
+
+    def get(self, class_, keys, key_field):
+        if isinstance(keys, list):
+            return [None for _ in range(len(keys))]
+        return None
+
+    def store(self, objs, keys, complete_sets=[]):
         pass
 
 #############################

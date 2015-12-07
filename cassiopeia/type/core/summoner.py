@@ -206,19 +206,20 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
         return cassiopeia.riotapi.get_teams_by_summoner(self)
 
     @cassiopeia.type.core.common.immutablemethod
-    def match_list(self, begin_index=-1, begin_time=0, end_time=0, champions=None, ranked_queues=None, seasons=None):
+    def match_list(self, num_matches=0, begin_index=0, begin_time=0, end_time=0, champions=None, ranked_queues=None, seasons=None):
         """Gets the summoner's match history
 
-        begin_index     int                          the game index to start from (default -1)
+        num_matches     int                          the maximum number of matches to retrieve. 0 will get as many as possible. (default 0)
+        begin_index     int                          the game index to start from (default 0)
         begin_time      int | datetime               the begin time to use for fetching games (default 0)
         end_time        int | datetime               the end time to use for fetching games (default 0)
         champions       Champion | list<Champion>    the champion(s) to limit the results to (default None)
         ranked_queue    Queue | list<Queue>          the ranked queue(s) to limit the results to (default None)
         seasons         Season | list<Season>        the season(s) to limit the results to (default None)
 
-        return          list<MatchReference>           the summoner's match history
+        return          list<MatchReference>         the summoner's match history
         """
-        return cassiopeia.riotapi.get_match_list(self, begin_index, begin_time, end_time, champions, ranked_queues, seasons)
+        return cassiopeia.riotapi.get_match_list(self, num_matches, begin_index, begin_time, end_time, champions, ranked_queues, seasons)
 
     @cassiopeia.type.core.common.immutablemethod
     def ranked_stats(self, season=None):

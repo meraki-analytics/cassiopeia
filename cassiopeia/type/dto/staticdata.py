@@ -513,6 +513,7 @@ class Item(cassiopeia.type.dto.common.CassiopeiaDto):
     consumed                bool               consumed
     depth                   int                depth
     description             str                description
+    effect                  dict<str, str>     effect
     from_                   list<str>          from
     gold                    Gold               data dragon includes the gold field for basic data, which is shared by both rune and item. However, only items have a gold field on them, representing their gold cost in the store. Since runes are not sold in the store, they have no gold cost.
     group                   str                group
@@ -529,6 +530,7 @@ class Item(cassiopeia.type.dto.common.CassiopeiaDto):
     sanitizedDescription    str                sanitized description
     specialRecipe           int                special recipe
     stacks                  int                stacks
+    stats                   BasicDataStats     stats
     tags                    list<str>          tags
     """
     def __init__(self, dictionary):
@@ -537,6 +539,7 @@ class Item(cassiopeia.type.dto.common.CassiopeiaDto):
         self.consumed = dictionary.get("consumed", False)
         self.depth = dictionary.get("depth", 0)
         self.description = dictionary.get("description", "")
+        self.effect = dictionary.get("effect", {})
         self.from_ = dictionary.get("from", [])
         val = dictionary.get("gold", None)
         self.gold = Gold(val) if val and not isinstance(val, Gold) else val
@@ -1274,6 +1277,7 @@ def _sa_bind_item():
         consumed = sqlalchemy.Column(sqlalchemy.Boolean)
         depth = sqlalchemy.Column(sqlalchemy.Integer)
         description = sqlalchemy.Column(sqlalchemy.Text)
+        effect = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
         from_ = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
         gold = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.Gold", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
         group = sqlalchemy.Column(sqlalchemy.String(30))
