@@ -144,7 +144,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def attack_speed(self):
         """float    attack speed"""
-        return 0.625/(1.0+self.data.attackspeedoffset)
+        return 0.625 / (1.0 + self.data.attackspeedoffset)
 
     @property
     def percent_attack_speed_per_level(self):
@@ -1133,6 +1133,11 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.description
 
     @property
+    def effect(self):
+        """dict<str, bool>    the item's effects"""
+        return self.effect
+    
+    @property
     def components(self):
         """list<Item>    the components for this item"""
         return cassiopeia.riotapi.get_items([int(id_) for id_ in self.data.from_])
@@ -1170,12 +1175,12 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def component_of(self):
         """list<Item>    the items this one is a component of"""
-        return riotapi.get_items([int(id_) for id_ in self.data.into])
+        return cassiopeia.riotapi.get_items([int(id_) for id_ in self.data.into])
 
     @property
     def maps(self):
-        """dict<str, bool>    well, we don't know what this one is. let us know if you figure it out."""
-        return self.data.maps
+        """dict<Map, bool>    a listing of whether this item is available on each map"""
+        return {cassiopeia.type.core.common.Map(int(id_)): allowed for id_, allowed in self.data.maps.items()}
 
     @property
     def name(self):
@@ -1366,7 +1371,7 @@ class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def prerequisite(self):
         """Mastery    the prerequisite for this mastery"""
-        return riotapi.get_mastery(int(self.data.prereq)) if self.data.prereq else None
+        return cassiopeia.riotapi.get_mastery(int(self.data.prereq)) if self.data.prereq else None
 
     @property
     def max_rank(self):

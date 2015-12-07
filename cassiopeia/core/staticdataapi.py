@@ -67,8 +67,15 @@ def get_champions_by_id(ids):
 
     return    list<Champion>    the requested champions
     """
-    get_champions()
-    return cassiopeia.core.requests.data_store.get(cassiopeia.type.core.staticdata.Champion, ids, "id")
+    champions = {champ.id: champ for champ in get_champions()}
+    results = []
+    for id_ in ids:
+        try:
+            champ = champions[id_]
+        except KeyError:
+            champ = None
+        results.append(champ)
+    return results
 
 def get_champions_by_name(names):
     """Gets a bunch of champions by name
@@ -166,7 +173,7 @@ def get_mastery(id_):
 
     # Load required data if loading policy is eager
     if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
-        cassiopeia.riotapi.get_masteries() if item.mastery_ids else None
+        cassiopeia.riotapi.get_masteries() if mastery.mastery_ids else None
 
     mastery = cassiopeia.type.core.staticdata.Mastery(mastery)
 

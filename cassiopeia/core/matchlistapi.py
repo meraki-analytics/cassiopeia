@@ -6,11 +6,12 @@ import cassiopeia.core.requests
 import cassiopeia.type.core.common
 import cassiopeia.type.core.matchlist
 
-def get_match_list(summoner, begin_index=-1, begin_time=0, end_time=0, champions=None, ranked_queues=None, seasons=None):
+def get_match_list(summoner, num_matches=0, begin_index=0, begin_time=0, end_time=0, champions=None, ranked_queues=None, seasons=None):
     """Gets a summoner's match history
 
     summoner        Summoner                     the summoner to get match history for
-    begin_index     int                          the game index to start from (default -1)
+    num_matches     int                          the maximum number of matches to retrieve. 0 will get as many as possible. (default 0)
+    begin_index     int                          the game index to start from (default 0)
     begin_time      int | datetime               the begin time to use for fetching games (default 0)
     end_time        int | datetime               the end time to use for fetching games (default 0)
     champions       Champion | list<Champion>    the champion(s) to limit the results to (default None)
@@ -41,7 +42,7 @@ def get_match_list(summoner, begin_index=-1, begin_time=0, end_time=0, champions
     queues = [queue.value for queue in ranked_queues] if isinstance(ranked_queues, list) else ranked_queues.value if ranked_queues else None
     seasons = [season.value for season in seasons] if isinstance(seasons, list) else seasons.value if seasons else None
 
-    history = cassiopeia.dto.matchlistapi.get_match_list(summoner.id, begin_index, begin_time, end_time, champion_ids, queues, seasons)
+    history = cassiopeia.dto.matchlistapi.get_match_list(summoner.id, num_matches, begin_index, begin_time, end_time, champion_ids, queues, seasons)
 
     # Load required data if loading policy is eager
     if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):

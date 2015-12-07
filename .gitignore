@@ -55,3 +55,6 @@ docs/
 
 # PyBuilder
 target/
+
+# PyCharm
+.idea/

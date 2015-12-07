@@ -274,21 +274,23 @@ class Season(enum.Enum):
     season_4 = "SEASON2014"
     preseason_5 = "PRESEASON2015"
     season_5 = "SEASON2015"
+    preseason_6 = "PRESEASON2016"
+    season_6 = "SEASON2016"
 
 stats_seasons = {Season.season_3, Season.season_4, Season.season_5}
 
 
 class Region(enum.Enum):
-    brazil = "BR"
-    europe_north_east = "EUNE"
-    europe_west = "EUW"
-    korea = "KR"
-    latin_america_north = "LAN"
-    latin_america_south = "LAS"
-    north_america = "NA"
-    oceania = "OCE"
-    russia = "RU"
-    turkey = "TR"
+    brazil = "br"
+    europe_north_east = "eune"
+    europe_west = "euw"
+    korea = "kr"
+    latin_america_north = "lan"
+    latin_america_south = "las"
+    north_america = "na"
+    oceania = "oce"
+    russia = "ru"
+    turkey = "tr"
 
 
 class Platform(enum.Enum):
