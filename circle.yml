@@ -3,6 +3,10 @@ machine:
   python:
     version: 2.7.5
 
+dependencies:
+  override:
+    - pip install -r requirements.txt
+
 test:
   #pre:
   #  - (pyenv global 3.5.0 && pip install -r requirements.txt)
