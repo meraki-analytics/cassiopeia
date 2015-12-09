@@ -1,4 +1,7 @@
-from future.builtins.misc import super
+try:
+    from future.builtins.misc import super
+except ImportError:
+    pass
 
 
 class CassiopeiaException(Exception):

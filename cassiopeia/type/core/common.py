@@ -14,6 +14,7 @@ class CassiopeiaObject(object):
         if(data.__class__ is not self.dto_type):
             raise cassiopeia.type.api.exception.CassiopeiaException("Tried to instantiate a core {class_} with a {dto} dto!".format(class_=self.__class__.__name__, dto=data.__class__.__name__))
         self.data = data
+        #print data
 
     def to_json(self):
         """Gets a JSON representation of the object
