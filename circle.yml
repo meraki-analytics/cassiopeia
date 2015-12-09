@@ -1,5 +1,4 @@
 machine:
-  # Start with Python 2
   python:
     version: 2.7.5
 
@@ -11,8 +10,6 @@ dependencies:
     - (deactivate && source ~/virtualenvs/venv-3.5.0/bin/activate && pip install -r requirements35.txt)
 
 test:
-  #pre:
-  #  - (pyenv global 3.5.0 && pip install -r requirements.txt)
   override:
     - (deactivate && source ~/virtualenvs/venv-2.7.5/bin/activate && py.test)
     - (deactivate && source ~/virtualenvs/venv-3.5.0/bin/activate && py.test)
