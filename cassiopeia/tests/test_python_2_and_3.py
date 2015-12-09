@@ -5,6 +5,6 @@ class Python2And3Tests(TestCase):
 
     def test_we_can_import_cass(self):
         from cassiopeia import riotapi
-        riotapi.set_region("NA")
+        riotapi.set_region(u"NA")
 
         assert True
