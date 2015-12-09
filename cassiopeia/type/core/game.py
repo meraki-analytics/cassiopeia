@@ -4,7 +4,10 @@ import cassiopeia.riotapi
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.game
 
-from future.builtins.misc import super
+try:
+    from future.builtins.misc import super
+except ImportError:
+    pass
 
 
 @cassiopeia.type.core.common.inheritdocs

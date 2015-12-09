@@ -1,0 +1,18 @@
+machine:
+  # Start with Python 2
+  python:
+    version: 2.7.5
+
+dependencies:
+  override:
+    - (deactivate && source ~/virtualenvs/venv-2.7.5/bin/activate && pip install -r requirements27.txt)
+    # Have to upgrade virtualenv to make a virtualenv with python3
+    - (deactivate && pip install --upgrade virtualenv && virtualenv ~/virtualenvs/venv-3.5.0 -p /home/ubuntu/.pyenv/versions/3.5.0/bin/python3)
+    - (deactivate && source ~/virtualenvs/venv-3.5.0/bin/activate && pip install -r requirements35.txt)
+
+test:
+  #pre:
+  #  - (pyenv global 3.5.0 && pip install -r requirements.txt)
+  override:
+    - (deactivate && source ~/virtualenvs/venv-2.7.5/bin/activate && py.test)
+    - (deactivate && source ~/virtualenvs/venv-3.5.0/bin/activate && py.test)

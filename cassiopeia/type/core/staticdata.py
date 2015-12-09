@@ -4,7 +4,10 @@ import cassiopeia.riotapi
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.staticdata
 
-from future.builtins.misc import super
+try:
+    from future.builtins.misc import super
+except ImportError:
+    pass
 
 
 ######################
@@ -760,6 +763,9 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
 
     def __init__(self, data, scraped_stats={}):
         super().__init__(data)
+        for k,v in scraped_stats.items():
+            if("percent" in k and v > 1.0):
+                scraped_stats[k] = v / 100.0
         self.__scraped_stats = scraped_stats
 
     def __str__(self):
@@ -1175,7 +1181,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def component_of(self):
         """list<Item>    the items this one is a component of"""
-        return riotapi.get_items([int(id_) for id_ in self.data.into])
+        return cassiopeia.riotapi.get_items([int(id_) for id_ in self.data.into])
 
     @property
     def maps(self):
@@ -1371,7 +1377,7 @@ class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def prerequisite(self):
         """Mastery    the prerequisite for this mastery"""
-        return riotapi.get_mastery(int(self.data.prereq)) if self.data.prereq else None
+        return cassiopeia.riotapi.get_mastery(int(self.data.prereq)) if self.data.prereq else None
 
     @property
     def max_rank(self):

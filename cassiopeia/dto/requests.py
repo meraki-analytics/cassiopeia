@@ -47,8 +47,8 @@ def get(request, params={}, static=False, include_base=True):
         raise cassiopeia.type.api.exception.CassiopeiaException("Region must be set before the API can be queried.")
 
     # Set server and rgn
-    server = "global" if static else region.lower()
-    rgn = ("static-data/{region}" if static else "{region}").format(region=region.lower())
+    server = "global" if static else region
+    rgn = ("static-data/{region}" if static else "{region}").format(region=region)
 
     # Encode params
     params["api_key"] = api_key
