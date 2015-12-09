@@ -3,6 +3,7 @@ This is the primary entry point for Cassiopeia. Accesses the LoL REST API (https
 """
 
 import urllib.request
+import sys
 
 import cassiopeia.dto.requests
 import cassiopeia.type.api.rates
@@ -35,6 +36,10 @@ def set_region(region):
 
     region    str | cassiopeia.type.core.common.Region    the region to query against
     """
+    if(sys.version_info.major == 2):
+        # Handle python 2 unicode
+        if(isinstance(region, unicode)):
+            region = cassiopeia.type.core.common.Region(region.lower())
     if(isinstance(region, str)):
         region = cassiopeia.type.core.common.Region(region.lower())
     cassiopeia.dto.requests.region = region.value
