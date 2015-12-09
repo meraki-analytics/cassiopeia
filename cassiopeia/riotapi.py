@@ -3,12 +3,14 @@ This is the primary entry point for Cassiopeia. Accesses the LoL REST API (https
 """
 
 import urllib.request
+import sys
 
 import cassiopeia.dto.requests
 import cassiopeia.type.api.rates
 import cassiopeia.dto.staticdataapi
 import cassiopeia.core.requests
 import cassiopeia.type.core.common
+import cassiopeia.type.api.store
 from cassiopeia.core.championapi import *
 from cassiopeia.core.currentgameapi import *
 from cassiopeia.core.featuredgamesapi import *
@@ -34,8 +36,12 @@ def set_region(region):
 
     region    str | cassiopeia.type.core.common.Region    the region to query against
     """
-    if(isinstance(region, str) or isinstance(region, unicode)):
-        region = cassiopeia.type.core.common.Region(region.upper())
+    if(sys.version_info.major == 2):
+        # Handle python 2 unicode
+        if(isinstance(region, unicode)):
+            region = cassiopeia.type.core.common.Region(region.lower())
+    if(isinstance(region, str)):
+        region = cassiopeia.type.core.common.Region(region.lower())
     cassiopeia.dto.requests.region = region.value
 
 def print_calls(on):
@@ -94,4 +100,7 @@ def set_data_store(store):
 
     store    cassiopeia.type.api.store.DataStore    the data store to use for storing results
     """
-    cassiopeia.core.requests.data_store = store
+    if(not store):
+        cassiopeia.core.requests.data_store = cassiopeia.type.api.store.VoidDataStore()
+    else:
+        cassiopeia.core.requests.data_store = store

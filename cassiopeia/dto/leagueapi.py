@@ -58,7 +58,7 @@ def get_leagues_by_team(team_ids):
     """
     # Can only have 10 teams max if it's a list
     if(isinstance(team_ids, list) and len(team_ids) > 10):
-        raise ValueError("Can only get leagues for up to 10 summoners at once.")
+        raise ValueError("Can only get leagues for up to 10 teams at once.")
 
     id_string = ",".join(team_ids) if isinstance(team_ids, list) else str(team_ids)
 
@@ -81,7 +81,7 @@ def get_league_entries_by_team(team_ids):
     """
     # Can only have 10 teams max if it's a list
     if(isinstance(team_ids, list) and len(team_ids) > 10):
-        raise ValueError("Can only get leagues for up to 10 summoners at once.")
+        raise ValueError("Can only get league entries for up to 10 teams at once.")
 
     id_string = ",".join(team_ids) if isinstance(team_ids, list) else str(team_ids)
 
