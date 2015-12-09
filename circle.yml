@@ -1,0 +1,12 @@
+machine:
+  # Start with Python 2
+  python:
+    version: 2.7.5
+  # Add python 3
+  post:
+    - pyenv install 3.5.0
+
+test:
+  override:
+    - (pyenv global python-2.7.5 && py.test)
+    - (pyenv global python-3.5.0 && py.test)
