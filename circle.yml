@@ -1,10 +1,10 @@
-machine:
+#machine:
   # Start with Python 2
-  python:
-    version: 2.7.5
+  #python:
+  #  version: 2.7.5
   # Add python 3
-  post:
-    - pyenv install 3.5.0
+  #post:
+  #  - pyenv install 3.5.0
 
 test:
   override:
