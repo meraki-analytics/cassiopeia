@@ -2,11 +2,10 @@ machine:
   # Start with Python 2
   python:
     version: 2.7.5
-  # Add python 3
-  post:
-    - (pyenv global 3.5.0 && pip install -r requirements.txt)
 
 test:
+  pre:
+    - (pyenv global 3.5.0 && pip install -r requirements.txt)
   override:
-    - (pyenv global 2.7.5 && py.test)
-    - (pyenv global 3.5.0 && py.test)
+    - py.test
+    - (pyenv global 3.5.0 && python3 -m py.test)
