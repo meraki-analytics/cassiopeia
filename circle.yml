@@ -8,5 +8,5 @@
 
 test:
   override:
-    - (pyenv global python-2.7.5 && py.test)
-    - (pyenv global python-3.5.0 && py.test)
+    - (pyenv global 2.7.5 && py.test)
+    - (pyenv global 3.5.0 && py.test)
