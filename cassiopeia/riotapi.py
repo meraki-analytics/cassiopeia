@@ -100,4 +100,7 @@ def set_data_store(store):
 
     store    cassiopeia.type.api.store.DataStore    the data store to use for storing results
     """
-    cassiopeia.core.requests.data_store = store
+    if(not store):
+        cassiopeia.core.requests.data_store = cassiopeia.type.api.store.VoidDataStore()
+    else:
+        cassiopeia.core.requests.data_store = store
