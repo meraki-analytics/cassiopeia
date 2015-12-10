@@ -32,7 +32,7 @@ def set_region(region):
 
     region    str    the region to query against
     """
-    cassiopeia.dto.requests.region = region.lower()
+    cassiopeia.dto.requests.region = region
 
 def print_calls(on):
     """Sets whether to print calls to stdout as they are made

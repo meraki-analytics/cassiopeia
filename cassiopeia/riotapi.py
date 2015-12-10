@@ -10,7 +10,6 @@ import cassiopeia.type.api.rates
 import cassiopeia.dto.staticdataapi
 import cassiopeia.core.requests
 import cassiopeia.type.core.common
-import cassiopeia.type.api.store
 from cassiopeia.core.championapi import *
 from cassiopeia.core.currentgameapi import *
 from cassiopeia.core.featuredgamesapi import *
@@ -100,7 +99,4 @@ def set_data_store(store):
 
     store    cassiopeia.type.api.store.DataStore    the data store to use for storing results
     """
-    if(not store):
-        cassiopeia.core.requests.data_store = cassiopeia.type.api.store.VoidDataStore()
-    else:
-        cassiopeia.core.requests.data_store = store
+    cassiopeia.core.requests.data_store = store

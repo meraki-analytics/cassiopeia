@@ -14,7 +14,6 @@ class CassiopeiaObject(object):
         if(data.__class__ is not self.dto_type):
             raise cassiopeia.type.api.exception.CassiopeiaException("Tried to instantiate a core {class_} with a {dto} dto!".format(class_=self.__class__.__name__, dto=data.__class__.__name__))
         self.data = data
-        #print data
 
     def to_json(self):
         """Gets a JSON representation of the object
@@ -282,16 +281,16 @@ stats_seasons = {Season.season_3, Season.season_4, Season.season_5}
 
 
 class Region(enum.Enum):
-    brazil = "br"
-    europe_north_east = "eune"
-    europe_west = "euw"
-    korea = "kr"
-    latin_america_north = "lan"
-    latin_america_south = "las"
-    north_america = "na"
-    oceania = "oce"
-    russia = "ru"
-    turkey = "tr"
+    brazil = "BR"
+    europe_north_east = "EUNE"
+    europe_west = "EUW"
+    korea = "KR"
+    latin_america_north = "LAN"
+    latin_america_south = "LAS"
+    north_america = "NA"
+    oceania = "OCE"
+    russia = "RU"
+    turkey = "TR"
 
 
 class Platform(enum.Enum):
