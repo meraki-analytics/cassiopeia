@@ -171,8 +171,10 @@ class Team(cassiopeia.type.dto.common.CassiopeiaDto):
     firstBlood              bool                    flag indicating whether or not the team got first blood
     firstDragon             bool                    flag indicating whether or not the team got the first dragon kill
     firstInhibitor          bool                    flag indicating whether or not the team destroyed the first inhibitor
+    firstRiftHerald         bool                    flag indicating whether or not the team got the first rift herald kill
     firstTower              bool                    flag indicating whether or not the team destroyed the first tower
     inhibitorKills          int                     number of inhibitors the team destroyed
+    riftHeraldKills         int                     number of times the team killed rift herald
     teamId                  int                     team ID
     towerKills              int                     number of towers the team destroyed
     vilemawKills            int                     number of times the team killed vilemaw
@@ -187,8 +189,10 @@ class Team(cassiopeia.type.dto.common.CassiopeiaDto):
         self.firstBlood = dictionary.get("firstBlood", False)
         self.firstDragon = dictionary.get("firstDragon", False)
         self.firstInhibitor = dictionary.get("firstInhibitor", False)
+        self.firstRiftHerald = dictionary.get("firstRiftHerald", False)
         self.firstTower = dictionary.get("firstTower", False)
         self.inhibitorKills = dictionary.get("inhibitorKills", 0)
+        self.riftHeraldKills = dictionary.get("riftHeraldKills", 0)
         self.teamId = dictionary.get("teamId", 0)
         self.towerKills = dictionary.get("towerKills", 0)
         self.vilemawKills = dictionary.get("vilemawKills", 0)
@@ -519,7 +523,7 @@ class Event(cassiopeia.type.dto.common.CassiopeiaDto):
     killerId                   int          the killer ID of the event. Only present if relevant. Killer ID 0 indicates a minion.
     laneType                   str          the lane type of the event. Only present if relevant. (Legal values: BOT_LANE, MID_LANE, TOP_LANE)
     levelUpType                str          the level up type of the event. Only present if relevant. (Legal values: EVOLVE, NORMAL)
-    monsterType                str          the monster type of the event. Only present if relevant. (Legal values: BARON_NASHOR, BLUE_GOLEM, DRAGON, RED_LIZARD, VILEMAW)
+    monsterType                str          the monster type of the event. Only present if relevant. (Legal values: BARON_NASHOR, BLUE_GOLEM, DRAGON, RED_LIZARD, RIFTHERALD, VILEMAW)
     participantId              int          the participant ID of the event. Only present if relevant.
     pointCaptured              str          the point captured in the event. Only present if relevant. (Legal values: POINT_A, POINT_B, POINT_C, POINT_D, POINT_E)
     position                   Position     the position of the event. Only present if relevant.
