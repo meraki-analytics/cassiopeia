@@ -10,6 +10,7 @@ import cassiopeia.type.api.rates
 import cassiopeia.dto.staticdataapi
 import cassiopeia.core.requests
 import cassiopeia.type.core.common
+import cassiopeia.type.api.store
 from cassiopeia.core.championapi import *
 from cassiopeia.core.currentgameapi import *
 from cassiopeia.core.featuredgamesapi import *
