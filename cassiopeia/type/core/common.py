@@ -17,7 +17,7 @@ class CassiopeiaObject(object):
 
     def to_json(self):
         """Gets a JSON representation of the object
-        
+
         return    str    a JSON representation of the object
         """
         return self.data.to_json()
@@ -370,7 +370,9 @@ class StatSummaryType(enum.Enum):
     bot_threes = "CoopVsAI3x3"
     ranked_solo = "RankedSolo5x5"
     ranked_threes = "RankedTeam3x3"
+    ranked_premade_threes = "RankedPremade3x3"
     ranked_fives = "RankedTeam5x5"
+    ranked_premade_fives = "RankedPremade5x5"
     one_for_all = "OneForAll5x5"
     showdown_solo = "FirstBlood1x1"
     showdown_duo = "FirstBlood2x2"
