@@ -206,6 +206,11 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
         return cassiopeia.riotapi.get_summoner_by_id(self.data.identity.player.summonerId) if self.data.identity.player and self.data.identity.player.summonerId else None
 
     @property
+    def summoner_id(self):
+        """str    the participant's summoner name"""
+        return self.data.identity.player.summonerId
+
+    @property
     def summoner_name(self):
         """str    the participant's summoner name"""
         return self.data.identity.player.summonerName
