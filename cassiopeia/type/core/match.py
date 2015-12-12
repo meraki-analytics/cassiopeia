@@ -198,7 +198,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def match_history_uri(self):
         """str    the the URI to access this player's match history online"""
-        return self.data.identity.player.matchHistoryUri
+        return self.data.identity.player.matchHistoryUri if self.data.identity.player else None
 
     @property
     def summoner(self):
@@ -213,7 +213,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def summoner_name(self):
         """str    the participant's summoner name"""
-        return self.data.identity.player.summonerName
+        return self.data.identity.player.summonerName if self.data.identity.player else None
 
 
 @cassiopeia.type.core.common.inheritdocs

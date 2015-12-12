@@ -24,9 +24,9 @@ class CassiopeiaDto(object):
         return    str    a JSON representation of the object
         """
         dictionary = {k: v for k,v in self.__dict__.items() if not k.startswith("_")}
-        default = kwargs.pop('default', lambda o: o.__dict__)
-        sort_keys = kwargs.pop('sort_keys', True)
-        indent = kwargs.pop('indent', 4)
+        default = kwargs.pop("default", lambda o: {k: v for k,v in o.__dict__.items() if not k.startswith("_")})
+        sort_keys = kwargs.pop("sort_keys", True)
+        indent = kwargs.pop("indent", 4)
         return json.dumps(dictionary, default=default, sort_keys=sort_keys, indent=indent, **kwargs)
 
     def __str__(self):
