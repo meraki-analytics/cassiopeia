@@ -207,7 +207,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def summoner_id(self):
-        """str    the participant's summoner name"""
+        """str    the participant's summoner id"""
         return self.data.identity.player.summonerId
 
     @property
