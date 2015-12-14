@@ -1136,7 +1136,7 @@ def _sa_bind_champion_spell():
         key = sqlalchemy.Column(sqlalchemy.String(30), primary_key=True)
         leveltip = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.LevelTip", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
         maxrank = sqlalchemy.Column(sqlalchemy.Integer)
-        name = sqlalchemy.Column(sqlalchemy.String(30))
+        name = sqlalchemy.Column(sqlalchemy.String(50))
         range = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
         rangeBurn = sqlalchemy.Column(sqlalchemy.String(30))
         resource = sqlalchemy.Column(sqlalchemy.String(50))
