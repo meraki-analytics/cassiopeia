@@ -432,6 +432,7 @@ class Monster(enum.Enum):
     blue = "BLUE_GOLEM"
     red = "RED_LIZARD"
     spider = "VILEMAW"
+    rift_herald = "RIFTHERALD"
 
 
 class Point(enum.Enum):

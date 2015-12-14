@@ -282,6 +282,11 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.firstInhibitor
 
     @property
+    def first_rift_herald(self):
+        """bool    flag indicating if this team killed the first rift herald"""
+        return self.data.firstRiftHerald
+
+    @property
     def first_turret(self):
         """bool    flag indicating if this team destroyed the first tower"""
         return self.data.firstTower
@@ -290,6 +295,11 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
     def inhibitor_kills(self):
         """int    the number of inhibitors this team killed"""
         return self.data.inhibitorKills
+
+    @property
+    def rift_herald_kills(self):
+        """int    the number of rift heralds this team killed"""
+        return self.data.riftHeraldKills
 
     @property
     def side(self):
