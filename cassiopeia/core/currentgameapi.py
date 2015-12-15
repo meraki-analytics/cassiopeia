@@ -13,7 +13,7 @@ def get_current_game(summoner):
     game = cassiopeia.dto.currentgameapi.get_current_game(summoner.id)
 
     # Load required data if loading policy is eager
-    if(game and cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
+    if game and cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager:
         cassiopeia.riotapi.get_champions() if game.champion_ids else None
         cassiopeia.riotapi.get_masteries() if game.mastery_ids else None
         cassiopeia.riotapi.get_runes() if game.rune_ids else None

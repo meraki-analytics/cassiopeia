@@ -43,9 +43,9 @@ def get(request, params={}, static=False, include_base=True):
 
     return          dict              the JSON response from the Riot API as a dict
     """
-    if(not api_key):
+    if not api_key:
         raise cassiopeia.type.api.exception.CassiopeiaException("API Key must be set before the API can be queried.")
-    if(not region):
+    if not region:
         raise cassiopeia.type.api.exception.CassiopeiaException("Region must be set before the API can be queried.")
 
     # Set server and rgn
@@ -57,7 +57,7 @@ def get(request, params={}, static=False, include_base=True):
     encoded_params = urllib.parse.urlencode(params)
 
     # Build and execute request
-    if(include_base):
+    if include_base:
         url = "https://{server}.api.pvp.net/api/lol/{region}/{request}?{params}".format(server=server, region=rgn, request=request, params=encoded_params)
     else:
         url = "{request}?{params}".format(request=request, params=encoded_params)
@@ -67,9 +67,9 @@ def get(request, params={}, static=False, include_base=True):
         return json.loads(content)
     except urllib.error.HTTPError as e:
         # Reset rate limiter and retry on 429 (rate limit exceeded)
-        if(e.code == 429 and rate_limiter):
+        if e.code == 429 and rate_limiter:
             retry_after = 1
-            if(e.headers["Retry-After"]):
+            if e.headers["Retry-After"]:
                 retry_after += int(e.headers["Retry-After"])
 
             rate_limiter.reset_in(retry_after)
@@ -85,7 +85,7 @@ def executeRequest(url):
 
     return    str    the content returned by the server
     """
-    if(print_calls):
+    if print_calls:
         print(url)
 
     response = None
@@ -97,5 +97,5 @@ def executeRequest(url):
         content = zlib.decompress(content, zlib.MAX_WBITS | 16).decode(encoding="UTF-8")
         return content
     finally:
-        if(response):
+        if response:
             response.close()

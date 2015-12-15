@@ -104,7 +104,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def blue_team(self):
         """Team   the team on the blue side"""
         for team in self.data.teams:
-            if(team.teamId == cassiopeia.type.core.common.Side.blue.value):
+            if team.teamId == cassiopeia.type.core.common.Side.blue.value:
                 return Team(team, [part for part in self.participants if part.side is cassiopeia.type.core.common.Side.blue])
         return None
 
@@ -112,7 +112,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def red_team(self):
         """Team   the team on the red side"""
         for team in self.data.teams:
-            if(team.teamId == cassiopeia.type.core.common.Side.red.value):
+            if team.teamId == cassiopeia.type.core.common.Side.red.value:
                 return Team(team, [part for part in self.participants if part.side is cassiopeia.type.core.common.Side.red])
         return None
 
@@ -867,7 +867,7 @@ class Frame(cassiopeia.type.core.common.CassiopeiaObject):
 
     def __count_participant(self):
         self.__counter += 1
-        if(self.__counter >= Frame.__participant_quota):
+        if self.__counter >= Frame.__participant_quota:
             del self.__counter
             del self.__participants
 
@@ -934,7 +934,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
 
     def __count_participant(self):
         self.__counter += 1
-        if(self.__counter >= Event.__participant_quota):
+        if self.__counter >= Event.__participant_quota:
             del self.__counter
             del self.__participants
 
