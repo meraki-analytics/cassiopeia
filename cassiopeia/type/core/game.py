@@ -47,10 +47,11 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
         """list<Item>    the consumables that the participant bought (careful, they might have just sold them back or hit undo?)"""
         return self.data.consumablesPurchased
 
-    @property
-    def damage_dealt(self):
-        """int    the damage this participant dealt"""
-        return self.data.damageDealtPlayer
+    # TODO: Damage dealt is repeated........??? Keeping the 2nd definition
+    # @property
+    # def damage_dealt(self):
+    #     """int    the damage this participant dealt"""
+    #     return self.data.damageDealtPlayer
 
     @property
     def double_kills(self):
@@ -542,10 +543,10 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
         """Side    the side that the particpant was on (the one that this game was pulled using)"""
         return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.teamId else None
 
+
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
-
 def _sa_rebind_all():
     Stats.dto_type = cassiopeia.type.dto.game.RawStats
     Participant.dto_type = cassiopeia.type.dto.game.Player

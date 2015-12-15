@@ -175,7 +175,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
             runes.append(rune.runeId)
             counts.append(rune.rank)
         return dict(zip(cassiopeia.riotapi.get_runes(runes), counts))
-        
+
     @property
     def summoner_spell_d(self):
         """SummonerSpell    the participant's first summoner spell"""
@@ -1128,10 +1128,10 @@ class Position(cassiopeia.type.core.common.CassiopeiaObject):
         """int    the y-position of the pixel"""
         return self.data.y
 
+
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
-
 def _sa_rebind_all():
     Match.dto_type = cassiopeia.type.dto.match.MatchDetail
     Team.dto_type = cassiopeia.type.dto.match.Team

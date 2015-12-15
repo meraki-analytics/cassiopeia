@@ -1,12 +1,14 @@
 import cassiopeia.dto.statusapi
 import cassiopeia.type.core.status
 
+
 def get_shards():
     """Get the list of server shards
 
     return    list<Shard>    the shards
     """
     return [cassiopeia.type.core.status.Shard(shard) for shard in cassiopeia.dto.statusapi.get_shards()]
+
 
 def get_shard():
     """Gets the status of the current region's shard

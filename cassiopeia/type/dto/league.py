@@ -1,9 +1,11 @@
 import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
+
 if(cassiopeia.type.dto.common.sqlalchemy_imported):
     import sqlalchemy
     import sqlalchemy.orm
+
 
 @cassiopeia.type.core.common.inheritdocs
 class MiniSeries(cassiopeia.type.dto.common.CassiopeiaDto):
@@ -71,7 +73,7 @@ class League(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all summoner IDs contained in this object"""
         ids = set()
 
-        if(self.participantId): 
+        if(self.participantId):
             try:
                 id_ = int(self.participantId)
                 ids.add(id_)
@@ -79,7 +81,7 @@ class League(cassiopeia.type.dto.common.CassiopeiaDto):
                 pass
 
         for entry in self.entries:
-            if(entry.playerOrTeamId): 
+            if(entry.playerOrTeamId):
                 try:
                     id_ = int(entry.playerOrTeamId)
                     ids.add(id_)
@@ -92,7 +94,7 @@ class League(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all team IDs contained in this object"""
         ids = set()
 
-        if(self.participantId): 
+        if(self.participantId):
             try:
                 int(self.participantId)
             except(ValueError):
@@ -106,12 +108,13 @@ class League(cassiopeia.type.dto.common.CassiopeiaDto):
                     ids.add(entry.playerOrTeamId)
         return ids
 
+
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
-
 def _sa_bind_mini_series():
     global MiniSeries
+
     @cassiopeia.type.core.common.inheritdocs
     class MiniSeries(MiniSeries, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MiniSeries"
@@ -122,8 +125,10 @@ def _sa_bind_mini_series():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _entry_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("LeagueEntry._id", ondelete="CASCADE"))
 
+
 def _sa_bind_league_entry():
     global LeagueEntry
+
     @cassiopeia.type.core.common.inheritdocs
     class LeagueEntry(LeagueEntry, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "LeagueEntry"
@@ -141,8 +146,10 @@ def _sa_bind_league_entry():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _league_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("League._id", ondelete="CASCADE"))
 
+
 def _sa_bind_league():
     global League
+
     @cassiopeia.type.core.common.inheritdocs
     class League(League, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "League"
@@ -152,6 +159,7 @@ def _sa_bind_league():
         queue = sqlalchemy.Column(sqlalchemy.String(30))
         tier = sqlalchemy.Column(sqlalchemy.String(30))
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+
 
 def _sa_bind_all():
     _sa_bind_mini_series()

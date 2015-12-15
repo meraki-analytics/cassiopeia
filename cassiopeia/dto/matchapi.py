@@ -1,6 +1,7 @@
 import cassiopeia.dto.requests
 import cassiopeia.type.dto.match
 
+
 def get_match(id_, include_timeline=True):
     """https://developer.riotgames.com/api/methods#!/1014/3442
 

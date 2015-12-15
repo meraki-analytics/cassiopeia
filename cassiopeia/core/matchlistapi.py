@@ -6,6 +6,7 @@ import cassiopeia.core.requests
 import cassiopeia.type.core.common
 import cassiopeia.type.core.matchlist
 
+
 def get_match_list(summoner, num_matches=0, begin_index=0, begin_time=0, end_time=0, champions=None, ranked_queues=None, seasons=None):
     """Gets a summoner's match history
 

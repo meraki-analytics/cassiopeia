@@ -4,6 +4,7 @@ import cassiopeia.riotapi
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.team
 
+
 @cassiopeia.type.core.common.inheritdocs
 class Team(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.team.Team
@@ -252,10 +253,10 @@ class TeamMember(cassiopeia.type.core.common.CassiopeiaObject):
         """str     the status of this team member"""
         return self.data.status
 
+
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
-
 def _sa_rebind_all():
     Team.dto_type = cassiopeia.type.dto.team.Team
     MatchSummary.dto_type = cassiopeia.type.dto.team.MatchHistorySummary

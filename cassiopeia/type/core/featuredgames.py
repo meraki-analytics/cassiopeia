@@ -4,6 +4,7 @@ import cassiopeia.riotapi
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.featuredgames
 
+
 @cassiopeia.type.core.common.inheritdocs
 class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.featuredgames.Participant
@@ -19,7 +20,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def champion(self):
         """Champion    the champion this participant is playing"""
-        return cassiopeia.riotapi.get_champion_by_id(self.data.championId) if self.data.championId else none
+        return cassiopeia.riotapi.get_champion_by_id(self.data.championId) if self.data.championId else None
 
     @property
     def profile_icon_id(self):
@@ -29,12 +30,12 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def summoner_spell_d(self):
         """SummonerSpell    the participant's first summonerspell"""
-        return cassiopeia.riotapi.get_summoner_spell(self.data.spell1Id) if self.data.spell1Id else none
+        return cassiopeia.riotapi.get_summoner_spell(self.data.spell1Id) if self.data.spell1Id else None
 
     @property
     def summoner_spell_f(self):
         """SummonerSpell    the participant's second summonerspell"""
-        return cassiopeia.riotapi.get_summoner_spell(self.data.spell2Id) if self.data.spell2Id else none
+        return cassiopeia.riotapi.get_summoner_spell(self.data.spell2Id) if self.data.spell2Id else None
 
     @property
     def summoner_name(self):
@@ -44,7 +45,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def side(self):
         """Side    which side of the map the participant is on"""
-        return cassiopeia.type.core.common.side(self.data.teamId) if self.data.teamId else none
+        return cassiopeia.type.core.common.side(self.data.teamId) if self.data.teamId else None
 
 
 @cassiopeia.type.core.common.inheritdocs
@@ -68,7 +69,7 @@ class Ban(cassiopeia.type.core.common.CassiopeiaObject):
     def side(self):
         """Side    which side banned this champion"""
         return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.teamId else None
- 
+
 
 @cassiopeia.type.core.common.inheritdocs
 class Game(cassiopeia.type.core.common.CassiopeiaObject):
@@ -113,27 +114,27 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def mode(self):
         """GameMode    what game mode is being played in this game"""
-        return cassiopeia.type.core.common.gamemode(self.data.gameMode) if self.data.gameMode else none
+        return cassiopeia.type.core.common.gamemode(self.data.gameMode) if self.data.gameMode else None
 
     @property
     def queue(self):
         """Queue    the queue type for this game"""
-        return cassiopeia.type.core.common.queue.for_id(self.data.gameQueueConfigId) if self.data.gameQueueConfigId else none
+        return cassiopeia.type.core.common.queue.for_id(self.data.gameQueueConfigId) if self.data.gameQueueConfigId else None
 
     @cassiopeia.type.core.common.lazyproperty
     def creation(self):
         """datetime    the creation timestamp for this game"""
-        return datetime.datetime.utcfromtimestamp(self.data.gameStartTime / 1000) if self.data.gameStartTime else none
+        return datetime.datetime.utcfromtimestamp(self.data.gameStartTime / 1000) if self.data.gameStartTime else None
 
     @property
     def type(self):
         """GameType    the game type"""
-        return cassiopeia.type.core.common.gametype(self.data.gameType) if self.data.gameType else none
+        return cassiopeia.type.core.common.gametype(self.data.gameType) if self.data.gameType else None
 
     @property
     def map(self):
         """Map    the map for this game"""
-        return cassiopeia.type.core.common.map(self.data.mapId) if self.data.mapId else none
+        return cassiopeia.type.core.common.map(self.data.mapId) if self.data.mapId else None
 
     @property
     def observer_token(self):
@@ -150,10 +151,10 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
         """Platform    which platform (ie server) the game is being played on"""
         return cassiopeia.type.core.common.Platform(self.data.platformId) if self.data.platformId else None
 
+
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
-
 def _sa_rebind_all():
     Participant.dto_type = cassiopeia.type.dto.featuredgames.Participant
     Ban.dto_type = cassiopeia.type.dto.featuredgames.BannedChampion

@@ -4,6 +4,7 @@ import cassiopeia.core.requests
 import cassiopeia.type.core.common
 import cassiopeia.type.core.league
 
+
 def get_challenger(queue_type=cassiopeia.type.core.common.Queue.ranked_solo):
     """Gets the challenger league
 
@@ -15,7 +16,7 @@ def get_challenger(queue_type=cassiopeia.type.core.common.Queue.ranked_solo):
         raise ValueError("Must use a ranked queue type to get ranked leagues")
 
     league = cassiopeia.dto.leagueapi.get_challenger(queue_type.value)
-    
+
     # Load required data if loading policy is eager
     if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
         summoner_ids = league.summoner_ids
@@ -24,6 +25,7 @@ def get_challenger(queue_type=cassiopeia.type.core.common.Queue.ranked_solo):
         cassiopeia.riotapi.get_teams(list(team_ids)) if team_ids else None
 
     return cassiopeia.type.core.league.League(league)
+
 
 def get_master(queue_type=cassiopeia.type.core.common.Queue.ranked_solo):
     """Gets the master league
@@ -36,7 +38,7 @@ def get_master(queue_type=cassiopeia.type.core.common.Queue.ranked_solo):
         raise ValueError("Must use a ranked queue type to get ranked leagues")
 
     league = cassiopeia.dto.leagueapi.get_master(queue_type.value)
-    
+
     # Load required data if loading policy is eager
     if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
         summoner_ids = league.summoner_ids
@@ -45,6 +47,7 @@ def get_master(queue_type=cassiopeia.type.core.common.Queue.ranked_solo):
         cassiopeia.riotapi.get_teams(list(team_ids)) if team_ids else None
 
     return cassiopeia.type.core.league.League(league)
+
 
 def __get_leagues_by_summoner_id(ids):
     leagues = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.leagueapi.get_leagues_by_summoner, 10, ids)
@@ -65,6 +68,7 @@ def __get_leagues_by_summoner_id(ids):
     else:
         return [[cassiopeia.type.core.league.League(league) for league in leagues.get(str(id_), []) if leagues.get(str(id_), [])] for id_ in ids]
 
+
 def get_leagues_by_summoner(summoners):
     """Gets the leagues that the summoner(s) belong(s) to. You probably don't want to call this with LoadPolicy.eager set.
 
@@ -76,6 +80,7 @@ def get_leagues_by_summoner(summoners):
         return __get_leagues_by_summoner_id([summoner.id for summoner in summoners])
     else:
         return __get_leagues_by_summoner_id(summoners.id)
+
 
 def __get_league_entries_by_summoner_id(ids):
     leagues = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.leagueapi.get_league_entries_by_summoner, 10, ids)
@@ -96,6 +101,7 @@ def __get_league_entries_by_summoner_id(ids):
     else:
         return [[cassiopeia.type.core.league.League(league) for league in leagues.get(str(id_), []) if leagues.get(str(id_), [])] for id_ in ids]
 
+
 def get_league_entries_by_summoner(summoners):
     """Gets the leagues that the summoner(s) belong(s) to, including only the requested summoner(s)' entries
 
@@ -107,6 +113,7 @@ def get_league_entries_by_summoner(summoners):
         return __get_league_entries_by_summoner_id([summoner.id for summoner in summoners])
     else:
         return __get_league_entries_by_summoner_id(summoners.id)
+
 
 def __get_leagues_by_team_id(ids):
     leagues = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.leagueapi.get_leagues_by_team, 10, ids)
@@ -127,6 +134,7 @@ def __get_leagues_by_team_id(ids):
     else:
         return [[cassiopeia.type.core.league.League(league) for league in leagues.get(id_, []) if leagues.get(id_, [])] for id_ in ids]
 
+
 def get_leagues_by_team(teams):
     """Gets the leagues that the team(s) belong(s) to. You probably don't want to call this with LoadPolicy.eager set.
 
@@ -138,6 +146,7 @@ def get_leagues_by_team(teams):
         return __get_leagues_by_team_id([team.id for team in teams])
     else:
         return __get_leagues_by_team_id(teams.id)
+
 
 def __get_league_entries_by_team_id(ids):
     leagues = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.leagueapi.get_league_entries_by_team, 10, ids)
@@ -157,6 +166,7 @@ def __get_league_entries_by_team_id(ids):
         return [cassiopeia.type.core.league.League(league) for league in leagues[ids]]
     else:
         return [[cassiopeia.type.core.league.League(league) for league in leagues.get(id_, []) if leagues.get(id_, [])] for id_ in ids]
+
 
 def get_league_entries_by_team(teams):
     """Gets the leagues that the team(s) belong(s) to, including only the requested team(s)' entries

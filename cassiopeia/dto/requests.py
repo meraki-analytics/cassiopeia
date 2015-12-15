@@ -11,6 +11,7 @@ import zlib
 import cassiopeia.type.api.exception
 import cassiopeia.type.api.rates
 
+
 api_versions = {
     "champion": "v1.2",
     "currentgame": "v1.0",
@@ -30,6 +31,7 @@ api_key = ""
 region = ""
 print_calls = False
 rate_limiter = cassiopeia.type.api.rates.MultiRateLimiter((10, 10), (500, 600))
+
 
 def get(request, params={}, static=False, include_base=True):
     """Makes a rate-limited HTTP request to the Riot API and returns the result
@@ -69,11 +71,12 @@ def get(request, params={}, static=False, include_base=True):
             retry_after = 1
             if(e.headers["Retry-After"]):
                 retry_after += int(e.headers["Retry-After"])
-                
+
             rate_limiter.reset_in(retry_after)
             return get(request, params, static)
         else:
             raise cassiopeia.type.api.exception.APIError("Server returned error {code} on call: {url}".format(code=e.code, url=url), e.code)
+
 
 def executeRequest(url):
     """Executes an HTTP GET request and returns the result in a string
@@ -94,5 +97,5 @@ def executeRequest(url):
         content = zlib.decompress(content, zlib.MAX_WBITS | 16).decode(encoding="UTF-8")
         return content
     finally:
-        if(response): 
+        if(response):
             response.close()

@@ -1,6 +1,7 @@
 import cassiopeia.dto.requests
 import cassiopeia.type.dto.champion
 
+
 def get_champion_status(id_):
     """https://developer.riotgames.com/api/methods#!/1015/3443
 
@@ -10,6 +11,7 @@ def get_champion_status(id_):
     """
     request = "{version}/champion/{id_}".format(version=cassiopeia.dto.requests.api_versions["champion"], id_=id_)
     return cassiopeia.type.dto.champion.Champion(cassiopeia.dto.requests.get(request))
+
 
 def get_champion_statuses(freeToPlay=False):
     """https://developer.riotgames.com/api/methods#!/1015/3444

@@ -1,9 +1,9 @@
 import enum
-import json
 import weakref
 import functools
 
 import cassiopeia.type.api.exception
+
 
 class CassiopeiaObject(object):
     """An object storing data from the API, with various helpful utilities and shortcuts"""
@@ -17,7 +17,7 @@ class CassiopeiaObject(object):
 
     def to_json(self):
         """Gets a JSON representation of the object
-        
+
         return    str    a JSON representation of the object
         """
         return self.data.to_json()

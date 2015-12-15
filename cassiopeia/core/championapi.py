@@ -2,6 +2,7 @@ import cassiopeia.riotapi
 import cassiopeia.dto.championapi
 import cassiopeia.type.core.champion
 
+
 def get_champion_statuses(free_to_play=False):
     """Gets the statuses for all champions (whether they are disabled, etc.)
 
@@ -10,10 +11,11 @@ def get_champion_statuses(free_to_play=False):
     return          dict<Champion, ChampionStatus>    the statuses for all the champions
     """
     statuses = cassiopeia.dto.championapi.get_champion_statuses(free_to_play)
-    
+
     # Always load champions since we'll be using them here
     cassiopeia.riotapi.get_champions()
     return {cassiopeia.riotapi.get_champion_by_id(champ.id): cassiopeia.type.core.champion.ChampionStatus(champ) for champ in statuses.champions}
+
 
 def get_champion_status(champion):
     """Gets the status for a champion (whether they are disabled, etc.)
