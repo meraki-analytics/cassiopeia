@@ -1,6 +1,7 @@
 import cassiopeia.dto.requests
 import cassiopeia.type.dto.team
 
+
 def get_teams_by_summoner_id(summoner_ids):
     """https://developer.riotgames.com/api/methods#!/986/3358
 
@@ -23,6 +24,7 @@ def get_teams_by_summoner_id(summoner_ids):
         response[id_] = [cassiopeia.type.dto.team.Team(team) for team in teams]
 
     return response
+
 
 def get_teams_by_id(team_ids):
     """https://developer.riotgames.com/api/methods#!/986/3358

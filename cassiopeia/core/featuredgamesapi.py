@@ -2,6 +2,7 @@ import cassiopeia.dto.featuredgamesapi
 import cassiopeia.core.requests
 import cassiopeia.type.core.featuredgames
 
+
 def get_featured_games():
     """Gets the current featured game list
 

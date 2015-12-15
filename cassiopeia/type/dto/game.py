@@ -1,9 +1,11 @@
 import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
+
 if(cassiopeia.type.dto.common.sqlalchemy_imported):
     import sqlalchemy
     import sqlalchemy.orm
+
 
 @cassiopeia.type.core.common.inheritdocs
 class RawStats(cassiopeia.type.dto.common.CassiopeiaDto):
@@ -309,12 +311,13 @@ class RecentGames(cassiopeia.type.dto.common.CassiopeiaDto):
             ids |= game.item_ids
         return ids
 
+
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
-
 def _sa_bind_raw_stats():
     global RawStats
+
     @cassiopeia.type.core.common.inheritdocs
     class RawStats(RawStats, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "GameRawStats"
@@ -399,8 +402,10 @@ def _sa_bind_raw_stats():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Game.gameId", ondelete="CASCADE"))
 
+
 def _sa_bind_player():
     global Player
+
     @cassiopeia.type.core.common.inheritdocs
     class Player(Player, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "GamePlayer"
@@ -410,8 +415,10 @@ def _sa_bind_player():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Game.gameId", ondelete="CASCADE"))
 
+
 def _sa_bind_game():
     global Game
+
     @cassiopeia.type.core.common.inheritdocs
     class Game(Game, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "Game"
@@ -430,6 +437,7 @@ def _sa_bind_game():
         stats = sqlalchemy.orm.relationship("cassiopeia.type.dto.game.RawStats", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
         subType = sqlalchemy.Column(sqlalchemy.String(30))
         teamId = sqlalchemy.Column(sqlalchemy.Integer)
+
 
 def _sa_bind_all():
     _sa_bind_raw_stats()

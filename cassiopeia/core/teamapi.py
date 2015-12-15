@@ -3,6 +3,7 @@ import cassiopeia.dto.teamapi
 import cassiopeia.core.requests
 import cassiopeia.type.core.team
 
+
 def get_teams_by_summoner(summoners):
     """Gets (a) summoner(s)' teams
 
@@ -26,6 +27,7 @@ def get_teams_by_summoner(summoners):
     else:
         return [[cassiopeia.type.core.team.Team(team) for team in teams[str(id_)]] for id_ in ids]
 
+
 def get_team(id_):
     """Gets a team by ID
 
@@ -41,6 +43,7 @@ def get_team(id_):
         cassiopeia.riotapi.get_summoners_by_id(list(summoner_ids)) if summoner_ids else None
 
     return cassiopeia.type.core.team.Team(team)
+
 
 def get_teams(ids):
     """Gets teams by ID

@@ -4,6 +4,7 @@ import cassiopeia.core.requests
 import cassiopeia.type.core.common
 import cassiopeia.type.core.stats
 
+
 def get_ranked_stats(summoner, season=None):
     """Gets a summoner's ranked stats
 
@@ -20,6 +21,7 @@ def get_ranked_stats(summoner, season=None):
     champions[0] = None
 
     return {champions[stat.id]: cassiopeia.type.core.stats.AggregatedStats(stat.stats) for stat in stats.champions}
+
 
 def get_stats(summoner, season=None):
     """Gets a summoner's stats
