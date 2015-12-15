@@ -1,6 +1,7 @@
 import cassiopeia.dto.requests
 import cassiopeia.type.dto.status
 
+
 def get_shards():
     """https://developer.riotgames.com/api/methods#!/908/3143
 
@@ -8,6 +9,7 @@ def get_shards():
     """
     request = "http://status.leagueoflegends.com/shards"
     return [cassiopeia.type.dto.status.Shard(shard) for shard in cassiopeia.dto.requests.get(request, static=True, include_base=False)]
+
 
 def get_shard():
     """https://developer.riotgames.com/api/methods#!/908/3142

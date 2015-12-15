@@ -1,9 +1,11 @@
 import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
+
 if(cassiopeia.type.dto.common.sqlalchemy_imported):
     import sqlalchemy
     import sqlalchemy.orm
+
 
 @cassiopeia.type.core.common.inheritdocs
 class Rune(cassiopeia.type.dto.common.CassiopeiaDto):
@@ -20,7 +22,7 @@ class Rune(cassiopeia.type.dto.common.CassiopeiaDto):
 class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
     """
     masteryId    int    the ID of the mastery
-    rank         int    the number of points put into this mastery by the user 
+    rank         int    the number of points put into this mastery by the user
     """
     def __init__(self, dictionary):
         self.masteryId = dictionary.get("masteryId", 0)
@@ -155,12 +157,13 @@ class CurrentGameInfo(cassiopeia.type.dto.common.CassiopeiaDto):
                     ids.add(m.masteryId)
         return ids
 
+
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
-
 def _sa_bind_rune():
     global Rune
+
     @cassiopeia.type.core.common.inheritdocs
     class Rune(Rune, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "CurrentGameRune"
@@ -169,8 +172,10 @@ def _sa_bind_rune():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("CurrentGameParticipant._id", ondelete="CASCADE"))
 
+
 def _sa_bind_mastery():
     global Mastery
+
     @cassiopeia.type.core.common.inheritdocs
     class Mastery(Mastery, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "CurrentGameMastery"
@@ -179,8 +184,10 @@ def _sa_bind_mastery():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("CurrentGameParticipant._id", ondelete="CASCADE"))
 
+
 def _sa_bind_observer():
     global Observer
+
     @cassiopeia.type.core.common.inheritdocs
     class Observer(Observer, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "CurrentGameObserver"
@@ -188,8 +195,10 @@ def _sa_bind_observer():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("CurrentGameInfo.gameId", ondelete="CASCADE"))
 
+
 def _sa_bind_current_game_participant():
     global CurrentGameParticipant
+
     @cassiopeia.type.core.common.inheritdocs
     class CurrentGameParticipant(CurrentGameParticipant, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "CurrentGameParticipant"
@@ -206,8 +215,10 @@ def _sa_bind_current_game_participant():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("CurrentGameInfo.gameId", ondelete="CASCADE"))
 
+
 def _sa_bind_banned_champion():
     global BannedChampion
+
     @cassiopeia.type.core.common.inheritdocs
     class BannedChampion(BannedChampion, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "CurrentGameBannedChampion"
@@ -217,8 +228,10 @@ def _sa_bind_banned_champion():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("CurrentGameInfo.gameId", ondelete="CASCADE"))
 
+
 def _sa_bind_current_game_info():
     global CurrentGameInfo
+
     @cassiopeia.type.core.common.inheritdocs
     class CurrentGameInfo(CurrentGameInfo, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "CurrentGameInfo"
@@ -233,6 +246,7 @@ def _sa_bind_current_game_info():
         observers = sqlalchemy.orm.relationship("cassiopeia.type.dto.currentgame.Observer", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
         participants = sqlalchemy.orm.relationship("cassiopeia.type.dto.currentgame.CurrentGameParticipant", cascade="all, delete-orphan", passive_deletes=True)
         platformId = sqlalchemy.Column(sqlalchemy.String(30))
+
 
 def _sa_bind_all():
     _sa_bind_rune()

@@ -8,6 +8,7 @@ class CassiopeiaException(Exception):
     """Generic exception for a failure within Cassiopeia"""
     pass
 
+
 class APIError(Exception):
     """"
     message       str    the error message

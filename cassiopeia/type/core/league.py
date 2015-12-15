@@ -2,12 +2,14 @@ import cassiopeia.riotapi
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.league
 
+
 @cassiopeia.type.core.common.inheritdocs
 class Series(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.league.MiniSeries
 
-    def __str__(self):
-        return progress
+    # TODO: This makes no sense?
+    # def __str__(self):
+    #     return progress
 
     @property
     def losses(self):
@@ -131,7 +133,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
 @cassiopeia.type.core.common.inheritdocs
 class League(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.league.League
-    
+
     def __str__(self):
         return "{name} ({tier})".format(name=self.name, tier=self.tier)
 
@@ -196,10 +198,10 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
         """Tier    the league's tier"""
         return cassiopeia.type.core.common.Tier(self.data.tier) if self.data.tier else None
 
+
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
-
 def _sa_rebind_all():
     Series.dto_type = cassiopeia.type.dto.league.MiniSeries
     Entry.dto_type = cassiopeia.type.dto.league.LeagueEntry

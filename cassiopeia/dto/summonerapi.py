@@ -3,6 +3,7 @@ import urllib.parse
 import cassiopeia.dto.requests
 import cassiopeia.type.dto.summoner
 
+
 def get_summoners_by_name(summoner_names):
     """https://developer.riotgames.com/api/methods#!/1017/3446
 
@@ -25,6 +26,7 @@ def get_summoners_by_name(summoner_names):
         response[name] = cassiopeia.type.dto.summoner.Summoner(summoner)
 
     return response
+
 
 def get_summoners_by_id(summoner_ids):
     """https://developer.riotgames.com/api/methods#!/1017/3447
@@ -49,6 +51,7 @@ def get_summoners_by_id(summoner_ids):
 
     return response
 
+
 def get_summoner_masteries(summoner_ids):
     """https://developer.riotgames.com/api/methods#!/1017/3450
 
@@ -72,6 +75,7 @@ def get_summoner_masteries(summoner_ids):
 
     return response
 
+
 def get_summoner_names(summoner_ids):
     """https://developer.riotgames.com/api/methods#!/1017/3451
 
@@ -88,6 +92,7 @@ def get_summoner_names(summoner_ids):
     # Get JSON response
     request = "{version}/summoner/{ids}/name".format(version=cassiopeia.dto.requests.api_versions["summoner"], ids=id_string)
     return cassiopeia.dto.requests.get(request)
+
 
 def get_summoner_runes(summoner_ids):
     """https://developer.riotgames.com/api/methods#!/1017/3449

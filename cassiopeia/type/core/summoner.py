@@ -4,6 +4,7 @@ import cassiopeia.riotapi
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.summoner
 
+
 @cassiopeia.type.core.common.inheritdocs
 class RunePage(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.summoner.RunePage
@@ -56,6 +57,7 @@ class RunePage(cassiopeia.type.core.common.CassiopeiaObject):
 
         fetched = cassiopeia.riotapi.get_runes(list(runes.keys()))
         return {rune: runes[rune.id] for rune in fetched}
+
 
 @cassiopeia.type.core.common.inheritdocs
 class MasteryPage(cassiopeia.type.core.common.CassiopeiaObject):
@@ -241,10 +243,10 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
         """
         return cassiopeia.riotapi.get_stats(self, season)
 
+
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
-
 def _sa_rebind_all():
     RunePage.dto_type = cassiopeia.type.dto.summoner.RunePage
     MasteryPage.dto_type = cassiopeia.type.dto.summoner.MasteryPage

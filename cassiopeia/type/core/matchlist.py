@@ -4,6 +4,7 @@ import cassiopeia.riotapi
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.matchlist
 
+
 @cassiopeia.type.core.common.inheritdocs
 class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.matchlist.MatchReference
@@ -51,31 +52,31 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def platform(self):
         """Platform    the platform (ie server) for this match"""
-        return cassiopeia.type.core.common.Platform(self.data.platformid) if self.data.platformid else none
+        return cassiopeia.type.core.common.Platform(self.data.platformid) if self.data.platformid else None
 
     @property
     def queue(self):
         """Queue    the queue type for this match"""
-        return cassiopeia.type.core.common.Queue(self.data.queue) if self.data.queue else none
+        return cassiopeia.type.core.common.Queue(self.data.queue) if self.data.queue else None
 
     @property
     def role(self):
         """Role    the role that the summoner was in for the summoner that was used to  pull this match reference"""
-        return cassiopeia.type.core.common.Role(self.data.role) if self.data.role else none
+        return cassiopeia.type.core.common.Role(self.data.role) if self.data.role else None
 
     @property
     def season(self):
         """Season    the season that this match was played in"""
-        return cassiopeia.type.core.common.Season(self.data.season) if self.data.season else none
+        return cassiopeia.type.core.common.Season(self.data.season) if self.data.season else None
 
     @cassiopeia.type.core.common.lazyproperty
     def timestamp(self):
         """datetime    the timestamp for this match"""
-        return datetime.datetime.utcfromtimestamp(self.data.timestamp / 1000) if self.data.timestamp else none
+        return datetime.datetime.utcfromtimestamp(self.data.timestamp / 1000) if self.data.timestamp else None
+
 
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
-
 def _sa_rebind_all():
     MatchReference.dto_type = cassiopeia.type.dto.matchlist.MatchReference

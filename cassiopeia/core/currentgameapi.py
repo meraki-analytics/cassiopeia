@@ -2,6 +2,7 @@ import cassiopeia.dto.currentgameapi
 import cassiopeia.core.requests
 import cassiopeia.type.core.currentgame
 
+
 def get_current_game(summoner):
     """Gets the game a summoner is currently in, if they're in one
 

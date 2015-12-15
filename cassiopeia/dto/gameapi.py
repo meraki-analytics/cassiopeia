@@ -1,6 +1,7 @@
 import cassiopeia.dto.requests
 import cassiopeia.type.dto.game
 
+
 def get_recent_games(summoner_id):
     """https://developer.riotgames.com/api/methods#!/1016/3445
 
