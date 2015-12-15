@@ -48,7 +48,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.consumablesPurchased
 
     @property
-    def damage_dealt(self):
+    def damage_dealt_player(self):
         """int    well, we don't know what this one is. let us know if you figure it out."""
         return self.data.damageDealtPlayer
 
