@@ -46,7 +46,7 @@ class CassiopeiaDto(object):
         return hash(id(self))
 
 
-if(sqlalchemy_imported):
+if sqlalchemy_imported:
     BaseDB = sqlalchemy.ext.declarative.declarative_base()
 
     class JSONEncoded(sqlalchemy.types.TypeDecorator):

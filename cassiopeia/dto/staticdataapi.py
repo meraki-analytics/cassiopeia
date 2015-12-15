@@ -14,7 +14,7 @@ def get_champion(id_):
     request = "{version}/champion/{id_}".format(version=cassiopeia.dto.requests.api_versions["staticdata"], id_=id_)
 
     params = {"champData": "all"}
-    if(_locale):
+    if _locale:
         params["locale"] = _locale
 
     return cassiopeia.type.dto.staticdata.Champion(cassiopeia.dto.requests.get(request, params, True))
@@ -28,7 +28,7 @@ def get_champions():
     request = "{version}/champion".format(version=cassiopeia.dto.requests.api_versions["staticdata"])
 
     params = {"champData": "all"}
-    if(_locale):
+    if _locale:
         params["locale"] = _locale
 
     return cassiopeia.type.dto.staticdata.ChampionList(cassiopeia.dto.requests.get(request, params, True))
@@ -44,7 +44,7 @@ def get_item(id_):
     request = "{version}/item/{id_}".format(version=cassiopeia.dto.requests.api_versions["staticdata"], id_=id_)
 
     params = {"itemData": "all"}
-    if(_locale):
+    if _locale:
         params["locale"] = _locale
 
     return cassiopeia.type.dto.staticdata.Item(cassiopeia.dto.requests.get(request, params, True))
@@ -58,7 +58,7 @@ def get_items():
     request = "{version}/item".format(version=cassiopeia.dto.requests.api_versions["staticdata"])
 
     params = {"itemListData": "all"}
-    if(_locale):
+    if _locale:
         params["locale"] = _locale
 
     return cassiopeia.type.dto.staticdata.ItemList(cassiopeia.dto.requests.get(request, params, True))
@@ -72,7 +72,7 @@ def get_language_strings():
     request = "{version}/language-strings".format(version=cassiopeia.dto.requests.api_versions["staticdata"])
 
     params = {}
-    if(_locale):
+    if _locale:
         params["locale"] = _locale
 
     return cassiopeia.type.dto.staticdata.LanguageStrings(cassiopeia.dto.requests.get(request, params, True))
@@ -95,7 +95,7 @@ def get_maps():
     request = "{version}/map".format(version=cassiopeia.dto.requests.api_versions["staticdata"])
 
     params = {}
-    if(_locale):
+    if _locale:
         params["locale"] = _locale
 
     return cassiopeia.type.dto.staticdata.MapData(cassiopeia.dto.requests.get(request, params, True))
@@ -111,7 +111,7 @@ def get_mastery(id_):
     request = "{version}/mastery/{id_}".format(version=cassiopeia.dto.requests.api_versions["staticdata"], id_=id_)
 
     params = {"masteryData": "all"}
-    if(_locale):
+    if _locale:
         params["locale"] = _locale
 
     return cassiopeia.type.dto.staticdata.Mastery(cassiopeia.dto.requests.get(request, params, True))
@@ -125,7 +125,7 @@ def get_masteries():
     request = "{version}/mastery".format(version=cassiopeia.dto.requests.api_versions["staticdata"])
 
     params = {"masteryListData": "all"}
-    if(_locale):
+    if _locale:
         params["locale"] = _locale
 
     return cassiopeia.type.dto.staticdata.MasteryList(cassiopeia.dto.requests.get(request, params, True))
@@ -150,7 +150,7 @@ def get_rune(id_):
     request = "{version}/rune/{id_}".format(version=cassiopeia.dto.requests.api_versions["staticdata"], id_=id_)
 
     params = {"runeData": "all"}
-    if(_locale):
+    if _locale:
         params["locale"] = _locale
 
     return cassiopeia.type.dto.staticdata.Rune(cassiopeia.dto.requests.get(request, params, True))
@@ -164,7 +164,7 @@ def get_runes():
     request = "{version}/rune".format(version=cassiopeia.dto.requests.api_versions["staticdata"])
 
     params = {"runeListData": "all"}
-    if(_locale):
+    if _locale:
         params["locale"] = _locale
 
     return cassiopeia.type.dto.staticdata.RuneList(cassiopeia.dto.requests.get(request, params, True))
@@ -180,7 +180,7 @@ def get_summoner_spell(id_):
     request = "{version}/summoner-spell/{id_}".format(version=cassiopeia.dto.requests.api_versions["staticdata"], id_=id_)
 
     params = {"spellData": "all"}
-    if(_locale):
+    if _locale:
         params["locale"] = _locale
 
     return cassiopeia.type.dto.staticdata.SummonerSpell(cassiopeia.dto.requests.get(request, params, True))
@@ -194,7 +194,7 @@ def get_summoner_spells():
     request = "{version}/summoner-spell".format(version=cassiopeia.dto.requests.api_versions["staticdata"])
 
     params = {"spellData": "all"}
-    if(_locale):
+    if _locale:
         params["locale"] = _locale
 
     return cassiopeia.type.dto.staticdata.SummonerSpellList(cassiopeia.dto.requests.get(request, params, True))

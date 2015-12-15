@@ -10,7 +10,7 @@ def get_teams_by_summoner_id(summoner_ids):
     return          dict<str, list<Team>>    the requested summoners' teams
     """
     # Can only have 10 summoners max if it's a list
-    if(isinstance(summoner_ids, list) and len(summoner_ids) > 10):
+    if isinstance(summoner_ids, list) and len(summoner_ids) > 10:
         raise ValueError("Can only get up to 10 summoners' teams at once.")
 
     id_string = ",".join(str(x) for x in summoner_ids) if isinstance(summoner_ids, list) else str(summoner_ids)
@@ -34,7 +34,7 @@ def get_teams_by_id(team_ids):
     return      dict<str, Team>    the requested teams
     """
     # Can only have 10 teams max if it's a list
-    if(isinstance(team_ids, list) and len(team_ids) > 10):
+    if isinstance(team_ids, list) and len(team_ids) > 10:
         raise ValueError("Can only get up to 10 teams at once.")
 
     id_string = ",".join(team_ids) if isinstance(team_ids, list) else team_ids

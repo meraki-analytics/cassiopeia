@@ -38,7 +38,7 @@ def set_region(region):
 
     region    str | cassiopeia.type.core.common.Region    the region to query against
     """
-    if(not isinstance(region, cassiopeia.type.core.common.Region)):
+    if not isinstance(region, cassiopeia.type.core.common.Region):
         region = cassiopeia.type.core.common.Region(region.lower())
     cassiopeia.dto.requests.region = region.value
 
@@ -74,7 +74,7 @@ def set_proxy(url, port=80):
     url     str    the URL of the proxy server, without port number or protocol
     port    int    the port number to conntect to (default 80)
     """
-    if(url):
+    if url:
         cassiopeia.dto.requests.proxy = urllib.request.ProxyHandler({"https": "https://{url}:{port}".format(url=url, port=port)})
         urllib.request.install_opener(urllib.request.build_opener(cassiopeia.dto.requests.proxy))
     else:
@@ -95,7 +95,7 @@ def set_load_policy(policy):
 
     policy    str | cassiopeia.type.core.common.LoadPolicy    the load policy to use for calls to the API
     """
-    if(not isinstance(policy, cassiopeia.type.core.common.LoadPolicy)):
+    if not isinstance(policy, cassiopeia.type.core.common.LoadPolicy):
         policy = cassiopeia.type.core.common.LoadPolicy(policy.upper())
     cassiopeia.core.requests.load_policy = policy
 
@@ -105,7 +105,7 @@ def set_data_store(store):
 
     store    cassiopeia.type.api.store.DataStore    the data store to use for storing results
     """
-    if(not store):
+    if not store:
         cassiopeia.core.requests.data_store = cassiopeia.type.api.store.VoidDataStore()
     else:
         cassiopeia.core.requests.data_store = store

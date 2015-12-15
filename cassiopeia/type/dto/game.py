@@ -2,7 +2,7 @@ import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
 
-if(cassiopeia.type.dto.common.sqlalchemy_imported):
+if cassiopeia.type.dto.common.sqlalchemy_imported:
     import sqlalchemy
     import sqlalchemy.orm
 
@@ -234,7 +234,7 @@ class Game(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all summoner IDs contained in this object"""
         ids = set()
         for p in self.fellowPlayers:
-            if(p.summonerId):
+            if p.summonerId:
                 ids.add(p.summonerId)
         return ids
 
@@ -251,19 +251,19 @@ class Game(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all item IDs contained in this object"""
         ids = set()
         s = self.stats
-        if(s.item0):
+        if s.item0:
             ids.add(s.item0)
-        if(s.item1):
+        if s.item1:
             ids.add(s.item1)
-        if(s.item2):
+        if s.item2:
             ids.add(s.item2)
-        if(s.item3):
+        if s.item3:
             ids.add(s.item3)
-        if(s.item4):
+        if s.item4:
             ids.add(s.item4)
-        if(s.item5):
+        if s.item5:
             ids.add(s.item5)
-        if(s.item6):
+        if s.item6:
             ids.add(s.item6)
         return ids
 
