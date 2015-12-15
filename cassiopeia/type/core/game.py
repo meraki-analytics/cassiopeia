@@ -499,7 +499,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def invalid(self):
-        """bool   well, we don't know what this one is. let us know if you figure it out."""
+        """bool    well, we don't know what this one is. let us know if you figure it out."""
         return self.data.invalid
 
     @property
