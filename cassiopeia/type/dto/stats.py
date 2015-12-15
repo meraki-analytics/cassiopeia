@@ -2,7 +2,7 @@ import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
 
-if(cassiopeia.type.dto.common.sqlalchemy_imported):
+if cassiopeia.type.dto.common.sqlalchemy_imported:
     import sqlalchemy
     import sqlalchemy.orm
 
@@ -171,7 +171,7 @@ class RankedStats(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all champion IDs contained in this object"""
         ids = set()
         for s in self.champions:
-            if(s.id):
+            if s.id:
                 ids.add(s.id)
         return ids
 

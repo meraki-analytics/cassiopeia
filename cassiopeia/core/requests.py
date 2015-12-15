@@ -14,18 +14,18 @@ def call_with_ensured_size(method, max_size, arg):
 
     return      list<any> | dict<any>    the combined results of the function calls on each chunk
     """
-    if(not isinstance(arg, list) or len(arg) <= max_size):
+    if not isinstance(arg, list) or len(arg) <= max_size:
         return method(arg)
 
     results = method(arg[0:max_size])
     i = max_size
 
-    if(isinstance(results, list)):
+    if isinstance(results, list):
         while(i < len(arg)):
             sublist = arg[i:i + max_size]
             results = results + method(sublist)
             i += max_size
-    elif(isinstance(results, dict)):
+    elif isinstance(results, dict):
         while(i < len(arg)):
             sublist = arg[i:i + max_size]
             results.update(method(sublist))

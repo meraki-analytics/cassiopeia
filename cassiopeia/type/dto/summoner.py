@@ -2,7 +2,7 @@ import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
 
-if(cassiopeia.type.dto.common.sqlalchemy_imported):
+if cassiopeia.type.dto.common.sqlalchemy_imported:
     import sqlalchemy
     import sqlalchemy.orm
 
@@ -45,7 +45,7 @@ class RunePage(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all rune IDs contained in this object"""
         ids = set()
         for s in self.slots:
-            if(s.runeId):
+             f(s.runeId:
                 ids.add(s.runeId)
         return ids
 
@@ -99,7 +99,7 @@ class MasteryPage(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all mastery IDs contained in this object"""
         ids = set()
         for m in self.masteries:
-            if(m.id):
+             f(m.id:
                 ids.add(m.id)
         return ids
 

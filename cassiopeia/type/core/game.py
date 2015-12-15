@@ -47,11 +47,10 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
         """list<Item>    the consumables that the participant bought (careful, they might have just sold them back or hit undo?)"""
         return self.data.consumablesPurchased
 
-    # TODO: Damage dealt is repeated........??? Keeping the 2nd definition
-    # @property
-    # def damage_dealt(self):
-    #     """int    the damage this participant dealt"""
-    #     return self.data.damageDealtPlayer
+    @property
+    def damage_dealt(self):
+        """int    well, we don't know what this one is. let us know if you figure it out."""
+        return self.data.damageDealtPlayer
 
     @property
     def double_kills(self):

@@ -2,7 +2,7 @@ import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
 
-if(cassiopeia.type.dto.common.sqlalchemy_imported):
+if cassiopeia.type.dto.common.sqlalchemy_imported:
     import sqlalchemy
     import sqlalchemy.orm
 
@@ -73,7 +73,7 @@ class League(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all summoner IDs contained in this object"""
         ids = set()
 
-        if(self.participantId):
+        if self.participantId:
             try:
                 id_ = int(self.participantId)
                 ids.add(id_)
@@ -81,7 +81,7 @@ class League(cassiopeia.type.dto.common.CassiopeiaDto):
                 pass
 
         for entry in self.entries:
-            if(entry.playerOrTeamId):
+            if entry.playerOrTeamId:
                 try:
                     id_ = int(entry.playerOrTeamId)
                     ids.add(id_)
@@ -94,14 +94,14 @@ class League(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all team IDs contained in this object"""
         ids = set()
 
-        if(self.participantId):
+        if self.participantId:
             try:
                 int(self.participantId)
             except(ValueError):
                 ids.add(self.participantId)
 
         for entry in self.entries:
-            if(entry.playerOrTeamId):
+            if entry.playerOrTeamId:
                 try:
                     int(entry.playerOrTeamId)
                 except(ValueError):

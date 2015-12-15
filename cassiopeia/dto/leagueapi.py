@@ -10,7 +10,7 @@ def get_leagues_by_summoner(summoner_ids):
     return          dict<str, list<League>>    the summoner(s)' leagues
     """
     # Can only have 10 summoners max if it's a list
-    if(isinstance(summoner_ids, list) and len(summoner_ids) > 10):
+    if isinstance(summoner_ids, list) and len(summoner_ids) > 10:
         raise ValueError("Can only get leagues for up to 10 summoners at once.")
 
     id_string = ",".join(str(x) for x in summoner_ids) if isinstance(summoner_ids, list) else str(summoner_ids)
@@ -35,7 +35,7 @@ def get_league_entries_by_summoner(summoner_ids):
     return          dict<str, list<League>>    the summoner(s)' league entries
     """
     # Can only have 10 summoners max if it's a list
-    if(isinstance(summoner_ids, list) and len(summoner_ids) > 10):
+    if isinstance(summoner_ids, list) and len(summoner_ids) > 10:
         raise ValueError("Can only get leagues for up to 10 summoners at once.")
 
     id_string = ",".join(str(x) for x in summoner_ids) if isinstance(summoner_ids, list) else str(summoner_ids)
@@ -60,7 +60,7 @@ def get_leagues_by_team(team_ids):
     return      dict<str, list<League>>    the team(s)' leagues
     """
     # Can only have 10 teams max if it's a list
-    if(isinstance(team_ids, list) and len(team_ids) > 10):
+    if isinstance(team_ids, list) and len(team_ids) > 10:
         raise ValueError("Can only get leagues for up to 10 teams at once.")
 
     id_string = ",".join(team_ids) if isinstance(team_ids, list) else str(team_ids)
@@ -84,7 +84,7 @@ def get_league_entries_by_team(team_ids):
     return      dict<str, list<League>>    the team(s)' league entries
     """
     # Can only have 10 teams max if it's a list
-    if(isinstance(team_ids, list) and len(team_ids) > 10):
+    if isinstance(team_ids, list) and len(team_ids) > 10:
         raise ValueError("Can only get league entries for up to 10 teams at once.")
 
     id_string = ",".join(team_ids) if isinstance(team_ids, list) else str(team_ids)

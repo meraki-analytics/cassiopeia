@@ -17,6 +17,6 @@ def get_current_game(summoner_id):
     try:
         return cassiopeia.type.dto.currentgame.CurrentGameInfo(cassiopeia.dto.requests.get(request, include_base=False))
     except cassiopeia.type.api.exception.APIError as e:
-        if(e.error_code == 404):
+        if e.error_code == 404:
             return None
         raise e

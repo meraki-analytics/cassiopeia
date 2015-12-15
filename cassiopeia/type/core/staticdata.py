@@ -541,28 +541,28 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
         return [SpellVariables(svars) for svars in self.data.vars]
 
     def __replace_variables(self, text, level, rank):
-        if(level < 1 or level > 18):
+        if level < 1 or level > 18:
             raise ValueError("Not a valid champion level")
-        if(rank < 1 or rank > self.max_rank):
+        if rank < 1 or rank > self.max_rank:
             raise ValueError("Not a valid spell rank")
 
         i = 1
         for effect in self.effects:
-            if(effect):
+            if effect:
                 text = text.replace("{{{{ e{i} }}}}".format(i=i), str(effect[rank - 1]))
                 i += 1
 
         for svar in self.variables:
             val = svar.coefficients[0]
-            if(len(svar.coefficients) == self.max_rank):
+            if len(svar.coefficients) == self.max_rank:
                 val = svar.coefficients[rank - 1]
-            elif(svar.coefficients == 18):
+            elif svar.coefficients == 18:
                 val = svar.coefficients[level - 1]
             replacement = str(val)
 
-            if(svar.link == "attackdamage"):
+            if svar.link == "attackdamage":
                 replacement = replacement + " AD"
-            elif(svar.link == "spelldamage"):
+            elif svar.link == "spelldamage":
                 replacement = replacement + " AP"
 
             text = text.replace("{{{{ {key} }}}}".format(key=svar.key), replacement)
@@ -763,7 +763,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def __init__(self, data, scraped_stats={}):
         super().__init__(data)
         for k, v in scraped_stats.items():
-            if("percent" in k and v > 1.0):
+            if "percent" in k and v > 1.0:
                 scraped_stats[k] = v / 100.0
         self.__scraped_stats = scraped_stats
 
@@ -1228,7 +1228,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
         scraped_stats = {}
         for stat, regex in Item.__stat_patterns.items():
             match = re.search(regex, self.description)
-            if(match):
+            if match:
                 scraped_stats[stat] = float(match.group(1))
         return ItemStats(self.data.stats, scraped_stats) if self.data.stats else None
 
@@ -1271,18 +1271,18 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     @cassiopeia.type.core.common.lazyproperty
     def categories(self):
         """list<str>    the shop categories that this item belongs to"""
-        if(self.consumable):
+        if self.consumable:
             cats = {"Consumable"}
         else:
             cats = set()
-        if(self.stats is not None):
+        if self.stats is not None:
             for cat_name, cat in Item.__item_categories.items():
                 for subcat, attrs in cat.items():
                     for attr in attrs:
-                        if(getattr(self.stats, attr, 0.0) != 0.0):
+                        if getattr(self.stats, attr, 0.0) != 0.0:
                             cats.add(cat_name)
                             cats.add(subcat)
-        if(str(self.id) in Item.__boot_ids or len(set(self.data.from_) & Item.__boot_ids) > 0):
+        if str(self.id) in Item.__boot_ids or len(set(self.data.from_) & Item.__boot_ids) > 0:
             cats.add("Boots")
             cats.remove("Other Movement Items")
 
@@ -1657,7 +1657,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
         return [SpellVariables(svars) for svars in self.data.vars]
 
     def __replace_variables(self, text, level):
-        if(level < 1 or level > 18):
+        if level < 1 or level > 18:
             raise ValueError("Not a valid champion level")
 
         for svar in self.variables:

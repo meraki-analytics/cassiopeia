@@ -2,7 +2,7 @@ import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
 
-if(cassiopeia.type.dto.common.sqlalchemy_imported):
+if cassiopeia.type.dto.common.sqlalchemy_imported:
     import sqlalchemy
     import sqlalchemy.orm
 
@@ -98,9 +98,9 @@ class FeaturedGameInfo(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all summoner spell IDs contained in this object"""
         ids = set()
         for p in self.participants:
-            if(p.spell1Id):
+            if p.spell1Id:
                 ids.add(p.spell1Id)
-            if(p.spell2Id):
+            if p.spell2Id:
                 ids.add(p.spell2Id)
         return ids
 

@@ -2,7 +2,7 @@ import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
 
-if(cassiopeia.type.dto.common.sqlalchemy_imported):
+if cassiopeia.type.dto.common.sqlalchemy_imported:
     import sqlalchemy
     import sqlalchemy.orm
 
@@ -774,7 +774,7 @@ class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
     def mastery_ids(self):
         """Gets all other mastery IDs contained in this object"""
         ids = set()
-        if(self.prereq):
+        if self.prereq:
             ids.add(int(self.prereq))
         return ids
 
