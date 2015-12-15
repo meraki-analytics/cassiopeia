@@ -55,6 +55,7 @@ class DataStore(object):
         """
         pass
 
+
 #######################
 # Void Store resouces #
 #######################
@@ -79,6 +80,7 @@ class VoidDataStore(DataStore):
 
     def store(self, objs, keys, complete_sets=[]):
         pass
+
 
 #############################
 # In-memory Cache resources #
