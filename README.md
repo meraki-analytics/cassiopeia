@@ -96,6 +96,19 @@ a_challenger = challenger_league.entries[0].playerOrTeamName
 print("He's much better at writing Python code than he is at LoL. He'll never be as good as {name}.".format(name=a_challenger))
 ```
 
+## Running tests
+
+After cloning the repo:
+
+```bash
+pip install -r requirements.txt
+```
+
+Then
+```bash
+py.test
+```
+
 ## Documentation
 [Found Here](http://robrua.github.io/cassiopeia/)
 
