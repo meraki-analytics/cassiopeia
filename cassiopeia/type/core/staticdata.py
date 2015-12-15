@@ -4,6 +4,12 @@ import cassiopeia.riotapi
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.staticdata
 
+try:
+    from future.builtins.misc import super
+except ImportError:
+    pass
+
+
 ######################
 # Champion Endpoints #
 ######################
