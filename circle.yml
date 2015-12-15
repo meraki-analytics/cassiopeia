@@ -1,16 +1,16 @@
 machine:
   python:
-    version: 2.7.5
+    version: 3.5.0
 
 dependencies:
   override:
-    - (deactivate && source ~/virtualenvs/venv-2.7.5/bin/activate && pip install -r requirements27.txt)
     # Have to upgrade virtualenv to make a virtualenv with python3
     - (deactivate && pip install --upgrade virtualenv && virtualenv ~/virtualenvs/venv-3.5.0 -p /home/ubuntu/.pyenv/versions/3.5.0/bin/python3)
     - (deactivate && source ~/virtualenvs/venv-3.5.0/bin/activate && pip install -r requirements35.txt)
+    - (deactivate && source ~/virtualenvs/venv-2.7.5/bin/activate && pip install -r requirements27.txt)
 
 test:
   override:
-    - (deactivate && source ~/virtualenvs/venv-2.7.5/bin/activate && py.test)
     - (deactivate && source ~/virtualenvs/venv-3.5.0/bin/activate && py.test)
+    - (deactivate && source ~/virtualenvs/venv-2.7.5/bin/activate && py.test)
     - flake8
