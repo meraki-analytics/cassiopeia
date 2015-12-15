@@ -1,4 +1,4 @@
-[![Build Status](https://circleci.com/gh/robrua/cassiopeia.svg?&style=shield&circle-token=8fb4f828f5c737e349cfb622eac18cc32fdde126)](https://circleci.com/gh/robrua/cassiopeia.svg?&style=shield&circle-token=8fb4f828f5c737e349cfb622eac18cc32fdde126)[![Documentation Status](https://readthedocs.org/projects/cassiopeia/badge/?version=latest)](http://cassiopeia.readthedocs.org/en/latest/?badge=latest)
+[![Build Status](https://circleci.com/gh/robrua/cassiopeia.svg?&style=shield&circle-token=8fb4f828f5c737e349cfb622eac18cc32fdde126)](https://circleci.com/gh/robrua/cassiopeia)[![Documentation Status](https://readthedocs.org/projects/cassiopeia/badge/?version=latest)](http://cassiopeia.readthedocs.org/en/latest/?badge=latest)
 
 # Cassiopeia
 
