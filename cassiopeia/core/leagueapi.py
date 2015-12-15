@@ -53,7 +53,7 @@ def __get_leagues_by_summoner_id(ids):
     leagues = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.leagueapi.get_leagues_by_summoner, 10, ids)
 
     # Load required data if loading policy is eager
-    if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
+    if cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager:
         summoner_ids = set()
         team_ids = set()
         for summoner in leagues.items():
