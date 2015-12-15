@@ -72,7 +72,7 @@ def get_matches(ids, include_timeline=True):
 
     # Make requests to get them
     for i in range(len(missing)):
-        match = cassiopeia.type.core.match.Match(cassiopeia.dto.matchapi.get_match(missing[i]))
+        match = cassiopeia.type.core.match.Match(cassiopeia.dto.matchapi.get_match(missing[i], include_timeline))
         matches[loc[i]] = match
         missing[i] = match
 
