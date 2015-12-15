@@ -1,6 +1,7 @@
 import cassiopeia.dto.requests
 import cassiopeia.type.dto.league
 
+
 def get_leagues_by_summoner(summoner_ids):
     """https://developer.riotgames.com/api/methods#!/985/3351
 
@@ -24,6 +25,7 @@ def get_leagues_by_summoner(summoner_ids):
             leagues[i] = cassiopeia.type.dto.league.League(league)
 
     return response
+
 
 def get_league_entries_by_summoner(summoner_ids):
     """https://developer.riotgames.com/api/methods#!/985/3356
@@ -49,6 +51,7 @@ def get_league_entries_by_summoner(summoner_ids):
 
     return response
 
+
 def get_leagues_by_team(team_ids):
     """https://developer.riotgames.com/api/methods#!/985/3352
 
@@ -71,6 +74,7 @@ def get_leagues_by_team(team_ids):
         response[id_] = [cassiopeia.type.dto.league.League(league) for league in leagues]
 
     return response
+
 
 def get_league_entries_by_team(team_ids):
     """https://developer.riotgames.com/api/methods#!/985/3355
@@ -95,6 +99,7 @@ def get_league_entries_by_team(team_ids):
 
     return response
 
+
 def get_challenger(queue_type):
     """https://developer.riotgames.com/api/methods#!/985/3353
 
@@ -104,6 +109,7 @@ def get_challenger(queue_type):
     """
     request = "{version}/league/challenger".format(version=cassiopeia.dto.requests.api_versions["league"])
     return cassiopeia.type.dto.league.League(cassiopeia.dto.requests.get(request, {"type": queue_type}))
+
 
 def get_master(queue_type):
     """https://developer.riotgames.com/api/methods#!/985/3354

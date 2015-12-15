@@ -1,6 +1,7 @@
 import cassiopeia.dto.requests
 import cassiopeia.type.dto.stats
 
+
 def get_ranked_stats(summoner_id, season=None):
     """https://developer.riotgames.com/api/methods#!/1018/3452
 
@@ -16,6 +17,7 @@ def get_ranked_stats(summoner_id, season=None):
         params["season"] = season
 
     return cassiopeia.type.dto.stats.RankedStats(cassiopeia.dto.requests.get(request, params))
+
 
 def get_stats(summoner_id, season=None):
     """https://developer.riotgames.com/api/methods#!/1018/3453

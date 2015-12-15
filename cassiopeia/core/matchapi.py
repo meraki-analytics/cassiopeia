@@ -5,6 +5,7 @@ import cassiopeia.type.core.common
 import cassiopeia.type.core.match
 import cassiopeia.type.core.matchlist
 
+
 def get_match(id_, include_timeline=True):
     """Gets a match
 
@@ -35,6 +36,7 @@ def get_match(id_, include_timeline=True):
     match = cassiopeia.type.core.match.Match(match)
     cassiopeia.core.requests.data_store.store(match, id_)
     return match
+
 
 def get_matches(ids, include_timeline=True):
     """Gets a bunch of matches

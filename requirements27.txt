@@ -2,3 +2,4 @@ pytest==2.8.4
 future==0.15.2
 enum34==1.1.1
 sqlalchemy
+flake8

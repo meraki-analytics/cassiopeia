@@ -1,9 +1,11 @@
 import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
+
 if(cassiopeia.type.dto.common.sqlalchemy_imported):
     import sqlalchemy
     import sqlalchemy.orm
+
 
 @cassiopeia.type.core.common.inheritdocs
 class Participant(cassiopeia.type.dto.common.CassiopeiaDto):
@@ -129,12 +131,13 @@ class FeaturedGames(cassiopeia.type.dto.common.CassiopeiaDto):
             ids |= game.summoner_spell_ids
         return ids
 
+
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
-
 def _sa_bind_participant():
     global Participant
+
     @cassiopeia.type.core.common.inheritdocs
     class Participant(Participant, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "FeaturedGameParticipant"
@@ -148,8 +151,10 @@ def _sa_bind_participant():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("FeaturedGameInfo.gameId", ondelete="CASCADE"))
 
+
 def _sa_bind_observer():
     global Observer
+
     @cassiopeia.type.core.common.inheritdocs
     class Observer(Observer, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "FeaturedGameObserver"
@@ -157,8 +162,10 @@ def _sa_bind_observer():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("FeaturedGameInfo.gameId", ondelete="CASCADE"))
 
+
 def _sa_bind_banned_champion():
     global BannedChampion
+
     @cassiopeia.type.core.common.inheritdocs
     class BannedChampion(BannedChampion, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "FeaturedGameBannedChampion"
@@ -168,8 +175,10 @@ def _sa_bind_banned_champion():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _game_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("FeaturedGameInfo.gameId", ondelete="CASCADE"))
 
+
 def _sa_bind_featured_game_info():
     global FeaturedGameInfo
+
     @cassiopeia.type.core.common.inheritdocs
     class FeaturedGameInfo(FeaturedGameInfo, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "FeaturedGameInfo"
@@ -184,6 +193,7 @@ def _sa_bind_featured_game_info():
         observers = sqlalchemy.orm.relationship("cassiopeia.type.dto.featuredgames.Observer", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
         participants = sqlalchemy.orm.relationship("cassiopeia.type.dto.featuredgames.Participant", cascade="all, delete-orphan", passive_deletes=True)
         platformId = sqlalchemy.Column(sqlalchemy.String(30))
+
 
 def _sa_bind_all():
     _sa_bind_participant()

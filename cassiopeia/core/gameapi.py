@@ -2,6 +2,7 @@ import cassiopeia.dto.gameapi
 import cassiopeia.core.requests
 import cassiopeia.type.core.game
 
+
 def get_recent_games(summoner):
     """Gets the most recent games a summoner played
 

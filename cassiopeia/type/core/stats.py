@@ -3,6 +3,7 @@ import datetime
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.stats
 
+
 @cassiopeia.type.core.common.inheritdocs
 class StatsSummary(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.stats.PlayerStatsSummary
@@ -328,10 +329,10 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
         """int    the total number of unreal kills this participant has gotten"""
         return self.data.totalUnrealKills
 
+
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
-
 def _sa_rebind_all():
     StatsSummary.dto_type = cassiopeia.type.dto.stats.PlayerStatsSummary
     AggregatedStats.dto_type = cassiopeia.type.dto.stats.AggregatedStats
