@@ -2,7 +2,7 @@ import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
 
-if(cassiopeia.type.dto.common.sqlalchemy_imported):
+if cassiopeia.type.dto.common.sqlalchemy_imported:
     import sqlalchemy
     import sqlalchemy.orm
 
@@ -117,8 +117,8 @@ class Cache(DataStore):
             return iter([])
 
     def get(self, class_, keys, key_field):
-        if(class_ not in self._cache):
-            if(not isinstance(keys, list)):
+        if class_ not in self._cache:
+            if not isinstance(keys, list):
                 return None
             else:
                 results = []
@@ -126,7 +126,7 @@ class Cache(DataStore):
                     results.append(None)
                 return results
 
-        if(not isinstance(keys, list)):
+        if not isinstance(keys, list):
             try:
                 return self._cache[class_][keys]
             except(KeyError):
@@ -142,25 +142,25 @@ class Cache(DataStore):
 
     def store(self, objs, keys, complete_sets=[]):
         is_list = isinstance(objs, list)
-        if(is_list != isinstance(keys, list)):
+        if is_list != isinstance(keys, list):
             raise ValueError("Object(s) and Key(s) must both be lists or both be non-lists")
 
-        if(not is_list):
+        if not is_list:
             class_ = type(objs)
-            if(class_ not in self._cache):
+            if class_ not in self._cache:
                 self._cache[class_] = {}
             self._cache[class_][keys] = objs
         else:
-            if(len(objs) != len(keys)):
+            if len(objs) != len(keys):
                 raise ValueError("Objects and Keys must be the same length")
 
             for i in range(len(objs)):
                 class_ = type(objs[i])
-                if(class_ not in self._cache):
+                if class_ not in self._cache:
                     self._cache[class_] = {}
                 self._cache[class_][keys[i]] = objs[i]
 
-        if(complete_sets):
+        if complete_sets:
             for class_ in complete_sets:
                 self._has_all[class_] = True
 
@@ -168,7 +168,7 @@ class Cache(DataStore):
 ########################
 # SQLAlchemy resources #
 ########################
-if(cassiopeia.type.dto.common.sqlalchemy_imported):
+if cassiopeia.type.dto.common.sqlalchemy_imported:
     class HasAllStatus(cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "HasAll"
         class_ = sqlalchemy.Column(sqlalchemy.String(50), primary_key=True)
@@ -225,7 +225,7 @@ if(cassiopeia.type.dto.common.sqlalchemy_imported):
             return SQLAlchemyDB.Iterator(class_, self.session.query(class_.dto_type).all())
 
         def get(self, class_, keys, key_field):
-            if(not isinstance(keys, list)):
+            if not isinstance(keys, list):
                 val = self.session.query(class_.dto_type).filter(getattr(class_.dto_type, key_field) == keys).first()
                 return class_(val) if val else None
             else:
@@ -242,11 +242,11 @@ if(cassiopeia.type.dto.common.sqlalchemy_imported):
                 return results
 
         def store(self, objs, keys=None, complete_sets=[]):
-            if(not isinstance(objs, list)):
+            if not isinstance(objs, list):
                 class_ = objs.data.__class__
                 p_key = class_.__mapper__.primary_key[0].name.split("\\.")[-1]
                 val = self.session.query(class_).filter(getattr(class_, p_key) == getattr(objs.data, p_key)).first()
-                if(not val):
+                if not val:
                     self.session.add(objs.data)
             else:
                 class_ = objs[0].data.__class__
@@ -258,10 +258,10 @@ if(cassiopeia.type.dto.common.sqlalchemy_imported):
 
                 self.session.add_all(to_store.values())
 
-            if(complete_sets):
+            if complete_sets:
                 classes = {HasAllStatus.get_name(class_): HasAllStatus(class_) for class_ in complete_sets}
                 for obj in self.session.query(HasAllStatus).filter(HasAllStatus.class_.in_(classes.keys())).all():
-                    if(not obj.have_all):
+                    if not obj.have_all:
                         obj.have_all = True
                     del classes[obj.class_]
                 self.session.add_all(classes.values())
@@ -280,7 +280,7 @@ __sa_bound = False
 def _sa_bind_typesystem():
     """Dynamically binds the typesystem with SQLAlchemy bindings"""
     global __sa_bound
-    if(__sa_bound):
+    if __sa_bound:
         return
 
     import cassiopeia.type.dto.champion

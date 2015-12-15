@@ -2,7 +2,7 @@ import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
 
-if(cassiopeia.type.dto.common.sqlalchemy_imported):
+if cassiopeia.type.dto.common.sqlalchemy_imported:
     import sqlalchemy
     import sqlalchemy.orm
     import sqlalchemy.orm.collections
@@ -51,19 +51,19 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
         ids = set()
         for p in self.participants:
             s = p.stats
-            if(s.item0):
+            if s.item0:
                 ids.add(s.item0)
-            if(s.item1):
+            if s.item1:
                 ids.add(s.item1)
-            if(s.item2):
+            if s.item2:
                 ids.add(s.item2)
-            if(s.item3):
+            if s.item3:
                 ids.add(s.item3)
-            if(s.item4):
+            if s.item4:
                 ids.add(s.item4)
-            if(s.item5):
+            if s.item5:
                 ids.add(s.item5)
-            if(s.item6):
+            if s.item6:
                 ids.add(s.item6)
         return ids
 
@@ -72,11 +72,11 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all champion IDs contained in this object"""
         ids = set()
         for p in self.participants:
-            if(p.championId):
+            if p.championId:
                 ids.add(p.championId)
         for t in self.teams:
             for b in t.bans:
-                if(b.championId):
+                if b.championId:
                     ids.add(b.championId)
         return ids
 
@@ -86,7 +86,7 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
         ids = set()
         for p in self.participants:
             for m in p.masteries:
-                if(m.masteryId):
+                if m.masteryId:
                     ids.add(m.masteryId)
         return ids
 
@@ -96,7 +96,7 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
         ids = set()
         for p in self.participants:
             for r in p.runes:
-                if(r.runeId):
+                if r.runeId:
                     ids.add(r.runeId)
         return ids
 
@@ -105,7 +105,7 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all summoner IDs contained in this object"""
         ids = set()
         for p in self.participantIdentities:
-            if(p.player and p.player.summonerId):
+            if p.player and p.player.summonerId:
                 ids.add(p.player.summonerId)
         return ids
 
@@ -114,9 +114,9 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all summoner spell IDs contained in this object"""
         ids = set()
         for p in self.participants:
-            if(p.spell1Id):
+            if p.spell1Id:
                 ids.add(p.spell1Id)
-            if(p.spell2Id):
+            if p.spell2Id:
                 ids.add(p.spell2Id)
         return ids
 

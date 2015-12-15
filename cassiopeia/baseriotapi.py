@@ -68,7 +68,7 @@ def set_proxy(url, port=80):
     url     str    the URL of the proxy server, without port number or protocol
     port    int    the port number to conntect to (default 80)
     """
-    if(url):
+    if url:
         cassiopeia.dto.requests.proxy = urllib.request.ProxyHandler({"https": "https://{url}:{port}".format(url=url, port=port)})
         urllib.request.install_opener(urllib.request.build_opener(cassiopeia.dto.requests.proxy))
     else:

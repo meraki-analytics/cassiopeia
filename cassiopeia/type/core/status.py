@@ -88,9 +88,8 @@ class ShardStatus(cassiopeia.type.core.common.CassiopeiaObject):
 class Service(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.status.Service
 
-    # TODO: This doesn't make sense?
-    # def __str__(self):
-    #     return name
+    def __str__(self):
+        return self.name
 
     def __iter__(self):
         return iter(self.incidents)

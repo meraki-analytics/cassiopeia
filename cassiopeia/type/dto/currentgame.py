@@ -2,7 +2,7 @@ import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
 
-if(cassiopeia.type.dto.common.sqlalchemy_imported):
+if cassiopeia.type.dto.common.sqlalchemy_imported:
     import sqlalchemy
     import sqlalchemy.orm
 
@@ -122,7 +122,7 @@ class CurrentGameInfo(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all summoner IDs contained in this object"""
         ids = set()
         for p in self.participants:
-            if(p.summonerId):
+            if p.summonerId:
                 ids.add(p.summonerId)
         return ids
 
@@ -131,9 +131,9 @@ class CurrentGameInfo(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all summoner spell IDs contained in this object"""
         ids = set()
         for p in self.participants:
-            if(p.spell1Id):
+            if p.spell1Id:
                 ids.add(p.spell1Id)
-            if(p.spell2Id):
+            if p.spell2Id:
                 ids.add(p.spell2Id)
         return ids
 
@@ -143,7 +143,7 @@ class CurrentGameInfo(cassiopeia.type.dto.common.CassiopeiaDto):
         ids = set()
         for p in self.participants:
             for r in p.runes:
-                if(r.runeId):
+                if r.runeId:
                     ids.add(r.runeId)
         return ids
 
@@ -153,7 +153,7 @@ class CurrentGameInfo(cassiopeia.type.dto.common.CassiopeiaDto):
         ids = set()
         for p in self.participants:
             for m in p.masteries:
-                if(m.masteryId):
+                if m.masteryId:
                     ids.add(m.masteryId)
         return ids
 

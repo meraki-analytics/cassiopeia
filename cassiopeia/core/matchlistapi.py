@@ -21,20 +21,20 @@ def get_match_list(summoner, num_matches=0, begin_index=0, begin_time=0, end_tim
 
     return          list<MatchReference>         the summoner's match history
     """
-    if(ranked_queues and isinstance(ranked_queues, list)):
+    if ranked_queues and isinstance(ranked_queues, list):
         for queue in ranked_queues:
             if queue not in cassiopeia.type.core.common.ranked_queues:
                 raise ValueError("{queue} is not a ranked queue".format(queue=queue))
-    elif(ranked_queues):
+    elif ranked_queues:
         if ranked_queues not in cassiopeia.type.core.common.ranked_queues:
             raise ValueError("{queue} is not a ranked queue".format(queue=ranked_queues))
 
     # Convert core types to API-ready types
-    if(isinstance(begin_time, datetime.datetime)):
+    if isinstance(begin_time, datetime.datetime):
         epoch = datetime.datetime.utcfromtimestamp(0)
         delta = begin_time - epoch
         begin_time = int(delta.total_seconds() * 1000)
-    if(isinstance(end_time, datetime.datetime)):
+    if isinstance(end_time, datetime.datetime):
         epoch = datetime.datetime.utcfromtimestamp(0)
         delta = end_time - epoch
         end_time = int(delta.total_seconds() * 1000)
@@ -46,7 +46,7 @@ def get_match_list(summoner, num_matches=0, begin_index=0, begin_time=0, end_tim
     history = cassiopeia.dto.matchlistapi.get_match_list(summoner.id, num_matches, begin_index, begin_time, end_time, champion_ids, queues, seasons)
 
     # Load required data if loading policy is eager
-    if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
+    if cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager:
         cassiopeia.riotapi.get_champions() if history.champion_ids else None
 
     return [cassiopeia.type.core.matchlist.MatchReference(ref) for ref in history.matches]
