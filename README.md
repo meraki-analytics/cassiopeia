@@ -33,7 +33,7 @@ Cassiopeia depends on [SQLAlchemy](http://www.sqlalchemy.org/). It should be aut
  
 ## Usage
 
-Here's an example of a few basic uses of the API. The full documentation can be found at http://robrua.github.io/cassiopeia/.
+Here's an example of a few basic uses of the API. The full documentation can be found at http://cassiopeia.readthedocs.org/en/latest/.
 
 ```python
 import random
@@ -110,7 +110,7 @@ py.test
 ```
 
 ## Documentation
-[Found Here](http://robrua.github.io/cassiopeia/)
+[Found Here](http://cassiopeia.readthedocs.org/en/latest/)
 
 ## Download
 [Releases](https://github.com/robrua/cassiopeia/releases)
