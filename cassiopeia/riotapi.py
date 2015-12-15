@@ -36,11 +36,7 @@ def set_region(region):
 
     region    str | cassiopeia.type.core.common.Region    the region to query against
     """
-    if(sys.version_info.major == 2):
-        # Handle python 2 unicode
-        if(isinstance(region, unicode)):
-            region = cassiopeia.type.core.common.Region(region.lower())
-    if(isinstance(region, str)):
+    if(isinstance(region, cassiopeia.type.core.common.Region)):
         region = cassiopeia.type.core.common.Region(region.lower())
     cassiopeia.dto.requests.region = region.value
 
@@ -91,7 +87,7 @@ def set_load_policy(policy):
 
     policy    str | cassiopeia.type.core.common.LoadPolicy    the load policy to use for calls to the API
     """
-    if(isinstance(policy, str)):
+    if(isinstance(policy, cassiopeia.type.core.common.LoadPolicy)):
         policy = cassiopeia.type.core.common.LoadPolicy(policy.upper())
     cassiopeia.core.requests.load_policy = policy
 
