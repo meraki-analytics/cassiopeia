@@ -45,7 +45,7 @@ class RunePage(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all rune IDs contained in this object"""
         ids = set()
         for s in self.slots:
-             f(s.runeId:
+            if s.runeId:
                 ids.add(s.runeId)
         return ids
 
@@ -99,7 +99,7 @@ class MasteryPage(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all mastery IDs contained in this object"""
         ids = set()
         for m in self.masteries:
-             f(m.id:
+            if m.id:
                 ids.add(m.id)
         return ids
 
