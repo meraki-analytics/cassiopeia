@@ -6,6 +6,7 @@ over those 20 games.
 The stats endpoint is then called to lookup this information using Dyrus' entire
 ranked history.
 """
+
 import os
 from cassiopeia import riotapi
 from cassiopeia.type.core.common import LoadPolicy, StatSummaryType
