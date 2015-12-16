@@ -1,3 +1,5 @@
+[![Build Status](https://circleci.com/gh/robrua/cassiopeia.svg?&style=shield&circle-token=8fb4f828f5c737e349cfb622eac18cc32fdde126)](https://circleci.com/gh/robrua/cassiopeia)[![Documentation Status](https://readthedocs.org/projects/cassiopeia/badge/?version=latest)](http://cassiopeia.readthedocs.org/en/latest/?badge=latest)
+
 # Cassiopeia
 
 A Python 3 adaptation of the Riot Games LoL API (https://developer.riotgames.com/).
@@ -33,7 +35,7 @@ Cassiopeia depends on [SQLAlchemy](http://www.sqlalchemy.org/). It should be aut
  
 ## Usage
 
-Here's an example of a few basic uses of the API. The full documentation can be found at http://robrua.github.io/cassiopeia/.
+Here's an example of a few basic uses of the API. The full documentation can be found at http://cassiopeia.readthedocs.org/en/latest/.
 
 ```python
 import random
@@ -96,8 +98,21 @@ a_challenger = challenger_league.entries[0].playerOrTeamName
 print("He's much better at writing Python code than he is at LoL. He'll never be as good as {name}.".format(name=a_challenger))
 ```
 
+## Running tests
+
+After cloning the repo:
+
+```bash
+pip install -r requirements.txt
+```
+
+Then
+```bash
+py.test
+```
+
 ## Documentation
-[Found Here](http://robrua.github.io/cassiopeia/)
+[Found Here](http://cassiopeia.readthedocs.org/en/latest/)
 
 ## Download
 [Releases](https://github.com/robrua/cassiopeia/releases)

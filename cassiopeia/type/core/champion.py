@@ -2,6 +2,7 @@ import cassiopeia.riotapi
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.champion
 
+
 @cassiopeia.type.core.common.inheritdocs
 class ChampionStatus(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.champion.Champion
@@ -39,9 +40,9 @@ class ChampionStatus(cassiopeia.type.core.common.CassiopeiaObject):
         """bool    whether the champion is currently enabled for ranked games"""
         return self.data.rankedPlayEnabled
 
+
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
-
 def _sa_rebind_all():
     ChampionStatus.dto_type = cassiopeia.type.dto.champion.Champion

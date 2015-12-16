@@ -1,6 +1,13 @@
+try:
+    from future.builtins.misc import super
+except ImportError:
+    pass
+
+
 class CassiopeiaException(Exception):
     """Generic exception for a failure within Cassiopeia"""
     pass
+
 
 class APIError(Exception):
     """"

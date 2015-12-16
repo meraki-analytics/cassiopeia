@@ -1,9 +1,11 @@
 import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
-if(cassiopeia.type.dto.common.sqlalchemy_imported):
+
+if cassiopeia.type.dto.common.sqlalchemy_imported:
     import sqlalchemy
     import sqlalchemy.orm
+
 
 @cassiopeia.type.core.common.inheritdocs
 class PlayerStatsSummaryList(cassiopeia.type.dto.common.CassiopeiaDto):
@@ -169,7 +171,7 @@ class RankedStats(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all champion IDs contained in this object"""
         ids = set()
         for s in self.champions:
-            if(s.id):
+            if s.id:
                 ids.add(s.id)
         return ids
 
@@ -185,12 +187,13 @@ class ChampionStats(cassiopeia.type.dto.common.CassiopeiaDto):
         val = dictionary.get("stats", None)
         self.stats = AggregatedStats(val) if val and not isinstance(val, AggregatedStats) else val
 
+
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
-
 def _sa_bind_player_stats_summary():
     global PlayerStatsSummary
+
     @cassiopeia.type.core.common.inheritdocs
     class PlayerStatsSummary(PlayerStatsSummary, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "PlayerStatsSummary"
@@ -201,8 +204,10 @@ def _sa_bind_player_stats_summary():
         wins = sqlalchemy.Column(sqlalchemy.Integer)
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
 
+
 def _sa_bind_aggregated_stats():
     global AggregatedStats
+
     @cassiopeia.type.core.common.inheritdocs
     class AggregatedStats(AggregatedStats, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "AggregatedStats"
@@ -264,6 +269,7 @@ def _sa_bind_aggregated_stats():
         totalUnrealKills = sqlalchemy.Column(sqlalchemy.Integer)
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _summary_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("PlayerStatsSummary._id", ondelete="CASCADE"))
+
 
 def _sa_bind_all():
     _sa_bind_player_stats_summary()

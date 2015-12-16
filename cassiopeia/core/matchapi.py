@@ -5,6 +5,7 @@ import cassiopeia.type.core.common
 import cassiopeia.type.core.match
 import cassiopeia.type.core.matchlist
 
+
 def get_match(id_, include_timeline=True):
     """Gets a match
 
@@ -13,17 +14,17 @@ def get_match(id_, include_timeline=True):
 
     return              Match                   the match
     """
-    if(isinstance(id_, cassiopeia.type.core.matchlist.MatchReference)):
+    if isinstance(id_, cassiopeia.type.core.matchlist.MatchReference):
         id_ = id_.id
 
     match = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.match.Match, id_, "matchId")
-    if(match and (match.timeline or not include_timeline)):
+    if match and (match.timeline or not include_timeline):
         return match
 
     match = cassiopeia.dto.matchapi.get_match(id_, include_timeline)
 
     # Load required data if loading policy is eager
-    if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
+    if cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager:
         cassiopeia.riotapi.get_items() if match.item_ids else None
         cassiopeia.riotapi.get_champions() if match.champion_ids else None
         cassiopeia.riotapi.get_masteries() if match.mastery_ids else None
@@ -35,6 +36,7 @@ def get_match(id_, include_timeline=True):
     match = cassiopeia.type.core.match.Match(match)
     cassiopeia.core.requests.data_store.store(match, id_)
     return match
+
 
 def get_matches(ids, include_timeline=True):
     """Gets a bunch of matches
@@ -52,15 +54,15 @@ def get_matches(ids, include_timeline=True):
     missing = []
     loc = []
     for i in range(len(ids)):
-        if(not matches[i] or (include_timeline and not matches[i].timeline)):
+        if not matches[i] or (include_timeline and not matches[i].timeline):
             missing.append(ids[i])
             loc.append(i)
 
-    if(not missing):
+    if not missing:
         return matches
 
     # Initialize eager loading variables appropriately
-    if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
+    if cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager:
         item_ids = set()
         champion_ids = set()
         mastery_ids = set()
@@ -70,11 +72,11 @@ def get_matches(ids, include_timeline=True):
 
     # Make requests to get them
     for i in range(len(missing)):
-        match = cassiopeia.type.core.match.Match(cassiopeia.dto.matchapi.get_match(missing[i]))
+        match = cassiopeia.type.core.match.Match(cassiopeia.dto.matchapi.get_match(missing[i], include_timeline))
         matches[loc[i]] = match
         missing[i] = match
 
-        if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
+        if cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager:
             item_ids = item_ids | match.data.item_ids
             champion_ids = champion_ids | match.data.champion_ids
             mastery_ids = mastery_ids | match.data.mastery_ids
@@ -83,7 +85,7 @@ def get_matches(ids, include_timeline=True):
             summoner_spell_ids = summoner_spell_ids | match.data.summoner_spell_ids
 
     # Load required data if loading policy is eager
-    if(cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager):
+    if cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager:
         cassiopeia.riotapi.get_items() if item_ids else None
         cassiopeia.riotapi.get_champions() if champion_ids else None
         cassiopeia.riotapi.get_masteries() if mastery_ids else None

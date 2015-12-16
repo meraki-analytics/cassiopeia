@@ -1,13 +1,15 @@
 import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
-if(cassiopeia.type.dto.common.sqlalchemy_imported):
+
+if cassiopeia.type.dto.common.sqlalchemy_imported:
     import sqlalchemy
+
 
 @cassiopeia.type.core.common.inheritdocs
 class Champion(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    active               bool    indicates if the champion is active 
+    active               bool    indicates if the champion is active
     botEnabled           bool    bot enabled flag (for custom games)
     botMmEnabled         bool    bot Match Made enabled flag (for Co-op vs. AI games)
     freeToPlay           bool    indicates if the champion is free to play. Free to play champions are rotated periodically
@@ -39,12 +41,13 @@ class ChampionList(cassiopeia.type.dto.common.CassiopeiaDto):
             ids.add(champ.id)
         return ids
 
+
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
-
 def _sa_bind_champion():
     global Champion
+
     @cassiopeia.type.core.common.inheritdocs
     class Champion(Champion, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "ChampionStatus"
@@ -54,6 +57,7 @@ def _sa_bind_champion():
         freeToPlay = sqlalchemy.Column(sqlalchemy.Boolean)
         id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         rankedPlayEnabled = sqlalchemy.Column(sqlalchemy.Boolean)
+
 
 def _sa_bind_all():
     _sa_bind_champion()

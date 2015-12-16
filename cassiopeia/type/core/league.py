@@ -2,12 +2,13 @@ import cassiopeia.riotapi
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.league
 
+
 @cassiopeia.type.core.common.inheritdocs
 class Series(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.league.MiniSeries
 
     def __str__(self):
-        return progress
+        return self.progress
 
     @property
     def losses(self):
@@ -80,7 +81,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def summoner(self):
         """Summoner    the summoner represented by this entry. None if this entry is for a team"""
-        if(not self.data.playerOrTeamId):
+        if not self.data.playerOrTeamId:
             return None
 
         try:
@@ -92,7 +93,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def team(self):
         """Team    the team represented by this entry. None if this entry is for a summoner"""
-        if(not self.data.playerOrTeamId):
+        if not self.data.playerOrTeamId:
             return None
 
         try:
@@ -104,7 +105,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def summoner_name(self):
         """str    the name of the summoner represented by this entry. An empty string if this entry is for a team"""
-        if(not self.data.playerOrTeamId):
+        if not self.data.playerOrTeamId:
             return ""
 
         try:
@@ -131,7 +132,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
 @cassiopeia.type.core.common.inheritdocs
 class League(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.league.League
-    
+
     def __str__(self):
         return "{name} ({tier})".format(name=self.name, tier=self.tier)
 
@@ -158,14 +159,14 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
     def participant_entry(self):
         """Entry    the entry for the relevant team or summoner that is a member of this league. Only present when full league is requested so that participant's entry can be identified. None when individual entry is requested"""
         for entry in self.entries:
-            if(entry.data.playerOrTeamId == self.data.participantId):
+            if entry.data.playerOrTeamId == self.data.participantId:
                 return entry
         return None
 
     @property
     def summoner(self):
         """Summoner    the relevant summoner that is a member of this league. Only present when full league is requested so that participant's entry can be identified. None when individual entry is requested or the participant is a team."""
-        if(not self.data.participantId):
+        if not self.data.participantId:
             return None
 
         try:
@@ -177,7 +178,7 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def team(self):
         """Team    the relevant team that is a member of this league. Only present when full league is requested so that participant's entry can be identified. None when individual entry is requested or the participant is a summoner."""
-        if(not self.data.participantId):
+        if not self.data.participantId:
             return None
 
         try:
@@ -196,10 +197,10 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
         """Tier    the league's tier"""
         return cassiopeia.type.core.common.Tier(self.data.tier) if self.data.tier else None
 
+
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
-
 def _sa_rebind_all():
     Series.dto_type = cassiopeia.type.dto.league.MiniSeries
     Entry.dto_type = cassiopeia.type.dto.league.LeagueEntry

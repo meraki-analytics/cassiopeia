@@ -1,6 +1,7 @@
 import cassiopeia.dto.requests
 import cassiopeia.type.dto.featuredgames
 
+
 def get_featured_games():
     """https://developer.riotgames.com/api/methods#!/977/3337
 
