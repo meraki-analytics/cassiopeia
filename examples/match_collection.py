@@ -21,6 +21,7 @@ In order for the algorithm to start, we need a match or a summoner to start the 
 first pull the Master tier and use those summoners as seed data. For the rest of the match
 collection.
 """
+
 import os
 from datetime import datetime
 from collections import deque
