@@ -8,7 +8,6 @@ In addition, we print the match version.
 """
 
 import os
-from collections import namedtuple
 from cassiopeia import riotapi
 from cassiopeia.type.core.common import LoadPolicy
 
@@ -30,7 +29,6 @@ def main():
     print("Match end time: {0}".format(match.creation + match.duration))
 
     print("Match version: {0}".format(match.version))
-
 
 
 if __name__ == "__main__":

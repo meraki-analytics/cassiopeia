@@ -17,7 +17,7 @@ def main():
     riotapi.set_load_policy(LoadPolicy.lazy)
 
     summoner = riotapi.get_summoner_by_name("Dyrs")  # SummonerID is 5908
-    #dyrus = riotapi.get_summoner_by_id(5908)  # You could use this as well
+    # dyrus = riotapi.get_summoner_by_id(5908)  # You could use this as well
 
     current_game = riotapi.get_current_game(summoner)
     if current_game is None:
