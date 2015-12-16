@@ -4,6 +4,12 @@ import cassiopeia.riotapi
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.game
 
+try:
+    from future.builtins.misc import super
+except ImportError:
+    pass
+
+
 @cassiopeia.type.core.common.inheritdocs
 class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.game.RawStats
@@ -42,8 +48,8 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.consumablesPurchased
 
     @property
-    def damage_dealt(self):
-        """int    the damage this participant dealt"""
+    def damage_dealt_player(self):
+        """int    well, we don't know what this one is. let us know if you figure it out."""
         return self.data.damageDealtPlayer
 
     @property
@@ -493,7 +499,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def invalid(self):
-        """bool   well, we don't know what this one is. let us know if you figure it out."""
+        """bool    well, we don't know what this one is. let us know if you figure it out."""
         return self.data.invalid
 
     @property
@@ -536,10 +542,10 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
         """Side    the side that the particpant was on (the one that this game was pulled using)"""
         return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.teamId else None
 
+
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
-
 def _sa_rebind_all():
     Stats.dto_type = cassiopeia.type.dto.game.RawStats
     Participant.dto_type = cassiopeia.type.dto.game.Player

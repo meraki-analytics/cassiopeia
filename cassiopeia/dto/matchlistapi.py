@@ -1,6 +1,7 @@
 import cassiopeia.dto.requests
 import cassiopeia.type.dto.matchlist
 
+
 def get_match_list(summoner_id, num_matches=0, begin_index=0, begin_time=0, end_time=0, champion_ids=None, ranked_queues=None, seasons=None):
     """https://developer.riotgames.com/api/methods#!/1013/3439
 
@@ -18,19 +19,19 @@ def get_match_list(summoner_id, num_matches=0, begin_index=0, begin_time=0, end_
     request = "{version}/matchlist/by-summoner/{summoner_id}".format(version=cassiopeia.dto.requests.api_versions["matchlist"], summoner_id=summoner_id)
 
     params = {}
-    if(num_matches):
+    if num_matches:
         params["endIndex"] = begin_index + num_matches
-    if(begin_index or num_matches):
+    if begin_index or num_matches:
         params["beginIndex"] = begin_index
-    if(begin_time):
+    if begin_time:
         params["beginTime"] = begin_time
-    if(end_time):
+    if end_time:
         params["endTime"] = end_time
-    if(champion_ids):
+    if champion_ids:
         params["championIds"] = ",".join(champion_ids) if isinstance(champion_ids, list) else str(champion_ids)
-    if(ranked_queues):
+    if ranked_queues:
         params["rankedQueues"] = ",".join(ranked_queues) if isinstance(ranked_queues, list) else str(ranked_queues)
-    if(seasons):
+    if seasons:
         params["seasons"] = ",".join(seasons) if isinstance(seasons, list) else str(seasons)
 
     return cassiopeia.type.dto.matchlist.MatchList(cassiopeia.dto.requests.get(request, params))

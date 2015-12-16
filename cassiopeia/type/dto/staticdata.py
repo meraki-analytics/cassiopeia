@@ -1,14 +1,15 @@
 import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
-if(cassiopeia.type.dto.common.sqlalchemy_imported):
+
+if cassiopeia.type.dto.common.sqlalchemy_imported:
     import sqlalchemy
     import sqlalchemy.orm
+
 
 ######################
 # Champion Endpoints #
 ######################
-
 @cassiopeia.type.core.common.inheritdocs
 class BlockItem(cassiopeia.type.dto.common.CassiopeiaDto):
     """
@@ -65,7 +66,7 @@ class LevelTip(cassiopeia.type.dto.common.CassiopeiaDto):
 class Stats(cassiopeia.type.dto.common.CassiopeiaDto):
     """
     armor                   float    armor
-    armorperlevel           float    armor per level 
+    armorperlevel           float    armor per level
     attackdamage            float    attack damage
     attackdamageperlevel    float    attack damage per level
     attackrange             float    attack range
@@ -325,10 +326,10 @@ class ChampionList(cassiopeia.type.dto.common.CassiopeiaDto):
             ids = ids | c[1].item_ids
         return ids
 
+
 ##################
 # Item Endpoints #
 ##################
-
 @cassiopeia.type.core.common.inheritdocs
 class MetaData(cassiopeia.type.dto.common.CassiopeiaDto):
     """
@@ -661,10 +662,10 @@ class ItemList(cassiopeia.type.dto.common.CassiopeiaDto):
         self.type = dictionary.get("type", "")
         self.version = dictionary.get("version", "")
 
+
 ######################
 # Language Endpoints #
 ######################
-
 @cassiopeia.type.core.common.inheritdocs
 class LanguageStrings(cassiopeia.type.dto.common.CassiopeiaDto):
     """
@@ -677,10 +678,10 @@ class LanguageStrings(cassiopeia.type.dto.common.CassiopeiaDto):
         self.type = dictionary.get("type", "")
         self.version = dictionary.get("version", "")
 
+
 ################
 # Map Endpoint #
 ################
-
 @cassiopeia.type.core.common.inheritdocs
 class MapDetails(cassiopeia.type.dto.common.CassiopeiaDto):
     """
@@ -709,10 +710,10 @@ class MapData(cassiopeia.type.dto.common.CassiopeiaDto):
         self.type = dictionary.get("type", "")
         self.version = dictionary.get("version", "")
 
+
 #####################
 # Mastery Endpoints #
 #####################
-
 @cassiopeia.type.core.common.inheritdocs
 class MasteryTreeItem(cassiopeia.type.dto.common.CassiopeiaDto):
     """
@@ -773,10 +774,9 @@ class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
     def mastery_ids(self):
         """Gets all other mastery IDs contained in this object"""
         ids = set()
-        if(self.prereq):
+        if self.prereq:
             ids.add(int(self.prereq))
         return ids
-
 
 
 @cassiopeia.type.core.common.inheritdocs
@@ -794,10 +794,10 @@ class MasteryList(cassiopeia.type.dto.common.CassiopeiaDto):
         self.type = dictionary.get("type", "")
         self.version = dictionary.get("version", "")
 
+
 ##################
 # Realm Endpoint #
 ##################
-
 @cassiopeia.type.core.common.inheritdocs
 class Realm(cassiopeia.type.dto.common.CassiopeiaDto):
     """
@@ -822,10 +822,10 @@ class Realm(cassiopeia.type.dto.common.CassiopeiaDto):
         self.store = dictionary.get("store", "")
         self.v = dictionary.get("v", "")
 
+
 ##################
 # Rune Endpoints #
 ##################
-
 @cassiopeia.type.core.common.inheritdocs
 class Rune(cassiopeia.type.dto.common.CassiopeiaDto):
     """
@@ -895,10 +895,10 @@ class RuneList(cassiopeia.type.dto.common.CassiopeiaDto):
         self.type = dictionary.get("type", "")
         self.version = dictionary.get("version", "")
 
+
 ############################
 # Summoner Spell Endpoints #
 ############################
-
 @cassiopeia.type.core.common.inheritdocs
 class SummonerSpell(cassiopeia.type.dto.common.CassiopeiaDto):
     """
@@ -909,7 +909,7 @@ class SummonerSpell(cassiopeia.type.dto.common.CassiopeiaDto):
     costType                str                    cost type
     description             str                    description
     effect                  list<list<float>>      effects
-    effectBurn              list<str>              effect burn 
+    effectBurn              list<str>              effect burn
     id                      int                    iD
     image                   Image                  image
     key                     str                    key
@@ -966,12 +966,13 @@ class SummonerSpellList(cassiopeia.type.dto.common.CassiopeiaDto):
         self.type = dictionary.get("type", "")
         self.version = dictionary.get("version", "")
 
+
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
-
 def _sa_bind_block_item():
     global BlockItem
+
     @cassiopeia.type.core.common.inheritdocs
     class BlockItem(BlockItem, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "BlockItem"
@@ -980,8 +981,10 @@ def _sa_bind_block_item():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _block_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Block._id", ondelete="CASCADE"))
 
+
 def _sa_bind_block():
     global Block
+
     @cassiopeia.type.core.common.inheritdocs
     class Block(Block, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "Block"
@@ -991,8 +994,10 @@ def _sa_bind_block():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _recommended_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Recommended._id", ondelete="CASCADE"))
 
+
 def _sa_bind_spell_vars():
     global SpellVars
+
     @cassiopeia.type.core.common.inheritdocs
     class SpellVars(SpellVars, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "SpellVars"
@@ -1005,8 +1010,10 @@ def _sa_bind_spell_vars():
         _c_spell_key = sqlalchemy.Column(sqlalchemy.String(30), sqlalchemy.ForeignKey("ChampionSpell.key", ondelete="CASCADE"))
         _s_spell_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("SummonerSpell.id", ondelete="CASCADE"))
 
+
 def _sa_bind_level_tip():
     global LevelTip
+
     @cassiopeia.type.core.common.inheritdocs
     class LevelTip(LevelTip, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "LevelTip"
@@ -1016,8 +1023,10 @@ def _sa_bind_level_tip():
         _c_spell_key = sqlalchemy.Column(sqlalchemy.String(30), sqlalchemy.ForeignKey("ChampionSpell.key", ondelete="CASCADE"))
         _s_spell_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("SummonerSpell.id", ondelete="CASCADE"))
 
+
 def _sa_bind_stats():
     global Stats
+
     @cassiopeia.type.core.common.inheritdocs
     class Stats(Stats, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "Stats"
@@ -1046,8 +1055,10 @@ def _sa_bind_stats():
         _rune_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Rune.id", ondelete="CASCADE"))
         _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id", ondelete="CASCADE"))
 
+
 def _sa_bind_skin():
     global Skin
+
     @cassiopeia.type.core.common.inheritdocs
     class Skin(Skin, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "Skin"
@@ -1056,8 +1067,10 @@ def _sa_bind_skin():
         num = sqlalchemy.Column(sqlalchemy.Integer)
         _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id", ondelete="CASCADE"))
 
+
 def _sa_bind_recommended():
     global Recommended
+
     @cassiopeia.type.core.common.inheritdocs
     class Recommended(Recommended, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "Recommended"
@@ -1071,8 +1084,10 @@ def _sa_bind_recommended():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id", ondelete="CASCADE"))
 
+
 def _sa_bind_image():
     global Image
+
     @cassiopeia.type.core.common.inheritdocs
     class Image(Image, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "Image"
@@ -1094,8 +1109,10 @@ def _sa_bind_image():
         _rune_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Rune.id", ondelete="CASCADE"))
         _s_spell_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("SummonerSpell.id", ondelete="CASCADE"))
 
+
 def _sa_bind_passive():
     global Passive
+
     @cassiopeia.type.core.common.inheritdocs
     class Passive(Passive, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "Passive"
@@ -1106,8 +1123,10 @@ def _sa_bind_passive():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id", ondelete="CASCADE"))
 
+
 def _sa_bind_info():
     global Info
+
     @cassiopeia.type.core.common.inheritdocs
     class Info(Info, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "ChampionInfo"
@@ -1118,8 +1137,10 @@ def _sa_bind_info():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id", ondelete="CASCADE"))
 
+
 def _sa_bind_champion_spell():
     global ChampionSpell
+
     @cassiopeia.type.core.common.inheritdocs
     class ChampionSpell(ChampionSpell, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "ChampionSpell"
@@ -1136,7 +1157,7 @@ def _sa_bind_champion_spell():
         key = sqlalchemy.Column(sqlalchemy.String(30), primary_key=True)
         leveltip = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.LevelTip", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
         maxrank = sqlalchemy.Column(sqlalchemy.Integer)
-        name = sqlalchemy.Column(sqlalchemy.String(30))
+        name = sqlalchemy.Column(sqlalchemy.String(50))
         range = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
         rangeBurn = sqlalchemy.Column(sqlalchemy.String(30))
         resource = sqlalchemy.Column(sqlalchemy.String(50))
@@ -1146,8 +1167,10 @@ def _sa_bind_champion_spell():
         vars = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.SpellVars", cascade="all, delete-orphan", passive_deletes=True)
         _champion_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Champion.id", ondelete="CASCADE"))
 
+
 def _sa_bind_champion():
     global Champion
+
     @cassiopeia.type.core.common.inheritdocs
     class Champion(Champion, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "Champion"
@@ -1169,8 +1192,10 @@ def _sa_bind_champion():
         tags = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
         title = sqlalchemy.Column(sqlalchemy.String(50))
 
+
 def _sa_bind_meta_data():
     global MetaData
+
     @cassiopeia.type.core.common.inheritdocs
     class MetaData(MetaData, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MetaData"
@@ -1181,8 +1206,10 @@ def _sa_bind_meta_data():
         _item_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Item.id", ondelete="CASCADE"))
         _rune_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Rune.id", ondelete="CASCADE"))
 
+
 def _sa_bind_gold():
     global Gold
+
     @cassiopeia.type.core.common.inheritdocs
     class Gold(Gold, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "Gold"
@@ -1193,8 +1220,10 @@ def _sa_bind_gold():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _item_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Item.id", ondelete="CASCADE"))
 
+
 def _sa_bind_basic_data_stats():
     global BasicDataStats
+
     @cassiopeia.type.core.common.inheritdocs
     class BasicDataStats(BasicDataStats, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "ItemStats"
@@ -1267,8 +1296,10 @@ def _sa_bind_basic_data_stats():
         _item_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Item.id", ondelete="CASCADE"))
         _rune_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Rune.id", ondelete="CASCADE"))
 
+
 def _sa_bind_item():
     global Item
+
     @cassiopeia.type.core.common.inheritdocs
     class Item(Item, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "Item"
@@ -1297,8 +1328,10 @@ def _sa_bind_item():
         stats = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.BasicDataStats", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
         tags = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
 
+
 def _sa_bind_map_details():
     global MapDetails
+
     @cassiopeia.type.core.common.inheritdocs
     class MapDetails(MapDetails, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MapDetails"
@@ -1307,8 +1340,10 @@ def _sa_bind_map_details():
         mapName = sqlalchemy.Column(sqlalchemy.String(30))
         unpurchasableItemList = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
 
+
 def _sa_bind_mastery():
     global Mastery
+
     @cassiopeia.type.core.common.inheritdocs
     class Mastery(Mastery, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "Mastery"
@@ -1321,8 +1356,10 @@ def _sa_bind_mastery():
         ranks = sqlalchemy.Column(sqlalchemy.Integer)
         sanitizedDescription = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
 
+
 def _sa_bind_realm():
     global Realm
+
     @cassiopeia.type.core.common.inheritdocs
     class Realm(Realm, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "Realm"
@@ -1336,8 +1373,10 @@ def _sa_bind_realm():
         store = sqlalchemy.Column(sqlalchemy.String(30))
         v = sqlalchemy.Column(sqlalchemy.String(30))
 
+
 def _sa_bind_rune():
     global Rune
+
     @cassiopeia.type.core.common.inheritdocs
     class Rune(Rune, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "Rune"
@@ -1364,8 +1403,10 @@ def _sa_bind_rune():
         stats = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.BasicDataStats", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
         tags = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
 
+
 def _sa_bind_summoner_spell():
     global SummonerSpell
+
     @cassiopeia.type.core.common.inheritdocs
     class SummonerSpell(SummonerSpell, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "SummonerSpell"
@@ -1392,6 +1433,7 @@ def _sa_bind_summoner_spell():
         summonerLevel = sqlalchemy.Column(sqlalchemy.Integer)
         tooltip = sqlalchemy.Column(sqlalchemy.Text)
         vars = sqlalchemy.orm.relationship("cassiopeia.type.dto.staticdata.SpellVars", cascade="all, delete-orphan", passive_deletes=True)
+
 
 def _sa_bind_all():
     _sa_bind_block_item()

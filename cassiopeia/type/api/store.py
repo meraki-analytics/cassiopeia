@@ -1,9 +1,11 @@
 import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
-if(cassiopeia.type.dto.common.sqlalchemy_imported):
+
+if cassiopeia.type.dto.common.sqlalchemy_imported:
     import sqlalchemy
     import sqlalchemy.orm
+
 
 class DataStore(object):
     """A place to store data. Used for caching/storing data from API calls"""
@@ -22,7 +24,7 @@ class DataStore(object):
 
         class_    type            the class to get values for
 
-        return    list<class_>    all stored values for the type 
+        return    list<class_>    all stored values for the type
         """
         pass
 
@@ -31,7 +33,7 @@ class DataStore(object):
 
         class_    type                the class to get values for
 
-        return    iterator<class_>    and iterator over all stored values for the type 
+        return    iterator<class_>    and iterator over all stored values for the type
         """
         pass
 
@@ -55,10 +57,10 @@ class DataStore(object):
         """
         pass
 
+
 #######################
 # Void Store resouces #
 #######################
-
 @cassiopeia.type.core.common.inheritdocs
 class VoidDataStore(DataStore):
     """A mock cache that doesn't actually store anything"""
@@ -80,10 +82,10 @@ class VoidDataStore(DataStore):
     def store(self, objs, keys, complete_sets=[]):
         pass
 
+
 #############################
 # In-memory Cache resources #
 #############################
-
 @cassiopeia.type.core.common.inheritdocs
 class Cache(DataStore):
     """In-memory cache of API data"""
@@ -115,8 +117,8 @@ class Cache(DataStore):
             return iter([])
 
     def get(self, class_, keys, key_field):
-        if(class_ not in self._cache):
-            if(not isinstance(keys, list)):
+        if class_ not in self._cache:
+            if not isinstance(keys, list):
                 return None
             else:
                 results = []
@@ -124,7 +126,7 @@ class Cache(DataStore):
                     results.append(None)
                 return results
 
-        if(not isinstance(keys, list)):
+        if not isinstance(keys, list):
             try:
                 return self._cache[class_][keys]
             except(KeyError):
@@ -140,33 +142,33 @@ class Cache(DataStore):
 
     def store(self, objs, keys, complete_sets=[]):
         is_list = isinstance(objs, list)
-        if(is_list != isinstance(keys, list)):
+        if is_list != isinstance(keys, list):
             raise ValueError("Object(s) and Key(s) must both be lists or both be non-lists")
 
-        if(not is_list):
+        if not is_list:
             class_ = type(objs)
-            if(class_ not in self._cache):
+            if class_ not in self._cache:
                 self._cache[class_] = {}
             self._cache[class_][keys] = objs
         else:
-            if(len(objs) != len(keys)):
+            if len(objs) != len(keys):
                 raise ValueError("Objects and Keys must be the same length")
 
             for i in range(len(objs)):
                 class_ = type(objs[i])
-                if(class_ not in self._cache):
+                if class_ not in self._cache:
                     self._cache[class_] = {}
                 self._cache[class_][keys[i]] = objs[i]
 
-        if(complete_sets):
+        if complete_sets:
             for class_ in complete_sets:
                 self._has_all[class_] = True
+
 
 ########################
 # SQLAlchemy resources #
 ########################
-
-if(cassiopeia.type.dto.common.sqlalchemy_imported):
+if cassiopeia.type.dto.common.sqlalchemy_imported:
     class HasAllStatus(cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "HasAll"
         class_ = sqlalchemy.Column(sqlalchemy.String(50), primary_key=True)
@@ -213,7 +215,7 @@ if(cassiopeia.type.dto.common.sqlalchemy_imported):
 
         def has_all(self, class_):
             class_name = HasAllStatus.get_name(class_)
-            has_all = self.session.query(HasAllStatus).filter(HasAllStatus.class_==class_name).first()
+            has_all = self.session.query(HasAllStatus).filter(HasAllStatus.class_ == class_name).first()
             return has_all.have_all if has_all else False
 
         def get_all(self, class_):
@@ -223,8 +225,8 @@ if(cassiopeia.type.dto.common.sqlalchemy_imported):
             return SQLAlchemyDB.Iterator(class_, self.session.query(class_.dto_type).all())
 
         def get(self, class_, keys, key_field):
-            if(not isinstance(keys, list)):
-                val = self.session.query(class_.dto_type).filter(getattr(class_.dto_type, key_field)==keys).first()
+            if not isinstance(keys, list):
+                val = self.session.query(class_.dto_type).filter(getattr(class_.dto_type, key_field) == keys).first()
                 return class_(val) if val else None
             else:
                 from_db = self.session.query(class_.dto_type).filter(getattr(class_.dto_type, key_field).in_(keys)).all()
@@ -240,11 +242,11 @@ if(cassiopeia.type.dto.common.sqlalchemy_imported):
                 return results
 
         def store(self, objs, keys=None, complete_sets=[]):
-            if(not isinstance(objs, list)):
+            if not isinstance(objs, list):
                 class_ = objs.data.__class__
                 p_key = class_.__mapper__.primary_key[0].name.split("\\.")[-1]
-                val = self.session.query(class_).filter(getattr(class_, p_key)==getattr(objs.data, p_key)).first()
-                if(not val):
+                val = self.session.query(class_).filter(getattr(class_, p_key) == getattr(objs.data, p_key)).first()
+                if not val:
                     self.session.add(objs.data)
             else:
                 class_ = objs[0].data.__class__
@@ -256,10 +258,10 @@ if(cassiopeia.type.dto.common.sqlalchemy_imported):
 
                 self.session.add_all(to_store.values())
 
-            if(complete_sets):
+            if complete_sets:
                 classes = {HasAllStatus.get_name(class_): HasAllStatus(class_) for class_ in complete_sets}
                 for obj in self.session.query(HasAllStatus).filter(HasAllStatus.class_.in_(classes.keys())).all():
-                    if(not obj.have_all):
+                    if not obj.have_all:
                         obj.have_all = True
                     del classes[obj.class_]
                 self.session.add_all(classes.values())
@@ -271,14 +273,28 @@ if(cassiopeia.type.dto.common.sqlalchemy_imported):
             self.session.close()
             self.db.dispose()
 
+
 __sa_bound = False
+
+
 def _sa_bind_typesystem():
     """Dynamically binds the typesystem with SQLAlchemy bindings"""
     global __sa_bound
-    if(__sa_bound):
+    if __sa_bound:
         return
 
-    import cassiopeia.type.dto.champion, cassiopeia.type.dto.currentgame, cassiopeia.type.dto.featuredgames, cassiopeia.type.dto.game, cassiopeia.type.dto.league, cassiopeia.type.dto.match, cassiopeia.type.dto.matchlist, cassiopeia.type.dto.staticdata, cassiopeia.type.dto.stats, cassiopeia.type.dto.status, cassiopeia.type.dto.summoner, cassiopeia.type.dto.team
+    import cassiopeia.type.dto.champion
+    import cassiopeia.type.dto.currentgame
+    import cassiopeia.type.dto.featuredgames
+    import cassiopeia.type.dto.game
+    import cassiopeia.type.dto.league
+    import cassiopeia.type.dto.match
+    import cassiopeia.type.dto.matchlist
+    import cassiopeia.type.dto.staticdata
+    import cassiopeia.type.dto.stats
+    import cassiopeia.type.dto.status
+    import cassiopeia.type.dto.summoner
+    import cassiopeia.type.dto.team
     cassiopeia.type.dto.champion._sa_bind_all()
     cassiopeia.type.dto.currentgame._sa_bind_all()
     cassiopeia.type.dto.featuredgames._sa_bind_all()
@@ -292,7 +308,18 @@ def _sa_bind_typesystem():
     cassiopeia.type.dto.summoner._sa_bind_all()
     cassiopeia.type.dto.team._sa_bind_all()
 
-    import cassiopeia.type.core.champion, cassiopeia.type.core.currentgame, cassiopeia.type.core.featuredgames, cassiopeia.type.core.game, cassiopeia.type.core.league, cassiopeia.type.core.match, cassiopeia.type.core.matchlist, cassiopeia.type.core.staticdata, cassiopeia.type.core.stats, cassiopeia.type.core.status, cassiopeia.type.core.summoner, cassiopeia.type.core.team
+    import cassiopeia.type.core.champion
+    import cassiopeia.type.core.currentgame
+    import cassiopeia.type.core.featuredgames
+    import cassiopeia.type.core.game
+    import cassiopeia.type.core.league
+    import cassiopeia.type.core.match
+    import cassiopeia.type.core.matchlist
+    import cassiopeia.type.core.staticdata
+    import cassiopeia.type.core.stats
+    import cassiopeia.type.core.status
+    import cassiopeia.type.core.summoner
+    import cassiopeia.type.core.team
     cassiopeia.type.core.champion._sa_rebind_all()
     cassiopeia.type.core.currentgame._sa_rebind_all()
     cassiopeia.type.core.featuredgames._sa_rebind_all()

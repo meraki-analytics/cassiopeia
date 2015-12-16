@@ -1,10 +1,12 @@
 import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
-if(cassiopeia.type.dto.common.sqlalchemy_imported):
+
+if cassiopeia.type.dto.common.sqlalchemy_imported:
     import sqlalchemy
     import sqlalchemy.orm
     import sqlalchemy.orm.collections
+
 
 @cassiopeia.type.core.common.inheritdocs
 class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
@@ -49,19 +51,19 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
         ids = set()
         for p in self.participants:
             s = p.stats
-            if(s.item0):
+            if s.item0:
                 ids.add(s.item0)
-            if(s.item1):
+            if s.item1:
                 ids.add(s.item1)
-            if(s.item2):
+            if s.item2:
                 ids.add(s.item2)
-            if(s.item3):
+            if s.item3:
                 ids.add(s.item3)
-            if(s.item4):
+            if s.item4:
                 ids.add(s.item4)
-            if(s.item5):
+            if s.item5:
                 ids.add(s.item5)
-            if(s.item6):
+            if s.item6:
                 ids.add(s.item6)
         return ids
 
@@ -70,11 +72,11 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all champion IDs contained in this object"""
         ids = set()
         for p in self.participants:
-            if(p.championId):
+            if p.championId:
                 ids.add(p.championId)
         for t in self.teams:
             for b in t.bans:
-                if(b.championId):
+                if b.championId:
                     ids.add(b.championId)
         return ids
 
@@ -84,7 +86,7 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
         ids = set()
         for p in self.participants:
             for m in p.masteries:
-                if(m.masteryId):
+                if m.masteryId:
                     ids.add(m.masteryId)
         return ids
 
@@ -94,7 +96,7 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
         ids = set()
         for p in self.participants:
             for r in p.runes:
-                if(r.runeId):
+                if r.runeId:
                     ids.add(r.runeId)
         return ids
 
@@ -103,7 +105,7 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all summoner IDs contained in this object"""
         ids = set()
         for p in self.participantIdentities:
-            if(p.player and p.player.summonerId):
+            if p.player and p.player.summonerId:
                 ids.add(p.player.summonerId)
         return ids
 
@@ -112,9 +114,9 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
         """Gets all summoner spell IDs contained in this object"""
         ids = set()
         for p in self.participants:
-            if(p.spell1Id):
+            if p.spell1Id:
                 ids.add(p.spell1Id)
-            if(p.spell2Id):
+            if p.spell2Id:
                 ids.add(p.spell2Id)
         return ids
 
@@ -171,8 +173,10 @@ class Team(cassiopeia.type.dto.common.CassiopeiaDto):
     firstBlood              bool                    flag indicating whether or not the team got first blood
     firstDragon             bool                    flag indicating whether or not the team got the first dragon kill
     firstInhibitor          bool                    flag indicating whether or not the team destroyed the first inhibitor
+    firstRiftHerald         bool                    flag indicating whether or not the team got the first rift herald kill
     firstTower              bool                    flag indicating whether or not the team destroyed the first tower
     inhibitorKills          int                     number of inhibitors the team destroyed
+    riftHeraldKills         int                     number of times the team killed rift herald
     teamId                  int                     team ID
     towerKills              int                     number of towers the team destroyed
     vilemawKills            int                     number of times the team killed vilemaw
@@ -187,8 +191,10 @@ class Team(cassiopeia.type.dto.common.CassiopeiaDto):
         self.firstBlood = dictionary.get("firstBlood", False)
         self.firstDragon = dictionary.get("firstDragon", False)
         self.firstInhibitor = dictionary.get("firstInhibitor", False)
+        self.firstRiftHerald = dictionary.get("firstRiftHerald", False)
         self.firstTower = dictionary.get("firstTower", False)
         self.inhibitorKills = dictionary.get("inhibitorKills", 0)
+        self.riftHeraldKills = dictionary.get("riftHeraldKills", 0)
         self.teamId = dictionary.get("teamId", 0)
         self.towerKills = dictionary.get("towerKills", 0)
         self.vilemawKills = dictionary.get("vilemawKills", 0)
@@ -519,7 +525,7 @@ class Event(cassiopeia.type.dto.common.CassiopeiaDto):
     killerId                   int          the killer ID of the event. Only present if relevant. Killer ID 0 indicates a minion.
     laneType                   str          the lane type of the event. Only present if relevant. (Legal values: BOT_LANE, MID_LANE, TOP_LANE)
     levelUpType                str          the level up type of the event. Only present if relevant. (Legal values: EVOLVE, NORMAL)
-    monsterType                str          the monster type of the event. Only present if relevant. (Legal values: BARON_NASHOR, BLUE_GOLEM, DRAGON, RED_LIZARD, VILEMAW)
+    monsterType                str          the monster type of the event. Only present if relevant. (Legal values: BARON_NASHOR, BLUE_GOLEM, DRAGON, RED_LIZARD, RIFTHERALD, VILEMAW)
     participantId              int          the participant ID of the event. Only present if relevant.
     pointCaptured              str          the point captured in the event. Only present if relevant. (Legal values: POINT_A, POINT_B, POINT_C, POINT_D, POINT_E)
     position                   Position     the position of the event. Only present if relevant.
@@ -593,12 +599,13 @@ class Position(cassiopeia.type.dto.common.CassiopeiaDto):
         self.x = dictionary.get("x", 0)
         self.y = dictionary.get("y", 0)
 
+
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
-
 def _sa_bind_match_detail():
     global MatchDetail
+
     @cassiopeia.type.core.common.inheritdocs
     class MatchDetail(MatchDetail, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MatchDetail"
@@ -617,9 +624,11 @@ def _sa_bind_match_detail():
         season = sqlalchemy.Column(sqlalchemy.String(30))
         teams = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Team", cascade="all, delete-orphan", passive_deletes=True)
         timeline = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Timeline", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
-        
+
+
 def _sa_bind_participant():
     global Participant
+
     @cassiopeia.type.core.common.inheritdocs
     class Participant(Participant, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MatchParticipant"
@@ -636,8 +645,10 @@ def _sa_bind_participant():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchDetail.matchId", ondelete="CASCADE"))
 
+
 def _sa_bind_participant_identity():
     global ParticipantIdentity
+
     @cassiopeia.type.core.common.inheritdocs
     class ParticipantIdentity(ParticipantIdentity, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MatchParticipantIdentity"
@@ -646,8 +657,10 @@ def _sa_bind_participant_identity():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchDetail.matchId", ondelete="CASCADE"))
 
+
 def _sa_bind_team():
     global Team
+
     @cassiopeia.type.core.common.inheritdocs
     class Team(Team, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MatchTeam"
@@ -668,8 +681,10 @@ def _sa_bind_team():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchDetail.matchId", ondelete="CASCADE"))
 
+
 def _sa_bind_timeline():
     global Timeline
+
     @cassiopeia.type.core.common.inheritdocs
     class Timeline(Timeline, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MatchTimeline"
@@ -678,8 +693,10 @@ def _sa_bind_timeline():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchDetail.matchId", ondelete="CASCADE"))
 
+
 def _sa_bind_mastery():
     global Mastery
+
     @cassiopeia.type.core.common.inheritdocs
     class Mastery(Mastery, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MatchMastery"
@@ -688,8 +705,10 @@ def _sa_bind_mastery():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipant._id", ondelete="CASCADE"))
 
+
 def _sa_bind_participant_stats():
     global ParticipantStats
+
     @cassiopeia.type.core.common.inheritdocs
     class ParticipantStats(ParticipantStats, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MatchParticipantStats"
@@ -759,8 +778,10 @@ def _sa_bind_participant_stats():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipant._id", ondelete="CASCADE"))
 
+
 def _sa_bind_participant_timeline():
     global ParticipantTimeline
+
     @cassiopeia.type.core.common.inheritdocs
     class ParticipantTimeline(ParticipantTimeline, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MatchParticipantTimeline"
@@ -794,8 +815,10 @@ def _sa_bind_participant_timeline():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipant._id", ondelete="CASCADE"))
 
+
 def _sa_bind_rune():
     global Rune
+
     @cassiopeia.type.core.common.inheritdocs
     class Rune(Rune, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MatchRune"
@@ -804,8 +827,10 @@ def _sa_bind_rune():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipant._id", ondelete="CASCADE"))
 
+
 def _sa_bind_player():
     global Player
+
     @cassiopeia.type.core.common.inheritdocs
     class Player(Player, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MatchPlayer"
@@ -816,8 +841,10 @@ def _sa_bind_player():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _participant_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipantIdentity._id", ondelete="CASCADE"))
 
+
 def _sa_bind_banned_champion():
     global BannedChampion
+
     @cassiopeia.type.core.common.inheritdocs
     class BannedChampion(BannedChampion, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MatchBannedChampion"
@@ -826,19 +853,23 @@ def _sa_bind_banned_champion():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _team_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchTeam._id", ondelete="CASCADE"))
 
+
 def _sa_bind_frame():
     global Frame
+
     @cassiopeia.type.core.common.inheritdocs
     class Frame(Frame, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MatchFrame"
         events = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Event", cascade="all, delete-orphan", passive_deletes=True)
-        participantFrames = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantFrame", collection_class=sqlalchemy.orm.collections.mapped_collection(lambda p: str(p.participantId)), cascade="all, delete-orphan", passive_deletes=True) # OR I HAVE NO IDEA
+        participantFrames = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantFrame", collection_class=sqlalchemy.orm.collections.mapped_collection(lambda p: str(p.participantId)), cascade="all, delete-orphan", passive_deletes=True)  # OR I HAVE NO IDEA
         timestamp = sqlalchemy.Column(sqlalchemy.Integer)
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _timeline_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchTimeline._id", ondelete="CASCADE"))
 
+
 def _sa_bind_participant_timeline_data():
     global ParticipantTimelineData
+
     @cassiopeia.type.core.common.inheritdocs
     class ParticipantTimelineData(ParticipantTimelineData, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MatchParticipantTimelineData"
@@ -850,8 +881,10 @@ def _sa_bind_participant_timeline_data():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _timeline_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipantTimeline._id", ondelete="CASCADE"))
 
+
 def _sa_bind_event():
     global Event
+
     @cassiopeia.type.core.common.inheritdocs
     class Event(Event, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MatchEvent"
@@ -879,8 +912,10 @@ def _sa_bind_event():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _frame_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchFrame._id", ondelete="CASCADE"))
 
+
 def _sa_bind_participant_frame():
     global ParticipantFrame
+
     @cassiopeia.type.core.common.inheritdocs
     class ParticipantFrame(ParticipantFrame, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MatchParticipantFrame"
@@ -897,8 +932,10 @@ def _sa_bind_participant_frame():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _frame_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchFrame._id", ondelete="CASCADE"))
 
+
 def _sa_bind_position():
     global Position
+
     @cassiopeia.type.core.common.inheritdocs
     class Position(Position, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "MatchPosition"
@@ -907,6 +944,7 @@ def _sa_bind_position():
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         _event_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchEvent._id", ondelete="CASCADE"))
         _frame_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchParticipantFrame._id", ondelete="CASCADE"))
+
 
 def _sa_bind_all():
     _sa_bind_match_detail()

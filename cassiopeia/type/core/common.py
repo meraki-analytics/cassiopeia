@@ -1,9 +1,9 @@
 import enum
-import json
 import weakref
 import functools
 
 import cassiopeia.type.api.exception
+
 
 class CassiopeiaObject(object):
     """An object storing data from the API, with various helpful utilities and shortcuts"""
@@ -11,7 +11,7 @@ class CassiopeiaObject(object):
         """
         data    CassiopeiaDto    the underlying DTO object with the data for this type
         """
-        if(data.__class__ is not self.dto_type):
+        if data.__class__ is not self.dto_type:
             raise cassiopeia.type.api.exception.CassiopeiaException("Tried to instantiate a core {class_} with a {dto} dto!".format(class_=self.__class__.__name__, dto=data.__class__.__name__))
         self.data = data
 
@@ -106,11 +106,11 @@ def inheritdocs(class_):
     return    class    the class with inherited documentation
     """
     for name, method in vars(class_).items():
-        if(not method.__doc__):
+        if not method.__doc__:
             for parent in class_.__bases__:
                 try:
                     p_method = getattr(parent, name)
-                    if(p_method and p_method.__doc__):
+                    if p_method and p_method.__doc__:
                         method.__doc__ = p_method.__doc__
                 except AttributeError:
                     continue
@@ -432,6 +432,7 @@ class Monster(enum.Enum):
     blue = "BLUE_GOLEM"
     red = "RED_LIZARD"
     spider = "VILEMAW"
+    rift_herald = "RIFTHERALD"
 
 
 class Point(enum.Enum):

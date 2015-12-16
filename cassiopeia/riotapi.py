@@ -1,5 +1,6 @@
 """
-This is the primary entry point for Cassiopeia. Accesses the LoL REST API (https://developer.riotgames.com/) and provides the results in easy-to-use Python objects.
+This is the primary entry point for Cassiopeia. Accesses the LoL REST API (https://developer.riotgames.com/)
+and provides the results in easy-to-use Python objects.
 """
 
 import urllib.request
@@ -23,6 +24,7 @@ from cassiopeia.core.statsapi import *
 from cassiopeia.core.summonerapi import *
 from cassiopeia.core.teamapi import *
 
+
 def set_api_key(key):
     """Set your API key
 
@@ -30,14 +32,16 @@ def set_api_key(key):
     """
     cassiopeia.dto.requests.api_key = key
 
+
 def set_region(region):
     """Set the region to run API queries against
 
     region    str | cassiopeia.type.core.common.Region    the region to query against
     """
-    if(isinstance(region, str)):
+    if not isinstance(region, cassiopeia.type.core.common.Region):
         region = cassiopeia.type.core.common.Region(region.lower())
     cassiopeia.dto.requests.region = region.value
+
 
 def print_calls(on):
     """Sets whether to print calls to stdout as they are made
@@ -45,6 +49,7 @@ def print_calls(on):
     on    bool    the region to query against
     """
     cassiopeia.dto.requests.print_calls = on
+
 
 def set_rate_limit(calls_per_epoch, seconds_per_epoch):
     """Sets the rate limit for cassiopeia to manage internally
@@ -54,6 +59,7 @@ def set_rate_limit(calls_per_epoch, seconds_per_epoch):
     """
     cassiopeia.dto.requests.rate_limiter = cassiopeia.type.api.rates.SingleRateLimiter(calls_per_epoch, seconds_per_epoch)
 
+
 def set_rate_limits(*limits):
     """Sets the rate limits for cassiopeia to manage internally
 
@@ -61,18 +67,20 @@ def set_rate_limits(*limits):
     """
     cassiopeia.dto.requests.rate_limiter = cassiopeia.type.api.rates.MultiRateLimiter(*limits)
 
+
 def set_proxy(url, port=80):
     """Sets a proxy server to tunnel requests to the Riot API through
 
     url     str    the URL of the proxy server, without port number or protocol
     port    int    the port number to conntect to (default 80)
     """
-    if(url):
+    if url:
         cassiopeia.dto.requests.proxy = urllib.request.ProxyHandler({"https": "https://{url}:{port}".format(url=url, port=port)})
         urllib.request.install_opener(urllib.request.build_opener(cassiopeia.dto.requests.proxy))
     else:
         cassiopeia.dto.requests.proxy = urllib.request.ProxyHandler({})
         urllib.request.install_opener(urllib.request.build_opener(cassiopeia.dto.requests.proxy))
+
 
 def set_locale(locale):
     """Sets the locale (language) to use for calls to the Riot API. Use get_languages() to find valid locales.
@@ -81,21 +89,23 @@ def set_locale(locale):
     """
     cassiopeia.dto.staticdataapi._locale = locale
 
+
 def set_load_policy(policy):
     """Sets the load policy to use. Keep your load policy in mind when making calls, as different policies are better for different applications.
 
     policy    str | cassiopeia.type.core.common.LoadPolicy    the load policy to use for calls to the API
     """
-    if(isinstance(policy, str)):
+    if not isinstance(policy, cassiopeia.type.core.common.LoadPolicy):
         policy = cassiopeia.type.core.common.LoadPolicy(policy.upper())
     cassiopeia.core.requests.load_policy = policy
+
 
 def set_data_store(store):
     """Sets the data store to use for caching the results of API calls.
 
     store    cassiopeia.type.api.store.DataStore    the data store to use for storing results
     """
-    if(not store):
+    if not store:
         cassiopeia.core.requests.data_store = cassiopeia.type.api.store.VoidDataStore()
     else:
         cassiopeia.core.requests.data_store = store

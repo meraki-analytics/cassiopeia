@@ -4,10 +4,15 @@ import cassiopeia.riotapi
 import cassiopeia.type.core.common
 import cassiopeia.type.dto.staticdata
 
+try:
+    from future.builtins.misc import super
+except ImportError:
+    pass
+
+
 ######################
 # Champion Endpoints #
 ######################
-
 @cassiopeia.type.core.common.inheritdocs
 class SetItem(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.BlockItem
@@ -536,28 +541,28 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
         return [SpellVariables(svars) for svars in self.data.vars]
 
     def __replace_variables(self, text, level, rank):
-        if(level < 1 or level > 18):
+        if level < 1 or level > 18:
             raise ValueError("Not a valid champion level")
-        if(rank < 1 or rank > self.max_rank):
+        if rank < 1 or rank > self.max_rank:
             raise ValueError("Not a valid spell rank")
 
         i = 1
         for effect in self.effects:
-            if(effect):
+            if effect:
                 text = text.replace("{{{{ e{i} }}}}".format(i=i), str(effect[rank - 1]))
                 i += 1
 
         for svar in self.variables:
             val = svar.coefficients[0]
-            if(len(svar.coefficients) == self.max_rank):
+            if len(svar.coefficients) == self.max_rank:
                 val = svar.coefficients[rank - 1]
-            elif(svar.coefficients == 18):
+            elif svar.coefficients == 18:
                 val = svar.coefficients[level - 1]
             replacement = str(val)
 
-            if(svar.link == "attackdamage"):
+            if svar.link == "attackdamage":
                 replacement = replacement + " AD"
-            elif(svar.link == "spelldamage"):
+            elif svar.link == "spelldamage":
                 replacement = replacement + " AP"
 
             text = text.replace("{{{{ {key} }}}}".format(key=svar.key), replacement)
@@ -696,10 +701,10 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
         """
         return cassiopeia.riotapi.get_champion_status(self)
 
+
 ##################
 # Item Endpoints #
 ##################
-
 @cassiopeia.type.core.common.inheritdocs
 class MetaData(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.MetaData
@@ -757,8 +762,8 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
 
     def __init__(self, data, scraped_stats={}):
         super().__init__(data)
-        for k,v in scraped_stats.items():
-            if("percent" in k and v > 1.0):
+        for k, v in scraped_stats.items():
+            if "percent" in k and v > 1.0:
                 scraped_stats[k] = v / 100.0
         self.__scraped_stats = scraped_stats
 
@@ -1136,7 +1141,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def effect(self):
         """dict<str, bool>    the item's effects"""
         return self.effect
-    
+
     @property
     def components(self):
         """list<Item>    the components for this item"""
@@ -1223,7 +1228,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
         scraped_stats = {}
         for stat, regex in Item.__stat_patterns.items():
             match = re.search(regex, self.description)
-            if(match):
+            if match:
                 scraped_stats[stat] = float(match.group(1))
         return ItemStats(self.data.stats, scraped_stats) if self.data.stats else None
 
@@ -1266,27 +1271,27 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     @cassiopeia.type.core.common.lazyproperty
     def categories(self):
         """list<str>    the shop categories that this item belongs to"""
-        if(self.consumable):
+        if self.consumable:
             cats = {"Consumable"}
         else:
             cats = set()
-        if(self.stats is not None):
+        if self.stats is not None:
             for cat_name, cat in Item.__item_categories.items():
                 for subcat, attrs in cat.items():
                     for attr in attrs:
-                        if(getattr(self.stats, attr, 0.0) != 0.0):
+                        if getattr(self.stats, attr, 0.0) != 0.0:
                             cats.add(cat_name)
                             cats.add(subcat)
-        if(str(self.id) in Item.__boot_ids or len(set(self.data.from_) & Item.__boot_ids) > 0):
+        if str(self.id) in Item.__boot_ids or len(set(self.data.from_) & Item.__boot_ids) > 0:
             cats.add("Boots")
             cats.remove("Other Movement Items")
 
         return list(cats)
 
+
 ################
 # Map Endpoint #
 ################
-
 @cassiopeia.type.core.common.inheritdocs
 class MapDetails(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.MapDetails
@@ -1323,10 +1328,10 @@ class MapDetails(cassiopeia.type.core.common.CassiopeiaObject):
         """list<Item>    the items that can't be bought on this map"""
         return list(filter(None, cassiopeia.riotapi.get_items(self.data.unpurchasableItemList)))
 
+
 #####################
 # Mastery Endpoints #
 #####################
-
 @cassiopeia.type.core.common.inheritdocs
 class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.Mastery
@@ -1383,10 +1388,10 @@ class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
         """list<str>    sanitized descriptions of this mastery by rank"""
         return self.data.sanitizedDescription
 
+
 ##################
 # Realm Endpoint #
 ##################
-
 @cassiopeia.type.core.common.inheritdocs
 class Realm(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.Realm
@@ -1448,10 +1453,10 @@ class Realm(cassiopeia.type.core.common.CassiopeiaObject):
         """str    the current version of this file"""
         return self.data.v
 
+
 ##################
 # Rune Endpoints #
 ##################
-
 @cassiopeia.type.core.common.inheritdocs
 class Rune(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.Rune
@@ -1507,7 +1512,7 @@ class Rune(cassiopeia.type.core.common.CassiopeiaObject):
     def tags(self):
         """list<str>    this rune's tags for sorting runes"""
         return self.data.tags
-        
+
     @property
     def rune_type(self):
         """str    what type of rune this is"""
@@ -1516,10 +1521,10 @@ class Rune(cassiopeia.type.core.common.CassiopeiaObject):
         except:
             return ""
 
+
 ############################
 # Summoner Spell Endpoints #
 ############################
-
 @cassiopeia.type.core.common.inheritdocs
 class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.SummonerSpell
@@ -1652,7 +1657,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
         return [SpellVariables(svars) for svars in self.data.vars]
 
     def __replace_variables(self, text, level):
-        if(level < 1 or level > 18):
+        if level < 1 or level > 18:
             raise ValueError("Not a valid champion level")
 
         for svar in self.variables:
@@ -1681,10 +1686,10 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
         """
         return self.__replace_variables(self.sanitized_tooltip, level)
 
+
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
-
 def _sa_rebind_all():
     SetItem.dto_type = cassiopeia.type.dto.staticdata.BlockItem
     ItemSet.dto_type = cassiopeia.type.dto.staticdata.Block

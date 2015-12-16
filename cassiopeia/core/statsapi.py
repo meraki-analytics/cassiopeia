@@ -4,6 +4,7 @@ import cassiopeia.core.requests
 import cassiopeia.type.core.common
 import cassiopeia.type.core.stats
 
+
 def get_ranked_stats(summoner, season=None):
     """Gets a summoner's ranked stats
 
@@ -12,7 +13,7 @@ def get_ranked_stats(summoner, season=None):
 
     return      dict<Champion, AggregatedStats>    the summoner's ranked stats divided by champion. The entry for None contains combined stats for all champions.
     """
-    if(season and season not in cassiopeia.type.core.common.stats_seasons):
+    if season and season not in cassiopeia.type.core.common.stats_seasons:
         raise ValueError("Must use a valid season to get ranked stats for")
 
     stats = cassiopeia.dto.statsapi.get_ranked_stats(summoner.id, season.value if season else None)
@@ -20,6 +21,7 @@ def get_ranked_stats(summoner, season=None):
     champions[0] = None
 
     return {champions[stat.id]: cassiopeia.type.core.stats.AggregatedStats(stat.stats) for stat in stats.champions}
+
 
 def get_stats(summoner, season=None):
     """Gets a summoner's stats
@@ -29,7 +31,7 @@ def get_stats(summoner, season=None):
 
     return      dict<StatSummaryType, StatsSummary>    the summoner's stats divided by queue type
     """
-    if(season and season not in cassiopeia.type.core.common.stats_seasons):
+    if season and season not in cassiopeia.type.core.common.stats_seasons:
         raise ValueError("Must use a valid season to get stats for")
 
     stats = cassiopeia.dto.statsapi.get_stats(summoner.id, season.value if season else None)

@@ -1,5 +1,6 @@
 import threading
 
+
 class SingleRateLimiter(object):
     """Handles a single rate limit, ensuring that calls don't exceed it"""
 
@@ -32,14 +33,14 @@ class SingleRateLimiter(object):
         self.lock.release()
 
         try:
-            if(method):
+            if method:
                 return method(*args)
             else:
                 return None
         finally:
             # If we don't have an epoch timer running, start one. Also count that we've completed a call.
             self.lock.acquire()
-            if(not self.resetter):
+            if not self.resetter:
                 self.resetter = threading.Timer(self.seconds_per_epoch, self._reset)
                 self.resetter.daemon = True
                 self.resetter.start()
@@ -75,7 +76,7 @@ class SingleRateLimiter(object):
         """
         self.lock.acquire()
 
-        if(self.resetter):
+        if self.resetter:
             self.resetter.cancel()
 
         self._drain()
@@ -109,7 +110,7 @@ class MultiRateLimiter(object):
         self.wait()
 
         try:
-            if(method):
+            if method:
                 return method(*args)
             else:
                 return None

@@ -8,6 +8,7 @@ try:
 except ImportError:
     sqlalchemy_imported = False
 
+
 class CassiopeiaDto(object):
     """A Python representation of an object returned by the RiotAPI"""
 
@@ -15,16 +16,16 @@ class CassiopeiaDto(object):
         """
         dictionary    dict    the JSON data returned from the Riot API as a dict
         """
-        for k,v in dictionary.items():
+        for k, v in dictionary.items():
             setattr(self, k, v)
 
     def to_json(self, **kwargs):
         """Gets a JSON representation of the object
-        
+
         return    str    a JSON representation of the object
         """
-        dictionary = {k: v for k,v in self.__dict__.items() if not k.startswith("_")}
-        default = kwargs.pop("default", lambda o: {k: v for k,v in o.__dict__.items() if not k.startswith("_")})
+        dictionary = {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
+        default = kwargs.pop("default", lambda o: {k: v for k, v in o.__dict__.items() if not k.startswith("_")})
         sort_keys = kwargs.pop("sort_keys", True)
         indent = kwargs.pop("indent", 4)
         return json.dumps(dictionary, default=default, sort_keys=sort_keys, indent=indent, **kwargs)
@@ -44,7 +45,8 @@ class CassiopeiaDto(object):
     def __hash__(self):
         return hash(id(self))
 
-if(sqlalchemy_imported):
+
+if sqlalchemy_imported:
     BaseDB = sqlalchemy.ext.declarative.declarative_base()
 
     class JSONEncoded(sqlalchemy.types.TypeDecorator):
