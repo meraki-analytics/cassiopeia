@@ -21,7 +21,7 @@ def main():
     riotapi.set_load_policy(LoadPolicy.lazy)
 
     dyrus = riotapi.get_summoner_by_name("Dyrus")  # SummonerID is 5908
-    #dyrus = riotapi.get_summoner_by_id(5908)  # You could use this as well
+    # dyrus = riotapi.get_summoner_by_id(5908)  # You could use this as well
 
     match_list = riotapi.get_match_list(dyrus)
 
@@ -33,15 +33,15 @@ def main():
 
     print("Calculating K/D/A from the past {0} matches...".format(num_matches))
 
-    for i,match_reference in enumerate(match_list[0:num_matches]):
+    for i, match_reference in enumerate(match_list[0:num_matches]):
         match = riotapi.get_match(match_reference)
         for participant in match.participants:
             if participant.summoner_id == dyrus.id:
                 kills += participant.stats.kills
                 deaths += participant.stats.kills
                 assists += participant.stats.assists
-        kda = (kills +  assists) / deaths
-        print("Rolling K/D/A for {0}:  {1}/{2}/{3} == {4} over most recent {5} matches".format(dyrus.name, kills, deaths, assists, round(kda, 3), i+1))
+        kda = (kills + assists) / deaths
+        print("Rolling K/D/A for {0}:  {1}/{2}/{3} == {4} over most recent {5} matches".format(dyrus.name, kills, deaths, assists, round(kda, 3), i + 1))
 
     print("Final average K/D/A:  {0}/{1}/{2} == {3} over past {4} matches".format(kills, deaths, assists, round(kda, 3), num_matches))
 
