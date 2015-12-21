@@ -144,7 +144,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def queue(self):
         """Queue    the queue type for this game"""
-        return cassiopeia.type.core.common.queue.for_id(self.data.gameQueueConfigId) if self.data.gameQueueConfigId else None
+        return cassiopeia.type.core.common.Queue.for_id(self.data.gameQueueConfigId) if self.data.gameQueueConfigId else None
 
     @cassiopeia.type.core.common.lazyproperty
     def creation(self):
