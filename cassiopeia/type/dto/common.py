@@ -46,6 +46,21 @@ class CassiopeiaDto(object):
         return hash(id(self))
 
 
+class CassiopeiaParametersDto(CassiopeiaDto):
+    """Parameters for a POST or PUT request to the Riot API"""
+
+    def to_json(self, **kwargs):
+        """Gets a JSON representation of the object
+
+        return    str    a JSON representation of the object
+        """
+        dictionary = {k: v for k, v in self.__dict__.items() if not k.startswith("_") and v}
+        default = kwargs.pop("default", lambda o: {k: v for k, v in o.__dict__.items() if not k.startswith("_") and v})
+        sort_keys = kwargs.pop("sort_keys", True)
+        indent = kwargs.pop("indent", 4)
+        return json.dumps(dictionary, default=default, sort_keys=sort_keys, indent=indent, **kwargs)
+
+
 if sqlalchemy_imported:
     BaseDB = sqlalchemy.ext.declarative.declarative_base()
 

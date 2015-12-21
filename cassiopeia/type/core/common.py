@@ -7,6 +7,7 @@ import cassiopeia.type.api.exception
 
 class CassiopeiaObject(object):
     """An object storing data from the API, with various helpful utilities and shortcuts"""
+
     def __init__(self, data):
         """
         data    CassiopeiaDto    the underlying DTO object with the data for this type
@@ -52,7 +53,7 @@ class LazyProperty(object):
     def __get__(self, obj, t=None):
         try:
             return self.values[obj]
-        except(KeyError):
+        except KeyError:
             self.values[obj] = self.method(obj)
             return self.values[obj]
 
@@ -289,6 +290,7 @@ class Region(enum.Enum):
     latin_america_south = "las"
     north_america = "na"
     oceania = "oce"
+    pbe = "pbe"
     russia = "ru"
     turkey = "tr"
 

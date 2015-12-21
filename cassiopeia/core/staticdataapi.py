@@ -97,7 +97,7 @@ def get_champions_by_name(names):
         try:
             index = indices[champion.name]
             results[index] = champion
-        except(KeyError):
+        except KeyError:
             pass
 
     return results

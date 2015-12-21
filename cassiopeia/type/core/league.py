@@ -87,7 +87,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
         try:
             id_ = int(self.data.playerOrTeamId)
             return cassiopeia.riotapi.get_summoner_by_id(id_)
-        except(ValueError):
+        except ValueError:
             return None
 
     @property
@@ -99,7 +99,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
         try:
             int(self.data.playerOrTeamId)
             return None
-        except(ValueError):
+        except ValueError:
             return cassiopeia.riotapi.get_team_by_id(self.data.playerOrTeamId)
 
     @property
@@ -111,7 +111,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
         try:
             int(self.data.playerOrTeamId)
             return self.data.playerOrTeamName
-        except(ValueError):
+        except ValueError:
             return ""
 
     @property
@@ -120,7 +120,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
         try:
             int(self.data.playerOrTeamId)
             return ""
-        except(ValueError):
+        except ValueError:
             return self.data.playerOrTeamName
 
     @property
@@ -172,7 +172,7 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
         try:
             id_ = int(self.data.participantId)
             return cassiopeia.riotapi.get_summoner_by_id(id_)
-        except(ValueError):
+        except ValueError:
             return None
 
     @property
@@ -184,7 +184,7 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
         try:
             int(self.data.participantId)
             return None
-        except(ValueError):
+        except ValueError:
             return cassiopeia.riotapi.get_team_by_id(self.data.participantId)
 
     @property

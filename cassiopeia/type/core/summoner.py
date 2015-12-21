@@ -52,7 +52,7 @@ class RunePage(cassiopeia.type.core.common.CassiopeiaObject):
         for slot in self.data.slots:
             try:
                 runes[slot.runeId] += 1
-            except(KeyError):
+            except KeyError:
                 runes[slot.runeId] = 1
 
         fetched = cassiopeia.riotapi.get_runes(list(runes.keys()))
