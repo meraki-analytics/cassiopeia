@@ -39,18 +39,18 @@ def auto_retry(api_call_method):
             return api_call_method(*args, **kwargs)
         except APIError as error:
             # Try Again Once
-            if(error.error_code in [500]):
+            if error.error_code in [500]:
                 try:
                     print("Got a 500, trying again...")
                     return api_call_method(*args, **kwargs)
                 except APIError as another_error:
-                    if(another_error.error_code in [500, 400, 404]):
+                    if another_error.error_code in [500, 400, 404]:
                         pass
                     else:
                         raise another_error
 
             # Skip
-            elif(error.error_code in [400, 404]):
+            elif error.error_code in [400, 404]:
                 print("Got a 400 or 404")
                 pass
 

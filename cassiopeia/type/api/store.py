@@ -97,7 +97,7 @@ class Cache(DataStore):
     def has_all(self, class_):
         try:
             return self._has_all[class_]
-        except(KeyError):
+        except KeyError:
             return False
 
     def get_all(self, class_):
@@ -105,7 +105,7 @@ class Cache(DataStore):
         try:
             for obj in self._cache[class_].items():
                 results.append(obj[1])
-        except(KeyError):
+        except KeyError:
             pass
 
         return results
@@ -113,7 +113,7 @@ class Cache(DataStore):
     def iterate(self, class_):
         try:
             iter(self._cache[class_].values())
-        except(KeyError):
+        except KeyError:
             return iter([])
 
     def get(self, class_, keys, key_field):
@@ -129,14 +129,14 @@ class Cache(DataStore):
         if not isinstance(keys, list):
             try:
                 return self._cache[class_][keys]
-            except(KeyError):
+            except KeyError:
                 return None
         else:
             results = []
             for key in keys:
                 try:
                     results.append(self._cache[class_][key])
-                except(KeyError):
+                except KeyError:
                     results.append(None)
             return results
 
@@ -193,7 +193,7 @@ if cassiopeia.type.dto.common.sqlalchemy_imported:
                     val = self.class_(self.result[self.index])
                     self.index += 1
                     return val
-                except(IndexError):
+                except IndexError:
                     raise StopIteration
 
             def __iter__(self):

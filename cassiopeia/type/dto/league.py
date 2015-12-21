@@ -77,7 +77,7 @@ class League(cassiopeia.type.dto.common.CassiopeiaDto):
             try:
                 id_ = int(self.participantId)
                 ids.add(id_)
-            except(ValueError):
+            except ValueError:
                 pass
 
         for entry in self.entries:
@@ -85,7 +85,7 @@ class League(cassiopeia.type.dto.common.CassiopeiaDto):
                 try:
                     id_ = int(entry.playerOrTeamId)
                     ids.add(id_)
-                except(ValueError):
+                except ValueError:
                     pass
         return ids
 
@@ -97,14 +97,14 @@ class League(cassiopeia.type.dto.common.CassiopeiaDto):
         if self.participantId:
             try:
                 int(self.participantId)
-            except(ValueError):
+            except ValueError:
                 ids.add(self.participantId)
 
         for entry in self.entries:
             if entry.playerOrTeamId:
                 try:
                     int(entry.playerOrTeamId)
-                except(ValueError):
+                except ValueError:
                     ids.add(entry.playerOrTeamId)
         return ids
 

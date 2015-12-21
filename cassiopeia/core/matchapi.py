@@ -6,11 +6,12 @@ import cassiopeia.type.core.match
 import cassiopeia.type.core.matchlist
 
 
-def get_match(id_, include_timeline=True):
+def get_match(id_, include_timeline=True, tournament_code=""):
     """Gets a match
 
     id_                 int | MatchReference    the ID of or reference to the match to get
     include_timeline    bool                    whether to include timeline data in the returned match
+    tournament_code     str                     the tournament code if the match to be retrieved is from a tournament
 
     return              Match                   the match
     """
@@ -21,7 +22,7 @@ def get_match(id_, include_timeline=True):
     if match and (match.timeline or not include_timeline):
         return match
 
-    match = cassiopeia.dto.matchapi.get_match(id_, include_timeline)
+    match = cassiopeia.dto.matchapi.get_match(id_, include_timeline, tournament_code)
 
     # Load required data if loading policy is eager
     if cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager:
@@ -38,11 +39,12 @@ def get_match(id_, include_timeline=True):
     return match
 
 
-def get_matches(ids, include_timeline=True):
+def get_matches(ids, include_timeline=True, tournament_code=""):
     """Gets a bunch of matches
 
     ids                 list<int> | list<MatchReference>    the IDs of or references to the matches to get
     include_timeline    bool                                whether to include timeline data in the returned matches
+    tournament_code     str                                 the tournament code if the match to be retrieved is from a tournament
 
     return              list<Match>                         the matches
     """
@@ -72,7 +74,7 @@ def get_matches(ids, include_timeline=True):
 
     # Make requests to get them
     for i in range(len(missing)):
-        match = cassiopeia.type.core.match.Match(cassiopeia.dto.matchapi.get_match(missing[i], include_timeline))
+        match = cassiopeia.type.core.match.Match(cassiopeia.dto.matchapi.get_match(missing[i], include_timeline, tournament_code))
         matches[loc[i]] = match
         missing[i] = match
 
@@ -95,3 +97,13 @@ def get_matches(ids, include_timeline=True):
 
     cassiopeia.core.requests.data_store.store(missing, [match.id for match in missing])
     return matches
+
+
+def get_tournament_match_ids(tournament_code):
+    """Gets the IDs for a tournament's matches
+
+    tournament_code    str          the tournament code
+
+    return             list<int>    the match ids for the tournament
+    """
+    return cassiopeia.dto.matchapi.get_tournament_match_ids(tournament_code)

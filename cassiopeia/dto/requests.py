@@ -28,12 +28,14 @@ api_versions = {
 }
 
 api_key = ""
+tournament_api_key = ""
 region = ""
 print_calls = False
-rate_limiter = cassiopeia.type.api.rates.MultiRateLimiter((10, 10), (500, 600))
+rate_limiter = None
+tournament_rate_limiter = None
 
 
-def get(request, params={}, static=False, include_base=True):
+def get(request, params={}, static=False, include_base=True, tournament=False):
     """Makes a rate-limited HTTP request to the Riot API and returns the result
 
     request         str               the request string
@@ -43,7 +45,7 @@ def get(request, params={}, static=False, include_base=True):
 
     return          dict              the JSON response from the Riot API as a dict
     """
-    if not api_key:
+    if (not tournament and not api_key) or (tournament and not tournament_api_key):
         raise cassiopeia.type.api.exception.CassiopeiaException("API Key must be set before the API can be queried.")
     if not region:
         raise cassiopeia.type.api.exception.CassiopeiaException("Region must be set before the API can be queried.")
@@ -53,7 +55,7 @@ def get(request, params={}, static=False, include_base=True):
     rgn = ("static-data/{region}" if static else "{region}").format(region=region)
 
     # Encode params
-    params["api_key"] = api_key
+    params["api_key"] = tournament_api_key if tournament else api_key
     encoded_params = urllib.parse.urlencode(params)
 
     # Build and execute request
@@ -62,35 +64,42 @@ def get(request, params={}, static=False, include_base=True):
     else:
         url = "{request}?{params}".format(request=request, params=encoded_params)
 
+    limiter = tournament_rate_limiter if tournament else rate_limiter
     try:
-        content = rate_limiter.call(executeRequest, url) if rate_limiter else executeRequest(url)
+        content = limiter.call(execute_request, url) if limiter else execute_request(url)
         return json.loads(content)
     except urllib.error.HTTPError as e:
         # Reset rate limiter and retry on 429 (rate limit exceeded)
-        if e.code == 429 and rate_limiter:
+        if e.code == 429 and limiter:
             retry_after = 1
             if e.headers["Retry-After"]:
                 retry_after += int(e.headers["Retry-After"])
 
-            rate_limiter.reset_in(retry_after)
+            limiter.reset_in(retry_after)
             return get(request, params, static)
         else:
             raise cassiopeia.type.api.exception.APIError("Server returned error {code} on call: {url}".format(code=e.code, url=url), e.code)
 
 
-def executeRequest(url):
-    """Executes an HTTP GET request and returns the result in a string
+def execute_request(url, method="GET", payload=""):
+    """Executes an HTTP request and returns the result in a string
 
-    url       str    the full URL to send a GET request to
+    url        str    the full URL to send a request to
+    method     str    the HTTP method to use
+    payload    str    the json payload to send if appropriate for HTTP method
 
-    return    str    the content returned by the server
+    return     str    the content returned by the server
     """
     if print_calls:
         print(url)
 
     response = None
     try:
-        request = urllib.request.Request(url)
+        if payload:
+            payload = payload.encode("UTF-8")
+            request = urllib.request.Request(url, method=method, payload=payload)
+        else:
+            request = urllib.request.Request(url, method=method)
         request.add_header("Accept-Encoding", "gzip")
         response = urllib.request.urlopen(request)
         content = response.read()
