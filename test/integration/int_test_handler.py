@@ -4,10 +4,14 @@ import os
 from cassiopeia import riotapi
 from cassiopeia.type.core.common import LoadPolicy
 
-riotapi.set_api_key(os.environ["RIOT_API_KEY"])
-riotapi.set_region("NA")
-riotapi.print_calls(True)
-riotapi.set_load_policy(LoadPolicy.lazy)
+
+RIOT_API_KEY = os.environ.get("RIOT_API_KEY")
+
+if RIOT_API_KEY:
+    riotapi.set_api_key(os.environ["RIOT_API_KEY"])
+    riotapi.set_region("NA")
+    riotapi.print_calls(True)
+    riotapi.set_load_policy(LoadPolicy.lazy)
 
 champion_id = 35
 champion_name = "Thresh"
@@ -22,5 +26,5 @@ item_id = 3031
 
 
 
-def test_result(result):
-    pass  # assert result
+def test_result(result=None):
+    assert True  # ??? was Pass previously

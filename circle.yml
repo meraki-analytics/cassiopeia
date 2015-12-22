@@ -11,6 +11,6 @@ dependencies:
 
 test:
   override:
-    - (deactivate && source ~/virtualenvs/venv-3.5.0/bin/activate && py.test)
-    - (deactivate && source ~/virtualenvs/venv-2.7.5/bin/activate && py.test)
+    - (deactivate && source ~/virtualenvs/venv-3.5.0/bin/activate && py.test -n 4)
+    - (deactivate && source ~/virtualenvs/venv-2.7.5/bin/activate && py.test -n 4)
     - flake8
