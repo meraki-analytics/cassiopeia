@@ -1,3 +1,1 @@
-pytest==2.8.4
-sqlalchemy
-flake8
+-r requirements-base.txt
