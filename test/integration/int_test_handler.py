@@ -1,4 +1,3 @@
-import pytest
 import os
 
 from cassiopeia import riotapi
@@ -23,7 +22,6 @@ summoner_name = "FatalElement"
 summoner_spell_id = 7
 team_id = "TEAM-49fc9f10-1290-11e3-80a6-782bcb4d0bb2"
 item_id = 3031
-
 
 
 def test_result(result=None):
