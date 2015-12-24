@@ -74,11 +74,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     @cassiopeia.type.core.common.lazyproperty
     def participants(self):
         """list<Participant>    the participants in this match"""
-        participants = []
-        for i in range(len(self.data.participants)):
-            p = CombinedParticipant(self.data.participants[i], self.data.participantIdentities[i])
-            participants.append(Participant(p))
-        return sorted(participants, key=lambda p: p.id)
+        return Participants(self.data.participants, self.data.participantIdentities)
 
     @property
     def platform(self):
@@ -93,7 +89,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def region(self):
         """Region    the region the match was played in"""
-        return cassiopeia.type.core.common.Region(self.data.region) if self.data.region else None
+        return cassiopeia.type.core.common.Region(self.data.region.lower()) if self.data.region else None
 
     @property
     def season(self):
@@ -125,6 +121,36 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def frames(self):
         """list<Frame>    the frames in this match"""
         return self.timeline.frames
+
+
+@cassiopeia.type.core.common.inheritdocs
+class Participants(cassiopeia.type.dto.common.CassiopeiaDto):
+    def __init__(self, participants, participantIdentities):
+        self.participants = []
+        for i in range(len(participants)):
+            p = CombinedParticipant(participants[i], participantIdentities[i])
+            self.participants.append(Participant(p))
+        self.participants = sorted(self.participants, key=lambda p: p.id)
+
+    def _lookup(self, key):
+        for p in self.participants:
+            # Check if the key is the summoner name, champion name, or summoner.
+            # Make sure not to make Summoner api calls for every summoner in self.participants
+            if (isinstance(key, str) and (p.summoner_name == key or p.champion.name == key)) or \
+                (isinstance(key, cassiopeia.type.core.staticdata.Champion) and p.champion == key) or \
+                (isinstance(key, cassiopeia.type.core.summoner.Summoner) and p.summoner_name == key.name):
+                return p
+        else:
+            raise KeyError(key)
+
+    def __getitem__(self, key):
+        try:
+            return self.participants[key]
+        except TypeError:
+            return self._lookup(key)
+
+    def __len__(self):
+        return len(self.participants)
 
 
 @cassiopeia.type.core.common.inheritdocs
@@ -388,6 +414,10 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def combat_score(self):
         """int    dominion only. the part of the participant's score that came from combat-related activities"""
         return self.data.combatPlayerScore
+
+    @property
+    def cs(self):
+        return self.minion_kills + self.monster_kills
 
     @property
     def deaths(self):
