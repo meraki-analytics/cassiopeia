@@ -137,8 +137,8 @@ class Participants(cassiopeia.type.dto.common.CassiopeiaDto):
             # Check if the key is the summoner name, champion name, or summoner.
             # Make sure not to make Summoner api calls for every summoner in self.participants
             if (isinstance(key, str) and (p.summoner_name == key or p.champion.name == key)) or \
-                (isinstance(key, cassiopeia.type.core.staticdata.Champion) and p.champion == key) or \
-                (isinstance(key, cassiopeia.type.core.summoner.Summoner) and p.summoner_name == key.name):
+                    (isinstance(key, cassiopeia.type.core.staticdata.Champion) and p.champion == key) or \
+                    (isinstance(key, cassiopeia.type.core.summoner.Summoner) and p.summoner_name == key.name):
                 return p
         else:
             raise KeyError(key)
