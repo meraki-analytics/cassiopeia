@@ -128,7 +128,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 @cassiopeia.type.core.common.inheritdocs
-class Participants(list, cassiopeia.type.dto.common.CassiopeiaDto):
+class Participants(list):
     def __init__(self, combined_participants):
         super().__init__(combined_participants)
 
