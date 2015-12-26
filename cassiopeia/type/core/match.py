@@ -146,8 +146,8 @@ class Participants(list):
                 if p.champion.id == key.id:
                     return p
         else:
-            raise KeyError(key)
-        return None
+            raise TypeError("Participant indices must be integers, slices, strings, summoners, or champions, not {t}".format(t=type(key)))
+        raise KeyError(key)
 
     def __getitem__(self, key):
         try:
