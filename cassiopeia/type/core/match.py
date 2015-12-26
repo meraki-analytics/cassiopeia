@@ -73,8 +73,12 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def participants(self):
-        """list<Participant>    the participants in this match"""
-        return Participants(self.data.participants, self.data.participantIdentities)
+        """Participants (list<Participant>)    the participants in this match"""
+        participants = []
+        for i in range(len(self.data.participants)):
+            p = CombinedParticipant(self.data.participants[i], self.data.participantIdentities[i])
+            participants.append(Participant(p))
+        return Participants(sorted(participants, key=lambda p: p.id))
 
     @property
     def platform(self):
@@ -101,7 +105,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
         """Team   the team on the blue side"""
         for team in self.data.teams:
             if team.teamId == cassiopeia.type.core.common.Side.blue.value:
-                return Team(team, [part for part in self.participants if part.side is cassiopeia.type.core.common.Side.blue])
+                return Team(team, Participants([part for part in self.participants if part.side is cassiopeia.type.core.common.Side.blue]))
         return None
 
     @cassiopeia.type.core.common.lazyproperty
@@ -109,7 +113,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
         """Team   the team on the red side"""
         for team in self.data.teams:
             if team.teamId == cassiopeia.type.core.common.Side.red.value:
-                return Team(team, [part for part in self.participants if part.side is cassiopeia.type.core.common.Side.red])
+                return Team(team, Participants([part for part in self.participants if part.side is cassiopeia.type.core.common.Side.red]))
         return None
 
     @cassiopeia.type.core.common.lazyproperty
@@ -124,33 +128,32 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 @cassiopeia.type.core.common.inheritdocs
-class Participants(cassiopeia.type.dto.common.CassiopeiaDto):
-    def __init__(self, participants, participantIdentities):
-        self.participants = []
-        for i in range(len(participants)):
-            p = CombinedParticipant(participants[i], participantIdentities[i])
-            self.participants.append(Participant(p))
-        self.participants = sorted(self.participants, key=lambda p: p.id)
+class Participants(list, cassiopeia.type.dto.common.CassiopeiaDto):
+    def __init__(self, combined_participants):
+        super().__init__(combined_participants)
 
-    def _lookup(self, key):
-        for p in self.participants:
-            # Check if the key is the summoner name, champion name, or summoner.
-            # Make sure not to make Summoner api calls for every summoner in self.participants
-            if (isinstance(key, str) and (p.summoner_name == key or p.champion.name == key)) or \
-                    (isinstance(key, cassiopeia.type.core.staticdata.Champion) and p.champion == key) or \
-                    (isinstance(key, cassiopeia.type.core.summoner.Summoner) and p.summoner_name == key.name):
-                return p
+    def __lookup(self, key):
+        if isinstance(key, str):
+            for p in self:
+                if p.summoner_name == key or p.champion.name == key:
+                    return p
+        elif isinstance(key, cassiopeia.type.core.summoner.Summoner):
+            for p in self:
+                if p.summoner_id == key.id:
+                    return p
+        elif isinstance(key, cassiopeia.type.core.staticdata.Champion):
+            for p in self:
+                if p.champion.id == key.id:
+                    return p
         else:
             raise KeyError(key)
+        return None
 
     def __getitem__(self, key):
         try:
-            return self.participants[key]
+            return super().__getitem__(key)
         except TypeError:
-            return self._lookup(key)
-
-    def __len__(self):
-        return len(self.participants)
+            return self.__lookup(key)
 
 
 @cassiopeia.type.core.common.inheritdocs
@@ -1131,7 +1134,7 @@ class ParticipantFrame(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.level
 
     @property
-    def minions_killed(self):
+    def minion_kills(self):
         """int    the number of minions killed"""
         return self.data.minionsKilled
 
