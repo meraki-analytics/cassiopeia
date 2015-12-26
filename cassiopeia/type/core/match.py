@@ -273,7 +273,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def participants(self):
-        """list<Participant>    the participants in this match"""
+        """Participants (list<Participant>)    the participants in this match"""
         return self.__participants
 
     @cassiopeia.type.core.common.lazyproperty
