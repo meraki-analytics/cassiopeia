@@ -129,8 +129,11 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
 
 @cassiopeia.type.core.common.inheritdocs
 class Participants(list):
-    def __init__(self, combined_participants):
-        super().__init__(combined_participants)
+    def __getitem__(self, key):
+        try:
+            return super().__getitem__(key)
+        except TypeError:
+            return self.__lookup(key)
 
     def __lookup(self, key):
         if isinstance(key, str):
@@ -148,12 +151,6 @@ class Participants(list):
         else:
             raise TypeError("Participant indices must be integers, slices, strings, summoners, or champions, not {t}".format(t=type(key)))
         raise KeyError(key)
-
-    def __getitem__(self, key):
-        try:
-            return super().__getitem__(key)
-        except TypeError:
-            return self.__lookup(key)
 
 
 @cassiopeia.type.core.common.inheritdocs
