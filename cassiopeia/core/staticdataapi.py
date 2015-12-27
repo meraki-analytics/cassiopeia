@@ -120,7 +120,7 @@ def get_item(id_):
     items = cassiopeia.riotapi.get_items()
     try:
         return next(filter(lambda item: item.id == id_, items))
-    except StopIteration:
+    except (StopIteration, TypeError):
         return None
 
 
