@@ -46,8 +46,9 @@ def create_tournament_codes(tournament_id, team_size=5, spectator_type='ALL', pi
     :param count: How many codes to generate
     :return: List of generated codes
     """
+    summoner_ids = cassiopeia.type.dto.tournament.SummonerIdParams(allowed_summoner_ids)
     payload = cassiopeia.type.dto.tournament.TournamentCodeParameters(
-        team_size, spectator_type, pick_type, map_type, allowed_summoner_ids, metadata).to_json()
+        team_size, spectator_type, pick_type, map_type, summoner_ids, metadata).to_json()
     params = {
         'tournamentId': tournament_id,
         'count': count
@@ -65,8 +66,9 @@ def update_tournament_code(code, spectator_type, pick_type, map_type, allowed_su
     :param map_type: Any value of the Map enum
     :param allowed_summoner_ids: List of allowed summoner ids, or false-evaluating value for no restrictions
     """
+    ids = ','.join([str(x) for x in allowed_summoner_ids])
     payload = cassiopeia.type.dto.tournament.TournamentCodeUpdateParameters(
-            allowed_summoner_ids, spectator_type, pick_type, map_type).to_json()
+            ids, spectator_type, pick_type, map_type).to_json()
     request = (BASE_URL + "code/{code}").format(
             code=code,
             version=cassiopeia.dto.requests.api_versions["tournamentprovider"])
