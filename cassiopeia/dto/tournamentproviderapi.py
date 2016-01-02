@@ -66,7 +66,7 @@ def update_tournament_code(code, spectator_type, pick_type, map_type, allowed_su
     :param map_type: Any value of the Map enum
     :param allowed_summoner_ids: List of allowed summoner ids, or false-evaluating value for no restrictions
     """
-    ids = ','.join([str(x) for x in allowed_summoner_ids])
+    ids = ','.join(str(x) for x in allowed_summoner_ids)
     payload = cassiopeia.type.dto.tournament.TournamentCodeUpdateParameters(
             ids, spectator_type, pick_type, map_type).to_json()
     request = (BASE_URL + "code/{code}").format(
