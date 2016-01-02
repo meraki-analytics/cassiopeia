@@ -2,11 +2,8 @@
 Handles making HTTP requests to the REST API and converting the results into a usable format
 """
 
-import urllib.parse
-import urllib.request
-import urllib.error
+import requests
 import json
-import zlib
 
 import cassiopeia.type.api.exception
 import cassiopeia.type.api.rates
@@ -33,15 +30,19 @@ region = ""
 print_calls = False
 rate_limiter = None
 tournament_rate_limiter = None
+proxy = {}
 
 
-def get(request, params={}, static=False, include_base=True, tournament=False):
+def request(method, address, params=None, static=False, include_base=True, tournament=False, key_in_header=False, **kwargs):
     """Makes a rate-limited HTTP request to the Riot API and returns the result
 
-    request         str               the request string
-    params          dict<str, any>    the parameters to send with the request (default {})
+    method          str               http method (get, post, put...)
+    address         str               url or relative resource address
+    params          dict<str, any>    the parameters to send with the request, in the url
     static          bool              whether this is a call to a static (non-rate-limited) API
     include_base    bool              whether to prepend https://{server}.api.pvp.net/api/lol/{region}/ to the request
+    tournament      bool              is this request for the standard apis or the tournament one
+    key_in_header   bool              if true, send the key as a header
 
     return          dict              the JSON response from the Riot API as a dict
     """
@@ -54,57 +55,63 @@ def get(request, params={}, static=False, include_base=True, tournament=False):
     server = "global" if static else region
     rgn = ("static-data/{region}" if static else "{region}").format(region=region)
 
-    # Encode params
-    params["api_key"] = tournament_api_key if tournament else api_key
-    encoded_params = urllib.parse.urlencode(params)
-
-    # Build and execute request
-    if include_base:
-        url = "https://{server}.api.pvp.net/api/lol/{region}/{request}?{params}".format(server=server, region=rgn, request=request, params=encoded_params)
+    # Add the API key to headers or request params depending on the API
+    headers = {}
+    if params is None:
+        params = {}
+    if key_in_header:
+        headers['X-Riot-Token'] = tournament_api_key if tournament else api_key
     else:
-        url = "{request}?{params}".format(request=request, params=encoded_params)
+        params["api_key"] = tournament_api_key if tournament else api_key
+
+    # Do we have json data in the request body? If yes encode it
+    if method.upper() in ('POST', 'PUT') and 'data' in kwargs:
+        headers['Content-Type'] = 'application/json'
+        kwargs['data'] = json.dumps(kwargs['data'])
+
+    # Build and send the request
+    if include_base:
+        url = "https://{server}.api.pvp.net/api/lol/{region}/{address}".format(
+                server=server, region=rgn, address=address)
+    else:
+        url = address
 
     limiter = tournament_rate_limiter if tournament else rate_limiter
-    try:
-        content = limiter.call(execute_request, url) if limiter else execute_request(url)
-        return json.loads(content)
-    except urllib.error.HTTPError as e:
+    response = limiter.call(execute_request, method, url, params=params, headers=headers, **kwargs) if limiter \
+        else execute_request(method, url, params=params, headers=headers, **kwargs)
+
+    if not response.ok:
         # Reset rate limiter and retry on 429 (rate limit exceeded)
-        if e.code == 429 and limiter:
+        if response.status_code == 429 and limiter:
             retry_after = 1
-            if e.headers["Retry-After"]:
-                retry_after += int(e.headers["Retry-After"])
+            if 'Retry-After' in response.headers and response.headers["Retry-After"]:
+                retry_after += int(response.headers["Retry-After"])
 
             limiter.reset_in(retry_after)
-            return get(request, params, static)
+            return request(method, address, params, static, include_base, tournament, key_in_header, **kwargs)
         else:
-            raise cassiopeia.type.api.exception.APIError("Server returned error {code} on call: {url}".format(code=e.code, url=url), e.code)
+            raise cassiopeia.type.api.exception.APIError("Server returned error {code} on call: {url}".format(
+                    code=response.status_code, url=url), response.status_code, response)
+    return response.json() if len(response.text) is not 0 else None
 
 
-def execute_request(url, method="GET", payload=""):
-    """Executes an HTTP request and returns the result in a string
+def get(address, **kwargs):
+    """ Performs a get request, see `request` for documentation """
+    return request('get', address, **kwargs)
 
-    url        str    the full URL to send a request to
-    method     str    the HTTP method to use
-    payload    str    the json payload to send if appropriate for HTTP method
 
-    return     str    the content returned by the server
-    """
+def post(address, **kwargs):
+    """ Performs a post request, see `request` for documentation """
+    return request('post', address, **kwargs)
+
+
+def put(address, **kwargs):
+    """ Performs a put request, see `request` for documentation """
+    return request('put', address, **kwargs)
+
+
+def execute_request(method, url, **kwargs):
+    """ Performs a put request, see `request` for documentation """
     if print_calls:
         print(url)
-
-    response = None
-    try:
-        if payload:
-            payload = payload.encode("UTF-8")
-            request = urllib.request.Request(url, method=method, payload=payload)
-        else:
-            request = urllib.request.Request(url, method=method)
-        request.add_header("Accept-Encoding", "gzip")
-        response = urllib.request.urlopen(request)
-        content = response.read()
-        content = zlib.decompress(content, zlib.MAX_WBITS | 16).decode(encoding="UTF-8")
-        return content
-    finally:
-        if response:
-            response.close()
+    return requests.request(method, url, proxies=proxy, **kwargs)

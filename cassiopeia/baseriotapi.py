@@ -20,7 +20,6 @@ from cassiopeia.dto.statsapi import *
 from cassiopeia.dto.summonerapi import *
 from cassiopeia.dto.teamapi import *
 
-
 def set_api_key(key):
     """Set your API key
 
@@ -98,11 +97,9 @@ def set_proxy(url, port=80):
     port    int    the port number to conntect to (default 80)
     """
     if url:
-        cassiopeia.dto.requests.proxy = urllib.request.ProxyHandler({"https": "https://{url}:{port}".format(url=url, port=port)})
-        urllib.request.install_opener(urllib.request.build_opener(cassiopeia.dto.requests.proxy))
+        cassiopeia.dto.requests.proxy = {"https": "https://{url}:{port}".format(url=url, port=port)}
     else:
-        cassiopeia.dto.requests.proxy = urllib.request.ProxyHandler({})
-        urllib.request.install_opener(urllib.request.build_opener(cassiopeia.dto.requests.proxy))
+        cassiopeia.dto.requests.proxy = {}
 
 
 def set_locale(locale):
