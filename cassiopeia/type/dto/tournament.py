@@ -85,6 +85,7 @@ class LobbyEventWrapper(cassiopeia.type.dto.common.CassiopeiaDto):
     """
     def __init__(self, dictionary):
         self.eventList = [(LobbyEvent(event) if not isinstance(event, LobbyEvent) else event) for event in dictionary.get("eventList", []) if event]
+        self.eventList.sort(key=lambda e: e.timestamp)
 
 
 @cassiopeia.type.core.common.inheritdocs
@@ -96,8 +97,8 @@ class LobbyEvent(cassiopeia.type.dto.common.CassiopeiaDto):
     """
     def __init__(self, dictionary):
         self.eventType = dictionary.get("eventType", "")
-        self.summonerId = dictionary.get("summonerId", "")
-        self.timestamp = dictionary.get("timestamp", "")
+        self.summonerId = dictionary.get("summonerId", 0)
+        self.timestamp = dictionary.get("timestamp", 0)
 
 
 @cassiopeia.type.core.common.inheritdocs

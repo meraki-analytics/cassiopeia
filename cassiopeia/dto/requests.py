@@ -21,7 +21,8 @@ api_versions = {
     "matchlist": "v2.2",
     "stats": "v1.3",
     "summoner": "v1.4",
-    "team": "v2.4"
+    "team": "v2.4",
+    "tournamentprovider": "v1"
 }
 
 api_key = ""
@@ -66,8 +67,9 @@ def request(method, address, params=None, static=False, include_base=True, tourn
 
     # Do we have json data in the request body? If yes encode it
     if method.upper() in ('POST', 'PUT') and 'data' in kwargs:
+        if not isinstance(kwargs['data'], str):
+            kwargs['data'] = json.dumps(kwargs['data'])
         headers['Content-Type'] = 'application/json'
-        kwargs['data'] = json.dumps(kwargs['data'])
 
     # Build and send the request
     if include_base:
@@ -113,5 +115,5 @@ def put(address, **kwargs):
 def execute_request(method, url, **kwargs):
     """ Performs a put request, see `request` for documentation """
     if print_calls:
-        print(url)
+        print(method.upper() + ' ' + url)
     return requests.request(method, url, proxies=proxy, **kwargs)
