@@ -16,7 +16,7 @@ class SingleRateLimiter(object):
         self.limit = calls_per_epoch
         self.resetter = None
 
-    def call(self, method=None, *args):
+    def call(self, method=None, *args, **kwargs):
         """Calls a function when the rate limit allows (first come first serve)
 
         method    function    the function which will be called when the rate limit allows
@@ -34,7 +34,7 @@ class SingleRateLimiter(object):
 
         try:
             if method:
-                return method(*args)
+                return method(*args, **kwargs)
             else:
                 return None
         finally:
@@ -99,7 +99,7 @@ class MultiRateLimiter(object):
         for limit in limits:
             self.limits.append(SingleRateLimiter(limit[0], limit[1]))
 
-    def call(self, method=None, *args):
+    def call(self, method=None, *args, **kwargs):
         """Calls a function when the rate limit allows (first come first serve)
 
         method    function    the function which will be called when the rate limit allows
@@ -111,7 +111,7 @@ class MultiRateLimiter(object):
 
         try:
             if method:
-                return method(*args)
+                return method(*args, **kwargs)
             else:
                 return None
         finally:
