@@ -16,18 +16,33 @@ def get_match_list(summoner, num_matches=0, begin_index=0, begin_time=0, end_tim
     begin_time      int | datetime               the begin time to use for fetching games (default 0)
     end_time        int | datetime               the end time to use for fetching games (default 0)
     champions       Champion | list<Champion>    the champion(s) to limit the results to (default None)
-    ranked_queue    Queue | list<Queue>          the ranked queue(s) to limit the results to (default None)
+    ranked_queues   Queue | list<Queue>          the ranked queue(s) to limit the results to (default None)
     seasons         Season | list<Season>        the season(s) to limit the results to (default None)
 
     return          list<MatchReference>         the summoner's match history
     """
-    if ranked_queues and isinstance(ranked_queues, list):
-        for queue in ranked_queues:
+    # Convert strings that should be enums into enums
+    if isinstance(seasons, str):
+        _seasons = cassiopeia.type.core.common.Season(seasons.upper())
+    elif isinstance(seasons, list) and all(isinstance(s, str) for s in seasons):
+        _seasons = [cassiopeia.type.core.common.Season(s.upper()) for s in seasons]
+    else:
+        _seasons = seasons
+
+    if isinstance(ranked_queues, str):
+        _ranked_queues = cassiopeia.type.core.common.Queue(ranked_queues.upper().replace('5X5', '5x5').replace('3X3', '3x3'))
+    elif isinstance(ranked_queues, list) and all(isinstance(q, str) for q in ranked_queues):
+        _ranked_queues = [cassiopeia.type.core.common.Queue(q.upper().replace('5X5', '5x5').replace('3X3', '3x3')) for q in ranked_queues]
+    else:
+        _ranked_queues = ranked_queues
+
+    if _ranked_queues and isinstance(_ranked_queues, list):
+        for queue in _ranked_queues:
             if queue not in cassiopeia.type.core.common.ranked_queues:
                 raise ValueError("{queue} is not a ranked queue".format(queue=queue))
-    elif ranked_queues:
-        if ranked_queues not in cassiopeia.type.core.common.ranked_queues:
-            raise ValueError("{queue} is not a ranked queue".format(queue=ranked_queues))
+    elif _ranked_queues:
+        if _ranked_queues not in cassiopeia.type.core.common.ranked_queues:
+            raise ValueError("{queue} is not a ranked queue".format(queue=_ranked_queues))
 
     # Convert core types to API-ready types
     if isinstance(begin_time, datetime.datetime):
@@ -40,10 +55,10 @@ def get_match_list(summoner, num_matches=0, begin_index=0, begin_time=0, end_tim
         end_time = int(delta.total_seconds() * 1000)
 
     champion_ids = [champion.id for champion in champions] if isinstance(champions, list) else champions.id if champions else None
-    queues = [queue.value for queue in ranked_queues] if isinstance(ranked_queues, list) else ranked_queues.value if ranked_queues else None
-    seasons = [season.value for season in seasons] if isinstance(seasons, list) else seasons.value if seasons else None
+    _ranked_queues = [queue.value for queue in _ranked_queues] if isinstance(_ranked_queues, list) else _ranked_queues.value if _ranked_queues else None
+    _seasons = [season.value for season in _seasons] if isinstance(_seasons, list) else _seasons.value if _seasons else None
 
-    history = cassiopeia.dto.matchlistapi.get_match_list(summoner.id, num_matches, begin_index, begin_time, end_time, champion_ids, queues, seasons)
+    history = cassiopeia.dto.matchlistapi.get_match_list(summoner.id, num_matches, begin_index, begin_time, end_time, champion_ids, _ranked_queues, _seasons)
 
     # Load required data if loading policy is eager
     if cassiopeia.core.requests.load_policy is cassiopeia.type.core.common.LoadPolicy.eager:
