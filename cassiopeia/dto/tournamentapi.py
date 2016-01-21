@@ -15,11 +15,11 @@ def create_tournament_codes(tournament_id, count, parameters):
         raise ValueError("Count must be between 1 and 1000")
     request = "https://{server}.api.pvp.net/tournament/public/{version}/code".format(server=cassiopeia.dto.requests.region, version=cassiopeia.dto.requests.api_versions["tournament"])
 
-    path_params = {
+    query_params = {
         "tournamentId": tournament_id,
         "count": count
     }
-    return cassiopeia.dto.requests.post(request, parameters, path_params, False, True)
+    return cassiopeia.dto.requests.post(request, parameters, query_params, False, True)
 
 
 def get_tournament_code(tournament_code):
