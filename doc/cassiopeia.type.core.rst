@@ -11,6 +11,16 @@ cassiopeia.type.core.champion
     :imported-members:
     :show-inheritance:
 
+cassiopeia.type.core.championmastery
+-----------------------------
+
+.. automodule:: cassiopeia.type.core.championmastery
+    :members:
+    :undoc-members:
+    :inherited-members:
+    :imported-members:
+    :show-inheritance:
+
 cassiopeia.type.core.common
 ---------------------------
 
@@ -125,6 +135,16 @@ cassiopeia.type.core.team
 -------------------------
 
 .. automodule:: cassiopeia.type.core.team
+    :members:
+    :undoc-members:
+    :inherited-members:
+    :imported-members:
+    :show-inheritance:
+
+cassiopeia.type.core.tournament
+-------------------------
+
+.. automodule:: cassiopeia.type.core.tournament
     :members:
     :undoc-members:
     :inherited-members:
