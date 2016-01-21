@@ -23,6 +23,7 @@ from cassiopeia.core.statusapi import *
 from cassiopeia.core.statsapi import *
 from cassiopeia.core.summonerapi import *
 from cassiopeia.core.teamapi import *
+from cassiopeia.core.tournamentapi import *
 
 
 def set_api_key(key):

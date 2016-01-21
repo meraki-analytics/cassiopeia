@@ -24,7 +24,8 @@ api_versions = {
     "matchlist": "v2.2",
     "stats": "v1.3",
     "summoner": "v1.4",
-    "team": "v2.4"
+    "team": "v2.4",
+    "tournament": "v1"
 }
 
 api_key = ""
@@ -36,14 +37,29 @@ tournament_rate_limiter = None
 
 
 def get(request, params={}, static=False, include_base=True, tournament=False):
+    return make_request(request=request, method="GET", params=params, static=static, include_base=include_base, tournament=tournament)
+
+
+def put(request, payload, params={}, include_base=True, tournament=False):
+    return make_request(request=request, method="PUT", payload=payload, params=params, include_base=include_base, tournament=tournament)
+
+
+def post(request, payload, params={}, include_base=True, tournament=False):
+    return make_request(request=request, method="POST", payload=payload, params=params, include_base=include_base, tournament=tournament)
+
+
+def make_request(request, method, params={}, payload=None, static=False, include_base=True, tournament=False):
     """Makes a rate-limited HTTP request to the Riot API and returns the result
 
-    request         str               the request string
-    params          dict<str, any>    the parameters to send with the request (default {})
-    static          bool              whether this is a call to a static (non-rate-limited) API
-    include_base    bool              whether to prepend https://{server}.api.pvp.net/api/lol/{region}/ to the request
+    request         str                                 the request string
+    method          str                                 the HTTP method to use
+    params          dict<str, any>                      the path parameters to send with the request (default {})
+    payload         CassiopeiaDto | CassiopeiaObject    the payload to send with the POST or PUT request (default None)
+    static          bool                                whether this is a call to a static (non-rate-limited) API (default False)
+    include_base    bool                                whether to prepend https://{server}.api.pvp.net/api/lol/{region}/ to the request (default True)
+    tournament      bool                                whether to use the tournament API rate limit (default False)
 
-    return          dict              the JSON response from the Riot API as a dict
+    return          dict                                the JSON response from the Riot API as a dict
     """
     if (not tournament and not api_key) or (tournament and not tournament_api_key):
         raise cassiopeia.type.api.exception.CassiopeiaException("API Key must be set before the API can be queried.")
@@ -58,6 +74,8 @@ def get(request, params={}, static=False, include_base=True, tournament=False):
     params["api_key"] = tournament_api_key if tournament else api_key
     encoded_params = urllib.parse.urlencode(params)
 
+    payload = payload.to_json(separators=(",", ":"), indent=None) if payload else ""
+
     # Build and execute request
     if include_base:
         url = "https://{server}.api.pvp.net/api/lol/{region}/{request}?{params}".format(server=server, region=rgn, request=request, params=encoded_params)
@@ -66,7 +84,7 @@ def get(request, params={}, static=False, include_base=True, tournament=False):
 
     limiter = tournament_rate_limiter if tournament else rate_limiter
     try:
-        content = limiter.call(execute_request, url) if limiter else execute_request(url)
+        content = limiter.call(execute_request, url, method, payload) if limiter else execute_request(url, method, payload)
         return json.loads(content)
     except urllib.error.HTTPError as e:
         # Reset rate limiter and retry on 429 (rate limit exceeded)
@@ -81,12 +99,12 @@ def get(request, params={}, static=False, include_base=True, tournament=False):
             raise cassiopeia.type.api.exception.APIError("Server returned error {code} on call: {url}".format(code=e.code, url=url), e.code)
 
 
-def execute_request(url, method="GET", payload=""):
+def execute_request(url, method, payload=""):
     """Executes an HTTP request and returns the result in a string
 
     url        str    the full URL to send a request to
     method     str    the HTTP method to use
-    payload    str    the json payload to send if appropriate for HTTP method
+    payload    str    the json payload to send if appropriate for HTTP method (default "")
 
     return     str    the content returned by the server
     """
@@ -97,7 +115,7 @@ def execute_request(url, method="GET", payload=""):
     try:
         if payload:
             payload = payload.encode("UTF-8")
-            request = urllib.request.Request(url, method=method, payload=payload)
+            request = urllib.request.Request(url, method=method, data=payload)
         else:
             request = urllib.request.Request(url, method=method)
         request.add_header("Accept-Encoding", "gzip")

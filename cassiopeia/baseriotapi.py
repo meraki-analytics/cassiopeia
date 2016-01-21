@@ -19,6 +19,7 @@ from cassiopeia.dto.matchlistapi import *
 from cassiopeia.dto.statsapi import *
 from cassiopeia.dto.summonerapi import *
 from cassiopeia.dto.teamapi import *
+from cassiopeia.dto.tournamentapi import *
 
 
 def set_api_key(key):
