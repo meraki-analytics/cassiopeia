@@ -136,7 +136,7 @@ def _sa_bind_tournament_code():
     @cassiopeia.type.core.common.inheritdocs
     class TournamentCode(TournamentCode, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "TournamentCode"
-        code = sqlalchemy.Column(sqlalchemy.String(30))
+        code = sqlalchemy.Column(sqlalchemy.String(50))
         id = sqlalchemy.Column(sqlalchemy.BigInteger)
         lobbyName = sqlalchemy.Column(sqlalchemy.String(50))
         map = sqlalchemy.Column(sqlalchemy.String(30))
