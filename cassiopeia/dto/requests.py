@@ -86,7 +86,7 @@ def make_request(request, method, params={}, payload=None, static=False, include
     limiter = tournament_rate_limiter if tournament else rate_limiter
     try:
         content = limiter.call(execute_request, url, method, payload) if limiter else execute_request(url, method, payload)
-        return json.loads(content)
+        return json.loads(content) if content else {}
     except urllib.error.HTTPError as e:
         # Reset rate limiter and retry on 429 (rate limit exceeded)
         if e.code == 429 and limiter:
@@ -117,12 +117,14 @@ def execute_request(url, method, payload=""):
         if payload:
             payload = payload.encode("UTF-8")
             request = urllib.request.Request(url, method=method, data=payload)
+            request.add_header("Content-Type", "application/json")
         else:
             request = urllib.request.Request(url, method=method)
         request.add_header("Accept-Encoding", "gzip")
         response = urllib.request.urlopen(request)
         content = response.read()
-        content = zlib.decompress(content, zlib.MAX_WBITS | 16).decode(encoding="UTF-8")
+        if content:
+            content = zlib.decompress(content, zlib.MAX_WBITS | 16).decode(encoding="UTF-8")
         return content
     finally:
         if response:

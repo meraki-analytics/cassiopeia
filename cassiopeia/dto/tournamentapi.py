@@ -2,12 +2,12 @@ import cassiopeia.dto.requests
 import cassiopeia.type.dto.tournament
 
 
-def create_tournament_codes(tournament_id, count, parameters):
+def create_tournament_codes(tournament_id, parameters, count=1):
     """https://developer.riotgames.com/api/methods#!/1063
 
     tournament_id    int                         the tournament ID to generate codes for
-    count            int                         the number of codes to generate (max 1000)
     parameters       TournamentCodeParameters    the parameters for the tournament codes
+    count            int                         the number of codes to generate (max 1000) (default 1)
 
     return           list<str>                   the created tournament codes
     """
