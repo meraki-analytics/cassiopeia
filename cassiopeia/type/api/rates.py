@@ -1,5 +1,6 @@
 import threading
 
+
 class SingleRateLimiter(object):
     """Handles a single rate limit, ensuring that calls don't exceed it"""
 
@@ -100,6 +101,7 @@ class SingleRateLimiter(object):
         with self.lock:
             return (self._successful_calls, self._total_calls)
 
+
 class MultiRateLimiter(object):
     """Handles a multiple rate limits simultaneously, ensuring that calls don't exceed them"""
 
@@ -134,7 +136,6 @@ class MultiRateLimiter(object):
                 limit.call()
                 if not successful_call:
                     limit._decrease_successful_calls()
-
 
     def wait(self):
         """Waits until a call becomes available"""

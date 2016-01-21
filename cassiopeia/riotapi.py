@@ -65,6 +65,18 @@ def print_calls(on):
     cassiopeia.dto.requests.print_calls = on
 
 
+def get_requests_count(tournament=False):
+    """
+    Returns the number of successful requests (no exceptions in the call) and total requests issued up to now
+
+    tournament    bool     get the request counts for the tournament requests
+
+    return        tuple    A (successful calls, total calls) tuple
+    """
+    limiter = cassiopeia.dto.requests.tournament_rate_limiter if tournament else cassiopeia.dto.requests.rate_limiter
+    return limiter.calls
+
+
 def set_rate_limit(calls_per_epoch, seconds_per_epoch):
     """Sets the rate limit for cassiopeia to manage internally
 

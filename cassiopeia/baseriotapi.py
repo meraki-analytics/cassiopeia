@@ -60,10 +60,12 @@ def print_calls(on):
 
 
 def get_requests_count(tournament=False):
-    """Returns the number of successful requests (no exceptions in the call) and total requests issued up to now
-    tournament          bool    get the request counts for the tournament requests
+    """
+    Returns the number of successful requests (no exceptions in the call) and total requests issued up to now
 
-    return              tuple   A (successful calls, total calls) tuple
+    tournament    bool     get the request counts for the tournament requests
+
+    return        tuple    A (successful calls, total calls) tuple
     """
     limiter = cassiopeia.dto.requests.tournament_rate_limiter if tournament else cassiopeia.dto.requests.rate_limiter
     return limiter.calls
