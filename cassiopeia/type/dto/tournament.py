@@ -2,6 +2,11 @@ import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
 
 
+if cassiopeia.type.dto.common.sqlalchemy_imported:
+    import sqlalchemy
+    import sqlalchemy.orm
+
+
 @cassiopeia.type.core.common.inheritdocs
 class TournamentCodeParameters(cassiopeia.type.dto.common.CassiopeiaParametersDto):
     """
@@ -120,3 +125,43 @@ class TournamentRegistrationParameters(cassiopeia.type.dto.common.CassiopeiaPara
     def __init__(self, providerId, name=""):
         self.providerId = providerId
         self.name = name
+
+
+###############################
+# Dynamic SQLAlchemy bindings #
+###############################
+def _sa_bind_tournament_code():
+    global TournamentCode
+
+    @cassiopeia.type.core.common.inheritdocs
+    class TournamentCode(TournamentCode, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "TournamentCode"
+        code = sqlalchemy.Column(sqlalchemy.String(30))
+        id = sqlalchemy.Column(sqlalchemy.BigInteger)
+        lobbyName = sqlalchemy.Column(sqlalchemy.String(50))
+        map = sqlalchemy.Column(sqlalchemy.String(30))
+        metaData = sqlalchemy.Column(sqlalchemy.Text)
+        participants = sqlalchemy.Column(cassiopeia.type.dto.common.JSONEncoded)
+        password = sqlalchemy.Column(sqlalchemy.String(30))
+        pickType = sqlalchemy.Column(sqlalchemy.String(30))
+        providerId = sqlalchemy.Column(sqlalchemy.Integer)
+        region = sqlalchemy.Column(sqlalchemy.String(30))
+        spectators = sqlalchemy.Column(sqlalchemy.String(30))
+        teamSize = sqlalchemy.Column(sqlalchemy.Integer)
+        tournamentId = sqlalchemy.Column(sqlalchemy.BigInteger)
+
+
+def _sa_bind_lobby_event():
+    global LobbyEvent
+
+    @cassiopeia.type.core.common.inheritdocs
+    class LobbyEvent(LobbyEvent, cassiopeia.type.dto.common.BaseDB):
+        __tablename__ = "LobbyEvent"
+        eventType = sqlalchemy.Column(sqlalchemy.String(50))
+        summonerId = sqlalchemy.Column(sqlalchemy.String(30))
+        timestamp = sqlalchemy.Column(sqlalchemy.String(50))
+
+
+def _sa_bind_all():
+    _sa_bind_tournament_code()
+    _sa_bind_lobby_event()
