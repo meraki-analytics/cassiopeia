@@ -12,6 +12,7 @@ if RIOT_API_KEY:
     riotapi.print_calls(True)
     riotapi.set_load_policy(LoadPolicy.lazy)
 
+non_existent_champion_id = 1000
 champion_id = 35
 champion_name = "Thresh"
 mastery_id = 6361
