@@ -14,6 +14,7 @@ import cassiopeia.type.api.rates
 
 api_versions = {
     "champion": "v1.2",
+    "championmastery": None,
     "currentgame": "v1.0",
     "featuredgames": "v1.0",
     "game": "v1.3",
