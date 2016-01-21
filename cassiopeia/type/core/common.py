@@ -16,12 +16,12 @@ class CassiopeiaObject(object):
             raise cassiopeia.type.api.exception.CassiopeiaException("Tried to instantiate a core {class_} with a {dto} dto!".format(class_=self.__class__.__name__, dto=data.__class__.__name__))
         self.data = data
 
-    def to_json(self):
+    def to_json(self, **kwargs):
         """Gets a JSON representation of the object
 
         return    str    a JSON representation of the object
         """
-        return self.data.to_json()
+        return self.data.to_json(**kwargs)
 
     def __str__(self):
         return str(self.data)
