@@ -11,6 +11,16 @@ cassiopeia.type.dto.champion
     :imported-members:
     :show-inheritance:
 
+cassiopeia.type.dto.championmastery
+-----------------------------
+
+.. automodule:: cassiopeia.type.dto.championmastery
+    :members:
+    :undoc-members:
+    :inherited-members:
+    :imported-members:
+    :show-inheritance:
+
 cassiopeia.type.dto.common
 --------------------------
 
@@ -125,6 +135,16 @@ cassiopeia.type.dto.team
 ------------------------
 
 .. automodule:: cassiopeia.type.dto.team
+    :members:
+    :undoc-members:
+    :inherited-members:
+    :imported-members:
+    :show-inheritance:
+
+cassiopeia.type.dto.tournament
+-------------------------
+
+.. automodule:: cassiopeia.type.dto.tournament
     :members:
     :undoc-members:
     :inherited-members:

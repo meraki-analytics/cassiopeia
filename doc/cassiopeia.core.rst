@@ -11,6 +11,16 @@ cassiopeia.core.championapi
     :imported-members:
     :show-inheritance:
 
+cassiopeia.core.championmasteryapi
+---------------------------
+
+.. automodule:: cassiopeia.core.championmasteryapi
+    :members:
+    :undoc-members:
+    :inherited-members:
+    :imported-members:
+    :show-inheritance:
+
 cassiopeia.core.currentgameapi
 ------------------------------
 
@@ -125,6 +135,16 @@ cassiopeia.core.teamapi
 -----------------------
 
 .. automodule:: cassiopeia.core.teamapi
+    :members:
+    :undoc-members:
+    :inherited-members:
+    :imported-members:
+    :show-inheritance:
+
+cassiopeia.core.tournamentapi
+----------------------
+
+.. automodule:: cassiopeia.core.tournamentapi
     :members:
     :undoc-members:
     :inherited-members:
