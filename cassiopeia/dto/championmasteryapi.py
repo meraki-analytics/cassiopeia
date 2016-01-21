@@ -11,15 +11,12 @@ def get_champion_mastery(summoner_id, champion_id):
 
     return         list<ChampionMastery>    the summoner's champion mastery value for the specified champion
     """
-
     region = cassiopeia.type.core.common.Region(cassiopeia.dto.requests.region)
     platform = cassiopeia.type.core.common.Platform[region.name]
 
     # Get JSON response
     request = "https://{server}.api.pvp.net/championmastery/location/{platform}/player/{summonerId}/champion/{championId}".format(server=cassiopeia.dto.requests.region, platform=platform.value, summonerId=summoner_id, championId=champion_id)
-    response = cassiopeia.type.dto.championmastery.ChampionMastery(cassiopeia.dto.requests.get(request, include_base=False))
-
-    return response
+    return cassiopeia.type.dto.championmastery.ChampionMastery(cassiopeia.dto.requests.get(request, include_base=False))
 
 
 def get_champion_masteries(summoner_id):
@@ -29,7 +26,6 @@ def get_champion_masteries(summoner_id):
 
     return         list<ChampionMastery>    the summoner's champion masteries
     """
-
     region = cassiopeia.type.core.common.Region(cassiopeia.dto.requests.region)
     platform = cassiopeia.type.core.common.Platform[region.name]
 
@@ -38,9 +34,7 @@ def get_champion_masteries(summoner_id):
     response = cassiopeia.dto.requests.get(request, include_base=False)
 
     # Convert response to Dto type
-    response = [cassiopeia.type.dto.championmastery.ChampionMastery(cm) for cm in response]
-
-    return response
+    return [cassiopeia.type.dto.championmastery.ChampionMastery(cm) for cm in response]
 
 
 def get_champion_mastery_score(summoner_id):
@@ -50,33 +44,28 @@ def get_champion_mastery_score(summoner_id):
 
     return         int    the summoner's total champion mastery score
     """
-
     region = cassiopeia.type.core.common.Region(cassiopeia.dto.requests.region)
     platform = cassiopeia.type.core.common.Platform[region.name]
 
     # Get JSON response
     request = "https://{server}.api.pvp.net/championmastery/location/{platform}/player/{summonerId}/score".format(server=cassiopeia.dto.requests.region, platform=platform.value, summonerId=summoner_id)
-    response = cassiopeia.dto.requests.get(request, include_base=False)
-
-    return response
+    return cassiopeia.dto.requests.get(request, include_base=False)
 
 
-def get_top_champion_masteries(summoner_id):
+def get_top_champion_masteries(summoner_id, count=3):
     """https://developer.riotgames.com/api/methods#!/1034/3540
 
     summoner_id    int                      the summoner ID to get champion masteries for
+    count          int                      the maximum number of entires to retrieve (default 3)
 
     return         list<ChampionMastery>    the summoner's top champion masteries
     """
-
     region = cassiopeia.type.core.common.Region(cassiopeia.dto.requests.region)
     platform = cassiopeia.type.core.common.Platform[region.name]
 
     # Get JSON response
     request = "https://{server}.api.pvp.net/championmastery/location/{platform}/player/{summonerId}/topchampions".format(server=cassiopeia.dto.requests.region, platform=platform.value, summonerId=summoner_id)
-    response = cassiopeia.dto.requests.get(request, include_base=False)
+    response = cassiopeia.dto.requests.get(request, {"count": count}, include_base=False)
 
     # Convert response to Dto type
-    response = [cassiopeia.type.dto.championmastery.ChampionMastery(cm) for cm in response]
-
-    return response
+    return [cassiopeia.type.dto.championmastery.ChampionMastery(cm) for cm in response]

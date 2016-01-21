@@ -243,6 +243,42 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
         """
         return cassiopeia.riotapi.get_stats(self, season)
 
+    @cassiopeia.type.core.common.immutablemethod
+    def champion_mastery(self, champion):
+        """Gets the ChampionMastery object for the specified champion
+
+        champion    Champion           the desired champion
+
+        return      ChampionMastery    the summoner's champion mastery value for the specified champion
+        """
+        return cassiopeia.riotapi.get_champion_mastery(self, champion)
+
+    @cassiopeia.type.core.common.immutablemethod
+    def champion_masteries(self):
+        """Gets all the ChampionMastery objects for the summoner
+
+        return      dict<Champion, ChampionMastery>    the summoner's champion masteries
+        """
+        return cassiopeia.riotapi.get_champion_masteries(self)
+
+    @cassiopeia.type.core.common.immutablemethod
+    def champion_mastery_score(self):
+        """Gets the total champion mastery score for the summoner
+
+        return    int    the summoner's total champion mastery score
+        """
+        return cassiopeia.riotapi.get_champion_mastery_score(self)
+
+    @cassiopeia.type.core.common.immutablemethod
+    def top_champion_masteries(self, max_entries=3):
+        """Gets the top ChampionMastery objects for the summoner
+
+        max_entries    int                      the maximum number of entires to retrieve (default 3)
+
+        return         list<ChampionMastery>    the summoner's top champion masteries
+        """
+        return cassiopeia.riotapi.get_top_champion_masteries(self, max_entries)
+
 
 ###############################
 # Dynamic SQLAlchemy bindings #

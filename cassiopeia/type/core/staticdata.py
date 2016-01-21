@@ -701,6 +701,16 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
         """
         return cassiopeia.riotapi.get_champion_status(self)
 
+    @cassiopeia.type.core.common.immutablemethod
+    def mastery_level(self, summoner):
+        """Gets the ChampionMastery object for the specified summoner
+
+        summoner    Summoner           the summoner to get champion mastery for
+
+        return      ChampionMastery    the summoner's champion mastery value for the champion
+        """
+        return cassiopeia.riotapi.get_champion_mastery(summoner, self)
+
 
 ##################
 # Item Endpoints #
