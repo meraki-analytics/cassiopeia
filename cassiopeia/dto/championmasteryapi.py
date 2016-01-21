@@ -21,6 +21,7 @@ def get_champion_mastery(summoner_id, champion_id):
 
     return response
 
+
 def get_champion_masteries(summoner_id):
     """https://developer.riotgames.com/api/methods#!/1034/3544
 
@@ -41,6 +42,7 @@ def get_champion_masteries(summoner_id):
 
     return response
 
+
 def get_champion_mastery_score(summoner_id):
     """https://developer.riotgames.com/api/methods#!/1034/3546
 
@@ -57,6 +59,7 @@ def get_champion_mastery_score(summoner_id):
     response = cassiopeia.dto.requests.get(request, include_base=False)
 
     return response
+
 
 def get_top_champion_masteries(summoner_id):
     """https://developer.riotgames.com/api/methods#!/1034/3540
