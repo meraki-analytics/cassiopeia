@@ -278,7 +278,7 @@ class Season(enum.Enum):
     preseason_6 = "PRESEASON2016"
     season_6 = "SEASON2016"
 
-stats_seasons = {Season.season_3, Season.season_4, Season.season_5}
+stats_seasons = {Season.season_3, Season.season_4, Season.season_5, Season.season_6}
 
 
 class Region(enum.Enum):
@@ -455,9 +455,10 @@ class Turret(enum.Enum):
 
 
 class Ward(enum.Enum):
+    blue_trinket = "BLUE_TRINKET"
     sight = "SIGHT_WARD"
     vision = "VISION_WARD"
-    trinket = "YELLOW_TRINKET"
-    upgraded_trinket = "YELLOW_TRINKET_UPGRADE"
+    yellow_trinket = "YELLOW_TRINKET"
+    upgraded_yellow_trinket = "YELLOW_TRINKET_UPGRADE"
     mushroom = "TEEMO_MUSHROOM"
     undefined = "UNDEFINED"
