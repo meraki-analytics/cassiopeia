@@ -24,7 +24,7 @@ def create_tournament_codes(tournament_id, team_size, spectator_type, pick_type,
     if not isinstance(pick_type, cassiopeia.type.core.tournament.PickType):
         pick_type = cassiopeia.type.core.tournament.PickType(pick_type.upper())
     if not isinstance(map_type, cassiopeia.type.core.tournament.MapType):
-        map_type = cassiopeia.type.core.tournament.MapType(map_type.upper()) 
+        map_type = cassiopeia.type.core.tournament.MapType(map_type.upper())
 
     summoners = cassiopeia.type.dto.tournament.SummonerIdParams([summoner.id for summoner in allowed_summoners]) if allowed_summoners else None
     parameters = cassiopeia.type.dto.tournament.TournamentCodeParameters(team_size, spectator_type.value, pick_type.value, map_type.value, summoners, str(meta_data))
@@ -58,7 +58,7 @@ def update_tournament_code(tournament_code, allowed_summoners=[], spectator_type
     if pick_type and not isinstance(pick_type, cassiopeia.type.core.tournament.PickType):
         pick_type = cassiopeia.type.core.tournament.PickType(pick_type.upper())
     if map_type and not isinstance(map_type, cassiopeia.type.core.tournament.MapType):
-        map_type = cassiopeia.type.core.tournament.MapType(map_type.upper()) 
+        map_type = cassiopeia.type.core.tournament.MapType(map_type.upper())
     summoners = ",".join([str(summoner.id) for summoner in allowed_summoners])
     parameters = cassiopeia.type.dto.tournament.TournamentCodeUpdateParameters(summoners, spectator_type.value if spectator_type else "", pick_type.value if pick_type else "", map_type.value if map_type else "")
     cassiopeia.dto.tournamentapi.update_tournament_code(tournament_code, parameters)
