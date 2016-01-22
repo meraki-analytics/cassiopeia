@@ -95,7 +95,7 @@ def make_request(request, method, params={}, payload=None, static=False, include
                 retry_after += int(e.headers["Retry-After"])
 
             limiter.reset_in(retry_after)
-            return get(request, params, static, include_base, tournament)
+            return make_request(request, method, params, payload, static, include_base, tournament)
         else:
             raise cassiopeia.type.api.exception.APIError("Server returned error {code} on call: {url}".format(code=e.code, url=url), e.code)
 
