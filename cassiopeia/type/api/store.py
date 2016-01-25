@@ -327,7 +327,7 @@ def _sa_bind_typesystem():
     import cassiopeia.type.core.team
     import cassiopeia.type.core.tournament
     cassiopeia.type.core.champion._sa_rebind_all()
-    cassiopeia.type.core.championmastery._sa_bind_all()
+    cassiopeia.type.core.championmastery._sa_rebind_all()
     cassiopeia.type.core.currentgame._sa_rebind_all()
     cassiopeia.type.core.featuredgames._sa_rebind_all()
     cassiopeia.type.core.game._sa_rebind_all()
