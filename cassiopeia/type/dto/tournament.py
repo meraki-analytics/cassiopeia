@@ -137,7 +137,7 @@ def _sa_bind_tournament_code():
     class TournamentCode(TournamentCode, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "TournamentCode"
         code = sqlalchemy.Column(sqlalchemy.String(50))
-        id = sqlalchemy.Column(sqlalchemy.BigInteger)
+        id = sqlalchemy.Column(sqlalchemy.BigInteger, primary_key=True)
         lobbyName = sqlalchemy.Column(sqlalchemy.String(50))
         map = sqlalchemy.Column(sqlalchemy.String(30))
         metaData = sqlalchemy.Column(sqlalchemy.Text)
@@ -157,6 +157,7 @@ def _sa_bind_lobby_event():
     @cassiopeia.type.core.common.inheritdocs
     class LobbyEvent(LobbyEvent, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "LobbyEvent"
+        _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         eventType = sqlalchemy.Column(sqlalchemy.String(50))
         summonerId = sqlalchemy.Column(sqlalchemy.String(30))
         timestamp = sqlalchemy.Column(sqlalchemy.String(50))
