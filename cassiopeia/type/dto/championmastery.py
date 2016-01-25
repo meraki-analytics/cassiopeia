@@ -41,7 +41,7 @@ def _sa_bind_champion_mastery():
     @cassiopeia.type.core.common.inheritdocs
     class ChampionMastery(ChampionMastery, cassiopeia.type.dto.common.BaseDB):
         __tablename__ = "ChampionMastery"
-        championId = sqlalchemy.Column(sqlalchemy.Integer)
+        championId = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
         championLevel = sqlalchemy.Column(sqlalchemy.Integer)
         championPoints = sqlalchemy.Column(sqlalchemy.Integer)
         championPointsSinceLastLevel = sqlalchemy.Column(sqlalchemy.Integer)
