@@ -49,7 +49,7 @@ def _sa_bind_champion_mastery():
         chestGranted = sqlalchemy.Column(sqlalchemy.Boolean)
         highestGrade = sqlalchemy.Column(sqlalchemy.String(30))
         lastPlayTime = sqlalchemy.Column(sqlalchemy.BigInteger)
-        playerId = sqlalchemy.Column(sqlalchemy.sqlalchemy.Integer, primary_key=True)
+        playerId = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
 
 
 def _sa_bind_all():
