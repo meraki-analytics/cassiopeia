@@ -204,6 +204,8 @@ class Queue(enum.Enum):
     poro_king = "KING_PORO_5x5"
     nemesis_draft = "COUNTER_PICK"
     black_market = "BILGEWATER_5x5"
+    dynamic_queue = "TEAM_BUILDER_DRAFT_UNRANKED_5x5"
+    ranked_dynamic_queue = "TEAM_BUILDER_DRAFT_RANKED_5x5"
 
     def for_id(id_):
         try:
@@ -245,9 +247,11 @@ Queue.by_id = {
     310: Queue.nemesis_draft,
     73: Queue.showdown_duo,
     313: Queue.black_market,
-    61: Queue.team_builder
+    61: Queue.team_builder,
+    400: Queue.dynamic_queue,
+    410: Queue.ranked_dynamic_queue
 }
-ranked_queues = {Queue.ranked_solo, Queue.ranked_threes, Queue.ranked_fives}
+ranked_queues = {Queue.ranked_solo, Queue.ranked_threes, Queue.ranked_fives, Queue.ranked_dynamic_queue}
 
 
 class Tier(enum.Enum):
