@@ -903,7 +903,12 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def percent_health_regen(self):
         """float    percent health regen"""
-        return self.data.PercentHPRegenMod + self.__scraped_stats.get("base_health_regen", 0.0)
+        return self.data.PercentHPRegenMod
+
+    @property
+    def percent_base_health_regen(self):
+        """float    percent base health regen"""
+        return self.__scraped_stats.get("base_health_regen", 0.0)
 
     @property
     def life_steal(self):
@@ -918,7 +923,12 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def percent_mana_regen(self):
         """float    percent mana regen"""
-        return self.data.PercentMPRegenMod + self.__scraped_stats.get("base_mana_regen", 0.0)
+        return self.data.PercentMPRegenMod
+
+    @property
+    def percent_base_mana_regen(self):
+        """float    percent base mana regen"""
+        return self.__scraped_stats.get("base_mana_regen", 0.0)
 
     @property
     def percent_ability_power(self):
@@ -1282,7 +1292,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     # Left out these: attack_range, percent_time_dead, percent_time_dead_per_level, time_dead, time_dead_per_level, gold_per_ten, starting_gold, percent_xp_bonus, xp_bonus
     __item_categories = {
         "Defense": {
-            "Health": ["base_health", "health", "percent_health", "percent_bonus_health", "health_regen", "base_health_regen", "health_regen_per_level", "bonus_health_regen", "percent_health_regen", "health_per_level", "base_health_regen", "bonus_health"],
+            "Health": ["base_health", "health", "percent_health", "percent_bonus_health", "health_regen", "base_health_regen", "health_regen_per_level", "bonus_health_regen", "percent_health_regen", "percent_base_health_regen", "health_per_level", "base_health_regen", "bonus_health"],
             "Armor": ["armor", "bonus_armor", "armor_per_level", "base_armor", "percent_armor"],
             "Magic Resist": ["magic_resist_per_level", "base_magic_resist", "magic_resist", "percent_magic_resist", "bonus_magic_resist"],
             "Tenacity": ["tenacity"],
@@ -1300,7 +1310,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
             "Cooldown Reduction": ["item_cooldown_reduction", "cooldown_reduction_per_level", "cooldown_reduction"],
             "Spell Vamp": ["spell_vamp"],
             "Mana": ["base_mana", "bonus_mana", "energy_per_level", "energy", "mana_per_level", "mana", "percent_mana", "base_mana_regen"],
-            "Mana Regen": ["base_mana_regen", "bonus_mana_regen", "mana_regen_per_level", "percent_mana_regen", "mana_regen", "energy_regen", "energy_regen_per_level"],
+            "Mana Regen": ["base_mana_regen", "bonus_mana_regen", "mana_regen_per_level", "percent_mana_regen", "percent_base_mana_regen", "mana_regen", "energy_regen", "energy_regen_per_level"],
             "Other": []
         },
         "Movement": {
