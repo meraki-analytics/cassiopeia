@@ -1269,7 +1269,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
         for stat, regex in Item.__stat_patterns.items():
             match = re.search(regex, self.description)
             if match:
-                value = [match.group(i) for i in range(1,re.compile(regex).groups+1) if match.group(i) is not None]
+                value = [match.group(i) for i in range(1, re.compile(regex).groups + 1) if match.group(i) is not None]
                 value = sum([float(v) for v in value])
                 scraped_stats[stat] = value
         return ItemStats(self.data.stats, scraped_stats) if self.data.stats else None
