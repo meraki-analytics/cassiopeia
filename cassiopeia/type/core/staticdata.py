@@ -773,7 +773,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def __init__(self, data, scraped_stats={}):
         super().__init__(data)
         for k, v in scraped_stats.items():
-            if "percent" in k and v > 1.0:
+            if ("percent" in k or "spell_vamp" in k or "life_steal" in k or "tenacity" in k) and v > 1.0:
                 scraped_stats[k] = v / 100.0
         self.__scraped_stats = scraped_stats
 
@@ -866,6 +866,11 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.FlatSpellBlockMod
 
     @property
+    def tenacity(self):
+        """float    tenacity"""
+        return self.__scraped_stats.get("tenacity", 0.0)
+
+    @property
     def percent_armor(self):
         """float    percent armor"""
         return self.data.PercentArmorMod
@@ -891,14 +896,19 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.PercentHPPoolMod
 
     @property
+    def percent_bonus_health(self):
+        """float    percent bonus health"""
+        return self.__scraped_stats.get("percent_bonus_health", 0.0)
+
+    @property
     def percent_health_regen(self):
         """float    percent health regen"""
-        return self.data.PercentHPRegenMod
+        return self.data.PercentHPRegenMod + self.__scraped_stats.get("base_health_regen", 0.0)
 
     @property
     def life_steal(self):
         """float    life steal"""
-        return self.data.PercentLifeStealMod
+        return self.data.PercentLifeStealMod + self.__scraped_stats.get("life_steal", 0.0)
 
     @property
     def percent_mana(self):
@@ -908,7 +918,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def percent_mana_regen(self):
         """float    percent mana regen"""
-        return self.data.PercentMPRegenMod
+        return self.data.PercentMPRegenMod + self.__scraped_stats.get("base_mana_regen", 0.0)
 
     @property
     def percent_ability_power(self):
@@ -918,12 +928,17 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def percent_movespeed(self):
         """float    percent movespeed"""
-        return self.data.PercentMovementSpeedMod
+        return self.data.PercentMovementSpeedMod + self.__scraped_stats.get("percent_movespeed", 0.0)
 
     @property
     def percent_attack_damage(self):
         """float    percent attack damage"""
         return self.data.PercentPhysicalDamageMod
+
+    @property
+    def percent_base_attack_damage(self):
+        """float    percent attack damage"""
+        return self.__scraped_stats.get("percent_base_attack_damage", 0.0)
 
     @property
     def percent_magic_resist(self):
@@ -933,7 +948,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def spell_vamp(self):
         """float    spell vamp"""
-        return self.data.PercentSpellVampMod
+        return self.data.PercentSpellVampMod + self.__scraped_stats.get("spell_vamp", 0.0)
 
     @property
     def armor_per_level(self):
@@ -1056,6 +1071,11 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.rPercentArmorPenetrationModPerLevel
 
     @property
+    def percent_bonus_armor_penetration(self):
+        """float    percent armor pentration"""
+        return self.__scraped_stats.get("percent_bonus_armor_pen", 0.0)
+
+    @property
     def percent_attack_speed_per_level(self):
         """float    percent attack speed per level"""
         return self.data.rPercentAttackSpeedModPerLevel
@@ -1101,13 +1121,23 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.Item
 
     __stat_patterns = {
-        "percent_cooldown_reduction": "\\+(\\d+) *% Cooldown Reduction *(<br>|</stats>|</passive>|$)",
-        "armor_pen": "\\+(\\d+) *Armor Penetration *(<br>|</stats>|</passive>|$)",
-        "percent_armor_pen": "ignores (\\d+)% of the target's Armor",
-        "magic_pen": "\\+(\\d+) *Magic Penetration *(<br>|</stats>|</passive>|$)",
-        "percent_magic_pen": "ignores (\\d+)% of the target's Magic Resist",
-        "gold_per_ten": "\\+(\\d+) *Gold per 10 seconds *(<br>|</stats>|</passive>|$)",
-        "percent_ability_power": "Increases Ability Power by (\\d+)%"
+        "percent_base_attack_damage": "\\+(\\d+)% Base Attack Damage",
+        "percent_cooldown_reduction": "\\+(\\d+) *% Cooldown Reduction",
+        "armor_pen": "\\+(\\d+) <a href='FlatArmorPen'>Armor Penetration</a>",
+        "percent_bonus_armor_pen": "\\+(\\d+)% <a href='BonusArmorPen'>Bonus Armor Penetration</a>",
+        "magic_pen": "\\+(\\d+) <a href='FlatMagicPen'>Magic Penetration</a>",
+        "percent_magic_pen": "\\+(\\d+)% <a href='TotalMagicPen'>Magic Penetration</a>",
+        "gold_per_ten": "\\+(\\d+) *Gold per 10 seconds",
+        "percent_ability_power": "Increases Ability Power by (\\d+)%",
+        "base_mana_regen": "<mana>\\+(\\d+)% Base Mana Regen </mana>",
+        "base_health_regen": "<health>\\+(\\d+)% Base Health Regen </health>",
+        "life_steal": "Dealing physical damage heals for (\\d+)% of the damage dealt|\\+(\\d+)% Life Steal",
+        "spell_vamp": "\\+(\\d+)% <a href='SpellVamp'>Spell Vamp</a>|Your spells and abilities heal you for (\\d+)% of the damage dealt",
+        "base_mana_regen": "\\+(\\d+)% Base Mana Regen",
+        "base_health_regen": "\\+(\\d+)% Base Health Regen",
+        "percent_bonus_health": "\\+(\\d+)% Bonus Health",
+        "percent_movespeed": "\\+(\\d+)% Movement Speed",
+        "tenacity": "Tenacity:</unique> Reduces the duration of stuns, slows, taunts, fears, silences, blinds, polymorphs, and immobilizes by (\\d+)%"
     }
 
     def __str__(self):
@@ -1239,7 +1269,9 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
         for stat, regex in Item.__stat_patterns.items():
             match = re.search(regex, self.description)
             if match:
-                scraped_stats[stat] = float(match.group(1))
+                value = [match.group(i) for i in range(1,re.compile(regex).groups+1) if match.group(i) is not None]
+                value = sum([float(v) for v in value])
+                scraped_stats[stat] = value
         return ItemStats(self.data.stats, scraped_stats) if self.data.stats else None
 
     @property
@@ -1250,24 +1282,24 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     # Left out these: attack_range, percent_time_dead, percent_time_dead_per_level, time_dead, time_dead_per_level, gold_per_ten, starting_gold, percent_xp_bonus, xp_bonus
     __item_categories = {
         "Defense": {
-            "Health": ["base_health", "health", "percent_health", "health_regen", "health_regen_per_level", "bonus_health_regen", "percent_health_regen", "health_per_level", "base_health_regen", "bonus_health"],
+            "Health": ["base_health", "health", "percent_health", "percent_bonus_health", "health_regen", "base_health_regen", "health_regen_per_level", "bonus_health_regen", "percent_health_regen", "health_per_level", "base_health_regen", "bonus_health"],
             "Armor": ["armor", "bonus_armor", "armor_per_level", "base_armor", "percent_armor"],
             "Magic Resist": ["magic_resist_per_level", "base_magic_resist", "magic_resist", "percent_magic_resist", "bonus_magic_resist"],
-            "Tenacity": ["percent_crowd_control_reduction"],
-            "Other": ["dodge_chance", "dodge_chance_per_level", "block", "percent_block"]
+            "Tenacity": ["tenacity"],
+            "Other": ["dodge_chance", "dodge_chance_per_level", "block", "percent_block", "tenacity"]
         },
         "Attack": {
             "Damage": ["bonus_attack_damage", "attack_damage", "base_attack_damage", "percent_attack_damage", "percent_total_damage_increase", "attack_damage_per_level"],
             "Critical Strike": ["percent_critical_strike_damage", "critical_strike_chance_per_level", "critical_strike_damage", "critical_strike_damage_per_level", "critical_strike_chance", "critical_strike_chance_per_level"],
             "Attack Speed": ["percent_attack_speed", "attack_speed", "bonus_attack_speed", "attack_speed_per_level", "base_attack_speed", "percent_attack_speed_per_level"],
             "Life Steal": ["life_steal"],
-            "Other": ["armor_penetration", "percent_armor_penetration", "armor_penetration_per_level", "percent_armor_penetration_per_level", "magic_penetration", "percent_magic_penetration", "magic_penetration_per_level", "percent_magic_pen_per_level"]
+            "Other": ["armor_penetration", "percent_armor_penetration", "percent_bonus_armor_penetration", "armor_penetration_per_level", "percent_armor_penetration_per_level", "magic_penetration", "percent_magic_penetration", "magic_penetration_per_level", "percent_magic_pen_per_level"]
         },
         "Magic": {
             "Ability Power": ["ability_power", "ability_power_per_level", "percent_ability_power"],
             "Cooldown Reduction": ["item_cooldown_reduction", "cooldown_reduction_per_level", "cooldown_reduction"],
             "Spell Vamp": ["spell_vamp"],
-            "Mana": ["base_mana", "bonus_mana", "energy_per_level", "energy", "mana_per_level", "mana", "percent_mana"],
+            "Mana": ["base_mana", "bonus_mana", "energy_per_level", "energy", "mana_per_level", "mana", "percent_mana", "base_mana_regen"],
             "Mana Regen": ["base_mana_regen", "bonus_mana_regen", "mana_regen_per_level", "percent_mana_regen", "mana_regen", "energy_regen", "energy_regen_per_level"],
             "Other": []
         },
