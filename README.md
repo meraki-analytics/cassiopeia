@@ -1,4 +1,4 @@
-[![Build Status](https://circleci.com/gh/meraki-analytics/cassiopeia.svg?style=shield&circle-token=b9e42c23cdc36e88b5339199abd1ebf582ae91bf)](https://github.com/meraki-analytics/cassiopeia)[![Documentation Status](https://readthedocs.org/projects/cassiopeia/badge/?version=latest)](http://cassiopeia.readthedocs.org/en/latest/)
+[![Documentation Status](https://readthedocs.org/projects/cassiopeia/badge/?version=latest)](http://cassiopeia.readthedocs.org/en/latest/)
 # Cassiopeia
 
 A Python adaptation of the Riot Games LoL API (https://developer.riotgames.com/).
