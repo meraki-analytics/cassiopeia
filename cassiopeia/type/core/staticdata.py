@@ -908,7 +908,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     @property
     def percent_base_health_regen(self):
         """float    percent base health regen"""
-        return self.__scraped_stats.get("base_health_regen", 0.0)
+        return self.__scraped_stats.get("percent_base_health_regen", 0.0)
 
     @property
     def life_steal(self):
@@ -1139,12 +1139,10 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
         "percent_magic_pen": "\\+(\\d+)% <a href='TotalMagicPen'>Magic Penetration</a>",
         "gold_per_ten": "\\+(\\d+) *Gold per 10 seconds",
         "percent_ability_power": "Increases Ability Power by (\\d+)%",
-        "base_mana_regen": "<mana>\\+(\\d+)% Base Mana Regen </mana>",
-        "base_health_regen": "<health>\\+(\\d+)% Base Health Regen </health>",
         "life_steal": "(?:Dealing physical damage heals for (\\d+)% of the damage dealt)|(?:\\+(\\d+)% Life Steal)",
         "spell_vamp": "(?:\\+(\\d+)% <a href='SpellVamp'>Spell Vamp</a>)|(?:Your spells and abilities heal you for (\\d+)% of the damage dealt)",
-        "base_mana_regen": "\\+(\\d+)% Base Mana Regen",
-        "base_health_regen": "\\+(\\d+)% Base Health Regen",
+        "percent_base_mana_regen": "\\+(\\d+)% Base Mana Regen",
+        "percent_base_health_regen": "\\+(\\d+)% Base Health Regen",
         "percent_bonus_health": "\\+(\\d+)% Bonus Health",
         "percent_movespeed": "\\+(\\d+)% Movement Speed",
         "tenacity": "Tenacity:</unique> Reduces the duration of stuns, slows, taunts, fears, silences, blinds, polymorphs, and immobilizes by (\\d+)%"
