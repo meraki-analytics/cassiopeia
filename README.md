@@ -56,7 +56,7 @@ best_na = challenger_league[0].summoner
 print("He's much better at writing Python code than he is at LoL. He'll never be as good as {name}.".format(name=best_na.name))
 ```
 
-Make sure you set your rate limit! Cassiopeia will limit you the the default development limit until you give it your production limit (if you have one).
+Make sure you set your rate limit ONLY IF YOU HAVE APPLIED FOR AND RECIEVED A PRODUCTION-LEVEL API KEY. By default, Cassiopeia will limit you to the Development rate limit. You can set the rate limit to your production limit (if you have one) as follows:
 
 ```python
 # 3,000 calls per 10 seconds
