@@ -10,7 +10,7 @@ class CassiopeiaException(Exception):
 
 
 class APIError(Exception):
-    """"
+    """
     message       str    the error message
     error_code    int    the HTTP error code that was received
     """
