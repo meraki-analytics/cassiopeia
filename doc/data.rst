@@ -60,7 +60,7 @@ Now that we have the match, let's see what champions each participant played:
     for participant in match.participants:
         print(participant.champion.name)
 
-That was easy! Just a for a loop and a print. Now let's look at some of the events that happened in the match:
+That was easy! Just a for a loop and print. Now let's look at some of the events that happened in the match:
 
 .. code-block:: python
 
