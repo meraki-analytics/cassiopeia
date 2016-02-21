@@ -1,5 +1,5 @@
-Advanced Usage
-##############
+Advanced Topics
+###############
 
 Using Both Core and Dto Datatypes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
