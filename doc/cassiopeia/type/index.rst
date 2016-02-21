@@ -3,6 +3,6 @@ cassiopeia.type
 
 .. toctree::
 
-    api
-    core
-    dto
+    api/index
+    core/index
+    dto/index
