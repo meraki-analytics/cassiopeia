@@ -1,18 +1,12 @@
 cassiopeia.type.dto
 ====================
 
-cassiopeia.type.dto.champion
-----------------------------
-
 .. automodule:: cassiopeia.type.dto.champion
     :members:
     :undoc-members:
     :inherited-members:
     :imported-members:
     :show-inheritance:
-
-cassiopeia.type.dto.championmastery
------------------------------
 
 .. automodule:: cassiopeia.type.dto.championmastery
     :members:
@@ -21,18 +15,12 @@ cassiopeia.type.dto.championmastery
     :imported-members:
     :show-inheritance:
 
-cassiopeia.type.dto.common
---------------------------
-
 .. automodule:: cassiopeia.type.dto.common
     :members:
     :undoc-members:
     :inherited-members:
     :imported-members:
     :show-inheritance:
-
-cassiopeia.type.dto.currentgame
--------------------------------
 
 .. automodule:: cassiopeia.type.dto.currentgame
     :members:
@@ -41,18 +29,12 @@ cassiopeia.type.dto.currentgame
     :imported-members:
     :show-inheritance:
 
-cassiopeia.type.dto.featuredgames
----------------------------------
-
 .. automodule:: cassiopeia.type.dto.featuredgames
     :members:
     :undoc-members:
     :inherited-members:
     :imported-members:
     :show-inheritance:
-
-cassiopeia.type.dto.game
-------------------------
 
 .. automodule:: cassiopeia.type.dto.game
     :members:
@@ -61,18 +43,12 @@ cassiopeia.type.dto.game
     :imported-members:
     :show-inheritance:
 
-cassiopeia.type.dto.league
---------------------------
-
 .. automodule:: cassiopeia.type.dto.league
     :members:
     :undoc-members:
     :inherited-members:
     :imported-members:
     :show-inheritance:
-
-cassiopeia.type.dto.match
--------------------------
 
 .. automodule:: cassiopeia.type.dto.match
     :members:
@@ -81,18 +57,12 @@ cassiopeia.type.dto.match
     :imported-members:
     :show-inheritance:
 
-cassiopeia.type.dto.matchlist
------------------------------
-
 .. automodule:: cassiopeia.type.dto.matchlist
     :members:
     :undoc-members:
     :inherited-members:
     :imported-members:
     :show-inheritance:
-
-cassiopeia.type.dto.staticdata
-------------------------------
 
 .. automodule:: cassiopeia.type.dto.staticdata
     :members:
@@ -101,18 +71,12 @@ cassiopeia.type.dto.staticdata
     :imported-members:
     :show-inheritance:
 
-cassiopeia.type.dto.stats
--------------------------
-
 .. automodule:: cassiopeia.type.dto.stats
     :members:
     :undoc-members:
     :inherited-members:
     :imported-members:
     :show-inheritance:
-
-cassiopeia.type.dto.status
---------------------------
 
 .. automodule:: cassiopeia.type.dto.status
     :members:
@@ -121,9 +85,6 @@ cassiopeia.type.dto.status
     :imported-members:
     :show-inheritance:
 
-cassiopeia.type.dto.summoner
-----------------------------
-
 .. automodule:: cassiopeia.type.dto.summoner
     :members:
     :undoc-members:
@@ -131,18 +92,12 @@ cassiopeia.type.dto.summoner
     :imported-members:
     :show-inheritance:
 
-cassiopeia.type.dto.team
-------------------------
-
 .. automodule:: cassiopeia.type.dto.team
     :members:
     :undoc-members:
     :inherited-members:
     :imported-members:
     :show-inheritance:
-
-cassiopeia.type.dto.tournament
--------------------------
 
 .. automodule:: cassiopeia.type.dto.tournament
     :members:
