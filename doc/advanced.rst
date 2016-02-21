@@ -2,7 +2,7 @@ Advanced Topics
 ###############
 
 Using Both Core and Dto Datatypes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can use both ``cassiopeia.riotapi`` and ``cassiopeia.baseriotapi`` within the same program and the rate limiting will still work correctly. This may be useful if you want to use advanced functionality for some types but not others.
 
@@ -14,7 +14,7 @@ By default, Cassiopeia will wait and retry if a request returns a 429 (although 
 Changing the Value of Attributes Cassiopeia Objects
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-All objects in Cassiopeia are immutable. This is deliberate to prevent users from modifying the underlying data which may break functionality.
+All Core objects in Cassiopeia are immutable. This is deliberate to prevent users from modifying the underlying data which may break functionality.
 
 For example, if a user was able to run
 
@@ -24,7 +24,7 @@ For example, if a user was able to run
     
 this would break functionality that relied on ``match.red_team`` being a ``Team`` object.
 
-If you wish to modify Cassiopeia objects you should create a new class that uses the Cassiopeia class to during initialization. For example:
+If you wish to modify Cassiopeia objects you can create a new class that uses the Cassiopeia class to during initialization. For example:
 
 .. code-block:: python
 
@@ -36,6 +36,19 @@ If you wish to modify Cassiopeia objects you should create a new class that uses
     annie = riotapi.get_champion_by_name("Annie")
     annie = Champion(annie)
     annie.id = 100  # Does not raise an exception
+    print(annie.id)
+
+Alternatively, you can edit the underlying Dto object (which is mutable) to alter the return values from the Core type. For example:
+
+.. code-block:: python
+
+    annie = riotapi.get_champion_by_name("Annie")
+    dto = annie.data  # Get the underlying Dto object
+    dto.id = 100
+    print(annie.id)
+
+Be careful when using the second method, as radically changing object types could break code which relies on data having a certain type.
+
 
 Additional Setup
 ^^^^^^^^^^^^^^^^
