@@ -35,8 +35,6 @@ You can find more examples within Cassiopeia's `examples <https://github.com/mer
 More Examples
 =============
 
-.. target-notes::
-
 * `Getting Champion Names and IDs <https://github.com/meraki-analytics/cassiopeia/blob/master/example/champion_id_to_name_mapping.py>`_
 * `Calculating K/D/A <https://github.com/meraki-analytics/cassiopeia/blob/master/example/calculate_average_kda.py>`_
 * `Checking if a Summoner is in Game <https://github.com/meraki-analytics/cassiopeia/blob/master/example/is_dyrus_in_game.py>`_
