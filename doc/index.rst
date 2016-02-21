@@ -4,23 +4,21 @@ Cassiopeia Documentation
 Overview
 ========
 
-Somewhere I should say that you can do ``dyrus.current_game()`` rather than ``riotapi.get_current_game(dyrus)``.
-
 .. toctree::
     :maxdepth: 1
 
     setup
     basicusage
     vs
-    data
     ratelimiting
+    data
     loadpolicy
     databasing
     advanced
 
 
 Top Level APIs
-===============
+==============
 
 .. toctree::
     :maxdepth: 1
@@ -30,10 +28,10 @@ Top Level APIs
 
 
 Submodules used by APIs
-========================
+=======================
 
-API Function Definitions
-^^^^^^^^^^^^^^^^^^^^^^^^
+API Methods
+^^^^^^^^^^^
 
 .. toctree::
     :maxdepth: 1
@@ -52,7 +50,7 @@ API Class Definitions
    
 
 Index and Search
-##################
+################
 
 * :ref:`genindex`
 * :ref:`modindex`
