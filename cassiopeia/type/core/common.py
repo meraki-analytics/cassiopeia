@@ -262,6 +262,7 @@ class Tier(enum.Enum):
     gold = "GOLD"
     silver = "SILVER"
     bronze = "BRONZE"
+    unranked = "UNRANKED"
 
 
 class Division(enum.Enum):
