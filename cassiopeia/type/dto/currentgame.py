@@ -10,8 +10,9 @@ if cassiopeia.type.dto.common.sqlalchemy_imported:
 @cassiopeia.type.core.common.inheritdocs
 class Rune(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    count     int    the count of this rune used by the participant
-    runeId    int    the ID of the rune
+    Args:
+        count (int): the count of this rune used by the participant
+        runeId (int): the ID of the rune
     """
     def __init__(self, dictionary):
         self.count = dictionary.get("count", 0)
@@ -21,8 +22,9 @@ class Rune(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    masteryId    int    the ID of the mastery
-    rank         int    the number of points put into this mastery by the user
+    Args:
+        masteryId (int): the ID of the mastery
+        rank (int): the number of points put into this mastery by the user
     """
     def __init__(self, dictionary):
         self.masteryId = dictionary.get("masteryId", 0)
@@ -32,7 +34,8 @@ class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class Observer(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    encryptionKey    str    key used to decrypt the spectator grid game data for playback
+    Args:
+        encryptionKey (str): key used to decrypt the spectator grid game data for playback
     """
     def __init__(self, dictionary):
         self.encryptionKey = dictionary.get("encryptionKey", "")
@@ -41,16 +44,17 @@ class Observer(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class CurrentGameParticipant(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    bot              bool             flag indicating whether or not this participant is a bot
-    championId       int              the ID of the champion played by this participant
-    masteries        list<Mastery>    the masteries used by this participant
-    profileIconId    int              the ID of the profile icon used by this participant
-    runes            list<Rune>       the runes used by this participant
-    spell1Id         int              the ID of the first summoner spell used by this participant
-    spell2Id         int              the ID of the second summoner spell used by this participant
-    summonerId       int              the summoner ID of this participant
-    summonerName     str              the summoner name of this participant
-    teamId           int              the team ID of this participant, indicating the participant's team
+    Args:
+        bot (bool): flag indicating whether or not this participant is a bot
+        championId (int): the ID of the champion played by this participant
+        masteries (list<Mastery>): the masteries used by this participant
+        profileIconId (int): the ID of the profile icon used by this participant
+        runes (list<Rune>): the runes used by this participant
+        spell1Id (int): the ID of the first summoner spell used by this participant
+        spell2Id (int): the ID of the second summoner spell used by this participant
+        summonerId (int): the summoner ID of this participant
+        summonerName (str): the summoner name of this participant
+        teamId (int): the team ID of this participant, indicating the participant's team
     """
     def __init__(self, dictionary):
         self.bot = dictionary.get("bot", False)
@@ -68,9 +72,10 @@ class CurrentGameParticipant(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class BannedChampion(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    championId    int    the ID of the banned champion
-    pickTurn      int    the turn during which the champion was banned
-    teamId        int    the ID of the team that banned the champion
+    Args:
+        championId (int): the ID of the banned champion
+        pickTurn (int): the turn during which the champion was banned
+        teamId (int): the ID of the team that banned the champion
     """
     def __init__(self, dictionary):
         self.championId = dictionary.get("championId", 0)
@@ -81,17 +86,18 @@ class BannedChampion(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class CurrentGameInfo(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    bannedChampions      list<BannedChampion>            banned champion information
-    gameId               int                             the ID of the game
-    gameLength           int                             the amount of time in seconds that has passed since the game started
-    gameMode             str                             the game mode (Legal values: CLASSIC, ODIN, ARAM, TUTORIAL, ONEFORALL, ASCENSION, FIRSTBLOOD, KINGPORO)
-    gameQueueConfigId    int                             the queue type (queue types are documented on the Game Constants page)
-    gameStartTime        int                             the game start time represented in epoch milliseconds
-    gameType             str                             the game type (Legal values: CUSTOM_GAME, MATCHED_GAME, TUTORIAL_GAME)
-    mapId                int                             the ID of the map
-    observers            Observer                        the observer information
-    participants         list<CurrentGameParticipant>    the participant information
-    platformId           str                             the ID of the platform on which the game is being played
+    Args:
+        bannedChampions (list<BannedChampion>): banned champion information
+        gameId (int): the ID of the game
+        gameLength (int): the amount of time in seconds that has passed since the game started
+        gameMode (str): the game mode (Legal values: CLASSIC, ODIN, ARAM, TUTORIAL, ONEFORALL, ASCENSION, FIRSTBLOOD, KINGPORO)
+        gameQueueConfigId (int): the queue type (queue types are documented on the Game Constants page)
+        gameStartTime (int): the game start time represented in epoch milliseconds
+        gameType (str): the game type (Legal values: CUSTOM_GAME, MATCHED_GAME, TUTORIAL_GAME)
+        mapId (int): the ID of the map
+        observers (Observer): the observer information
+        participants (list<CurrentGameParticipant>): the participant information
+        platformId (str): the ID of the platform on which the game is being played
     """
     def __init__(self, dictionary):
         self.bannedChampions = [(BannedChampion(ban) if not isinstance(ban, BannedChampion) else ban) for ban in dictionary.get("bannedChampions", []) if ban]
@@ -109,7 +115,9 @@ class CurrentGameInfo(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def champion_ids(self):
-        """Gets all champion IDs contained in this object"""
+        """
+        Gets all champion IDs contained in this object
+        """
         ids = set()
         for ban in self.bannedChampions:
             ids.add(ban.championId)
@@ -119,7 +127,9 @@ class CurrentGameInfo(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def summoner_ids(self):
-        """Gets all summoner IDs contained in this object"""
+        """
+        Gets all champion IDs contained in this object
+        """
         ids = set()
         for p in self.participants:
             if p.summonerId:
@@ -128,7 +138,9 @@ class CurrentGameInfo(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def summoner_spell_ids(self):
-        """Gets all summoner spell IDs contained in this object"""
+        """
+        Gets all champion IDs contained in this object
+        """
         ids = set()
         for p in self.participants:
             if p.spell1Id:
@@ -139,7 +151,9 @@ class CurrentGameInfo(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def rune_ids(self):
-        """Gets all rune IDs contained in this object"""
+        """
+        Gets all champion IDs contained in this object
+        """
         ids = set()
         for p in self.participants:
             for r in p.runes:
@@ -149,7 +163,9 @@ class CurrentGameInfo(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def mastery_ids(self):
-        """Gets all mastery IDs contained in this object"""
+        """
+        Gets all champion IDs contained in this object
+        """
         ids = set()
         for p in self.participants:
             for m in p.masteries:

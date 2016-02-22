@@ -10,20 +10,21 @@ if cassiopeia.type.dto.common.sqlalchemy_imported:
 @cassiopeia.type.core.common.inheritdocs
 class Team(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    createDate                       int                          date that team was created specified as epoch milliseconds
-    fullId                           str                          fullId
-    lastGameDate                     int                          date that last game played by team ended specified as epoch milliseconds
-    lastJoinDate                     int                          date that last member joined specified as epoch milliseconds
-    lastJoinedRankedTeamQueueDate    int                          date that team last joined the ranked team queue specified as epoch milliseconds
-    matchHistory                     list<MatchHistorySummary>    matchHistory
-    modifyDate                       int                          date that team was last modified specified as epoch milliseconds
-    name                             str                          name
-    roster                           Roster                       roster
-    secondLastJoinDate               int                          date that second to last member joined specified as epoch milliseconds
-    status                           str                          status
-    tag                              str                          tag
-    teamStatDetails                  list<TeamStatDetail>         stat details
-    thirdLastJoinDate                int                          date that third to last member joined specified as epoch milliseconds
+    Args:
+        createDate (int): date that team was created specified as epoch milliseconds
+        fullId (str): fullId
+        lastGameDate (int): date that last game played by team ended specified as epoch milliseconds
+        lastJoinDate (int): date that last member joined specified as epoch milliseconds
+        lastJoinedRankedTeamQueueDate (int): date that team last joined the ranked team queue specified as epoch milliseconds
+        matchHistory (list<MatchHistorySummary>): matchHistory
+        modifyDate (int): date that team was last modified specified as epoch milliseconds
+        name (str): name
+        roster (Roster): roster
+        secondLastJoinDate (int): date that second to last member joined specified as epoch milliseconds
+        status (str): status
+        tag (str): tag
+        teamStatDetails (list<TeamStatDetail>): stat details
+        thirdLastJoinDate (int): date that third to last member joined specified as epoch milliseconds
     """
     def __init__(self, dictionary):
         self.createDate = dictionary.get("createDate", 0)
@@ -44,7 +45,9 @@ class Team(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def summoner_ids(self):
-        """Gets all summoner IDs contained in this object"""
+        """
+        Gets all summoner IDs contained in this object
+        """
         ids = set()
         ids.add(self.roster.ownerId)
         for member in self.roster.memberList:
@@ -55,17 +58,7 @@ class Team(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class MatchHistorySummary(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    assists              int     assists
-    date                 int     date that match was completed specified as epoch milliseconds
-    deaths               int     deaths
-    gameId               int     gameId
-    gameMode             str     gameMode
-    invalid              bool    invalid
-    kills                int     kills
-    mapId                int     mapId
-    opposingTeamKills    int     opposingTeamKills
-    opposingTeamName     str     opposingTeamName
-    win                  bool    win
+    Gets all summoner IDs contained in this object
     """
     def __init__(self, dictionary):
         self.assists = dictionary.get("assists", 0)
@@ -84,8 +77,18 @@ class MatchHistorySummary(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class Roster(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    memberList    list<TeamMemberInfo>    memberList
-    ownerId       int                     ownerId
+    Args:
+        assists (int): assists
+        date (int): date that match was completed specified as epoch milliseconds
+        deaths (int): deaths
+        gameId (int): gameId
+        gameMode (str): gameMode
+        invalid (bool): invalid
+        kills (int): kills
+        mapId (int): mapId
+        opposingTeamKills (int): opposingTeamKills
+        opposingTeamName (str): opposingTeamName
+        win (bool): win
     """
     def __init__(self, dictionary):
         self.memberList = [(TeamMemberInfo(ts) if not isinstance(ts, TeamMemberInfo) else ts) for ts in dictionary.get("memberList", []) if ts]
@@ -95,10 +98,9 @@ class Roster(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class TeamStatDetail(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    averageGamesPlayed    int    averageGamesPlayed
-    losses                int    losses
-    teamStatType          str    teamStatType
-    wins                  int    wins
+    Args:
+        memberList (list<TeamMemberInfo>): memberList
+        ownerId (int): ownerId
     """
     def __init__(self, dictionary):
         self.averageGamesPlayed = dictionary.get("averageGamesPlayed", 0)
@@ -110,10 +112,11 @@ class TeamStatDetail(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class TeamMemberInfo(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    inviteDate    int    date that team member was invited to team specified as epoch milliseconds
-    joinDate      int    date that team member joined team specified as epoch milliseconds
-    playerId      int    playerId
-    status        str    status
+    Args:
+        averageGamesPlayed (int): averageGamesPlayed
+        losses (int): losses
+        teamStatType (str): teamStatType
+        wins (int): wins
     """
     def __init__(self, dictionary):
         self.inviteDate = dictionary.get("inviteDate", 0)

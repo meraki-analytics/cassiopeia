@@ -7,13 +7,16 @@ import cassiopeia.type.core.matchlist
 
 
 def get_match(id_, include_timeline=True, tournament_code=""):
-    """Gets a match
+    """
+    Gets a match
 
-    id_                 int | MatchReference    the ID of or reference to the match to get
-    include_timeline    bool                    whether to include timeline data in the returned match
-    tournament_code     str                     the tournament code if the match to be retrieved is from a tournament
+    Args:
+        id_ (int | MatchReference): the ID of or reference to the match to get
+        include_timeline (bool): whether to include timeline data in the returned match
+        tournament_code (str): the tournament code if the match to be retrieved is from a tournament
 
-    return              Match                   the match
+    Returns:
+        Match: the match
     """
     if isinstance(id_, cassiopeia.type.core.matchlist.MatchReference):
         id_ = id_.id
@@ -40,13 +43,16 @@ def get_match(id_, include_timeline=True, tournament_code=""):
 
 
 def get_matches(ids, include_timeline=True, tournament_code=""):
-    """Gets a bunch of matches
+    """
+    Gets a bunch of matches
 
-    ids                 list<int> | list<MatchReference>    the IDs of or references to the matches to get
-    include_timeline    bool                                whether to include timeline data in the returned matches
-    tournament_code     str                                 the tournament code if the match to be retrieved is from a tournament
+    Args:
+        ids (list<int> | list<MatchReference>): the IDs of or references to the matches to get
+        include_timeline (bool): whether to include timeline data in the returned matches
+        tournament_code (str): the tournament code if the match to be retrieved is from a tournament
 
-    return              list<Match>                         the matches
+    Returns:
+        list<Match>: the matches
     """
     ids = [ref.id if isinstance(ref, cassiopeia.type.core.matchlist.MatchReference) else ref for ref in ids]
 
@@ -100,10 +106,13 @@ def get_matches(ids, include_timeline=True, tournament_code=""):
 
 
 def get_tournament_match_ids(tournament_code):
-    """Gets the IDs for a tournament's matches
+    """
+    Gets the IDs for a tournament's matches
 
-    tournament_code    str          the tournament code
+    Args:
+        tournament_code (str): the tournament code
 
-    return             list<int>    the match ids for the tournament
+    Returns:
+        list<int>: the match ids for the tournament
     """
     return cassiopeia.dto.matchapi.get_tournament_match_ids(tournament_code)

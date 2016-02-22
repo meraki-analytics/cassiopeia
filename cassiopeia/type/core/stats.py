@@ -13,27 +13,42 @@ class StatsSummary(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def stats(self):
-        """AggregatedStats    the aggregated stats (contains pretty much every stat you probably want to access)"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return AggregatedStats(self.data.aggregatedStats) if self.data.aggregatedStats else None
 
     @property
     def losses(self):
-        """int    how many loses this participant has"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.losses
 
     @cassiopeia.type.core.common.lazyproperty
     def modify_date(self):
-        """datetime    the date when the stats were last updated (in epoch milliseconds)"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return datetime.datetime.utcfromtimestamp(self.data.modifyDate / 1000) if self.data.modifyDate else None
 
     @property
     def type(self):
-        """StatSummaryType    the identifier for what queue this stat summary is for"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return cassiopeia.type.core.common.StatSummaryType(self.data.playerStatSummaryType) if self.data.playerStatSummaryType else None
 
     @property
     def wins(self):
-        """int    how many wins this participant has"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.wins
 
 
@@ -46,287 +61,458 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def kda(self):
-        """float    the participant's kda"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return (self.data.totalChampionKills + self.data.totalAssists) / (self.data.totalDeathsPerSession if self.data.totalDeathsPerSession else 1)
 
     @property
     def average_assists(self):
-        """float    dominion only"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.averageAssists
 
     @property
     def average_kills(self):
-        """float    dominion only"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.averageChampionsKilled
 
     @property
     def average_combat_score(self):
-        """float    dominion only. the part of your score in dominion that comes from combat-related activities"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.averageCombatPlayerScore
 
     @property
     def average_node_captures(self):
-        """float    dominion only"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.averageNodeCapture
 
     @property
     def average_node_capture_assists(self):
-        """float    dominion only"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.averageNodeCaptureAssist
 
     @property
     def average_node_neutralizations(self):
-        """float    dominion only"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.averageNodeNeutralize
 
     @property
     def average_node_neutralization_assists(self):
-        """float    dominion only"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.averageNodeNeutralizeAssist
 
     @property
     def average_deaths(self):
-        """float    dominion only"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.averageNumDeaths
 
     @property
     def average_objective_score(self):
-        """float    dominion only. the part of your score in dominion that comes from object-based activities"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.averageObjectivePlayerScore
 
     @property
     def average_team_score(self):
-        """float    dominion only"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.averageTeamObjective
 
     @property
     def average_score(self):
-        """float    dominion only"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.averageTotalPlayerScore
 
     @property
     def bot_games(self):
-        """int    the number of bot games the participant has played"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.botGamesPlayed
 
     @property
     def killing_sprees(self):
-        """int    how many killing sprees the participant has had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.killingSpree
 
     @property
     def max_assists(self):
-        """int    dominion only. the most assists the participant has ever had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.maxAssists
 
     @property
     def max_kills(self):
-        """int    the most kills the participant has ever had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.maxChampionsKilled
 
     @property
     def max_combat_score(self):
-        """int    dominion only. the highest combat score the participant has ever had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.maxCombatPlayerScore
 
     @property
     def max_crit(self):
-        """int    the highest damage crit the participant has ever had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.maxLargestCriticalStrike
 
     @property
     def max_killing_spree(self):
-        """int    the largest killing spree the participant has ever had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.maxLargestKillingSpree
 
     @property
     def max_node_captures(self):
-        """int    dominion only. the most node captures the particiant has ever had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.maxNodeCapture
 
     @property
     def max_node_capture_assists(self):
-        """int    dominion only. the most node capture assists the participant has ever had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.maxNodeCaptureAssist
 
     @property
     def max_node_neutralizations(self):
-        """int    dominion only. the most node neutralizations the participant has ever had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.maxNodeNeutralize
 
     @property
     def max_node_neutralize_assist(self):
-        """int    dominion only. the most node neutralization assists the participant has ever had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.maxNodeNeutralizeAssist
 
     @property
     def max_deaths(self):
-        """int    only returned for ranked statistics. the most deaths the participant has ever had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.maxNumDeaths
 
     @property
     def max_objective_score(self):
-        """int    dominion only. the highest object score the participant has ever had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.maxObjectivePlayerScore
 
     @property
     def max_team_score(self):
-        """int    dominion only. the highest team score the participant has ever had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.maxTeamObjective
 
     @property
     def max_game_time(self):
-        """int    the longest a participant has ever been in a game"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.maxTimePlayed
 
     @property
     def max_time_alive(self):
-        """int    the longest a participant has ever been alive"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.maxTimeSpentLiving
 
     @property
     def max_score(self):
-        """int    dominion only. the highest dominion score the participant has ever obtained"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.maxTotalPlayerScore
 
     @property
     def max_kills_per_session(self):
-        """int    well, we don't know what this one is. let us know if you figure it out."""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.mostChampionKillsPerSession
 
     @property
     def max_spells_cast(self):
-        """int    the most spell casts the participant has ever done in a game"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.mostSpellsCast
 
     @property
     def normal_games(self):
-        """int    the number of normal games the participant has played"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.normalGamesPlayed
 
     @property
     def ranked_premade_games(self):
-        """int    how many premade, ranked games the participant has played"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.rankedPremadeGamesPlayed
 
     @property
     def ranked_solo_games(self):
-        """int    how many premade, solo games the participant has played"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.rankedSoloGamesPlayed
 
     @property
     def assists(self):
-        """int    the total number of assists this participant has had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalAssists
 
     @property
     def kills(self):
-        """int    the total number of champion kills this participant has had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalChampionKills
 
     @property
     def damage_dealt(self):
-        """int    the total amount of damage this participant has dealt"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalDamageDealt
 
     @property
     def damage_taken(self):
-        """int    the total amount of damage this participant has taken"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalDamageTaken
 
     @property
     def deaths(self):
-        """int    the total number of deaths this participant has had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalDeathsPerSession
 
     @property
     def double_kills(self):
-        """int    the total number of double kills this participant has had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalDoubleKills
 
     @property
     def first_bloods(self):
-        """int    the total number of first bloods this participant has had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalFirstBlood
 
     @property
     def gold_earned(self):
-        """int    the total amount of gold earned this participant has had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalGoldEarned
 
     @property
     def healing_done(self):
-        """int    the total amount of healing this participant has done"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalHeal
 
     @property
     def magic_damage_dealt(self):
-        """int    the total amount of magic damage this participant has dealt"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalMagicDamageDealt
 
     @property
     def minions_killed(self):
-        """int    the total number of minion kills this participant has had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalMinionKills
 
     @property
     def neutral_monster_killed(self):
-        """int    the total number of neutral monster kills this participant has had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalNeutralMinionsKilled
 
     @property
     def node_captures(self):
-        """int    dominion only. the total number of nodes this participant has captured"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalNodeCapture
 
     @property
     def node_neutralizations(self):
-        """int    dominion only. the total number of nodes this participant has neutralized"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalNodeNeutralize
 
     @property
     def penta_kills(self):
-        """int    the total number of penta kills this participant has gotten"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalPentaKills
 
     @property
     def physical_damage_dealt(self):
-        """int    the total amount of physical damage this participant has dealt"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalPhysicalDamageDealt
 
     @property
     def quadra_kills(self):
-        """int    the total number of quadra kills this participant has gotten"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalQuadraKills
 
     @property
     def losses(self):
-        """int    the total number of loses this participant has had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalSessionsLost
 
     @property
     def games_played(self):
-        """int    the total number of games this participant has played"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalSessionsPlayed
 
     @property
     def wins(self):
-        """int    the total number of wins this participant has had"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalSessionsWon
 
     @property
     def triple_kills(self):
-        """int    the total number of triple kills this participant has gotten"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalTripleKills
 
     @property
     def turrets_killed(self):
-        """int    the total number of turrets this participant has killed"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalTurretsKilled
 
     @property
     def unreal_kills(self):
-        """int    the total number of unreal kills this participant has gotten"""
+        """
+        Returns:
+            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+        """
         return self.data.totalUnrealKills
 
 

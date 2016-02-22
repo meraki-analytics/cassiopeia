@@ -6,20 +6,22 @@ import cassiopeia.type.api.exception
 
 
 class CassiopeiaObject(object):
-    """An object storing data from the API, with various helpful utilities and shortcuts"""
+    """
+    An object storing data from the API, with various helpful utilities and shortcuts
+    """
 
     def __init__(self, data):
         """
-        data    CassiopeiaDto    the underlying DTO object with the data for this type
+        An object storing data from the API, with various helpful utilities and shortcuts
         """
         if data.__class__ is not self.dto_type:
             raise cassiopeia.type.api.exception.CassiopeiaException("Tried to instantiate a core {class_} with a {dto} dto!".format(class_=self.__class__.__name__, dto=data.__class__.__name__))
         self.data = data
 
     def to_json(self, **kwargs):
-        """Gets a JSON representation of the object
-
-        return    str    a JSON representation of the object
+        """
+        Args:
+            data (CassiopeiaDto): the underlying DTO object with the data for this type
         """
         return self.data.to_json(**kwargs)
 
@@ -39,7 +41,10 @@ class CassiopeiaObject(object):
 class LazyProperty(object):
     def __init__(self, method):
         """
-        method    function    the method to turn into a lazy property
+        Gets a JSON representation of the object
+
+        Returns:
+            str: a JSON representation of the object
         """
         self.method = method
         self.values = weakref.WeakKeyDictionary()
@@ -59,11 +64,9 @@ class LazyProperty(object):
 
 
 def lazyproperty(method):
-    """Makes a property load only once and store the result value to be returned to all later calls
-
-    method    function    the method to turn into a lazy property
-
-    return    function    the method as a lazy property
+    """
+    Args:
+        method (function): the method to turn into a lazy property
     """
     prop = LazyProperty(method)
 
@@ -76,12 +79,19 @@ def lazyproperty(method):
 
 
 class immutablemethod(object):
-    """Makes a method un-deletable and un-repleacable
-    @decorator
+    """
+    Makes a property load only once and store the result value to be returned to all later calls
+
+    Args:
+        method (function): the method to turn into a lazy property
+
+    Returns:
+        function: the method as a lazy property
     """
     def __init__(self, method):
         """
-        method    function    the method to make immutable
+        Makes a method un-deletable and un-repleacable
+        @decorator
         """
         self.method = method
 
@@ -99,12 +109,9 @@ class immutablemethod(object):
 
 
 def inheritdocs(class_):
-    """Makes a class inherit the documentation from any overridden methods
-    @decorator
-
-    class_    class    the class to make inherit documentation
-
-    return    class    the class with inherited documentation
+    """
+    Args:
+        method (function): the method to make immutable
     """
     for name, method in vars(class_).items():
         if not method.__doc__:

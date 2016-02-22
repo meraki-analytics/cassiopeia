@@ -23,22 +23,31 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.immutablemethod
     def match(self, include_timeline=True):
-        """Gets the full information for this match
+        """
+        Gets the full information for this match
 
-        include_timeline    bool     whether to include timeline data in the returned match
+        Args:
+            include_timeline (bool): whether to include timeline data in the returned match
 
-        return              Match    the match
+        Returns:
+            Match: the match
         """
         return cassiopeia.riotapi.get_match(self, include_timeline)
 
     @cassiopeia.type.core.common.lazyproperty
     def champion(self):
-        """Champion    the champion that the summoner played for the summoner that was used to pull this match reference"""
+        """
+        Returns:
+            Champion: the champion that the summoner played for the summoner that was used to pull this match reference
+        """
         return cassiopeia.riotapi.get_champion_by_id(self.data.champion)
 
     @property
     def lane(self):
-        """Lane    the lane that the summoner was in for the summoner that was used to  pull this match reference"""
+        """
+        Returns:
+            Champion: the champion that the summoner played for the summoner that was used to pull this match reference
+        """
         lane = self.data.lane
         lane = "MIDDLE" if lane == "MID" else lane
         lane = "BOTTOM" if lane == "BOT" else lane
@@ -46,32 +55,50 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def id(self):
-        """int    the match id for this match"""
+        """
+        Returns:
+            Champion: the champion that the summoner played for the summoner that was used to pull this match reference
+        """
         return self.data.matchId
 
     @property
     def platform(self):
-        """Platform    the platform (ie server) for this match"""
+        """
+        Returns:
+            Champion: the champion that the summoner played for the summoner that was used to pull this match reference
+        """
         return cassiopeia.type.core.common.Platform(self.data.platformid) if self.data.platformid else None
 
     @property
     def queue(self):
-        """Queue    the queue type for this match"""
+        """
+        Returns:
+            Champion: the champion that the summoner played for the summoner that was used to pull this match reference
+        """
         return cassiopeia.type.core.common.Queue(self.data.queue) if self.data.queue else None
 
     @property
     def role(self):
-        """Role    the role that the summoner was in for the summoner that was used to  pull this match reference"""
+        """
+        Returns:
+            Champion: the champion that the summoner played for the summoner that was used to pull this match reference
+        """
         return cassiopeia.type.core.common.Role(self.data.role) if self.data.role else None
 
     @property
     def season(self):
-        """Season    the season that this match was played in"""
+        """
+        Returns:
+            Champion: the champion that the summoner played for the summoner that was used to pull this match reference
+        """
         return cassiopeia.type.core.common.Season(self.data.season) if self.data.season else None
 
     @cassiopeia.type.core.common.lazyproperty
     def timestamp(self):
-        """datetime    the timestamp for this match"""
+        """
+        Returns:
+            Champion: the champion that the summoner played for the summoner that was used to pull this match reference
+        """
         return datetime.datetime.utcfromtimestamp(self.data.timestamp / 1000) if self.data.timestamp else None
 
 

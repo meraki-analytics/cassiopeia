@@ -32,22 +32,34 @@ class RunePage(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def current(self):
-        """bool    whether or not this page is active"""
+        """
+        Returns:
+            bool: whether or not this page is active
+        """
         return self.data.current
 
     @property
     def id(self):
-        """int    the id of this summoner's rune page"""
+        """
+        Returns:
+            bool: whether or not this page is active
+        """
         return self.data.id
 
     @property
     def name(self):
-        """str    the name of this summoner's rune page"""
+        """
+        Returns:
+            bool: whether or not this page is active
+        """
         return self.data.name
 
     @cassiopeia.type.core.common.lazyproperty
     def runes(self):
-        """list<Rune>    the runes in this rune page"""
+        """
+        Returns:
+            bool: whether or not this page is active
+        """
         runes = {}
         for slot in self.data.slots:
             try:
@@ -86,17 +98,26 @@ class MasteryPage(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def current(self):
-        """bool    whether or not this mastery page is active"""
+        """
+        Returns:
+            bool: whether or not this page is active
+        """
         return self.data.current
 
     @property
     def id(self):
-        """int    the id of the mastery page for this summoner"""
+        """
+        Returns:
+            bool: whether or not this page is active
+        """
         return self.data.id
 
     @cassiopeia.type.core.common.lazyproperty
     def masteries(self):
-        """list<Mastery>    this mastery page's masteries"""
+        """
+        Returns:
+            bool: whether or not this page is active
+        """
         masteries = []
         ranks = []
         for mastery in self.data.masteries.items():
@@ -106,7 +127,10 @@ class MasteryPage(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def name(self):
-        """str    the name of this summoner's mastery page"""
+        """
+        Returns:
+            bool: whether or not this page is active
+        """
         return self.data.name
 
 
@@ -128,154 +152,155 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def id(self):
-        """int    the summoner's id"""
+        """
+        Returns:
+            bool: whether or not this page is active
+        """
         return self.data.id
 
     @property
     def name(self):
-        """str    the summoner's name"""
+        """
+        Returns:
+            bool: whether or not this page is active
+        """
         return self.data.name
 
     @property
     def profile_icon_id(self):
-        """int    the ID of the summoner icon associated with the summoner"""
+        """
+        Returns:
+            bool: whether or not this page is active
+        """
         return self.data.profileIconId
 
     @cassiopeia.type.core.common.lazyproperty
     def modify_date(self):
-        """datetime    the date this summoner was last modified specified as epoch milliseconds. The following events will update this timestamp: profile icon change, playing the tutorial or advanced tutorial, finishing a game, summoner name change"""
+        """
+        Returns:
+            bool: whether or not this page is active
+        """
         return datetime.datetime.utcfromtimestamp(self.data.revisionDate / 1000) if self.data.revisionDate else None
 
     @property
     def level(self):
-        """int    the Summoner's level"""
+        """
+        Returns:
+            bool: whether or not this page is active
+        """
         return self.data.summonerLevel
 
     @cassiopeia.type.core.common.immutablemethod
     def current_game(self):
-        """Gets the game the summoner is currently in, if they're in one
-
-        return    Game    the game they're in (or None if they aren't in one)
+        """
+        Returns:
+            bool: whether or not this page is active
         """
         return cassiopeia.riotapi.get_current_game(self)
 
     @cassiopeia.type.core.common.immutablemethod
     def recent_games(self):
-        """Gets the most recent games the summoner played
-
-        return    list<Game>    the summoner's recent games
+        """
+        Returns:
+            int: the id of this summoner's rune page
         """
         return cassiopeia.riotapi.get_recent_games(self)
 
     @cassiopeia.type.core.common.immutablemethod
     def rune_pages(self):
-        """Get the summoner's rune pages
-
-        return    list<RunePage>    the summoner's rune pages
+        """
+        Returns:
+            str: the name of this summoner's rune page
         """
         return cassiopeia.riotapi.get_rune_pages(self)
 
     @cassiopeia.type.core.common.immutablemethod
     def mastery_pages(self):
-        """Get the summoner's mastery pages
-
-        return    list<RunePage>    the summoner's mastery pages
+        """
+        Returns:
+            list<Rune>: the runes in this rune page
         """
         return cassiopeia.riotapi.get_mastery_pages(self)
 
     @cassiopeia.type.core.common.immutablemethod
     def leagues(self):
-        """Gets the leagues that the summoner belongs to. You probably don't want to call this with LoadPolicy.eager set.
-
-        return    list<League>   the leagues that the summoner belongs to
+        """
+        Returns:
+            bool: whether or not this mastery page is active
         """
         return cassiopeia.riotapi.get_leagues_by_summoner(self)
 
     @cassiopeia.type.core.common.immutablemethod
     def league_entries(self):
-        """Gets the leagues that the summoner belongs to, including only their own entries
-
-        return    list<League>    the leagues that the summoner belongs to
+        """
+        Returns:
+            int: the id of the mastery page for this summoner
         """
         return cassiopeia.riotapi.get_league_entries_by_summoner(self)
 
     @cassiopeia.type.core.common.immutablemethod
     def teams(self):
-        """Gets the summoner's' teams
-
-        return    list<Team>    the summoner's teams
+        """
+        Returns:
+            list<Mastery>: this mastery page's masteries
         """
         return cassiopeia.riotapi.get_teams_by_summoner(self)
 
     @cassiopeia.type.core.common.immutablemethod
     def match_list(self, num_matches=0, begin_index=0, begin_time=0, end_time=0, champions=None, ranked_queues=None, seasons=None):
-        """Gets the summoner's match history
-
-        num_matches     int                          the maximum number of matches to retrieve. 0 will get as many as possible. (default 0)
-        begin_index     int                          the game index to start from (default 0)
-        begin_time      int | datetime               the begin time to use for fetching games (default 0)
-        end_time        int | datetime               the end time to use for fetching games (default 0)
-        champions       Champion | list<Champion>    the champion(s) to limit the results to (default None)
-        ranked_queue    Queue | list<Queue>          the ranked queue(s) to limit the results to (default None)
-        seasons         Season | list<Season>        the season(s) to limit the results to (default None)
-
-        return          list<MatchReference>         the summoner's match history
+        """
+        Returns:
+            str: the name of this summoner's mastery page
         """
         return cassiopeia.riotapi.get_match_list(self, num_matches, begin_index, begin_time, end_time, champions, ranked_queues, seasons)
 
     @cassiopeia.type.core.common.immutablemethod
     def ranked_stats(self, season=None):
-        """Gets the summoner's ranked stats
-
-        season    Season                             the season to get ranked stats for (None will give current season stats) (default None)
-
-        return    dict<Champion, AggregatedStats>    the summoner's ranked stats divided by champion. The entry for None contains combined stats for all champions.
+        """
+        Returns:
+            int: the summoner's id
         """
         return cassiopeia.riotapi.get_ranked_stats(self, season)
 
     @cassiopeia.type.core.common.immutablemethod
     def stats(self, season=None):
-        """Gets the summoner's stats
-
-        season    Season                                 the season to get stats for (None will give current season stats) (default None)
-
-        return    dict<StatSummaryType, StatsSummary>    the summoner's stats divided by queue type
+        """
+        Returns:
+            str: the summoner's name
         """
         return cassiopeia.riotapi.get_stats(self, season)
 
     @cassiopeia.type.core.common.immutablemethod
     def champion_mastery(self, champion):
-        """Gets the ChampionMastery object for the specified champion
-
-        champion    Champion           the desired champion
-
-        return      ChampionMastery    the summoner's champion mastery value for the specified champion
+        """
+        Returns:
+            int: the ID of the summoner icon associated with the summoner
         """
         return cassiopeia.riotapi.get_champion_mastery(self, champion)
 
     @cassiopeia.type.core.common.immutablemethod
     def champion_masteries(self):
-        """Gets all the ChampionMastery objects for the summoner
-
-        return      dict<Champion, ChampionMastery>    the summoner's champion masteries
+        """
+        Returns:
+            datetime: the date this summoner was last modified specified as epoch milliseconds. The following events will update this timestamp: profile icon change, playing the tutorial or advanced tutorial, finishing a game, summoner name change
         """
         return cassiopeia.riotapi.get_champion_masteries(self)
 
     @cassiopeia.type.core.common.immutablemethod
     def champion_mastery_score(self):
-        """Gets the total champion mastery score for the summoner
-
-        return    int    the summoner's total champion mastery score
+        """
+        Returns:
+            int: the Summoner's level
         """
         return cassiopeia.riotapi.get_champion_mastery_score(self)
 
     @cassiopeia.type.core.common.immutablemethod
     def top_champion_masteries(self, max_entries=3):
-        """Gets the top ChampionMastery objects for the summoner
+        """
+        Gets the game the summoner is currently in, if they're in one
 
-        max_entries    int                      the maximum number of entires to retrieve (default 3)
-
-        return         list<ChampionMastery>    the summoner's top champion masteries
+        Returns:
+            Game: the game they're in (or None if they aren't in one)
         """
         return cassiopeia.riotapi.get_top_champion_masteries(self, max_entries)
 

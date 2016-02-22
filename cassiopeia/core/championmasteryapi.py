@@ -5,23 +5,29 @@ import cassiopeia.type.core.championmastery
 
 
 def get_champion_mastery(summoner, champion):
-    """Gets the ChampionMastery object for the specified summoner and champion
+    """
+    Gets the ChampionMastery object for the specified summoner and champion
 
-    summoner    Summoner           the summoner to get champion mastery for
-    champion    Champion           the desired champion
+    Args:
+        summoner (Summoner): the summoner to get champion mastery for
+        champion (Champion): the desired champion
 
-    return      ChampionMastery    the summoner's champion mastery value for the specified champion
+    Returns:
+        ChampionMastery: the summoner's champion mastery value for the specified champion
     """
     champion_mastery = cassiopeia.dto.championmasteryapi.get_champion_mastery(summoner.id, champion.id)
     return cassiopeia.type.core.championmastery.ChampionMastery(champion_mastery)
 
 
 def get_champion_masteries(summoner):
-    """Gets all the ChampionMastery objects for the specified summoner
+    """
+    Gets all the ChampionMastery objects for the specified summoner
 
-    summoner    Summoner                           the summoner to get champion mastery for
+    Args:
+        summoner (Summoner): the summoner to get champion mastery for
 
-    return      dict<Champion, ChampionMastery>    the summoner's champion masteries
+    Returns:
+        dict<Champion, ChampionMastery>: the summoner's champion masteries
     """
     champion_masteries = cassiopeia.dto.championmasteryapi.get_champion_masteries(summoner.id)
 
@@ -31,22 +37,28 @@ def get_champion_masteries(summoner):
 
 
 def get_champion_mastery_score(summoner):
-    """Gets the total champion mastery score for the specified summoner
+    """
+    Gets the total champion mastery score for the specified summoner
 
-    summoner    Summoner    the summoner to get champion mastery for
+    Args:
+        summoner (Summoner): the summoner to get champion mastery for
 
-    return      int         the summoner's total champion mastery score
+    Returns:
+        int: the summoner's total champion mastery score
     """
     return cassiopeia.dto.championmasteryapi.get_champion_mastery_score(summoner.id)
 
 
 def get_top_champion_masteries(summoner, max_entries=3):
-    """Gets the top ChampionMastery objects for the specified summoner
+    """
+    Gets the top ChampionMastery objects for the specified summoner
 
-    summoner       Summoner                 the summoner to get champion mastery for
-    max_entries    int                      the maximum number of entires to retrieve (default 3)
+    Args:
+        summoner (Summoner): the summoner to get champion mastery for
+        max_entries (int): the maximum number of entires to retrieve (default 3)
 
-    return         list<ChampionMastery>    the summoner's top champion masteries
+    Returns:
+        list<ChampionMastery>: the summoner's top champion masteries
     """
     champion_masteries = cassiopeia.dto.championmasteryapi.get_top_champion_masteries(summoner.id, max_entries)
 

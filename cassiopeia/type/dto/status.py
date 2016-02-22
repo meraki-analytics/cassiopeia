@@ -10,11 +10,12 @@ if cassiopeia.type.dto.common.sqlalchemy_imported:
 @cassiopeia.type.core.common.inheritdocs
 class Shard(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    hostname      str          hostname
-    locales       list<str>    locales
-    name          str          name
-    region_tag    str          region tag
-    slug          str          slug
+    Args:
+        hostname (str): hostname
+        locales (list<str>): locales
+        name (str): name
+        region_tag (str): region tag
+        slug (str): slug
     """
     def __init__(self, dictionary):
         self.hostname = dictionary.get("hostname", "")
@@ -27,9 +28,10 @@ class Shard(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class Translation(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    content       str    content
-    locale        str    locale
-    updated_at    str    timestamp
+    Args:
+        content (str): content
+        locale (str): locale
+        updated_at (str): timestamp
     """
     def __init__(self, dictionary):
         self.content = dictionary.get("content", "")
@@ -40,13 +42,14 @@ class Translation(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class Message(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    author          str                  author
-    content         str                  content
-    created_at      str                  timestamp created
-    id              int                  ID
-    severity        str                  legal values: Info, Alert, Error
-    translations    list<Translation>    translations
-    updated_at      str                  timestamp updated
+    Args:
+        author (str): author
+        content (str): content
+        created_at (str): timestamp created
+        id (int): ID
+        severity (str): legal values: Info, Alert, Error
+        translations (list<Translation>): translations
+        updated_at (str): timestamp updated
     """
     def __init__(self, dictionary):
         self.author = dictionary.get("author", "")
@@ -61,10 +64,11 @@ class Message(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class Incident(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    active        bool             active
-    created_at    str              timestamp created
-    id            int              ID
-    updates       list<Message>    updates
+    Args:
+        active (bool): active
+        created_at (str): timestamp created
+        id (int): ID
+        updates (list<Message>): updates
     """
     def __init__(self, dictionary):
         self.active = dictionary.get("active", False)
@@ -76,10 +80,11 @@ class Incident(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class Service(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    incidents    list<Incident>    incidents
-    name         str               name
-    slug         str               slug
-    status       str               legal values: Online, Alert, Offline, Deploying
+    Args:
+        incidents (list<Incident>): incidents
+        name (str): name
+        slug (str): slug
+        status (str): legal values: Online, Alert, Offline, Deploying
     """
     def __init__(self, dictionary):
         self.incidents = [(Incident(inc) if not isinstance(inc, Incident) else inc) for inc in dictionary.get("incidents", []) if inc]
@@ -91,12 +96,13 @@ class Service(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class ShardStatus(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    hostname      str              hostname
-    locales       list<string>     locales
-    name          str              name
-    region_tag    str              region tag
-    services      list<Service>    services
-    slug          str              slug
+    Args:
+        hostname (str): hostname
+        locales (list<string>): locales
+        name (str): name
+        region_tag (str): region tag
+        services (list<Service>): services
+        slug (str): slug
     """
     def __init__(self, dictionary):
         self.hostname = dictionary.get("hostname", "")

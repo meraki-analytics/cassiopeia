@@ -6,13 +6,16 @@ data_store = cassiopeia.type.api.store.Cache()
 
 
 def call_with_ensured_size(method, max_size, arg):
-    """Breaks a list of arguments up into chunks of a maximum size and calls the given method on each chunk
+    """
+    Breaks a list of arguments up into chunks of a maximum size and calls the given method on each chunk
 
-    method      function                 the method to call
-    max_size    int                      the maximum number of arguments to include in a single call
-    arg         any | list<any>          the arguments to split up
+    Args:
+        method (function): the method to call
+        max_size (int): the maximum number of arguments to include in a single call
+        arg (any | list<any>): the arguments to split up
 
-    return      list<any> | dict<any>    the combined results of the function calls on each chunk
+    Returns:
+        list<any> | dict<any>: the combined results of the function calls on each chunk
     """
     if not isinstance(arg, list) or len(arg) <= max_size:
         return method(arg)

@@ -11,21 +11,22 @@ if cassiopeia.type.dto.common.sqlalchemy_imported:
 @cassiopeia.type.core.common.inheritdocs
 class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    mapId                    int                          match map ID
-    matchCreation            int                          match creation time. Designates when the team select lobby is created and/or the match is made through match making, not when the game actually starts.
-    matchDuration            int                          match duration
-    matchId                  int                          ID of the match
-    matchMode                str                          match mode (Legal values: CLASSIC, ODIN, ARAM, TUTORIAL, ONEFORALL, ASCENSION, FIRSTBLOOD, KINGPORO)
-    matchType                str                          match type (Legal values: CUSTOM_GAME, MATCHED_GAME, TUTORIAL_GAME)
-    matchVersion             str                          match version
-    participantIdentities    list<ParticipantIdentity>    participant identity information
-    participants             list<Participant>            participant information
-    platformId               str                          platform ID of the match
-    queueType                str                          match queue type (Legal values: CUSTOM, NORMAL_5x5_BLIND, RANKED_SOLO_5x5, RANKED_PREMADE_5x5, BOT_5x5, NORMAL_3x3, RANKED_PREMADE_3x3, NORMAL_5x5_DRAFT, ODIN_5x5_BLIND, ODIN_5x5_DRAFT, BOT_ODIN_5x5, BOT_5x5_INTRO, BOT_5x5_BEGINNER, BOT_5x5_INTERMEDIATE, RANKED_TEAM_3x3, RANKED_TEAM_5x5, BOT_TT_3x3, GROUP_FINDER_5x5, ARAM_5x5, ONEFORALL_5x5, FIRSTBLOOD_1x1, FIRSTBLOOD_2x2, SR_6x6, URF_5x5, ONEFORALL_MIRRORMODE_5x5, BOT_URF_5x5, NIGHTMARE_BOT_5x5_RANK1, NIGHTMARE_BOT_5x5_RANK2, NIGHTMARE_BOT_5x5_RANK5, ASCENSION_5x5, HEXAKILL, KING_PORO_5x5, COUNTER_PICK)
-    region                   str                          region where the match was played
-    season                   str                          season match was played (Legal values: PRESEASON3, SEASON3, PRESEASON2014, SEASON2014, PRESEASON2015, SEASON2015)
-    teams                    list<Team>                   team information
-    timeline                 Timeline                     match timeline data (not included by default)
+    Args:
+        mapId (int): match map ID
+        matchCreation (int): match creation time. Designates when the team select lobby is created and/or the match is made through match making, not when the game actually starts.
+        matchDuration (int): match duration
+        matchId (int): ID of the match
+        matchMode (str): match mode (Legal values: CLASSIC, ODIN, ARAM, TUTORIAL, ONEFORALL, ASCENSION, FIRSTBLOOD, KINGPORO)
+        matchType (str): match type (Legal values: CUSTOM_GAME, MATCHED_GAME, TUTORIAL_GAME)
+        matchVersion (str): match version
+        participantIdentities (list<ParticipantIdentity>): participant identity information
+        participants (list<Participant>): participant information
+        platformId (str): platform ID of the match
+        queueType (str): match queue type (Legal values: CUSTOM, NORMAL_5x5_BLIND, RANKED_SOLO_5x5, RANKED_PREMADE_5x5, BOT_5x5, NORMAL_3x3, RANKED_PREMADE_3x3, NORMAL_5x5_DRAFT, ODIN_5x5_BLIND, ODIN_5x5_DRAFT, BOT_ODIN_5x5, BOT_5x5_INTRO, BOT_5x5_BEGINNER, BOT_5x5_INTERMEDIATE, RANKED_TEAM_3x3, RANKED_TEAM_5x5, BOT_TT_3x3, GROUP_FINDER_5x5, ARAM_5x5, ONEFORALL_5x5, FIRSTBLOOD_1x1, FIRSTBLOOD_2x2, SR_6x6, URF_5x5, ONEFORALL_MIRRORMODE_5x5, BOT_URF_5x5, NIGHTMARE_BOT_5x5_RANK1, NIGHTMARE_BOT_5x5_RANK2, NIGHTMARE_BOT_5x5_RANK5, ASCENSION_5x5, HEXAKILL, KING_PORO_5x5, COUNTER_PICK)
+        region (str): region where the match was played
+        season (str): season match was played (Legal values: PRESEASON3, SEASON3, PRESEASON2014, SEASON2014, PRESEASON2015, SEASON2015)
+        teams (list<Team>): team information
+        timeline (Timeline): match timeline data (not included by default)
     """
     def __init__(self, dictionary):
         self.mapId = dictionary.get("mapId", 0)
@@ -47,7 +48,9 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def item_ids(self):
-        """Gets all item IDs contained in this object"""
+        """
+        Gets all item IDs contained in this object
+        """
         ids = set()
         for p in self.participants:
             s = p.stats
@@ -69,7 +72,9 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def champion_ids(self):
-        """Gets all champion IDs contained in this object"""
+        """
+        Gets all item IDs contained in this object
+        """
         ids = set()
         for p in self.participants:
             if p.championId:
@@ -82,7 +87,9 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def mastery_ids(self):
-        """Gets all mastery IDs contained in this object"""
+        """
+        Gets all item IDs contained in this object
+        """
         ids = set()
         for p in self.participants:
             for m in p.masteries:
@@ -92,7 +99,9 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def rune_ids(self):
-        """Gets all rune IDs contained in this object"""
+        """
+        Gets all item IDs contained in this object
+        """
         ids = set()
         for p in self.participants:
             for r in p.runes:
@@ -102,7 +111,9 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def summoner_ids(self):
-        """Gets all summoner IDs contained in this object"""
+        """
+        Gets all item IDs contained in this object
+        """
         ids = set()
         for p in self.participantIdentities:
             if p.player and p.player.summonerId:
@@ -111,7 +122,9 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def summoner_spell_ids(self):
-        """Gets all summoner spell IDs contained in this object"""
+        """
+        Gets all item IDs contained in this object
+        """
         ids = set()
         for p in self.participants:
             if p.spell1Id:
@@ -124,16 +137,7 @@ class MatchDetail(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class Participant(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    championId                   int                    champion ID
-    highestAchievedSeasonTier    str                    highest ranked tier achieved for the previous season, if any, otherwise null. Used to display border in game loading screen. (Legal values: CHALLENGER, MASTER, DIAMOND, PLATINUM, GOLD, SILVER, BRONZE, UNRANKED)
-    masteries                    list<Mastery>          list of mastery information
-    participantId                int                    participant ID
-    runes                        list<Rune>             list of rune information
-    spell1Id                     int                    first summoner spell ID
-    spell2Id                     int                    second summoner spell ID
-    stats                        ParticipantStats       participant statistics
-    teamId                       int                    team ID
-    timeline                     ParticipantTimeline    timeline data. Delta fields refer to values for the specified period (e.g., the gold per minute over the first 10 minutes of the game versus the second 20 minutes of the game. Diffs fields refer to the deltas versus the calculated lane opponent(s).
+    Gets all item IDs contained in this object
     """
     def __init__(self, dictionary):
         self.championId = dictionary.get("championId", 0)
@@ -153,8 +157,7 @@ class Participant(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class ParticipantIdentity(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    participantId    int       participant ID
-    player           Player    player information
+    Gets all champion IDs contained in this object
     """
     def __init__(self, dictionary):
         self.participantId = dictionary.get("participantId", 0)
@@ -165,22 +168,7 @@ class ParticipantIdentity(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class Team(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    bans                    list<BannedChampion>    if game was draft mode, contains banned champion data, otherwise null
-    baronKills              int                     number of times the team killed baron
-    dominionVictoryScore    int                     if game was a dominion game, specifies the points the team had at game end, otherwise null
-    dragonKills             int                     number of times the team killed dragon
-    firstBaron              bool                    flag indicating whether or not the team got the first baron kill
-    firstBlood              bool                    flag indicating whether or not the team got first blood
-    firstDragon             bool                    flag indicating whether or not the team got the first dragon kill
-    firstInhibitor          bool                    flag indicating whether or not the team destroyed the first inhibitor
-    firstRiftHerald         bool                    flag indicating whether or not the team got the first rift herald kill
-    firstTower              bool                    flag indicating whether or not the team destroyed the first tower
-    inhibitorKills          int                     number of inhibitors the team destroyed
-    riftHeraldKills         int                     number of times the team killed rift herald
-    teamId                  int                     team ID
-    towerKills              int                     number of towers the team destroyed
-    vilemawKills            int                     number of times the team killed vilemaw
-    winner                  bool                    flag indicating whether or not the team won
+    Gets all mastery IDs contained in this object
     """
     def __init__(self, dictionary):
         self.bans = [(BannedChampion(c) if not isinstance(c, BannedChampion) else c) for c in dictionary.get("bans", []) if c]
@@ -204,8 +192,7 @@ class Team(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class Timeline(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    frameInterval    int            time between each returned frame in milliseconds
-    frames           list<Frame>    list of timeline frames for the game
+    Gets all rune IDs contained in this object
     """
     def __init__(self, dictionary):
         self.frameInterval = dictionary.get("frameInterval", 0)
@@ -215,8 +202,7 @@ class Timeline(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    masteryId    int    mastery ID
-    rank         int    mastery rank
+    Gets all summoner IDs contained in this object
     """
     def __init__(self, dictionary):
         self.masteryId = dictionary.get("masteryId", 0)
@@ -226,69 +212,7 @@ class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class ParticipantStats(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    assists                            int     number of assists
-    champLevel                         int     champion level achieved
-    combatPlayerScore                  int     if game was a dominion game, player's combat score, otherwise 0
-    deaths                             int     number of deaths
-    doubleKills                        int     number of double kills
-    firstBloodAssist                   bool    flag indicating if participant got an assist on first blood
-    firstBloodKill                     bool    flag indicating if participant got first blood
-    firstInhibitorAssist               bool    flag indicating if participant got an assist on the first inhibitor
-    firstInhibitorKill                 bool    flag indicating if participant destroyed the first inhibitor
-    firstTowerAssist                   bool    flag indicating if participant got an assist on the first tower
-    firstTowerKill                     bool    flag indicating if participant destroyed the first tower
-    goldEarned                         int     gold earned
-    goldSpent                          int     gold spent
-    inhibitorKills                     int     number of inhibitor kills
-    item0                              int     frst item ID
-    item1                              int     second item ID
-    item2                              int     third item ID
-    item3                              int     fourth item ID
-    item4                              int     fifth item ID
-    item5                              int     sixth item ID
-    item6                              int     seventh item ID
-    killingSprees                      int     number of killing sprees
-    kills                              int     number of kills
-    largestCriticalStrike              int     largest critical strike
-    largestKillingSpree                int     largest killing spree
-    largestMultiKill                   int     largest multi kill
-    magicDamageDealt                   int     magical damage dealt
-    magicDamageDealtToChampions        int     magical damage dealt to champions
-    magicDamageTaken                   int     magic damage taken
-    minionsKilled                      int     minions killed
-    neutralMinionsKilled               int     neutral minions killed
-    neutralMinionsKilledEnemyJungle    int     neutral jungle minions killed in the enemy team's jungle
-    neutralMinionsKilledTeamJungle     int     neutral jungle minions killed in your team's jungle
-    nodeCapture                        int     if game was a dominion game, number of node captures
-    nodeCaptureAssist                  int     if game was a dominion game, number of node capture assists
-    nodeNeutralize                     int     if game was a dominion game, number of node neutralizations
-    nodeNeutralizeAssist               int     if game was a dominion game, number of node neutralization assists
-    objectivePlayerScore               int     if game was a dominion game, player's objectives score, otherwise 0
-    pentaKills                         int     number of penta kills
-    physicalDamageDealt                int     physical damage dealt
-    physicalDamageDealtToChampions     int     physical damage dealt to champions
-    physicalDamageTaken                int     physical damage taken
-    quadraKills                        int     number of quadra kills
-    sightWardsBoughtInGame             int     sight wards purchased
-    teamObjective                      int     if game was a dominion game, number of completed team objectives (i.e., quests)
-    totalDamageDealt                   int     total damage dealt
-    totalDamageDealtToChampions        int     total damage dealt to champions
-    totalDamageTaken                   int     total damage taken
-    totalHeal                          int     total heal amount
-    totalPlayerScore                   int     if game was a dominion game, player's total score, otherwise 0
-    totalScoreRank                     int     if game was a dominion game, team rank of the player's total score (e.g., 1-5)
-    totalTimeCrowdControlDealt         int     total dealt crowd control time
-    totalUnitsHealed                   int     total units healed
-    towerKills                         int     number of tower kills
-    tripleKills                        int     number of triple kills
-    trueDamageDealt                    int     true damage dealt
-    trueDamageDealtToChampions         int     true damage dealt to champions
-    trueDamageTaken                    int     true damage taken
-    unrealKills                        int     number of unreal kills
-    visionWardsBoughtInGame            int     vision wards purchased
-    wardsKilled                        int     number of wards killed
-    wardsPlaced                        int     number of wards placed
-    winner                             bool    flag indicating whether or not the participant won
+    Gets all summoner spell IDs contained in this object
     """
     def __init__(self, dictionary):
         self.assists = dictionary.get("assists", 0)
@@ -359,33 +283,17 @@ class ParticipantStats(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class ParticipantTimeline(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    ancientGolemAssistsPerMinCounts    ParticipantTimelineData    ancient golem assists per minute timeline counts
-    ancientGolemKillsPerMinCounts      ParticipantTimelineData    ancient golem kills per minute timeline counts
-    assistedLaneDeathsPerMinDeltas     ParticipantTimelineData    assisted lane deaths per minute timeline data
-    assistedLaneKillsPerMinDeltas      ParticipantTimelineData    assisted lane kills per minute timeline data
-    baronAssistsPerMinCounts           ParticipantTimelineData    baron assists per minute timeline counts
-    baronKillsPerMinCounts             ParticipantTimelineData    baron kills per minute timeline counts
-    creepsPerMinDeltas                 ParticipantTimelineData    creeps per minute timeline data
-    csDiffPerMinDeltas                 ParticipantTimelineData    creep score difference per minute timeline data
-    damageTakenDiffPerMinDeltas        ParticipantTimelineData    damage taken difference per minute timeline data
-    damageTakenPerMinDeltas            ParticipantTimelineData    damage taken per minute timeline data
-    dragonAssistsPerMinCounts          ParticipantTimelineData    dragon assists per minute timeline counts
-    dragonKillsPerMinCounts            ParticipantTimelineData    dragon kills per minute timeline counts
-    elderLizardAssistsPerMinCounts     ParticipantTimelineData    elder lizard assists per minute timeline counts
-    elderLizardKillsPerMinCounts       ParticipantTimelineData    elder lizard kills per minute timeline counts
-    goldPerMinDeltas                   ParticipantTimelineData    gold per minute timeline data
-    inhibitorAssistsPerMinCounts       ParticipantTimelineData    inhibitor assists per minute timeline counts
-    inhibitorKillsPerMinCounts         ParticipantTimelineData    inhibitor kills per minute timeline counts
-    lane                               str                        participant's lane (Legal values: MID, MIDDLE, TOP, JUNGLE, BOT, BOTTOM)
-    role                               str                        participant's role (Legal values: DUO, NONE, SOLO, DUO_CARRY, DUO_SUPPORT)
-    towerAssistsPerMinCounts           ParticipantTimelineData    tower assists per minute timeline counts
-    towerKillsPerMinCounts             ParticipantTimelineData    tower kills per minute timeline counts
-    towerKillsPerMinDeltas             ParticipantTimelineData    tower kills per minute timeline data
-    vilemawAssistsPerMinCounts         ParticipantTimelineData    vilemaw assists per minute timeline counts
-    vilemawKillsPerMinCounts           ParticipantTimelineData    vilemaw kills per minute timeline counts
-    wardsPerMinDeltas                  ParticipantTimelineData    wards placed per minute timeline data
-    xpDiffPerMinDeltas                 ParticipantTimelineData    experience difference per minute timeline data
-    xpPerMinDeltas                     ParticipantTimelineData    experience per minute timeline data
+    Args:
+        championId (int): champion ID
+        highestAchievedSeasonTier (str): highest ranked tier achieved for the previous season, if any, otherwise null. Used to display border in game loading screen. (Legal values: CHALLENGER, MASTER, DIAMOND, PLATINUM, GOLD, SILVER, BRONZE, UNRANKED)
+        masteries (list<Mastery>): list of mastery information
+        participantId (int): participant ID
+        runes (list<Rune>): list of rune information
+        spell1Id (int): first summoner spell ID
+        spell2Id (int): second summoner spell ID
+        stats (ParticipantStats): participant statistics
+        teamId (int): team ID
+        timeline (ParticipantTimeline): timeline data. Delta fields refer to values for the specified period (e.g., the gold per minute over the first 10 minutes of the game versus the second 20 minutes of the game. Diffs fields refer to the deltas versus the calculated lane opponent(s).
     """
     def __init__(self, dictionary):
         val = dictionary.get("ancientGolemAssistsPerMinCounts", None)
@@ -445,8 +353,9 @@ class ParticipantTimeline(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class Rune(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    rank      int    rune rank
-    runeId    int    rune ID
+    Args:
+        participantId (int): participant ID
+        player (Player): player information
     """
     def __init__(self, dictionary):
         self.rank = dictionary.get("rank", 0)
@@ -456,10 +365,23 @@ class Rune(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class Player(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    matchHistoryUri    str    match history URI
-    profileIcon        int    profile icon ID
-    summonerId         int    summoner ID
-    summonerName       str    summoner name
+    Args:
+        bans (list<BannedChampion>): if game was draft mode, contains banned champion data, otherwise null
+        baronKills (int): number of times the team killed baron
+        dominionVictoryScore (int): if game was a dominion game, specifies the points the team had at game end, otherwise null
+        dragonKills (int): number of times the team killed dragon
+        firstBaron (bool): flag indicating whether or not the team got the first baron kill
+        firstBlood (bool): flag indicating whether or not the team got first blood
+        firstDragon (bool): flag indicating whether or not the team got the first dragon kill
+        firstInhibitor (bool): flag indicating whether or not the team destroyed the first inhibitor
+        firstRiftHerald (bool): flag indicating whether or not the team got the first rift herald kill
+        firstTower (bool): flag indicating whether or not the team destroyed the first tower
+        inhibitorKills (int): number of inhibitors the team destroyed
+        riftHeraldKills (int): number of times the team killed rift herald
+        teamId (int): team ID
+        towerKills (int): number of towers the team destroyed
+        vilemawKills (int): number of times the team killed vilemaw
+        winner (bool): flag indicating whether or not the team won
     """
     def __init__(self, dictionary):
         self.matchHistoryUri = dictionary.get("matchHistoryUri", "")
@@ -471,8 +393,9 @@ class Player(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class BannedChampion(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    championId    int    banned champion ID
-    pickTurn      int    turn during which the champion was banned
+    Args:
+        frameInterval (int): time between each returned frame in milliseconds
+        frames (list<Frame>): list of timeline frames for the game
     """
     def __init__(self, dictionary):
         self.championId = dictionary.get("championId", 0)
@@ -482,9 +405,9 @@ class BannedChampion(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class Frame(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    events               list<Event>                    list of events for this frame
-    participantFrames    dict<str, ParticipantFrame>    map of each participant ID to the participant's information for the frame
-    timestamp            int                            represents how many milliseconds into the game the frame occurred
+    Args:
+        masteryId (int): mastery ID
+        rank (int): mastery rank
     """
     def __init__(self, dictionary):
         self.events = [(Event(e) if not isinstance(e, Event) else e) for e in dictionary.get("events", []) if e]
@@ -495,13 +418,70 @@ class Frame(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class ParticipantTimelineData(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    events               list<Event>                    list of events for this frame
-    participantFrames    dict<str, ParticipantFrame>    map of each participant ID to the participant's information for the frame
-    timestamp            int                            represents how many milliseconds into the game the frame occurred
-    tenToTwenty          float                          value per minute from 10 min to 20 min
-    thirtyToEnd          float                          value per minute from 30 min to the end of the game
-    twentyToThirty       float                          value per minute from 20 min to 30 min
-    zeroToTen            float                          value per minute from the beginning of the game to 10 min
+    Args:
+        assists (int): number of assists
+        champLevel (int): champion level achieved
+        combatPlayerScore (int): if game was a dominion game, player's combat score, otherwise 0
+        deaths (int): number of deaths
+        doubleKills (int): number of double kills
+        firstBloodAssist (bool): flag indicating if participant got an assist on first blood
+        firstBloodKill (bool): flag indicating if participant got first blood
+        firstInhibitorAssist (bool): flag indicating if participant got an assist on the first inhibitor
+        firstInhibitorKill (bool): flag indicating if participant destroyed the first inhibitor
+        firstTowerAssist (bool): flag indicating if participant got an assist on the first tower
+        firstTowerKill (bool): flag indicating if participant destroyed the first tower
+        goldEarned (int): gold earned
+        goldSpent (int): gold spent
+        inhibitorKills (int): number of inhibitor kills
+        item0 (int): frst item ID
+        item1 (int): second item ID
+        item2 (int): third item ID
+        item3 (int): fourth item ID
+        item4 (int): fifth item ID
+        item5 (int): sixth item ID
+        item6 (int): seventh item ID
+        killingSprees (int): number of killing sprees
+        kills (int): number of kills
+        largestCriticalStrike (int): largest critical strike
+        largestKillingSpree (int): largest killing spree
+        largestMultiKill (int): largest multi kill
+        magicDamageDealt (int): magical damage dealt
+        magicDamageDealtToChampions (int): magical damage dealt to champions
+        magicDamageTaken (int): magic damage taken
+        minionsKilled (int): minions killed
+        neutralMinionsKilled (int): neutral minions killed
+        neutralMinionsKilledEnemyJungle (int): neutral jungle minions killed in the enemy team's jungle
+        neutralMinionsKilledTeamJungle (int): neutral jungle minions killed in your team's jungle
+        nodeCapture (int): if game was a dominion game, number of node captures
+        nodeCaptureAssist (int): if game was a dominion game, number of node capture assists
+        nodeNeutralize (int): if game was a dominion game, number of node neutralizations
+        nodeNeutralizeAssist (int): if game was a dominion game, number of node neutralization assists
+        objectivePlayerScore (int): if game was a dominion game, player's objectives score, otherwise 0
+        pentaKills (int): number of penta kills
+        physicalDamageDealt (int): physical damage dealt
+        physicalDamageDealtToChampions (int): physical damage dealt to champions
+        physicalDamageTaken (int): physical damage taken
+        quadraKills (int): number of quadra kills
+        sightWardsBoughtInGame (int): sight wards purchased
+        teamObjective (int): if game was a dominion game, number of completed team objectives (i.e., quests)
+        totalDamageDealt (int): total damage dealt
+        totalDamageDealtToChampions (int): total damage dealt to champions
+        totalDamageTaken (int): total damage taken
+        totalHeal (int): total heal amount
+        totalPlayerScore (int): if game was a dominion game, player's total score, otherwise 0
+        totalScoreRank (int): if game was a dominion game, team rank of the player's total score (e.g., 1-5)
+        totalTimeCrowdControlDealt (int): total dealt crowd control time
+        totalUnitsHealed (int): total units healed
+        towerKills (int): number of tower kills
+        tripleKills (int): number of triple kills
+        trueDamageDealt (int): true damage dealt
+        trueDamageDealtToChampions (int): true damage dealt to champions
+        trueDamageTaken (int): true damage taken
+        unrealKills (int): number of unreal kills
+        visionWardsBoughtInGame (int): vision wards purchased
+        wardsKilled (int): number of wards killed
+        wardsPlaced (int): number of wards placed
+        winner (bool): flag indicating whether or not the participant won
     """
     def __init__(self, dictionary, type_=None):
         self.tenToTwenty = dictionary.get("tenToTwenty", 0.0)
@@ -514,27 +494,34 @@ class ParticipantTimelineData(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class Event(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    ascendedType               str          the ascended type of the event. Only present if relevant. Note that CLEAR_ASCENDED refers to when a participants kills the ascended player. (Legal values: CHAMPION_ASCENDED, CLEAR_ASCENDED, MINION_ASCENDED)
-    assistingParticipantIds    list<int>    the assisting participant IDs of the event. Only present if relevant.
-    buildingType               str          the building type of the event. Only present if relevant. (Legal values: INHIBITOR_BUILDING, TOWER_BUILDING)
-    creatorId                  int          the creator ID of the event. Only present if relevant.
-    eventType                  str          event type (Legal values: ASCENDED_EVENT, BUILDING_KILL, CAPTURE_POINT, CHAMPION_KILL, ELITE_MONSTER_KILL, ITEM_DESTROYED, ITEM_PURCHASED, ITEM_SOLD, ITEM_UNDO, PORO_KING_SUMMON, SKILL_LEVEL_UP, WARD_KILL, WARD_PLACED)
-    itemAfter                  int          the ending item ID of the event. Only present if relevant.
-    itemBefore                 int          the starting item ID of the event. Only present if relevant.
-    itemId                     int          the item ID of the event. Only present if relevant.
-    killerId                   int          the killer ID of the event. Only present if relevant. Killer ID 0 indicates a minion.
-    laneType                   str          the lane type of the event. Only present if relevant. (Legal values: BOT_LANE, MID_LANE, TOP_LANE)
-    levelUpType                str          the level up type of the event. Only present if relevant. (Legal values: EVOLVE, NORMAL)
-    monsterType                str          the monster type of the event. Only present if relevant. (Legal values: BARON_NASHOR, BLUE_GOLEM, DRAGON, RED_LIZARD, RIFTHERALD, VILEMAW)
-    participantId              int          the participant ID of the event. Only present if relevant.
-    pointCaptured              str          the point captured in the event. Only present if relevant. (Legal values: POINT_A, POINT_B, POINT_C, POINT_D, POINT_E)
-    position                   Position     the position of the event. Only present if relevant.
-    skillSlot                  int          the skill slot of the event. Only present if relevant.
-    teamId                     int          the team ID of the event. Only present if relevant.
-    timestamp                  int          represents how many milliseconds into the game the event occurred.
-    towerType                  str          the tower type of the event. Only present if relevant. (Legal values: BASE_TURRET, FOUNTAIN_TURRET, INNER_TURRET, NEXUS_TURRET, OUTER_TURRET, UNDEFINED_TURRET)
-    victimId                   int          the victim ID of the event. Only present if relevant.
-    wardType                   str          the ward type of the event. Only present if relevant. (Legal values: SIGHT_WARD, TEEMO_MUSHROOM, UNDEFINED, VISION_WARD, YELLOW_TRINKET, YELLOW_TRINKET_UPGRADE)
+    Args:
+        ancientGolemAssistsPerMinCounts (ParticipantTimelineData): ancient golem assists per minute timeline counts
+        ancientGolemKillsPerMinCounts (ParticipantTimelineData): ancient golem kills per minute timeline counts
+        assistedLaneDeathsPerMinDeltas (ParticipantTimelineData): assisted lane deaths per minute timeline data
+        assistedLaneKillsPerMinDeltas (ParticipantTimelineData): assisted lane kills per minute timeline data
+        baronAssistsPerMinCounts (ParticipantTimelineData): baron assists per minute timeline counts
+        baronKillsPerMinCounts (ParticipantTimelineData): baron kills per minute timeline counts
+        creepsPerMinDeltas (ParticipantTimelineData): creeps per minute timeline data
+        csDiffPerMinDeltas (ParticipantTimelineData): creep score difference per minute timeline data
+        damageTakenDiffPerMinDeltas (ParticipantTimelineData): damage taken difference per minute timeline data
+        damageTakenPerMinDeltas (ParticipantTimelineData): damage taken per minute timeline data
+        dragonAssistsPerMinCounts (ParticipantTimelineData): dragon assists per minute timeline counts
+        dragonKillsPerMinCounts (ParticipantTimelineData): dragon kills per minute timeline counts
+        elderLizardAssistsPerMinCounts (ParticipantTimelineData): elder lizard assists per minute timeline counts
+        elderLizardKillsPerMinCounts (ParticipantTimelineData): elder lizard kills per minute timeline counts
+        goldPerMinDeltas (ParticipantTimelineData): gold per minute timeline data
+        inhibitorAssistsPerMinCounts (ParticipantTimelineData): inhibitor assists per minute timeline counts
+        inhibitorKillsPerMinCounts (ParticipantTimelineData): inhibitor kills per minute timeline counts
+        lane (str): participant's lane (Legal values: MID, MIDDLE, TOP, JUNGLE, BOT, BOTTOM)
+        role (str): participant's role (Legal values: DUO, NONE, SOLO, DUO_CARRY, DUO_SUPPORT)
+        towerAssistsPerMinCounts (ParticipantTimelineData): tower assists per minute timeline counts
+        towerKillsPerMinCounts (ParticipantTimelineData): tower kills per minute timeline counts
+        towerKillsPerMinDeltas (ParticipantTimelineData): tower kills per minute timeline data
+        vilemawAssistsPerMinCounts (ParticipantTimelineData): vilemaw assists per minute timeline counts
+        vilemawKillsPerMinCounts (ParticipantTimelineData): vilemaw kills per minute timeline counts
+        wardsPerMinDeltas (ParticipantTimelineData): wards placed per minute timeline data
+        xpDiffPerMinDeltas (ParticipantTimelineData): experience difference per minute timeline data
+        xpPerMinDeltas (ParticipantTimelineData): experience per minute timeline data
     """
     def __init__(self, dictionary):
         self.ascendedType = dictionary.get("ascendedType", "")
@@ -564,16 +551,9 @@ class Event(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class ParticipantFrame(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    currentGold            int         participant's current gold
-    dominionScore          int         dominion score of the participant
-    jungleMinionsKilled    int         number of jungle minions killed by participant
-    level                  int         participant's current level
-    minionsKilled          int         number of minions killed by participant
-    participantId          int         participant ID
-    position               Position    participant's position
-    teamScore              int         team score of the participant
-    totalGold              int         participant's total gold
-    xp                     int         experience earned by participant
+    Args:
+        rank (int): rune rank
+        runeId (int): rune ID
     """
     def __init__(self, dictionary):
         self.currentGold = dictionary.get("currentGold", 0)
@@ -592,8 +572,11 @@ class ParticipantFrame(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class Position(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    x    int    x position
-    y    int    y position
+    Args:
+        matchHistoryUri (str): match history URI
+        profileIcon (int): profile icon ID
+        summonerId (int): summoner ID
+        summonerName (str): summoner name
     """
     def __init__(self, dictionary):
         self.x = dictionary.get("x", 0)

@@ -49,67 +49,106 @@ class TournamentCode(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def code(self):
-        """str    the tournament code"""
+        """
+        Returns:
+            str: the tournament code
+        """
         return self.data.code
 
     @property
     def id(self):
-        """int    the tournament code's ID"""
+        """
+        Returns:
+            str: the tournament code
+        """
         return self.data.id
 
     @property
     def name(self):
-        """str    the lobby name"""
+        """
+        Returns:
+            str: the tournament code
+        """
         return self.data.lobbyName
 
     @property
     def map(self):
-        """str    the map for the game"""
+        """
+        Returns:
+            str: the tournament code
+        """
         return MapType(self.data.map) if self.data.map else None
 
     @property
     def meta_data(self):
-        """str    the metadata for the game"""
+        """
+        Returns:
+            str: the tournament code
+        """
         return self.data.metaData
 
     @property
     def participants(self):
-        """list<Summoner>    the summoners participating in the tournament"""
+        """
+        Returns:
+            str: the tournament code
+        """
         return cassiopeia.riotapi.get_summoners_by_id(self.data.participants) if self.data.participants else []
 
     @property
     def password(self):
-        """str    the password for the lobby"""
+        """
+        Returns:
+            str: the tournament code
+        """
         return self.data.password
 
     @property
     def pick_type(self):
-        """PickType    the pick mode for the game"""
+        """
+        Returns:
+            str: the tournament code
+        """
         return PickType(self.data.pickType) if self.data.pickType else None
 
     @property
     def provider_id(self):
-        """int    the provider's ID"""
+        """
+        Returns:
+            str: the tournament code
+        """
         return self.data.providerId
 
     @property
     def region(self):
-        """TournamentRegion    the tournament's region"""
+        """
+        Returns:
+            str: the tournament code
+        """
         return TournamentRegion(self.data.region) if self.data.region else None
 
     @property
     def spectator_type(self):
-        """SpectatorType    the spectator mode for the game"""
+        """
+        Returns:
+            str: the tournament code
+        """
         return SpectatorType(self.data.spectators) if self.data.spectators else None
 
     @property
     def team_size(self):
-        """int    the team size for the game"""
+        """
+        Returns:
+            str: the tournament code
+        """
         return self.data.teamSize
 
     @property
     def tournament_id(self):
-        """int    the tournament's ID"""
+        """
+        Returns:
+            str: the tournament code
+        """
         return self.data.tournamentId
 
 
@@ -122,17 +161,26 @@ class LobbyEvent(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def type(self):
-        """str    the type of the event"""
+        """
+        Returns:
+            str: the tournament code
+        """
         return self.data.eventType
 
     @property
     def summoner(self):
-        """Summoner    the summoner that triggered the event"""
+        """
+        Returns:
+            str: the tournament code
+        """
         return cassiopeia.riotapi.get_summoner_by_id(int(self.data.summonerId)) if self.data.summonerId else None
 
     @property
     def timestamp(self):
-        """str    the time that the event occurred"""
+        """
+        Returns:
+            str: the tournament code
+        """
         return self.data.timestamp
 
 

@@ -22,12 +22,18 @@ class SetItem(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def count(self):
-        """int    how many of this item are in the block"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.count
 
     @property
     def item(self):
-        """Item    the item itself"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return cassiopeia.riotapi.get_item(self.data.id)
 
 
@@ -49,17 +55,26 @@ class ItemSet(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def items(self):
-        """list<SetItem>    the items in this item set"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return [SetItem(item) for item in self.data.items]
 
     @property
     def rec_math(self):
-        """bool    well, we don't know what this one is. let us know if you figure it out."""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.recMath
 
     @property
     def type(self):
-        """str    what type the item set is (e.g. starting items)"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.type
 
 
@@ -72,27 +87,42 @@ class SpellVariables(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def coefficients(self):
-        """list<float>    the coefficients for determining spell scaling"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.coeff
 
     @property
     def dynamic(self):
-        """str    whether the spell variables are dynamic"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.dyn
 
     @property
     def key(self):
-        """str    the identifying key for these variables"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.key
 
     @property
     def link(self):
-        """str    the thing these variables scale off of"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.link
 
     @property
     def ranks_with(self):
-        """str    what these variables rank with"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.ranksWith
 
 
@@ -105,12 +135,18 @@ class LevelTip(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def effects(self):
-        """list<str>    the changes for the level tooltip, level-by-level"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.effect
 
     @property
     def labels(self):
-        """list<str>    the labels for the changes in effects"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.label
 
 
@@ -123,102 +159,162 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def armor(self):
-        """float    armor"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.armor
 
     @property
     def armor_per_level(self):
-        """float    armor per level"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.armorperlevel
 
     @property
     def attack_damage(self):
-        """float    attack damage"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.attackdamage
 
     @property
     def attack_damage_per_level(self):
-        """float    attack damage per level"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.attackdamageperlevel
 
     @property
     def attack_range(self):
-        """float    attack range"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.attackrange
 
     @property
     def attack_speed(self):
-        """float    attack speed"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return 0.625 / (1.0 + self.data.attackspeedoffset)
 
     @property
     def percent_attack_speed_per_level(self):
-        """float    attack speed per level"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.attackspeedperlevel / 100
 
     @property
     def critical_strike_chance(self):
-        """float    crititical strike chance"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.crit
 
     @property
     def critical_strike_chance_per_level(self):
-        """float    crititical strike chance per level"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.critperlevel
 
     @property
     def health(self):
-        """float    health"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.hp
 
     @property
     def health_per_level(self):
-        """float    health per level"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.hpperlevel
 
     @property
     def health_regen(self):
-        """float    health regen"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.hpregen
 
     @property
     def health_regen_per_level(self):
-        """float    health regen per level"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.hpregenperlevel
 
     @property
     def movespeed(self):
-        """float    movespeed"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.movespeed
 
     @property
     def mana(self):
-        """float    mana"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.mp
 
     @property
     def mana_per_level(self):
-        """float    mana per level"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.mpperlevel
 
     @property
     def mana_regen(self):
-        """float    mana regen"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.mpregen
 
     @property
     def mana_regen_per_level(self):
-        """float    mana regen per level"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.mpregenperlevel
 
     @property
     def magic_resist(self):
-        """float    magic resist"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.spellblock
 
     @property
     def magic_resist_per_level(self):
-        """float    magic resist per level"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.spellblockperlevel
 
 
@@ -244,27 +340,42 @@ class Skin(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def splash(self):
-        """str    the link to the splash art for this skin"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return "http://ddragon.leagueoflegends.com/cdn/img/champion/splash/{0}_{1}.jpg".format(self.__key, self.number)
 
     @property
     def loading(self):
-        """str    the link to the loading art for this skin"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return "http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{0}_{1}.jpg".format(self.__key, self.number)
 
     @property
     def id(self):
-        """int    the ID of this skin"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.id
 
     @property
     def name(self):
-        """str    the name of this skin"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.name
 
     @property
     def number(self):
-        """int    where in the skin order this skin comes"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.num
 
 
@@ -286,37 +397,58 @@ class RecommendedItems(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def item_sets(self):
-        """list<ItemSet>    the sets of items that make up this reommended page"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return [ItemSet(block) for block in self.data.blocks]
 
     @property
     def champion(self):
-        """Champion    the champion these recommendations are for"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return cassiopeia.riotapi.get_champion_by_name(self.data.champion) if self.data.champion else None
 
     @property
     def map(self):
-        """str    the name of the map these recommendations are for"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.map
 
     @property
     def mode(self):
-        """GameMode    the game mode these recommendations are for"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return cassiopeia.type.core.common.GameMode(self.data.mode) if self.data.mode else None
 
     @property
     def priority(self):
-        """bool    whether this is a priority recommendation"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.priority
 
     @property
     def name(self):
-        """str    the name of the recommendations"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.title
 
     @property
     def type(self):
-        """str    the type of recommendations these are"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.type
 
 
@@ -329,37 +461,58 @@ class Image(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def link(self):
-        """str    the link to the image. See https://developer.riotgames.com/docs/static-data for more information."""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.full
 
     @property
     def group(self):
-        """str    the group for this image"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.group
 
     @property
     def height(self):
-        """int    the height of the image"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.h
 
     @property
     def sprite(self):
-        """str    the sprite image link. See https://developer.riotgames.com/docs/static-data for more information."""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.sprite
 
     @property
     def width(self):
-        """int    the width of the image"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.w
 
     @property
     def x(self):
-        """int    the x offset of the image"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.x
 
     @property
     def y(self):
-        """int    the y offset of the image"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.y
 
 
@@ -372,22 +525,34 @@ class Passive(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def description(self):
-        """str    the description for the passive"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.description
 
     @cassiopeia.type.core.common.lazyproperty
     def image(self):
-        """Image    the image for the passive"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return Image(self.data.image) if self.data.image else None
 
     @property
     def name(self):
-        """str    the name of the passive"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.name
 
     @property
     def sanitized_description(self):
-        """str    the sanitized description of the passive"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.sanitizedDescription
 
 
@@ -400,22 +565,34 @@ class ChampionInfo(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def physical(self):
-        """int    physical damage output rating (out of 10)"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.attack
 
     @property
     def defense(self):
-        """int    defensive rating (out of 10)"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.defense
 
     @property
     def difficulty(self):
-        """int    difficulty rating (out of 10)"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.difficulty
 
     @property
     def magic(self):
-        """int    magic damage output rating (out of 10)"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.magic
 
 
@@ -437,107 +614,170 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def alternate_images(self):
-        """list<Image>    the alternate images for this spell"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return [Image(img) for img in self.data.altimages]
 
     @property
     def cooldowns(self):
-        """list<float>    the cooldowns of this spell level-by-level"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.cooldown
 
     @property
     def cooldown_burn(self):
-        """str    a string formatted list of the spell's cooldowns by level"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.cooldownBurn
 
     @property
     def costs(self):
-        """list<int>    the cost of the spell level-by-level"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.cost
 
     @property
     def cost_burn(self):
-        """str    a string formatted list of the spell's cost by level"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.costBurn
 
     @property
     def cost_type(self):
-        """str    what the spell costs to use (e.g. mana or energy)"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.costType
 
     @property
     def description(self):
-        """str    the description of the spell"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.description
 
     @property
     def effects(self):
-        """list<list<float>>    the level-by-level replacements for {{ e# }} tags in other values"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.effect
 
     @property
     def effect_burn(self):
-        """list<str>    the string formatted replacements for {{ e# }} tags in other values by level"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.effectBurn
 
     @cassiopeia.type.core.common.lazyproperty
     def image(self):
-        """Image    the image for this spell"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return Image(self.data.image) if self.data.image else None
 
     @property
     def key(self):
-        """str    this spell's identifying key"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.key
 
     @cassiopeia.type.core.common.lazyproperty
     def level_tip(self):
-        """LevelTip    the level-up tips for this spell"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return LevelTip(self.data.leveltip) if self.data.leveltip else None
 
     @property
     def max_rank(self):
-        """int    the maximum level for this spell"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.maxrank
 
     @property
     def name(self):
-        """str    the name of this spell"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.name
 
     @property
     def range(self):
-        """self | list<int>    the level-by-level range of this spell"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.range
 
     @property
     def range_burn(self):
-        """str    the string formatted range of this spell by level"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.rangeBurn
 
     @property
     def resource(self):
-        """str    what resource this spell uses"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.resource
 
     @property
     def sanitized_description(self):
-        """str    the sanitized description of this spell"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.sanitizedDescription
 
     @property
     def sanitized_tooltip(self):
-        """str    the sanitized tooltip for this spell"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.sanitizedTooltip
 
     @property
     def tooltip(self):
-        """str    the tooltip for this spell"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return self.data.tooltip
 
     @cassiopeia.type.core.common.lazyproperty
     def variables(self):
-        """SpellVariables    the variables that determine this spell's damage"""
+        """
+        Returns:
+            int: how many of this item are in the block
+        """
         return [SpellVariables(svars) for svars in self.data.vars]
 
     def __replace_variables(self, text, level, rank):
@@ -571,23 +811,17 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.immutablemethod
     def tooltip_for_level(self, level, rank):
-        """Gets the tooltip for this spell for a specific level/rank
-
-        level     int    the level of the champion
-        rank      int    the rank of this spell
-
-        return    str    the tooltip for that rank/level
+        """
+        Returns:
+            int: how many of this item are in the block
         """
         return self.__replace_variables(self.tooltip, level, rank)
 
     @cassiopeia.type.core.common.immutablemethod
     def sanitized_tooltip_for_level(self, level, rank):
-        """Gets the sanitized tooltip for this spell for a specific level/rank
-
-        level     int    the level of the champion
-        rank      int    the rank of this spell
-
-        return    str    the sanitized tooltip for that rank/level
+        """
+        Returns:
+            Item: the item itself
         """
         return self.__replace_variables(self.sanitized_tooltip, level, rank)
 
@@ -610,104 +844,153 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def ally_tips(self):
-        """list<str>    the set of tips for allies of this champion"""
+        """
+        Returns:
+            list<SetItem>: the items in this item set
+        """
         return self.data.allytips
 
     @property
     def blurb(self):
-        """str    the blurb for this champion"""
+        """
+        Returns:
+            list<SetItem>: the items in this item set
+        """
         return self.data.blurb
 
     @property
     def enemy_tips(self):
-        """list<str>    the set of tips for enemies of this champion"""
+        """
+        Returns:
+            list<SetItem>: the items in this item set
+        """
         return self.data.enemytips
 
     @property
     def id(self):
-        """int    the ID of this champion"""
+        """
+        Returns:
+            list<SetItem>: the items in this item set
+        """
         return self.data.id
 
     @cassiopeia.type.core.common.lazyproperty
     def image(self):
-        """Image    the image of this champion"""
+        """
+        Returns:
+            list<SetItem>: the items in this item set
+        """
         return Image(self.data.image) if self.data.image else None
 
     @cassiopeia.type.core.common.lazyproperty
     def info(self):
-        """ChampionInfo    ratings of what this champion is good/bad at"""
+        """
+        Returns:
+            list<SetItem>: the items in this item set
+        """
         return ChampionInfo(self.data.info) if self.data.info else None
 
     @property
     def key(self):
-        """str    the identifying key for this champion"""
+        """
+        Returns:
+            list<SetItem>: the items in this item set
+        """
         return self.data.key
 
     @property
     def lore(self):
-        """str    this champion's lore"""
+        """
+        Returns:
+            list<SetItem>: the items in this item set
+        """
         return self.data.lore
 
     @property
     def name(self):
-        """str    this champion's name"""
+        """
+        Returns:
+            list<SetItem>: the items in this item set
+        """
         return self.data.name
 
     @property
     def resource(self):
-        """str    the resource this champion uses"""
+        """
+        Returns:
+            list<SetItem>: the items in this item set
+        """
         return self.data.partype
 
     @cassiopeia.type.core.common.lazyproperty
     def passive(self):
-        """Passive    this champion's passive"""
+        """
+        Returns:
+            list<SetItem>: the items in this item set
+        """
         return Passive(self.data.passive) if self.data.passive else None
 
     @cassiopeia.type.core.common.lazyproperty
     def recommended_items(self):
-        """list<RecommendedItems>    item recommendations for this champion"""
+        """
+        Returns:
+            list<SetItem>: the items in this item set
+        """
         return [RecommendedItems(rec) for rec in self.data.recommended]
 
     @cassiopeia.type.core.common.lazyproperty
     def skins(self):
-        """list<Skin>    this champion's skins"""
+        """
+        Returns:
+            list<SetItem>: the items in this item set
+        """
         return [Skin(skin, self.key) for skin in self.data.skins]
 
     @cassiopeia.type.core.common.lazyproperty
     def spells(self):
-        """list<Spell>    this champion's spells"""
+        """
+        Returns:
+            list<SetItem>: the items in this item set
+        """
         return [Spell(spell) for spell in self.data.spells]
 
     @cassiopeia.type.core.common.lazyproperty
     def stats(self):
-        """ChampionStats    this champion's combat stats"""
+        """
+        Returns:
+            list<SetItem>: the items in this item set
+        """
         return ChampionStats(self.data.stats) if self.data.stats else None
 
     @property
     def tags(self):
-        """list<str>    tags for searching for this champion"""
+        """
+        Returns:
+            list<SetItem>: the items in this item set
+        """
         return self.data.tags
 
     @property
     def title(self):
-        """str    this champion's title"""
+        """
+        Returns:
+            list<SetItem>: the items in this item set
+        """
         return self.data.title
 
     @cassiopeia.type.core.common.immutablemethod
     def status(self):
-        """Gets the status for this champion (whether they are disabled, etc.)
-
-        return      ChampionStatus    the champion's status
+        """
+        Returns:
+            list<SetItem>: the items in this item set
         """
         return cassiopeia.riotapi.get_champion_status(self)
 
     @cassiopeia.type.core.common.immutablemethod
     def mastery_level(self, summoner):
-        """Gets the ChampionMastery object for the specified summoner
-
-        summoner    Summoner           the summoner to get champion mastery for
-
-        return      ChampionMastery    the summoner's champion mastery value for the champion
+        """
+        Returns:
+            bool: well, we don't know what this one is. let us know if you figure it out.
         """
         return cassiopeia.riotapi.get_champion_mastery(summoner, self)
 
@@ -724,17 +1007,26 @@ class MetaData(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def rune(self):
-        """bool    whether the item is a rune"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.isRune
 
     @property
     def tier(self):
-        """str    what tier the item is"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.tier
 
     @property
     def type(self):
-        """str    the type of item it is"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.type
 
 
@@ -747,22 +1039,34 @@ class Gold(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def base(self):
-        """int    the base price of the item"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.base
 
     @property
     def purchasable(self):
-        """bool    whether the item can be bought"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.purchasable
 
     @property
     def sell(self):
-        """int    the sell price of the item"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.sell
 
     @property
     def total(self):
-        """int    the total price of the item"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.total
 
 
@@ -782,347 +1086,554 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def armor(self):
-        """float    armor"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.FlatArmorMod
 
     @property
     def attack_speed(self):
-        """float    attack speed"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.FlatAttackSpeedMod
 
     @property
     def block(self):
-        """float    blocked damage per attack"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.FlatBlockMod
 
     @property
     def percent_block(self):
-        """float    percent blocked damage per attack"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.PercentBlockMod
 
     @property
     def critical_strike_chance(self):
-        """float    critical strike chance"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.FlatCritChanceMod + self.data.PercentCritChanceMod
 
     @property
     def critical_strike_damage(self):
-        """float    critical strike damage modification"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.FlatCritDamageMod
 
     @property
     def xp_bonus(self):
-        """float    experience bonus"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.FlatEXPBonus
 
     @property
     def energy(self):
-        """float    energy"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.FlatEnergyPoolMod
 
     @property
     def energy_regen(self):
-        """float    energy regen"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.FlatEnergyRegenMod
 
     @property
     def health(self):
-        """float    health"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.FlatHPPoolMod
 
     @property
     def health_regen(self):
-        """float    health regen"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.FlatHPRegenMod
 
     @property
     def mana(self):
-        """float    mana"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.FlatMPPoolMod
 
     @property
     def mana_regen(self):
-        """float    mana regen"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.FlatMPRegenMod
 
     @property
     def ability_power(self):
-        """float    ability power"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.FlatMagicDamageMod
 
     @property
     def movespeed(self):
-        """float    movespeed"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.FlatMovementSpeedMod
 
     @property
     def attack_damage(self):
-        """float    attack damage"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.FlatPhysicalDamageMod
 
     @property
     def magic_resist(self):
-        """float    magic resist"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.FlatSpellBlockMod
 
     @property
     def tenacity(self):
-        """float    tenacity"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.__scraped_stats.get("tenacity", 0.0)
 
     @property
     def percent_armor(self):
-        """float    percent armor"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.PercentArmorMod
 
     @property
     def percent_attack_speed(self):
-        """float    percent attack speed"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.PercentAttackSpeedMod
 
     @property
     def percent_critical_strike_damage(self):
-        """float    percent critical strike damage modification"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.PercentCritDamageMod
 
     @property
     def percent_xp_bonus(self):
-        """float    percent experience bonus"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.PercentEXPBonus
 
     @property
     def percent_health(self):
-        """float    percent health"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.PercentHPPoolMod
 
     @property
     def percent_bonus_health(self):
-        """float    percent bonus health"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.__scraped_stats.get("percent_bonus_health", 0.0)
 
     @property
     def percent_health_regen(self):
-        """float    percent health regen"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.PercentHPRegenMod
 
     @property
     def percent_base_health_regen(self):
-        """float    percent base health regen"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.__scraped_stats.get("percent_base_health_regen", 0.0)
 
     @property
     def life_steal(self):
-        """float    life steal"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.PercentLifeStealMod + self.__scraped_stats.get("life_steal", 0.0)
 
     @property
     def percent_mana(self):
-        """float    percent mana"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.PercentMPPoolMod
 
     @property
     def percent_mana_regen(self):
-        """float    percent mana regen"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.PercentMPRegenMod
 
     @property
     def percent_base_mana_regen(self):
-        """float    percent base mana regen"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.__scraped_stats.get("base_mana_regen", 0.0)
 
     @property
     def percent_ability_power(self):
-        """float    percent ability power"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.PercentMagicDamageMod + self.__scraped_stats.get("percent_ability_power", 0.0)
 
     @property
     def percent_movespeed(self):
-        """float    percent movespeed"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.PercentMovementSpeedMod + self.__scraped_stats.get("percent_movespeed", 0.0)
 
     @property
     def percent_attack_damage(self):
-        """float    percent attack damage"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.PercentPhysicalDamageMod
 
     @property
     def percent_base_attack_damage(self):
-        """float    percent attack damage"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.__scraped_stats.get("percent_base_attack_damage", 0.0)
 
     @property
     def percent_magic_resist(self):
-        """float    percent magic resist"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.PercentSpellBlockMod
 
     @property
     def spell_vamp(self):
-        """float    spell vamp"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.PercentSpellVampMod + self.__scraped_stats.get("spell_vamp", 0.0)
 
     @property
     def armor_per_level(self):
-        """float    armor per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rFlatArmorModPerLevel
 
     @property
     def armor_penetration(self):
-        """float    armor penetration"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rFlatArmorPenetrationMod + self.__scraped_stats.get("armor_pen", 0.0)
 
     @property
     def armor_penetration_per_level(self):
-        """float    armor penetration per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rFlatArmorPenetrationModPerLevel
 
     @property
     def critical_strike_chance_per_level(self):
-        """float    critical strike chance per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rFlatCritChanceModPerLevel
 
     @property
     def critical_strike_damage_per_level(self):
-        """float    critical strike damage per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rFlatCritDamageModPerLevel
 
     @property
     def dodge_chance(self):
-        """float    dodge chance"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rFlatDodgeMod + self.data.PercentDodgeMod
 
     @property
     def dodge_chance_per_level(self):
-        """float    dodge change per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rFlatDodgeModPerLevel
 
     @property
     def energy_per_level(self):
-        """float    energy per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rFlatEnergyModPerLevel
 
     @property
     def energy_regen_per_level(self):
-        """float    energy regen per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rFlatEnergyRegenModPerLevel
 
     @property
     def gold_per_ten(self):
-        """float    gold per 10 seconds"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rFlatGoldPer10Mod + self.__scraped_stats.get("gold_per_ten", 0.0)
 
     @property
     def health_per_level(self):
-        """float    health per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rFlatHPModPerLevel
 
     @property
     def health_regen_per_level(self):
-        """float    health regen per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rFlatHPRegenModPerLevel
 
     @property
     def mana_per_level(self):
-        """float    mana per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rFlatMPModPerLevel
 
     @property
     def mana_regen_per_level(self):
-        """float    mana regen per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rFlatMPRegenModPerLevel
 
     @property
     def ability_power_per_level(self):
-        """float    ability power per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rFlatMagicDamageModPerLevel
 
     @property
     def magic_penetration(self):
-        """float    magic penetration"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rFlatMagicPenetrationMod + self.__scraped_stats.get("magic_pen", 0.0)
 
     @property
     def magic_penetration_per_level(self):
-        """float    magic penetration per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rFlatMagicPenetrationModPerLevel
 
     @property
     def movespeed_per_level(self):
-        """float    movespeed per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rFlatMovementSpeedModPerLevel
 
     @property
     def attack_damage_per_level(self):
-        """float    attack damage per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rFlatPhysicalDamageModPerLevel
 
     @property
     def magic_resist_per_level(self):
-        """float    magic reists per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rFlatSpellBlockModPerLevel
 
     @property
     def time_dead(self):
-        """float    time dead modification"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return abs(self.data.rFlatTimeDeadMod)
 
     @property
     def time_dead_per_level(self):
-        """float    time dead modification per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return abs(self.data.rFlatTimeDeadModPerLevel)
 
     @property
     def percent_armor_penetration(self):
-        """float    percent armor pentration"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rPercentArmorPenetrationMod + self.__scraped_stats.get("percent_armor_pen", 0.0)
 
     @property
     def percent_armor_penetration_per_level(self):
-        """float    percent armor penetration per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rPercentArmorPenetrationModPerLevel
 
     @property
     def percent_bonus_armor_penetration(self):
-        """float    percent armor pentration"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.__scraped_stats.get("percent_bonus_armor_pen", 0.0)
 
     @property
     def percent_attack_speed_per_level(self):
-        """float    percent attack speed per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rPercentAttackSpeedModPerLevel
 
     @property
     def cooldown_reduction(self):
-        """float    cooldown reduction"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return abs(self.data.rPercentCooldownMod + self.__scraped_stats.get("percent_cooldown_reduction", 0.0))
 
     @property
     def cooldown_reduction_per_level(self):
-        """float    cooldown reduction per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return abs(self.data.rPercentCooldownModPerLevel)
 
     @property
     def percent_magic_penetration(self):
-        """float    percent magic penetration"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rPercentMagicPenetrationMod + self.__scraped_stats.get("percent_magic_pen", 0.0)
 
     @property
     def percent_magic_pen_per_level(self):
-        """float    percent magic penetration per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rPercentMagicPenetrationModPerLevel
 
     @property
     def percent_movespeed_per_level(self):
-        """float    percent movespeed per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rPercentMovementSpeedModPerLevel
 
     @property
     def percent_time_dead(self):
-        """float    percent time dead modification"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return abs(self.data.rPercentTimeDeadMod)
 
     @property
     def percent_time_dead_per_level(self):
-        """float    percent time dead modification per level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return abs(self.data.rPercentTimeDeadModPerLevel)
 
 
@@ -1162,117 +1673,186 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def keywords(self):
-        """str    a string formatted list of search keywords for this item in the shop"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.colloq
 
     @property
     def consume_on_full(self):
-        """bool    well, we don't know what this one is. let us know if you figure it out."""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.consumeOnFull
 
     @property
     def consumable(self):
-        """bool    whether the item is a consumable"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.consumed
 
     @property
     def tier(self):
-        """int    the tier of the item"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.depth
 
     @property
     def description(self):
-        """str    the item's description"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.description
 
     @property
     def effect(self):
-        """dict<str, bool>    the item's effects"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.effect
 
     @property
     def components(self):
-        """list<Item>    the components for this item"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return cassiopeia.riotapi.get_items([int(id_) for id_ in self.data.from_])
 
     @cassiopeia.type.core.common.lazyproperty
     def gold(self):
-        """Gold    price information for this item"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return Gold(self.data.gold) if self.data.gold else None
 
     @property
     def group(self):
-        """str    the group for this item"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.group
 
     @property
     def hide(self):
-        """bool    well, we don't know what this one is. let us know if you figure it out."""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.hide_from_all
 
     @property
     def id(self):
-        """int    the ID of this item"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.id
 
     @cassiopeia.type.core.common.lazyproperty
     def image(self):
-        """Image    this item's image"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return Image(self.data.image) if self.data.image else None
 
     @property
     def in_store(self):
-        """bool    well, we don't know what this one is. let us know if you figure it out."""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.inStore
 
     @property
     def component_of(self):
-        """list<Item>    the items this one is a component of"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return cassiopeia.riotapi.get_items([int(id_) for id_ in self.data.into])
 
     @property
     def maps(self):
-        """dict<Map, bool>    a listing of whether this item is available on each map"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return {cassiopeia.type.core.common.Map(int(id_)): allowed for id_, allowed in self.data.maps.items()}
 
     @property
     def name(self):
-        """str    the name of this item"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.name
 
     @property
     def blurb(self):
-        """str    the blurb for this item"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.plaintext
 
     @property
     def required_champion(self):
-        """Champion    the required champion for this item"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return cassiopeia.riotapi.get_champion_by_name(self.data.requiredChampion) if self.data.requiredChampion else None
 
     @cassiopeia.type.core.common.lazyproperty
     def meta_data(self):
-        """MetaData    meta data about this item"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return MetaData(self.data.rune) if self.data.rune else None
 
     @property
     def sanitized_description(self):
-        """str    the sanitized description of this item"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.sanitizedDescription
 
     @property
     def special_recipe(self):
-        """int    well, we don't know what this one is. let us know if you figure it out."""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.specialRecipe
 
     @property
     def stacks(self):
-        """int    the number of stacks this item can have"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.stacks
 
     @cassiopeia.type.core.common.lazyproperty
     def stats(self):
-        """ItemStats    the stats for this item"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         scraped_stats = {}
         for stat, regex in Item.__stat_patterns.items():
             match = re.search(regex, self.description)
@@ -1284,7 +1864,10 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def tags(self):
-        """list<str>    this item's tags for sorting items"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.tags
 
     # Left out these: attack_range, percent_time_dead, percent_time_dead_per_level, time_dead, time_dead_per_level, gold_per_ten, starting_gold, percent_xp_bonus, xp_bonus
@@ -1320,7 +1903,10 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def categories(self):
-        """list<str>    the shop categories that this item belongs to"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         if self.consumable:
             cats = {"Consumable"}
         else:
@@ -1360,22 +1946,34 @@ class MapDetails(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def image(self):
-        """Image    the image of this map"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return Image(self.data.image) if self.data.image else None
 
     @property
     def map_id(self):
-        """int    the ID of this map"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.mapId
 
     @property
     def map(self):
-        """Map    the map"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return cassiopeia.type.core.common.Map(self.data.mapId) if self.data.mapId else None
 
     @cassiopeia.type.core.common.lazyproperty
     def unpurchasable_items(self):
-        """list<Item>    the items that can't be bought on this map"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return list(filter(None, cassiopeia.riotapi.get_items(self.data.unpurchasableItemList)))
 
 
@@ -1400,42 +1998,66 @@ class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def descriptions(self):
-        """list<str>    descriptions of this mastery by rank"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.description
 
     @property
     def id(self):
-        """int    the ID of this mastery"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.id
 
     @cassiopeia.type.core.common.lazyproperty
     def image(self):
-        """Image    this mastery's image"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return Image(self.data.image) if self.data.image else None
 
     @property
     def tree(self):
-        """str    which mastery tree this mastery belongs to"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.masteryTree
 
     @property
     def name(self):
-        """name    the name of this mastery"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.name.strip()
 
     @property
     def prerequisite(self):
-        """Mastery    the prerequisite for this mastery"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return cassiopeia.riotapi.get_mastery(int(self.data.prereq)) if self.data.prereq else None
 
     @property
     def max_rank(self):
-        """int    the max rank for this mastery"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.ranks
 
     @property
     def sanitized_descriptions(self):
-        """list<str>    sanitized descriptions of this mastery by rank"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.sanitizedDescription
 
 
@@ -1460,47 +2082,74 @@ class Realm(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def cdn(self):
-        """str    the base CDN url"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.cdn
 
     @property
     def css(self):
-        """str    the latest version of the Dragon Magic's css file"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.css
 
     @property
     def dragon_magic(self):
-        """str    the lastest version of Dragon Magic"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.dd
 
     @property
     def language(self):
-        """str    the default locale for this realm"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.l
 
     @property
     def legacy(self):
-        """str    the legacy script mode for IE6 or older"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.lg
 
     @property
     def data_type_versions(self):
-        """dict<str, str>    the latest versions for listed data types"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.n
 
     @property
     def profile_icon_id_max(self):
-        """int    the largest profileicon id that can be used under 500.0 Any profileicon that is requested between this number and 500 should be mapped to 0.0."""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.profileiconmax
 
     @property
     def store(self):
-        """str    additional api data drawn from other sources that may be related to data dragon functionality"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.store
 
     @property
     def version(self):
-        """str    the current version of this file"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.v
 
 
@@ -1525,47 +2174,74 @@ class Rune(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def description(self):
-        """str    the rune's description"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.description
 
     @property
     def id(self):
-        """int    the ID of this rune"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.id
 
     @cassiopeia.type.core.common.lazyproperty
     def image(self):
-        """Image    this rune's image"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return Image(self.data.image) if self.data.image else None
 
     @property
     def name(self):
-        """str    the name of this rune"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.name
 
     @cassiopeia.type.core.common.lazyproperty
     def meta_data(self):
-        """MetaData    meta data about this rune"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return MetaData(self.data.rune) if self.data.rune else None
 
     @property
     def sanitized_description(self):
-        """str    the sanitized description of this rune"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.sanitizedDescription
 
     @cassiopeia.type.core.common.lazyproperty
     def stats(self):
-        """ItemStats    the stats for this rune"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return ItemStats(self.data.stats) if self.data.stats else None
 
     @property
     def tags(self):
-        """list<str>    this rune's tags for sorting runes"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.tags
 
     @property
     def rune_type(self):
-        """str    what type of rune this is"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         try:
             return next(iter(set(self.tags).intersection({"mark", "seal", "glyph", "quintessence"})))
         except:
@@ -1593,117 +2269,186 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def cooldowns(self):
-        """list<float>    the cooldowns of this spell level-by-level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.cooldown
 
     @property
     def cooldown_burn(self):
-        """str    a string formatted list of the spell's cooldowns by level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.cooldownBurn
 
     @property
     def costs(self):
-        """list<int>    the cost of the spell level-by-level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.cost
 
     @property
     def cost_burn(self):
-        """str    a string formatted list of the spell's cost by level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.costBurn
 
     @property
     def cost_type(self):
-        """str    what the spell costs to use (e.g. mana or energy)"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.costType
 
     @property
     def description(self):
-        """str    the description of the spell"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.description
 
     @property
     def effects(self):
-        """list<list<float>>    the level-by-level replacements for {{ e# }} tags in other values"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.effect
 
     @property
     def effect_burn(self):
-        """list<str>    the string formatted replacements for {{ e# }} tags in other values by level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.effectBurn
 
     @property
     def id(self):
-        """int    the ID of this spell"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.id
 
     @cassiopeia.type.core.common.lazyproperty
     def image(self):
-        """Image    the image for this spell"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return Image(self.data.image) if self.data.image else None
 
     @property
     def key(self):
-        """str    this spell's identifying key"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.key
 
     @cassiopeia.type.core.common.lazyproperty
     def leveltip(self):
-        """LevelTip    the level-up tips for this spell"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return LevelTip(self.data.leveltip) if self.data.leveltip else None
 
     @property
     def max_rank(self):
-        """int    the maximum level for this spell"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.maxrank
 
     @property
     def modes(self):
-        """list<GameMode>    the game modes that this spell is allowed on"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return [cassiopeia.type.core.common.GameMode(mode) for mode in self.data.modes]
 
     @property
     def name(self):
-        """str    the name of this spell"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.name
 
     @property
     def range(self):
-        """self | list<int>    the level-by-level range of this spell"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.range
 
     @property
     def range_burn(self):
-        """str    the string formatted range of this spell by level"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.rangeBurn
 
     @property
     def resource(self):
-        """str    what resource this spell uses"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.resource
 
     @property
     def sanitized_description(self):
-        """str    the sanitized description of this spell"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.sanitizedDescription
 
     @property
     def sanitized_tooltip(self):
-        """str    the sanitized tooltip for this spell"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.sanitizedTooltip
 
     @property
     def summoner_level(self):
-        """int    the summoner level required to use this spell"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.summonerLevel
 
     @property
     def tooltip(self):
-        """str    the tooltip for this spell"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return self.data.tooltip
 
     @cassiopeia.type.core.common.lazyproperty
     def variables(self):
-        """SpellVariables    the variables that determine this spell's effects"""
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
         return [SpellVariables(svars) for svars in self.data.vars]
 
     def __replace_variables(self, text, level):
@@ -1718,21 +2463,17 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.immutablemethod
     def tooltip_for_level(self, level):
-        """Gets the tooltip for this spell for a specific level
-
-        level     int    the level of the champion
-
-        return    str    the tooltip for that rank/level
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
         """
         return self.__replace_variables(self.tooltip, level)
 
     @cassiopeia.type.core.common.immutablemethod
     def sanitized_tooltip_for_level(self, level):
-        """Gets the sanitized tooltip for this spell for a specific level
-
-        level     int    the level of the champion
-
-        return    str    the sanitized tooltip for that rank/level
+        """
+        Returns:
+            list<float>: the coefficients for determining spell scaling
         """
         return self.__replace_variables(self.sanitized_tooltip, level)
 

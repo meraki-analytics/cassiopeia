@@ -50,17 +50,20 @@ def post(request, payload, params={}, include_base=True, tournament=False):
 
 
 def make_request(request, method, params={}, payload=None, static=False, include_base=True, tournament=False):
-    """Makes a rate-limited HTTP request to the Riot API and returns the result
+    """
+    Makes a rate-limited HTTP request to the Riot API and returns the result
 
-    request         str                                 the request string
-    method          str                                 the HTTP method to use
-    params          dict<str, any>                      the path parameters to send with the request (default {})
-    payload         CassiopeiaDto | CassiopeiaObject    the payload to send with the POST or PUT request (default None)
-    static          bool                                whether this is a call to a static (non-rate-limited) API (default False)
-    include_base    bool                                whether to prepend https://{server}.api.pvp.net/api/lol/{region}/ to the request (default True)
-    tournament      bool                                whether to use the tournament API rate limit (default False)
+    Args:
+        request (str): the request string
+        method (str): the HTTP method to use
+        params (dict<str, any>): the path parameters to send with the request (default {})
+        payload (CassiopeiaDto | CassiopeiaObject): the payload to send with the POST or PUT request (default None)
+        static (bool): whether this is a call to a static (non-rate-limited) API (default False)
+        include_base (bool): whether to prepend https://{server}.api.pvp.net/api/lol/{region}/ to the request (default True)
+        tournament (bool): whether to use the tournament API rate limit (default False)
 
-    return          dict                                the JSON response from the Riot API as a dict
+    Returns:
+        dict: the JSON response from the Riot API as a dict
     """
     if (not tournament and not api_key) or (tournament and not tournament_api_key):
         raise cassiopeia.type.api.exception.CassiopeiaException("API Key must be set before the API can be queried.")
@@ -101,13 +104,16 @@ def make_request(request, method, params={}, payload=None, static=False, include
 
 
 def execute_request(url, method, payload=""):
-    """Executes an HTTP request and returns the result in a string
+    """
+    Executes an HTTP request and returns the result in a string
 
-    url        str    the full URL to send a request to
-    method     str    the HTTP method to use
-    payload    str    the json payload to send if appropriate for HTTP method (default "")
+    Args:
+        url (str): the full URL to send a request to
+        method (str): the HTTP method to use
+        payload (str): the json payload to send if appropriate for HTTP method (default "")
 
-    return     str    the content returned by the server
+    Returns:
+        str: the content returned by the server
     """
     if print_calls:
         print(url)

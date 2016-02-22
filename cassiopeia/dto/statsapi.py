@@ -3,12 +3,15 @@ import cassiopeia.type.dto.stats
 
 
 def get_ranked_stats(summoner_id, season=None):
-    """https://developer.riotgames.com/api/methods#!/1018/3452
+    """
+    https://developer.riotgames.com/api/methods#!/1018/3452
 
-    summoner_id    int            the summoner to get ranked stats for
-    season         str            the season to get ranked stats for ("SEASON2015", "SEASON2014", "SEASON3") (default None)
+    Args:
+        summoner_id (int): the summoner to get ranked stats for
+        season (str): the season to get ranked stats for ("SEASON2015", "SEASON2014", "SEASON3") (default None)
 
-    return         RankedStats    the ranked stats for the summoner and season specified
+    Returns:
+        RankedStats: the ranked stats for the summoner and season specified
     """
     request = "{version}/stats/by-summoner/{id_}/ranked".format(version=cassiopeia.dto.requests.api_versions["stats"], id_=summoner_id)
 
@@ -20,12 +23,15 @@ def get_ranked_stats(summoner_id, season=None):
 
 
 def get_stats(summoner_id, season=None):
-    """https://developer.riotgames.com/api/methods#!/1018/3453
+    """
+    https://developer.riotgames.com/api/methods#!/1018/3453
 
-    summoner_id    int                       the summoner to get ranked stats for
-    season         str                       the season to get ranked stats for ("SEASON2015", "SEASON2014", "SEASON3") (default None)
+    Args:
+        summoner_id (int): the summoner to get ranked stats for
+        season (str): the season to get ranked stats for ("SEASON2015", "SEASON2014", "SEASON3") (default None)
 
-    return         PlayerStatsSummaryList    the ranked stats for the summoner and season specified
+    Returns:
+        PlayerStatsSummaryList: the ranked stats for the summoner and season specified
     """
     request = "{version}/stats/by-summoner/{id_}/summary".format(version=cassiopeia.dto.requests.api_versions["stats"], id_=summoner_id)
 

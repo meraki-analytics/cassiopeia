@@ -22,11 +22,14 @@ def __get_mastery_pages_by_id(ids):
 
 
 def get_mastery_pages(summoners):
-    """Get the mastery pages for (a) summoner(s).
+    """
+    Get the mastery pages for (a) summoner(s).
 
-    ids       Summoner | list<Summoner>                      the summoner(s) to get mastery pages for
+    Args:
+        ids (Summoner | list<Summoner>): the summoner(s) to get mastery pages for
 
-    return    list<MasteryPage> | list<list<MasteryPage>>    the requested summoner(s)' mastery pages
+    Returns:
+        list<MasteryPage> | list<list<MasteryPage>>: the requested summoner(s)' mastery pages
     """
     if isinstance(summoners, list):
         return __get_mastery_pages_by_id([summoner.id for summoner in summoners])
@@ -51,11 +54,14 @@ def __get_rune_pages_by_id(ids):
 
 
 def get_rune_pages(summoners):
-    """Get the rune pages for (a) summoner(s).
+    """
+    Get the rune pages for (a) summoner(s).
 
-    ids       Summoner | list<Summoner>                the summoner(s) to get rune pages for
+    Args:
+        ids (Summoner | list<Summoner>): the summoner(s) to get rune pages for
 
-    return    list<RunePage> | list<list<RunePage>>    the requested summoner(s)' rune pages
+    Returns:
+        list<RunePage> | list<list<RunePage>>: the requested summoner(s)' rune pages
     """
     if isinstance(summoners, list):
         return __get_rune_pages_by_id([summoner.id for summoner in summoners])
@@ -64,11 +70,14 @@ def get_rune_pages(summoners):
 
 
 def get_summoner_by_id(id_):
-    """Gets a summoner by ID
+    """
+    Gets a summoner by ID
 
-    id_       int         the ID of the summoner
+    Args:
+        id_ (int): the ID of the summoner
 
-    return    Summoner    the summoner
+    Returns:
+        Summoner: the summoner
     """
     summoner = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, id_, "id")
     if summoner:
@@ -86,11 +95,14 @@ def get_summoner_by_id(id_):
 
 
 def get_summoner_by_name(name):
-    """Gets a summoner by name
+    """
+    Gets a summoner by name
 
-    name      str         the name of the summoner
+    Args:
+        name (str): the name of the summoner
 
-    return    Summoner    the summoner
+    Returns:
+        Summoner: the summoner
     """
     summoner = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, name, "name")
     if summoner:
@@ -108,11 +120,14 @@ def get_summoner_by_name(name):
 
 
 def get_summoners_by_id(ids):
-    """Gets a bunch of summoners by ID
+    """
+    Gets a bunch of summoners by ID
 
-    ids       list<int>         the IDs of the summoners
+    Args:
+        ids (list<int>): the IDs of the summoners
 
-    return    list<Summoner>    the summoners
+    Returns:
+        list<Summoner>: the summoners
     """
     summoners = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, ids, "id")
 
@@ -144,11 +159,14 @@ def get_summoners_by_id(ids):
 
 
 def get_summoners_by_name(names):
-    """Gets a bunch of summoners by name
+    """
+    Gets a bunch of summoners by name
 
-    names     list<str>         the names of the summoners
+    Args:
+        names (list<str>): the names of the summoners
 
-    return    list<Summoner>    the summoners
+    Returns:
+        list<Summoner>: the summoners
     """
     summoners = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, names, "name")
 
@@ -180,11 +198,14 @@ def get_summoners_by_name(names):
 
 
 def get_summoner_name(id_):
-    """Gets the name of a summoner by ID
+    """
+    Gets the name of a summoner by ID
 
-    id_       id     the summoner's ID
+    Args:
+        id_ (id): the summoner's ID
 
-    return    str    the summoner's name
+    Returns:
+        str: the summoner's name
     """
     summoner = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, id_, "id")
     if summoner:
@@ -194,11 +215,14 @@ def get_summoner_name(id_):
 
 
 def get_summoner_names(ids):
-    """Gets the names of a bunch of summoners by ID
+    """
+    Gets the names of a bunch of summoners by ID
 
-    ids       list<id>     the summoners' IDs
+    Args:
+        ids (list<id>): the summoners' IDs
 
-    return    list<str>    the summoners' names
+    Returns:
+        list<str>: the summoners' names
     """
     summoners = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, ids, "id")
     summoners = [summoner.name if summoner else "" for summoner in summoners]

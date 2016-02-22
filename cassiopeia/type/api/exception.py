@@ -11,8 +11,9 @@ class CassiopeiaException(Exception):
 
 class APIError(Exception):
     """
-    message       str    the error message
-    error_code    int    the HTTP error code that was received
+    Args:
+        message (str): the error message
+        error_code (int): the HTTP error code that was received
     """
     def __init__(self, message, error_code):
         super().__init__(message)

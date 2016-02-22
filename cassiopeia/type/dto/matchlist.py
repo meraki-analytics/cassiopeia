@@ -9,10 +9,11 @@ if cassiopeia.type.dto.common.sqlalchemy_imported:
 @cassiopeia.type.core.common.inheritdocs
 class MatchList(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    endIndex      int                     the last match index from history returned
-    matches       list<MatchReference>    list of matches from the player's history
-    startIndex    int                     the first match index from history returned
-    totalGames    int                     the number of games provided
+    Args:
+        endIndex (int): the last match index from history returned
+        matches (list<MatchReference>): list of matches from the player's history
+        startIndex (int): the first match index from history returned
+        totalGames (int): the number of games provided
     """
     def __init__(self, dictionary):
         self.endIndex = dictionary.get("endIndex", 0)
@@ -22,7 +23,9 @@ class MatchList(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def champion_ids(self):
-        """Gets all champion IDs contained in this object"""
+        """
+        Gets all champion IDs contained in this object
+        """
         ids = set()
         for m in self.matches:
             ids.add(m.champion)
@@ -32,14 +35,7 @@ class MatchList(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class MatchReference(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    champion      int    the target player's champion ID
-    lane          str    the lane that the player played in. Legal values: MID, MIDDLE, TOP, JUNGLE, BOT, BOTTOM
-    matchId       int    the match ID
-    platformId    str    the platform the match was played on
-    queue         str    the queue of the match. Legal values: RANKED_SOLO_5x5, RANKED_TEAM_3x3, RANKED_TEAM_5x5
-    role          str    the role that the player played. Legal values: DUO, NONE, SOLO, DUO_CARRY, DUO_SUPPORT
-    season        str    the season the match was played in. Legal values: PRESEASON3, SEASON3, PRESEASON2014, SEASON2014, PRESEASON2015, SEASON2015
-    timestamp     int    the timestamp for the match
+    Gets all champion IDs contained in this object
     """
     def __init__(self, dictionary):
         self.champion = dictionary.get("champion", 0)

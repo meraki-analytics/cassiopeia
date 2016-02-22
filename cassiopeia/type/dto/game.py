@@ -10,84 +10,85 @@ if cassiopeia.type.dto.common.sqlalchemy_imported:
 @cassiopeia.type.core.common.inheritdocs
 class RawStats(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    assists                            int     number of assists
-    barracksKilled                     int     number of enemy inhibitors killed
-    championsKilled                    int     number of champions killed
-    combatPlayerScore                  int     the combat player score
-    consumablesPurchased               int     number of consumables purchased
-    damageDealtPlayer                  int     total damage dealt
-    doubleKills                        int     number of double kills
-    firstBlood                         int     first blood
-    gold                               int     amount of gold
-    goldEarned                         int     total gold earned
-    goldSpent                          int     total gold spent
-    item0                              int     ID of item 0
-    item1                              int     ID of item 1
-    item2                              int     ID of item 2
-    item3                              int     ID of item 3
-    item4                              int     ID of item 4
-    item5                              int     ID of item 5
-    item6                              int     ID of item 6
-    itemsPurchased                     int     number of items purchased
-    killingSprees                      int     number of killing sprees
-    largestCriticalStrike              int     largest critical strike
-    largestKillingSpree                int     largest killing spree
-    largestMultiKill                   int     largest multi kill
-    legendaryItemsCreated              int     number of tier 3 items built
-    level                              int     level
-    magicDamageDealtPlayer             int     total magic damage dealt
-    magicDamageDealtToChampions        int     total magic damage dealt to champions
-    magicDamageTaken                   int     total magic damage taken
-    minionsDenied                      int     total minions denied
-    minionsKilled                      int     total minions killed
-    neutralMinionsKilled               int     total neutral minions killed
-    neutralMinionsKilledEnemyJungle    int     neutral minions killed in enemy jungle
-    neutralMinionsKilledYourJungle     int     neutral minions killed in own jungle
-    nexusKilled                        bool    flag specifying if the summoner got the killing blow on the nexus
-    nodeCapture                        int     number of nodes captured
-    nodeCaptureAssist                  int     number of node capture assists
-    nodeNeutralize                     int     number of nodes neutralized
-    nodeNeutralizeAssist               int     number of node neutralization assists
-    numDeaths                          int     number of deaths
-    numItemsBought                     int     number of items bought
-    objectivePlayerScore               int     objective player score
-    pentaKills                         int     number of penta kills
-    physicalDamageDealtPlayer          int     total physical damage dealt
-    physicalDamageDealtToChampions     int     total physical damage dealt to champions
-    physicalDamageTaken                int     total physical damage taken
-    playerPosition                     int     player position
-    playerRole                         int     player role
-    quadraKills                        int     number of quadra kills
-    sightWardsBought                   int     number of sight wards bought
-    spell1Cast                         int     number of times first champion spell was cast
-    spell2Cast                         int     number of times second champion spell was cast
-    spell3Cast                         int     number of times third champion spell was cast
-    spell4Cast                         int     number of times fourth champion spell was cast
-    summonSpell1Cast                   int     number of times summoner spell 1 was cast
-    summonSpell2Cast                   int     number of times summoner spell 2 was cast
-    superMonsterKilled                 int     number of super monsters killed
-    team                               int     team
-    teamObjective                      int     team objectives
-    timePlayed                         int     time played
-    totalDamageDealt                   int     total damage dealt
-    totalDamageDealtToChampions        int     total damage dealt to champions
-    totalDamageTaken                   int     total damage taken
-    totalHeal                          int     total healing done
-    totalPlayerScore                   int     total player score
-    totalScoreRank                     int     total score rank
-    totalTimeCrowdControlDealt         int     total crowd control time dealt
-    totalUnitsHealed                   int     number of units healed
-    tripleKills                        int     number of triple kills
-    trueDamageDealtPlayer              int     total true damage dealt
-    trueDamageDealtToChampions         int     total true damage dealt to champions
-    trueDamageTaken                    int     total true damage taken
-    turretsKilled                      int     number of turrets killed
-    unrealKills                        int     number of unreal kills
-    victoryPointTotal                  int     total victory points
-    visionWardsBought                  int     number of vision wards bought
-    wardKilled                         int     number of wards killed
-    wardPlaced                         int     number of wards placed
-    win                                bool    flag specifying whether or not this game was won
+    Args:
+        assists (int): number of assists
+        barracksKilled (int): number of enemy inhibitors killed
+        championsKilled (int): number of champions killed
+        combatPlayerScore (int): the combat player score
+        consumablesPurchased (int): number of consumables purchased
+        damageDealtPlayer (int): total damage dealt
+        doubleKills (int): number of double kills
+        firstBlood (int): first blood
+        gold (int): amount of gold
+        goldEarned (int): total gold earned
+        goldSpent (int): total gold spent
+        item0 (int): ID of item 0
+        item1 (int): ID of item 1
+        item2 (int): ID of item 2
+        item3 (int): ID of item 3
+        item4 (int): ID of item 4
+        item5 (int): ID of item 5
+        item6 (int): ID of item 6
+        itemsPurchased (int): number of items purchased
+        killingSprees (int): number of killing sprees
+        largestCriticalStrike (int): largest critical strike
+        largestKillingSpree (int): largest killing spree
+        largestMultiKill (int): largest multi kill
+        legendaryItemsCreated (int): number of tier 3 items built
+        level (int): level
+        magicDamageDealtPlayer (int): total magic damage dealt
+        magicDamageDealtToChampions (int): total magic damage dealt to champions
+        magicDamageTaken (int): total magic damage taken
+        minionsDenied (int): total minions denied
+        minionsKilled (int): total minions killed
+        neutralMinionsKilled (int): total neutral minions killed
+        neutralMinionsKilledEnemyJungle (int): neutral minions killed in enemy jungle
+        neutralMinionsKilledYourJungle (int): neutral minions killed in own jungle
+        nexusKilled (bool): flag specifying if the summoner got the killing blow on the nexus
+        nodeCapture (int): number of nodes captured
+        nodeCaptureAssist (int): number of node capture assists
+        nodeNeutralize (int): number of nodes neutralized
+        nodeNeutralizeAssist (int): number of node neutralization assists
+        numDeaths (int): number of deaths
+        numItemsBought (int): number of items bought
+        objectivePlayerScore (int): objective player score
+        pentaKills (int): number of penta kills
+        physicalDamageDealtPlayer (int): total physical damage dealt
+        physicalDamageDealtToChampions (int): total physical damage dealt to champions
+        physicalDamageTaken (int): total physical damage taken
+        playerPosition (int): player position
+        playerRole (int): player role
+        quadraKills (int): number of quadra kills
+        sightWardsBought (int): number of sight wards bought
+        spell1Cast (int): number of times first champion spell was cast
+        spell2Cast (int): number of times second champion spell was cast
+        spell3Cast (int): number of times third champion spell was cast
+        spell4Cast (int): number of times fourth champion spell was cast
+        summonSpell1Cast (int): number of times summoner spell 1 was cast
+        summonSpell2Cast (int): number of times summoner spell 2 was cast
+        superMonsterKilled (int): number of super monsters killed
+        team (int): team
+        teamObjective (int): team objectives
+        timePlayed (int): time played
+        totalDamageDealt (int): total damage dealt
+        totalDamageDealtToChampions (int): total damage dealt to champions
+        totalDamageTaken (int): total damage taken
+        totalHeal (int): total healing done
+        totalPlayerScore (int): total player score
+        totalScoreRank (int): total score rank
+        totalTimeCrowdControlDealt (int): total crowd control time dealt
+        totalUnitsHealed (int): number of units healed
+        tripleKills (int): number of triple kills
+        trueDamageDealtPlayer (int): total true damage dealt
+        trueDamageDealtToChampions (int): total true damage dealt to champions
+        trueDamageTaken (int): total true damage taken
+        turretsKilled (int): number of turrets killed
+        unrealKills (int): number of unreal kills
+        victoryPointTotal (int): total victory points
+        visionWardsBought (int): number of vision wards bought
+        wardKilled (int): number of wards killed
+        wardPlaced (int): number of wards placed
+        win (bool): flag specifying whether or not this game was won
     """
     def __init__(self, dictionary):
         self.assists = dictionary.get("assists", 0)
@@ -173,9 +174,10 @@ class RawStats(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class Player(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    championId    int    champion id associated with player
-    summonerId    int    summoner id associated with player
-    teamId        int    team id associated with player
+    Args:
+        championId (int): champion id associated with player
+        summonerId (int): summoner id associated with player
+        teamId (int): team id associated with player
     """
     def __init__(self, dictionary):
         self.championId = dictionary.get("championId", 0)
@@ -186,21 +188,22 @@ class Player(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class Game(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    championId       int             champion ID associated with game
-    createDate       int             date that end game data was recorded, specified as epoch milliseconds
-    fellowPlayers    list<Player>    other players associated with the game
-    gameId           int             game ID
-    gameMode         str             game mode (Legal values: CLASSIC, ODIN, ARAM, TUTORIAL, ONEFORALL, ASCENSION, FIRSTBLOOD, KINGPORO)
-    gameType         str             game type (Legal values: CUSTOM_GAME, MATCHED_GAME, TUTORIAL_GAME)
-    invalid          bool            invalid flag
-    ipEarned         int             IP Earned
-    level            int             level
-    mapId            int             map ID
-    spell1           int             ID of first summoner spell
-    spell2           int             ID of second summoner spell
-    stats            RawStats        statistics associated with the game for this summoner
-    subType          str             game sub-type (Legal values: NONE, NORMAL, BOT, RANKED_SOLO_5x5, RANKED_PREMADE_3x3, RANKED_PREMADE_5x5, ODIN_UNRANKED, RANKED_TEAM_3x3, RANKED_TEAM_5x5, NORMAL_3x3, BOT_3x3, CAP_5x5, ARAM_UNRANKED_5x5, ONEFORALL_5x5, FIRSTBLOOD_1x1, FIRSTBLOOD_2x2, SR_6x6, URF, URF_BOT, NIGHTMARE_BOT, ASCENSION, HEXAKILL, KING_PORO, COUNTER_PICK)
-    teamId           int             team ID associated with game. Team ID 100 is blue team. Team ID 300 is purple team.
+    Args:
+        championId (int): champion ID associated with game
+        createDate (int): date that end game data was recorded, specified as epoch milliseconds
+        fellowPlayers (list<Player>): other players associated with the game
+        gameId (int): game ID
+        gameMode (str): game mode (Legal values: CLASSIC, ODIN, ARAM, TUTORIAL, ONEFORALL, ASCENSION, FIRSTBLOOD, KINGPORO)
+        gameType (str): game type (Legal values: CUSTOM_GAME, MATCHED_GAME, TUTORIAL_GAME)
+        invalid (bool): invalid flag
+        ipEarned (int): IP Earned
+        level (int): level
+        mapId (int): map ID
+        spell1 (int): ID of first summoner spell
+        spell2 (int): ID of second summoner spell
+        stats (RawStats): statistics associated with the game for this summoner
+        subType (str): game sub-type (Legal values: NONE, NORMAL, BOT, RANKED_SOLO_5x5, RANKED_PREMADE_3x3, RANKED_PREMADE_5x5, ODIN_UNRANKED, RANKED_TEAM_3x3, RANKED_TEAM_5x5, NORMAL_3x3, BOT_3x3, CAP_5x5, ARAM_UNRANKED_5x5, ONEFORALL_5x5, FIRSTBLOOD_1x1, FIRSTBLOOD_2x2, SR_6x6, URF, URF_BOT, NIGHTMARE_BOT, ASCENSION, HEXAKILL, KING_PORO, COUNTER_PICK)
+        teamId (int): team ID associated with game. Team ID 100 is blue team. Team ID 300 is purple team.
     """
     def __init__(self, dictionary):
         self.championId = dictionary.get("championId", 0)
@@ -222,7 +225,9 @@ class Game(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def champion_ids(self):
-        """Gets all champion IDs contained in this object"""
+        """
+        Gets all champion IDs contained in this object
+        """
         ids = set()
         ids.add(self.championId)
         for p in self.fellowPlayers:
@@ -231,7 +236,9 @@ class Game(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def summoner_ids(self):
-        """Gets all summoner IDs contained in this object"""
+        """
+        Gets all champion IDs contained in this object
+        """
         ids = set()
         for p in self.fellowPlayers:
             if p.summonerId:
@@ -240,7 +247,9 @@ class Game(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def summoner_spell_ids(self):
-        """Gets all summoner spell IDs contained in this object"""
+        """
+        Gets all champion IDs contained in this object
+        """
         ids = set()
         ids.add(self.spell1)
         ids.add(self.spell2)
@@ -248,7 +257,9 @@ class Game(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def item_ids(self):
-        """Gets all item IDs contained in this object"""
+        """
+        Gets all champion IDs contained in this object
+        """
         ids = set()
         s = self.stats
         if s.item0:
@@ -271,8 +282,7 @@ class Game(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class RecentGames(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    games         list<Game>    collection of recent games played (max 10)
-    summonerId    int           summoner ID
+    Gets all champion IDs contained in this object
     """
     def __init__(self, dictionary):
         self.games = [(Game(game) if not isinstance(game, Game) else game) for game in dictionary.get("games", []) if game]
@@ -280,7 +290,9 @@ class RecentGames(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def champion_ids(self):
-        """Gets all champion IDs contained in this object"""
+        """
+        Gets all summoner IDs contained in this object
+        """
         ids = set()
         for game in self.games:
             ids |= game.champion_ids
@@ -288,7 +300,9 @@ class RecentGames(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def summoner_ids(self):
-        """Gets all summoner IDs contained in this object"""
+        """
+        Gets all summoner IDs contained in this object
+        """
         ids = set()
         ids.add(self.summonerId)
         for game in self.games:
@@ -297,7 +311,9 @@ class RecentGames(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def summoner_spell_ids(self):
-        """Gets all sumoner spell IDs contained in this object"""
+        """
+        Gets all summoner IDs contained in this object
+        """
         ids = set()
         for game in self.games:
             ids |= game.summoner_spell_ids
@@ -305,7 +321,9 @@ class RecentGames(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def item_ids(self):
-        """Gets all item IDs contained in this object"""
+        """
+        Gets all summoner IDs contained in this object
+        """
         ids = set()
         for game in self.games:
             ids |= game.item_ids

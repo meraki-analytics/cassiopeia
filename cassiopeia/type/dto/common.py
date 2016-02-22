@@ -10,19 +10,21 @@ except ImportError:
 
 
 class CassiopeiaDto(object):
-    """A Python representation of an object returned by the RiotAPI"""
+    """
+    A Python representation of an object returned by the RiotAPI
+    """
 
     def __init__(self, dictionary):
         """
-        dictionary    dict    the JSON data returned from the Riot API as a dict
+        A Python representation of an object returned by the RiotAPI
         """
         for k, v in dictionary.items():
             setattr(self, k, v)
 
     def to_json(self, **kwargs):
-        """Gets a JSON representation of the object
-
-        return    str    a JSON representation of the object
+        """
+        Args:
+            dictionary (dict): the JSON data returned from the Riot API as a dict
         """
         dictionary = {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
         default = kwargs.pop("default", lambda o: {k: v for k, v in o.__dict__.items() if not k.startswith("_")})
@@ -47,12 +49,19 @@ class CassiopeiaDto(object):
 
 
 class CassiopeiaParametersDto(CassiopeiaDto):
-    """Parameters for a POST or PUT request to the Riot API"""
+    """
+    Gets a JSON representation of the object
+
+    Returns:
+        str: a JSON representation of the object
+    """
 
     def to_json(self, **kwargs):
-        """Gets a JSON representation of the object
+        """
+        Gets a JSON representation of the object
 
-        return    str    a JSON representation of the object
+        Returns:
+            str: a JSON representation of the object
         """
         dictionary = {k: v for k, v in self.__dict__.items() if not k.startswith("_") and v}
         default = kwargs.pop("default", lambda o: {k: v for k, v in o.__dict__.items() if not k.startswith("_") and v})
@@ -65,7 +74,9 @@ if sqlalchemy_imported:
     BaseDB = sqlalchemy.ext.declarative.declarative_base()
 
     class JSONEncoded(sqlalchemy.types.TypeDecorator):
-        """JSON encoded storage for SQLAlchemy"""
+        """
+        Parameters for a POST or PUT request to the Riot API
+        """
 
         impl = sqlalchemy.Text
 
