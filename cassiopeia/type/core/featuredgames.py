@@ -14,37 +14,58 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def bot(self):
-        """bool    whether the participant is a bot"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return self.data.bot
 
     @property
     def champion(self):
-        """Champion    the champion this participant is playing"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return cassiopeia.riotapi.get_champion_by_id(self.data.championId) if self.data.championId else None
 
     @property
     def profile_icon_id(self):
-        """int    the participant's profile icon's id"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return self.data.profileiconid
 
     @property
     def summoner_spell_d(self):
-        """SummonerSpell    the participant's first summonerspell"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return cassiopeia.riotapi.get_summoner_spell(self.data.spell1Id) if self.data.spell1Id else None
 
     @property
     def summoner_spell_f(self):
-        """SummonerSpell    the participant's second summonerspell"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return cassiopeia.riotapi.get_summoner_spell(self.data.spell2Id) if self.data.spell2Id else None
 
     @property
     def summoner_name(self):
-        """str    the participant's summoner name"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return self.data.summonerName
 
     @property
     def side(self):
-        """Side    which side of the map the participant is on"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return cassiopeia.type.core.common.side(self.data.teamId) if self.data.teamId else None
 
 
@@ -57,17 +78,26 @@ class Ban(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def champion(self):
-        """Champion    the champion that was banned"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return cassiopeia.riotapi.get_champion_by_id(self.data.championId) if self.data.championId else None
 
     @property
     def pick_turn(self):
-        """int    which pick turn this ban was on"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return self.data.pickTurn
 
     @property
     def side(self):
-        """Side    which side banned this champion"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.teamId else None
 
 
@@ -98,57 +128,90 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def bans(self):
-        """list<Ban>    the bans for this game"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return [Ban(ban) for ban in self.data.bannedChampions]
 
     @property
     def id(self):
-        """int    the game id"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return self.data.gameId
 
     @cassiopeia.type.core.common.lazyproperty
     def duration(self):
-        """timedelta    current duration of the game"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return datetime.timedelta(seconds=self.data.gameLength)
 
     @property
     def mode(self):
-        """GameMode    what game mode is being played in this game"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return cassiopeia.type.core.common.gamemode(self.data.gameMode) if self.data.gameMode else None
 
     @property
     def queue(self):
-        """Queue    the queue type for this game"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return cassiopeia.type.core.common.queue.for_id(self.data.gameQueueConfigId) if self.data.gameQueueConfigId else None
 
     @cassiopeia.type.core.common.lazyproperty
     def creation(self):
-        """datetime    the creation timestamp for this game"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return datetime.datetime.utcfromtimestamp(self.data.gameStartTime / 1000) if self.data.gameStartTime else None
 
     @property
     def type(self):
-        """GameType    the game type"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return cassiopeia.type.core.common.gametype(self.data.gameType) if self.data.gameType else None
 
     @property
     def map(self):
-        """Map    the map for this game"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return cassiopeia.type.core.common.map(self.data.mapId) if self.data.mapId else None
 
     @property
     def observer_token(self):
-        """str    the token associated with the observer for this game"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return self.data.observers.encryptionKey
 
     @cassiopeia.type.core.common.lazyproperty
     def participants(self):
-        """list<Participant>    the game's participants"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return [Participant(participant) for participant in self.data.participants]
 
     @property
     def platform(self):
-        """Platform    which platform (ie server) the game is being played on"""
+        """
+        Returns:
+            bool: whether the participant is a bot
+        """
         return cassiopeia.type.core.common.Platform(self.data.platformId) if self.data.platformId else None
 
 

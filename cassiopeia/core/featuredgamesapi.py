@@ -4,9 +4,11 @@ import cassiopeia.type.core.featuredgames
 
 
 def get_featured_games():
-    """Gets the current featured game list
+    """
+    Gets the current featured game list
 
-    return    list<Game>    the featured games
+    Returns:
+        list<Game>: the featured games
     """
     games = cassiopeia.dto.featuredgamesapi.get_featured_games()
 

@@ -10,8 +10,9 @@ if cassiopeia.type.dto.common.sqlalchemy_imported:
 @cassiopeia.type.core.common.inheritdocs
 class RunePages(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    pages         list<RunePage>    collection of rune pages associated with the summoner
-    summonerId    int               summoner ID
+    Args:
+        pages (list<RunePage>): collection of rune pages associated with the summoner
+        summonerId (int): summoner ID
     """
     def __init__(self, dictionary):
         self.pages = [(RunePage(p) if not isinstance(p, RunePage) else p) for p in dictionary.get("pages", []) if p]
@@ -19,7 +20,9 @@ class RunePages(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def rune_ids(self):
-        """Gets all rune IDs contained in this object"""
+        """
+        Gets all rune IDs contained in this object
+        """
         ids = set()
         for p in self.pages:
             ids = ids | p.rune_ids
@@ -29,10 +32,7 @@ class RunePages(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class RunePage(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    current    bool              indicates if the page is the current page
-    id         int               rune page ID
-    name       str               rune page name
-    slots      list<RuneSlot>    collection of rune slots associated with the rune page
+    Gets all rune IDs contained in this object
     """
     def __init__(self, dictionary):
         self.current = dictionary.get("current", False)
@@ -42,7 +42,13 @@ class RunePage(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def rune_ids(self):
-        """Gets all rune IDs contained in this object"""
+        """
+        Args:
+            current (bool): indicates if the page is the current page
+            id (int): rune page ID
+            name (str): rune page name
+            slots (list<RuneSlot>): collection of rune slots associated with the rune page
+        """
         ids = set()
         for s in self.slots:
             if s.runeId:
@@ -53,8 +59,11 @@ class RunePage(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class RuneSlot(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    runeId        int    rune ID associated with the rune slot. For static information correlating to rune IDs, please refer to the LoL Static Data API.
-    runeSlotId    int    rune slot ID.
+    Args:
+        current (bool): indicates if the page is the current page
+        id (int): rune page ID
+        name (str): rune page name
+        slots (list<RuneSlot>): collection of rune slots associated with the rune page
     """
     def __init__(self, dictionary):
         self.runeId = dictionary.get("runeId", 0)
@@ -64,8 +73,7 @@ class RuneSlot(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class MasteryPages(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    pages         list<MasteryPage>    collection of mastery pages associated with the summoner
-    summonerId    int                  summoner ID
+    Gets all rune IDs contained in this object
     """
     def __init__(self, dictionary):
         self.pages = [(MasteryPage(p) if not isinstance(p, MasteryPage) else p) for p in dictionary.get("pages", []) if p]
@@ -73,7 +81,11 @@ class MasteryPages(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def mastery_ids(self):
-        """Gets all mastery IDs contained in this object"""
+        """
+        Args:
+            runeId (int): rune ID associated with the rune slot. For static information correlating to rune IDs, please refer to the LoL Static Data API.
+            runeSlotId (int): rune slot ID.
+        """
         ids = set()
         for p in self.pages:
             ids = ids | p.mastery_ids
@@ -83,10 +95,9 @@ class MasteryPages(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class MasteryPage(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    current      bool                indicates if the mastery page is the current mastery page
-    id           int                 mastery page ID
-    masteries    list<MasteryDto>    collection of masteries associated with the mastery page
-    name         str                 mastery page name.
+    Args:
+        runeId (int): rune ID associated with the rune slot. For static information correlating to rune IDs, please refer to the LoL Static Data API.
+        runeSlotId (int): rune slot ID.
     """
     def __init__(self, dictionary):
         self.current = dictionary.get("current", False)
@@ -96,7 +107,11 @@ class MasteryPage(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def mastery_ids(self):
-        """Gets all mastery IDs contained in this object"""
+        """
+        Args:
+            pages (list<MasteryPage>): collection of mastery pages associated with the summoner
+            summonerId (int): summoner ID
+        """
         ids = set()
         for m in self.masteries:
             if m.id:
@@ -107,8 +122,9 @@ class MasteryPage(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    id      int    mastery ID. For static information correlating to masteries, please refer to the LoL Static Data API.
-    rank    int    mastery rank (i.e. the number of points put into this mastery)
+    Args:
+        pages (list<MasteryPage>): collection of mastery pages associated with the summoner
+        summonerId (int): summoner ID
     """
     def __init__(self, dictionary):
         self.id = dictionary.get("id", 0)
@@ -118,11 +134,7 @@ class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class Summoner(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    id               int    summoner ID
-    name             str    summoner name
-    profileIconId    int    ID of the summoner icon associated with the summoner
-    revisionDate     int    date summoner was last modified specified as epoch milliseconds. The following events will update this timestamp: profile icon change, playing the tutorial or advanced tutorial, finishing a game, summoner name change.
-    summonerLevel    int    summoner level associated with the summoner
+    Gets all mastery IDs contained in this object
     """
     def __init__(self, dictionary):
         self.id = dictionary.get("id", 0)

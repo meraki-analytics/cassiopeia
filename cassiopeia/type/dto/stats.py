@@ -10,8 +10,9 @@ if cassiopeia.type.dto.common.sqlalchemy_imported:
 @cassiopeia.type.core.common.inheritdocs
 class PlayerStatsSummaryList(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    playerStatSummaries    list<PlayerStatsSummary>    collection of player stats summaries associated with the summoner
-    summonerId             int                         summoner ID
+    Args:
+        playerStatSummaries (list<PlayerStatsSummary>): collection of player stats summaries associated with the summoner
+        summonerId (int): summoner ID
     """
     def __init__(self, dictionary):
         self.playerStatSummaries = [(PlayerStatsSummary(pss) if not isinstance(pss, PlayerStatsSummary) else pss) for pss in dictionary.get("playerStatSummaries", []) if pss]
@@ -21,10 +22,11 @@ class PlayerStatsSummaryList(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class PlayerStatsSummary(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    losses                   int    number of losses for this queue type. Returned for ranked queue types only
-    modifyDate               int    date stats were last modified specified as epoch milliseconds
-    playerStatSummaryType    str    player stats summary type (Legal values: AramUnranked5x5, Ascension, CAP5x5, CoopVsAI, CoopVsAI3x3, CounterPick, FirstBlood1x1, FirstBlood2x2, Hexakill, KingPoro, NightmareBot, OdinUnranked, OneForAll5x5, RankedPremade3x3, RankedPremade5x5, RankedSolo5x5, RankedTeam3x3, RankedTeam5x5, SummonersRift6x6, Unranked, Unranked3x3, URF, URFBots)
-    wins                     int    number of wins for this queue type
+    Args:
+        losses (int): number of losses for this queue type. Returned for ranked queue types only
+        modifyDate (int): date stats were last modified specified as epoch milliseconds
+        playerStatSummaryType (str): player stats summary type (Legal values: AramUnranked5x5, Ascension, CAP5x5, CoopVsAI, CoopVsAI3x3, CounterPick, FirstBlood1x1, FirstBlood2x2, Hexakill, KingPoro, NightmareBot, OdinUnranked, OneForAll5x5, RankedPremade3x3, RankedPremade5x5, RankedSolo5x5, RankedTeam3x3, RankedTeam5x5, SummonersRift6x6, Unranked, Unranked3x3, URF, URFBots)
+        wins (int): number of wins for this queue type
     """
     def __init__(self, dictionary):
         val = dictionary.get("aggregatedStats", None)
@@ -38,62 +40,63 @@ class PlayerStatsSummary(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class AggregatedStats(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    averageAssists                 int    dominion only
-    averageChampionsKilled         int    dominion only
-    averageCombatPlayerScore       int    dominion only
-    averageNodeCapture             int    dominion only
-    averageNodeCaptureAssist       int    dominion only
-    averageNodeNeutralize          int    dominion only
-    averageNodeNeutralizeAssist    int    dominion only
-    averageNumDeaths               int    dominion only
-    averageObjectivePlayerScore    int    dominion only
-    averageTeamObjective           int    dominion only
-    averageTotalPlayerScore        int    dominion only
-    botGamesPlayed                 int    botGamesPlayed
-    killingSpree                   int    killingSpree
-    maxAssists                     int    dominion only
-    maxChampionsKilled             int    maxChampionsKilled
-    maxCombatPlayerScore           int    dominion only
-    maxLargestCriticalStrike       int    maxLargestCriticalStrike
-    maxLargestKillingSpree         int    maxLargestKillingSpree
-    maxNodeCapture                 int    dominion only
-    maxNodeCaptureAssist           int    dominion only
-    maxNodeNeutralize              int    dominion only
-    maxNodeNeutralizeAssist        int    dominion only
-    maxNumDeaths                   int    only returned for ranked statistics.
-    maxObjectivePlayerScore        int    dominion only
-    maxTeamObjective               int    dominion only
-    maxTimePlayed                  int    maxTimePlayed
-    maxTimeSpentLiving             int    maxTimeSpentLiving
-    maxTotalPlayerScore            int    dominion only
-    mostChampionKillsPerSession    int    mostChampionKillsPerSession
-    mostSpellsCast                 int    mostSpellsCast
-    normalGamesPlayed              int    normalGamesPlayed
-    rankedPremadeGamesPlayed       int    rankedPremadeGamesPlayed
-    rankedSoloGamesPlayed          int    rankedSoloGamesPlayed
-    totalAssists                   int    totalAssists
-    totalChampionKills             int    totalChampionKills
-    totalDamageDealt               int    totalDamageDealt
-    totalDamageTaken               int    totalDamageTaken
-    totalDeathsPerSession          int    only returned for ranked statistics
-    totalDoubleKills               int    totalDoubleKills
-    totalFirstBlood                int    totalFirstBlood
-    totalGoldEarned                int    totalGoldEarned
-    totalHeal                      int    totalHeal
-    totalMagicDamageDealt          int    totalMagicDamageDealt
-    totalMinionKills               int    totalMinionKills
-    totalNeutralMinionsKilled      int    totalNeutralMinionsKilled
-    totalNodeCapture               int    dominion only
-    totalNodeNeutralize            int    dominion only
-    totalPentaKills                int    totalPentaKills
-    totalPhysicalDamageDealt       int    totalPhysicalDamageDealt
-    totalQuadraKills               int    totalQuadraKills
-    totalSessionsLost              int    totalSessionsLost
-    totalSessionsPlayed            int    totalSessionsPlayed
-    totalSessionsWon               int    totalSessionsWon
-    totalTripleKills               int    totalTripleKills
-    totalTurretsKilled             int    totalTurretsKilled
-    totalUnrealKills               int    totalUnrealKills
+    Args:
+        averageAssists (int): dominion only
+        averageChampionsKilled (int): dominion only
+        averageCombatPlayerScore (int): dominion only
+        averageNodeCapture (int): dominion only
+        averageNodeCaptureAssist (int): dominion only
+        averageNodeNeutralize (int): dominion only
+        averageNodeNeutralizeAssist (int): dominion only
+        averageNumDeaths (int): dominion only
+        averageObjectivePlayerScore (int): dominion only
+        averageTeamObjective (int): dominion only
+        averageTotalPlayerScore (int): dominion only
+        botGamesPlayed (int): botGamesPlayed
+        killingSpree (int): killingSpree
+        maxAssists (int): dominion only
+        maxChampionsKilled (int): maxChampionsKilled
+        maxCombatPlayerScore (int): dominion only
+        maxLargestCriticalStrike (int): maxLargestCriticalStrike
+        maxLargestKillingSpree (int): maxLargestKillingSpree
+        maxNodeCapture (int): dominion only
+        maxNodeCaptureAssist (int): dominion only
+        maxNodeNeutralize (int): dominion only
+        maxNodeNeutralizeAssist (int): dominion only
+        maxNumDeaths (int): only returned for ranked statistics.
+        maxObjectivePlayerScore (int): dominion only
+        maxTeamObjective (int): dominion only
+        maxTimePlayed (int): maxTimePlayed
+        maxTimeSpentLiving (int): maxTimeSpentLiving
+        maxTotalPlayerScore (int): dominion only
+        mostChampionKillsPerSession (int): mostChampionKillsPerSession
+        mostSpellsCast (int): mostSpellsCast
+        normalGamesPlayed (int): normalGamesPlayed
+        rankedPremadeGamesPlayed (int): rankedPremadeGamesPlayed
+        rankedSoloGamesPlayed (int): rankedSoloGamesPlayed
+        totalAssists (int): totalAssists
+        totalChampionKills (int): totalChampionKills
+        totalDamageDealt (int): totalDamageDealt
+        totalDamageTaken (int): totalDamageTaken
+        totalDeathsPerSession (int): only returned for ranked statistics
+        totalDoubleKills (int): totalDoubleKills
+        totalFirstBlood (int): totalFirstBlood
+        totalGoldEarned (int): totalGoldEarned
+        totalHeal (int): totalHeal
+        totalMagicDamageDealt (int): totalMagicDamageDealt
+        totalMinionKills (int): totalMinionKills
+        totalNeutralMinionsKilled (int): totalNeutralMinionsKilled
+        totalNodeCapture (int): dominion only
+        totalNodeNeutralize (int): dominion only
+        totalPentaKills (int): totalPentaKills
+        totalPhysicalDamageDealt (int): totalPhysicalDamageDealt
+        totalQuadraKills (int): totalQuadraKills
+        totalSessionsLost (int): totalSessionsLost
+        totalSessionsPlayed (int): totalSessionsPlayed
+        totalSessionsWon (int): totalSessionsWon
+        totalTripleKills (int): totalTripleKills
+        totalTurretsKilled (int): totalTurretsKilled
+        totalUnrealKills (int): totalUnrealKills
     """
     def __init__(self, dictionary):
         self.averageAssists = dictionary.get("averageAssists", 0)
@@ -157,9 +160,10 @@ class AggregatedStats(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class RankedStats(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    champions     list<ChampionStats>    collection of aggregated stats summarized by champion
-    modifyDate    int                    date stats were last modified specified as epoch milliseconds
-    summonerId    int                    summoner ID
+    Args:
+        champions (list<ChampionStats>): collection of aggregated stats summarized by champion
+        modifyDate (int): date stats were last modified specified as epoch milliseconds
+        summonerId (int): summoner ID
     """
     def __init__(self, dictionary):
         self.champions = [(ChampionStats(c) if not isinstance(c, ChampionStats) else c) for c in dictionary.get("champions", []) if c]
@@ -168,7 +172,9 @@ class RankedStats(cassiopeia.type.dto.common.CassiopeiaDto):
 
     @property
     def champion_ids(self):
-        """Gets all champion IDs contained in this object"""
+        """
+        Gets all champion IDs contained in this object
+        """
         ids = set()
         for s in self.champions:
             if s.id:
@@ -179,8 +185,7 @@ class RankedStats(cassiopeia.type.dto.common.CassiopeiaDto):
 @cassiopeia.type.core.common.inheritdocs
 class ChampionStats(cassiopeia.type.dto.common.CassiopeiaDto):
     """
-    id       int                champion ID. Note that champion ID 0 represents the combined stats for all champions. For static information correlating to champion IDs, please refer to the LoL Static Data API.
-    stats    AggregatedStats    aggregated stats associated with the champion.
+    Gets all champion IDs contained in this object
     """
     def __init__(self, dictionary):
         self.id = dictionary.get("id", 0)

@@ -8,52 +8,63 @@ if cassiopeia.type.dto.common.sqlalchemy_imported:
 
 
 class DataStore(object):
-    """A place to store data. Used for caching/storing data from API calls"""
+    """
+    A place to store data. Used for caching/storing data from API calls
+    """
 
     def has_all(self, class_):
-        """Checks if the data store has all the values for a type there can be (as reported by the user)
-
-        class_    type    the class to do the check for
-
-        return    bool    whether all the values are stored
+        """
+        A place to store data. Used for caching/storing data from API calls
         """
         pass
 
     def get_all(self, class_):
-        """Gets all currently stored values for a type
+        """
+        Checks if the data store has all the values for a type there can be (as reported by the user)
 
-        class_    type            the class to get values for
+        Args:
+            class_ (type): the class to do the check for
 
-        return    list<class_>    all stored values for the type
+        Returns:
+            bool: whether all the values are stored
         """
         pass
 
     def iterate(self, class_):
-        """Gets an iterator over all currently stored values for a type
+        """
+        Gets all currently stored values for a type
 
-        class_    type                the class to get values for
+        Args:
+            class_ (type): the class to get values for
 
-        return    iterator<class_>    and iterator over all stored values for the type
+        Returns:
+            list<class_>: all stored values for the type
         """
         pass
 
     def get(self, class_, keys, key_field):
-        """Gets objects from the data store
+        """
+        Gets an iterator over all currently stored values for a type
 
-        class_       type                     the class to get values for
-        keys         any | list<any>          the keys that should be used to find the desired values
-        key_field    str                      the name of the attribute that the key(s) reference
+        Args:
+            class_ (type): the class to get values for
 
-        return       class_ | list<class_>    the values from storage - None will replace any value that couldn't be found
+        Returns:
+            iterator<class_>: and iterator over all stored values for the type
         """
         pass
 
     def store(self, objs, keys, complete_sets=[]):
-        """Stores objects in the data store
+        """
+        Gets objects from the data store
 
-        objs             any                the objects to store
-        keys             any | list<any>    the keys to store those values with
-        complete_sets    list<type>         include any types for which it should be marked that all possible values are stored
+        Args:
+            class_ (type): the class to get values for
+            keys (any | list<any>): the keys that should be used to find the desired values
+            key_field (str): the name of the attribute that the key(s) reference
+
+        Returns:
+            class_ | list<class_>: the values from storage - None will replace any value that couldn't be found
         """
         pass
 
@@ -63,7 +74,14 @@ class DataStore(object):
 #######################
 @cassiopeia.type.core.common.inheritdocs
 class VoidDataStore(DataStore):
-    """A mock cache that doesn't actually store anything"""
+    """
+    Stores objects in the data store
+
+    Args:
+        objs (any): the objects to store
+        keys (any | list<any>): the keys to store those values with
+        complete_sets (list<type>): include any types for which it should be marked that all possible values are stored
+    """
 
     def has_all(self, class_):
         return False
@@ -88,7 +106,14 @@ class VoidDataStore(DataStore):
 #############################
 @cassiopeia.type.core.common.inheritdocs
 class Cache(DataStore):
-    """In-memory cache of API data"""
+    """
+    Stores objects in the data store
+
+    Args:
+        objs (any): the objects to store
+        keys (any | list<any>): the keys to store those values with
+        complete_sets (list<type>): include any types for which it should be marked that all possible values are stored
+    """
 
     def __init__(self):
         self._cache = {}
@@ -202,11 +227,12 @@ if cassiopeia.type.dto.common.sqlalchemy_imported:
 
         def __init__(self, flavor, host, database, username, password):
             """
-            flavor      str    the connector to use for SQLAlchemy (http://docs.sqlalchemy.org/en/rel_1_0/core/engines.html#database-urls)
-            host        str    the server IP or domain name to connect to
-            database    str    the name of the database to connect to
-            username    str    the username to connect to the database with
-            password    str    the password to connect to the database with
+            Stores objects in the data store
+
+            Args:
+                objs (any): the objects to store
+                keys (any | list<any>): the keys to store those values with
+                complete_sets (list<type>): include any types for which it should be marked that all possible values are stored
             """
             _sa_bind_typesystem()
             self.db = sqlalchemy.create_engine("{flavor}://{username}:{password}@{host}/{database}".format(flavor=flavor, host=host, database=database, username=username, password=password))
@@ -269,7 +295,9 @@ if cassiopeia.type.dto.common.sqlalchemy_imported:
             self.session.commit()
 
         def close(self):
-            """Closes the connection to the database"""
+            """
+            A mock cache that doesn't actually store anything
+            """
             self.session.close()
             self.db.dispose()
 
@@ -278,7 +306,9 @@ __sa_bound = False
 
 
 def _sa_bind_typesystem():
-    """Dynamically binds the typesystem with SQLAlchemy bindings"""
+    """
+    A mock cache that doesn't actually store anything
+    """
     global __sa_bound
     if __sa_bound:
         return

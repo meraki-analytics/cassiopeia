@@ -2,12 +2,13 @@ import threading
 
 
 class SingleRateLimiter(object):
-    """Handles a single rate limit, ensuring that calls don't exceed it"""
+    """
+    Handles a single rate limit, ensuring that calls don't exceed it
+    """
 
     def __init__(self, calls_per_epoch, seconds_per_epoch):
         """
-        calls_per_epoch      int    the number of calls allowed in each epoch
-        seconds_per_epoch    int    the number of seconds per epoch
+        Handles a single rate limit, ensuring that calls don't exceed it
         """
         self.seconds_per_epoch = seconds_per_epoch
         self.semaphore = threading.Semaphore(calls_per_epoch)
@@ -19,12 +20,10 @@ class SingleRateLimiter(object):
         self._successful_calls = 0
 
     def call(self, method=None, *args):
-        """Calls a function when the rate limit allows (first come first serve)
-
-        method    function    the function which will be called when the rate limit allows
-        *args     any...      the arguments to be passed to the functions when it is called
-
-        return    any         the result of the function once it has been called
+        """
+        Args:
+            calls_per_epoch (int): the number of calls allowed in each epoch
+            seconds_per_epoch (int): the number of seconds per epoch
         """
         # Block until a call opens up
         self.semaphore.acquire()
@@ -53,12 +52,30 @@ class SingleRateLimiter(object):
                     self._successful_calls += 1
 
     def _drain(self):
-        """Drains all remaining calls"""
+        """
+        Calls a function when the rate limit allows (first come first serve)
+
+        Args:
+            method (function): the function which will be called when the rate limit allows
+            *args (any...): the arguments to be passed to the functions when it is called
+
+        Returns:
+            any: the result of the function once it has been called
+        """
         while self.semaphore.acquire(False):
             pass
 
     def _reset(self):
-        """Resets the rate limit"""
+        """
+        Calls a function when the rate limit allows (first come first serve)
+
+        Args:
+            method (function): the function which will be called when the rate limit allows
+            *args (any...): the arguments to be passed to the functions when it is called
+
+        Returns:
+            any: the result of the function once it has been called
+        """
         self.lock.acquire()
 
         self._drain()
@@ -69,14 +86,29 @@ class SingleRateLimiter(object):
         self.lock.release()
 
     def wait(self):
-        """Waits until a call becomes available"""
+        """
+        Calls a function when the rate limit allows (first come first serve)
+
+        Args:
+            method (function): the function which will be called when the rate limit allows
+            *args (any...): the arguments to be passed to the functions when it is called
+
+        Returns:
+            any: the result of the function once it has been called
+        """
         self.semaphore.acquire()
         self.semaphore.release()
 
     def reset_in(self, seconds):
-        """Resets the rate limiter after waiting
+        """
+        Calls a function when the rate limit allows (first come first serve)
 
-        seconds    int    the number of seconds to wait before resetting
+        Args:
+            method (function): the function which will be called when the rate limit allows
+            *args (any...): the arguments to be passed to the functions when it is called
+
+        Returns:
+            any: the result of the function once it has been called
         """
         with self.lock:
 
@@ -94,33 +126,30 @@ class SingleRateLimiter(object):
 
     @property
     def calls(self):
-        """Returns the number of successful calls (no exceptions in the call) and total calls served by this limiter
-
-        return    tuple   A (successful calls, total calls) tuple
+        """
+        Drains all remaining calls
         """
         with self.lock:
             return (self._successful_calls, self._total_calls)
 
 
 class MultiRateLimiter(object):
-    """Handles a multiple rate limits simultaneously, ensuring that calls don't exceed them"""
+    """
+    Resets the rate limit
+    """
 
     def __init__(self, *limits):
         """
-        *limits    tuple...    the rate limits to apply. Rate limits are of the form (calls_per_epoch, seconds_per_epoch)
+        Resets the rate limit
         """
         self.limits = []
 
         for limit in limits:
             self.limits.append(SingleRateLimiter(limit[0], limit[1]))
 
-    def call(self, method=None, *args):
-        """Calls a function when the rate limit allows (first come first serve)
-
-        method    function    the function which will be called when the rate limit allows
-        *args     any...      the arguments to be passed to the functions when it is called
-
-        return    any         the result of the function once it has been called
+    def call(self, method=None, *args):  # TODO
+        """
+        Waits until a call becomes available
         """
         self.wait()
 
@@ -138,23 +167,32 @@ class MultiRateLimiter(object):
                     limit._decrease_successful_calls()
 
     def wait(self):
-        """Waits until a call becomes available"""
+        """
+        Resets the rate limiter after waiting
+
+        Args:
+            seconds (int): the number of seconds to wait before resetting
+        """
         for limit in self.limits:
             limit.wait()
 
     def reset_in(self, seconds):
-        """Resets the rate limiter after waiting
+        """
+        Resets the rate limiter after waiting
 
-        seconds    int    the number of seconds to wait before resetting
+        Args:
+            seconds (int): the number of seconds to wait before resetting
         """
         for limit in self.limits:
             limit.reset_in(seconds)
 
     @property
     def calls(self):
-        """Returns the number of successful calls (no exceptions in the call) and total calls served by this limiter
+        """
+        Returns the number of successful calls (no exceptions in the call) and total calls served by this limiter
 
-        return    tuple   A (successful calls, total calls) tuple
+        Returns:
+            return: tuple   A (successful calls, total calls) tuple
         """
         try:
             return self.limits[0].calls

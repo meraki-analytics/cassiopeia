@@ -3,11 +3,14 @@ import cassiopeia.type.dto.team
 
 
 def get_teams_by_summoner_id(summoner_ids):
-    """https://developer.riotgames.com/api/methods#!/986/3358
+    """
+    https://developer.riotgames.com/api/methods#!/986/3358
 
-    summoner_ids    int | list<int>          the summoner ID(s) to look up teams for
+    Args:
+        summoner_ids (int | list<int>): the summoner ID(s) to look up teams for
 
-    return          dict<str, list<Team>>    the requested summoners' teams
+    Returns:
+        dict<str, list<Team>>: the requested summoners' teams
     """
     # Can only have 10 summoners max if it's a list
     if isinstance(summoner_ids, list) and len(summoner_ids) > 10:
@@ -27,11 +30,14 @@ def get_teams_by_summoner_id(summoner_ids):
 
 
 def get_teams_by_id(team_ids):
-    """https://developer.riotgames.com/api/methods#!/986/3358
+    """
+    https://developer.riotgames.com/api/methods#!/986/3358
 
-    team_ids    str | list<str>    the team ID(s) to look up
+    Args:
+        team_ids (str | list<str>): the team ID(s) to look up
 
-    return      dict<str, Team>    the requested teams
+    Returns:
+        dict<str, Team>: the requested teams
     """
     # Can only have 10 teams max if it's a list
     if isinstance(team_ids, list) and len(team_ids) > 10:

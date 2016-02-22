@@ -5,11 +5,14 @@ import cassiopeia.type.api.exception
 
 
 def get_current_game(summoner_id):
-    """https://developer.riotgames.com/api/methods#!/976/3336
+    """
+    https://developer.riotgames.com/api/methods#!/976/3336
 
-    summoner_id    int                the ID of the summoner to find an active game for
+    Args:
+        summoner_id (int): the ID of the summoner to find an active game for
 
-    return         CurrentGameInfo    the summoner's current game (or None if they aren't in one)
+    Returns:
+        CurrentGameInfo: the summoner's current game (or None if they aren't in one)
     """
     region = cassiopeia.type.core.common.Region(cassiopeia.dto.requests.region)
     platform = cassiopeia.type.core.common.Platform[region.name]

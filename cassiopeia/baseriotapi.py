@@ -24,9 +24,11 @@ from cassiopeia.dto.tournamentapi import *
 
 
 def set_api_key(key):
-    """Set your API key
+    """
+    Set your API key
 
-    key    str    the key to use
+    Args:
+        key (str): the key to use
     """
     cassiopeia.dto.requests.api_key = key
     if not cassiopeia.dto.requests.rate_limiter:
@@ -34,9 +36,11 @@ def set_api_key(key):
 
 
 def set_tournament_api_key(key):
-    """Set your tournament API key
+    """
+    Set your tournament API key
 
-    key    str    the key to use
+    Args:
+        key (str): the key to use
     """
     cassiopeia.dto.requests.tournament_api_key = key
     if not cassiopeia.dto.requests.tournament_rate_limiter:
@@ -44,17 +48,21 @@ def set_tournament_api_key(key):
 
 
 def set_region(region):
-    """Set the region to run API queries against
+    """
+    Set the region to run API queries against
 
-    region    str    the region to query against
+    Args:
+        region (str): the region to query against
     """
     cassiopeia.dto.requests.region = region.lower()
 
 
 def print_calls(on):
-    """Sets whether to print calls to stdout as they are made
+    """
+    Sets whether to print calls to stdout as they are made
 
-    on    bool    whether to print calls to stdout
+    Args:
+        on (bool): whether to print calls to stdout
     """
     cassiopeia.dto.requests.print_calls = on
 
@@ -63,53 +71,65 @@ def get_requests_count(tournament=False):
     """
     Returns the number of successful requests (no exceptions in the call) and total requests issued up to now
 
-    tournament    bool     get the request counts for the tournament requests
+    Args:
+        tournament (bool): get the request counts for the tournament requests
 
-    return        tuple    A (successful calls, total calls) tuple
+    Returns:
+        tuple: A (successful calls, total calls) tuple
     """
     limiter = cassiopeia.dto.requests.tournament_rate_limiter if tournament else cassiopeia.dto.requests.rate_limiter
     return limiter.calls
 
 
 def set_rate_limit(calls_per_epoch, seconds_per_epoch):
-    """Sets the rate limit for cassiopeia to manage internally
+    """
+    Sets the rate limit for cassiopeia to manage internally
 
-    calls_per_epoch      int    the number of calls allowed in each epoch
-    seconds_per_epoch    int    the number of seconds per epoch
+    Args:
+        calls_per_epoch (int): the number of calls allowed in each epoch
+        seconds_per_epoch (int): the number of seconds per epoch
     """
     cassiopeia.dto.requests.rate_limiter = cassiopeia.type.api.rates.SingleRateLimiter(calls_per_epoch, seconds_per_epoch)
 
 
 def set_tournament_rate_limit(calls_per_epoch, seconds_per_epoch):
-    """Sets the tournament rate limit for cassiopeia to manage internally
+    """
+    Sets the tournament rate limit for cassiopeia to manage internally
 
-    calls_per_epoch      int    the number of calls allowed in each epoch
-    seconds_per_epoch    int    the number of seconds per epoch
+    Args:
+        calls_per_epoch (int): the number of calls allowed in each epoch
+        seconds_per_epoch (int): the number of seconds per epoch
     """
     cassiopeia.dto.requests.tournament_rate_limiter = cassiopeia.type.api.rates.SingleRateLimiter(calls_per_epoch, seconds_per_epoch)
 
 
 def set_rate_limits(*limits):
-    """Sets the rate limits for cassiopeia to manage internally
+    """
+    Sets the rate limits for cassiopeia to manage internally
 
-    *limits    tuple...    the rate limits to apply. Rate limits are of the form (calls_per_epoch, seconds_per_epoch)
+    Args:
+        *limits (tuple...): the rate limits to apply. Rate limits are of the form (calls_per_epoch, seconds_per_epoch)
     """
     cassiopeia.dto.requests.rate_limiter = cassiopeia.type.api.rates.MultiRateLimiter(*limits)
 
 
 def set_tournament_rate_limits(*limits):
-    """Sets the tournament rate limits for cassiopeia to manage internally
+    """
+    Sets the tournament rate limits for cassiopeia to manage internally
 
-    *limits    tuple...    the rate limits to apply. Rate limits are of the form (calls_per_epoch, seconds_per_epoch)
+    Args:
+        *limits (tuple...): the rate limits to apply. Rate limits are of the form (calls_per_epoch, seconds_per_epoch)
     """
     cassiopeia.dto.requests.tournament_rate_limiter = cassiopeia.type.api.rates.MultiRateLimiter(*limits)
 
 
 def set_proxy(url, port=80):
-    """Sets a proxy server to tunnel requests to the Riot API through
+    """
+    Sets a proxy server to tunnel requests to the Riot API through
 
-    url     str    the URL of the proxy server, without port number or protocol
-    port    int    the port number to conntect to (default 80)
+    Args:
+        url (str): the URL of the proxy server, without port number or protocol
+        port (int): the port number to conntect to (default 80)
     """
     if url:
         cassiopeia.dto.requests.proxy = urllib.request.ProxyHandler({"https": "https://{url}:{port}".format(url=url, port=port)})
@@ -120,8 +140,10 @@ def set_proxy(url, port=80):
 
 
 def set_locale(locale):
-    """Sets the locale (language) to use for calls to the Riot API. Use get_languages() to find valid locales.
+    """
+    Sets the locale (language) to use for calls to the Riot API. Use get_languages() to find valid locales.
 
-    locale    str    the locale to use for calls to the API
+    Args:
+        locale (str): the locale to use for calls to the API
     """
     cassiopeia.dto.staticdataapi._locale = locale

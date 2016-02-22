@@ -5,11 +5,14 @@ import cassiopeia.type.dto.summoner
 
 
 def get_summoners_by_name(summoner_names):
-    """https://developer.riotgames.com/api/methods#!/1017/3446
+    """
+    https://developer.riotgames.com/api/methods#!/1017/3446
 
-    summoner_names    str | list<str>        the summoner name(s) to look up
+    Args:
+        summoner_names (str | list<str>): the summoner name(s) to look up
 
-    return            dict<str, Summoner>    the requested summoners
+    Returns:
+        dict<str, Summoner>: the requested summoners
     """
     # Can only have 40 summoners max if it's a list
     if isinstance(summoner_names, list) and len(summoner_names) > 40:
@@ -29,11 +32,14 @@ def get_summoners_by_name(summoner_names):
 
 
 def get_summoners_by_id(summoner_ids):
-    """https://developer.riotgames.com/api/methods#!/1017/3447
+    """
+    https://developer.riotgames.com/api/methods#!/1017/3447
 
-    summoner_ids    int | list<int>        the summoner ID(s) to look up
+    Args:
+        summoner_ids (int | list<int>): the summoner ID(s) to look up
 
-    return          dict<str, Summoner>    the requested summoners
+    Returns:
+        dict<str, Summoner>: the requested summoners
     """
     # Can only have 40 summoners max if it's a list
     if isinstance(summoner_ids, list) and len(summoner_ids) > 40:
@@ -53,11 +59,14 @@ def get_summoners_by_id(summoner_ids):
 
 
 def get_summoner_masteries(summoner_ids):
-    """https://developer.riotgames.com/api/methods#!/1017/3450
+    """
+    https://developer.riotgames.com/api/methods#!/1017/3450
 
-    summoner_ids    int | list<int>            the summoner ID(s) to get mastery pages for
+    Args:
+        summoner_ids (int | list<int>): the summoner ID(s) to get mastery pages for
 
-    return          dict<str, MasteryPages>    the requested summoners' mastery pages
+    Returns:
+        dict<str, MasteryPages>: the requested summoners' mastery pages
     """
     # Can only have 40 summoners max if it's a list
     if isinstance(summoner_ids, list) and len(summoner_ids) > 40:
@@ -77,11 +86,14 @@ def get_summoner_masteries(summoner_ids):
 
 
 def get_summoner_names(summoner_ids):
-    """https://developer.riotgames.com/api/methods#!/1017/3451
+    """
+    https://developer.riotgames.com/api/methods#!/1017/3451
 
-    summoner_ids    int | list<int>   the summoner ID(s) to get names for
+    Args:
+        summoner_ids (int | list<int>): the summoner ID(s) to get names for
 
-    return          dict<str, str>    the requested summoners' names
+    Returns:
+        dict<str, str>: the requested summoners' names
     """
     # Can only have 40 summoners max if it's a list
     if isinstance(summoner_ids, list) and len(summoner_ids) > 40:
@@ -95,11 +107,14 @@ def get_summoner_names(summoner_ids):
 
 
 def get_summoner_runes(summoner_ids):
-    """https://developer.riotgames.com/api/methods#!/1017/3449
+    """
+    https://developer.riotgames.com/api/methods#!/1017/3449
 
-    summoner_ids    int | list<int>         the summoner ID(s) to get rune pages for
+    Args:
+        summoner_ids (int | list<int>): the summoner ID(s) to get rune pages for
 
-    return          dict<str, RunePages>    the requested summoners' rune pages
+    Returns:
+        dict<str, RunePages>: the requested summoners' rune pages
     """
     # Can only have 40 summoners max if it's a list
     if isinstance(summoner_ids, list) and len(summoner_ids) > 40:

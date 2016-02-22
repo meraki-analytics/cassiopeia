@@ -32,92 +32,137 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def creation(self):
-        """datetime    the creation date of the team"""
+        """
+        Returns:
+            datetime: the creation date of the team
+        """
         return datetime.datetime.utcfromtimestamp(self.data.createDate / 1000) if self.data.createDate else None
 
     @property
     def id(self):
-        """int    the team's id"""
+        """
+        Returns:
+            datetime: the creation date of the team
+        """
         return self.data.fullId
 
     @cassiopeia.type.core.common.lazyproperty
     def last_game(self):
-        """datetime    the date and time for the team's last game in epoch milliseconds"""
+        """
+        Returns:
+            datetime: the creation date of the team
+        """
         return datetime.datetime.utcfromtimestamp(self.data.lastGameDate / 1000) if self.data.lastGameDate else None
 
     @cassiopeia.type.core.common.lazyproperty
     def last_join(self):
-        """datetime    the date and time for when the most recent team member joined in epoch milliseconds"""
+        """
+        Returns:
+            datetime: the creation date of the team
+        """
         return datetime.datetime.utcfromtimestamp(self.data.lastJoinDate / 1000) if self.data.lastJoinDate else None
 
     @cassiopeia.type.core.common.lazyproperty
     def last_queue(self):
-        """datetime    the date the team last joined the ranked team queue in epoch milliseconds"""
+        """
+        Returns:
+            datetime: the creation date of the team
+        """
         return datetime.datetime.utcfromtimestamp(self.data.lastJoinedRankedTeamQueueDate / 1000) if self.data.lastJoinedRankedTeamQueueDate else None
 
     @cassiopeia.type.core.common.lazyproperty
     def match_history(self):
-        """list<MatchSummary>    the match history of the team"""
+        """
+        Returns:
+            datetime: the creation date of the team
+        """
         return [MatchSummary(summary) for summary in self.data.matchHistory]
 
     @cassiopeia.type.core.common.lazyproperty
     def modify(self):
-        """datetime    the date that team was last modified specified as epoch milliseconds"""
+        """
+        Returns:
+            datetime: the creation date of the team
+        """
         return datetime.datetime.utcfromtimestamp(self.data.modifyDate / 1000) if self.data.modifyDate else None
 
     @property
     def name(self):
-        """str    the name of the team"""
+        """
+        Returns:
+            datetime: the creation date of the team
+        """
         return self.data.name
 
     @property
     def captain(self):
-        """Summoner    the captain of the team (returns a summoner)"""
+        """
+        Returns:
+            datetime: the creation date of the team
+        """
         return cassiopeia.riotapi.get_summoner_by_id(self.data.roster.ownerId)
 
     @property
     def roster(self):
-        """list<TeamMember>    the team members"""
+        """
+        Returns:
+            datetime: the creation date of the team
+        """
         return [TeamMember(member) for member in self.data.roster.memberList]
 
     @cassiopeia.type.core.common.lazyproperty
     def second_to_last_join(self):
-        """datetime    the date the second to last member joined specified as epoch milliseconds"""
+        """
+        Returns:
+            datetime: the creation date of the team
+        """
         return datetime.datetime.utcfromtimestamp(self.data.secondLastJoinDate / 1000) if self.data.secondLastJoinDate else None
 
     @property
     def status(self):
-        """str    the status of the team"""
+        """
+        Returns:
+            datetime: the creation date of the team
+        """
         return self.data.status
 
     @property
     def tag(self):
-        """str    the team's tag"""
+        """
+        Returns:
+            datetime: the creation date of the team
+        """
         return self.data.tag
 
     @cassiopeia.type.core.common.lazyproperty
     def stats(self):
-        """Stats    the team's stats"""
+        """
+        Returns:
+            datetime: the creation date of the team
+        """
         return [Stats(stats) for stats in self.data.teamStatDetails]
 
     @cassiopeia.type.core.common.lazyproperty
     def third_to_last_join(self):
-        """datetime    the date the third to last member joined specified as epoch milliseconds"""
+        """
+        Returns:
+            datetime: the creation date of the team
+        """
         return datetime.datetime.utcfromtimestamp(self.data.thirdLastJoinDate / 1000) if self.data.thirdLastJoinDate else None
 
     @cassiopeia.type.core.common.immutablemethod
     def leagues(self):
-        """Gets the leagues that the summoner belongs to. You probably don't want to call this with LoadPolicy.eager set.
-
-        return    list<League>   the leagues that the summoner belongs to
+        """
+        Returns:
+            datetime: the creation date of the team
         """
         return cassiopeia.riotapi.get_leagues_by_team(self)
 
     @cassiopeia.type.core.common.immutablemethod
     def league_entries(self):
-        """Gets the leagues that the summoner belongs to, including only their own entries
-
-        return    list<League>    the leagues that the summoner belongs to
+        """
+        Returns:
+            int: the team's id
         """
         return cassiopeia.riotapi.get_league_entries_by_team(self)
 
@@ -131,69 +176,105 @@ class MatchSummary(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def kda(self):
-        """float    the participant's kda"""
+        """
+        Returns:
+            datetime: the date and time for the team's last game in epoch milliseconds
+        """
         return (self.kills + self.assists) / (self.deaths if self.deaths else 1)
 
     @property
     def assists(self):
-        """int    the number of assists the team had"""
+        """
+        Returns:
+            datetime: the date and time for the team's last game in epoch milliseconds
+        """
         return self.data.assists
 
     @cassiopeia.type.core.common.lazyproperty
     def date(self):
-        """datetime    the date that match was completed specified as epoch milliseconds"""
+        """
+        Returns:
+            datetime: the date and time for the team's last game in epoch milliseconds
+        """
         return datetime.datetime.utcfromtimestamp(self.data.date / 1000) if self.data.date else None
 
     @property
     def deaths(self):
-        """int    the number of deaths the team had"""
+        """
+        Returns:
+            datetime: the date and time for the team's last game in epoch milliseconds
+        """
         return self.data.deaths
 
     @property
     def id(self):
-        """int    the team's ID"""
+        """
+        Returns:
+            datetime: the date and time for the team's last game in epoch milliseconds
+        """
         return self.data.gameId
 
     @property
     def mode(self):
-        """GameMode    the game mode of the match"""
+        """
+        Returns:
+            datetime: the date and time for the team's last game in epoch milliseconds
+        """
         return cassiopeia.type.core.common.GameMode(self.data.gameMode) if self.data.gameMode else None
 
     @property
     def invalid(self):
-        """bool    whether or not the data is valid?"""
+        """
+        Returns:
+            datetime: the date and time for the team's last game in epoch milliseconds
+        """
         return self.data.invalid
 
     @property
     def kills(self):
-        """int    the number of kills the team had"""
+        """
+        Returns:
+            datetime: the date and time for the team's last game in epoch milliseconds
+        """
         return self.data.kills
 
     @property
     def map(self):
-        """Map    the map that the game was played on"""
+        """
+        Returns:
+            datetime: the date and time for the team's last game in epoch milliseconds
+        """
         return cassiopeia.type.core.common.Map(self.data.mapId) if self.data.mapId else None
 
     @property
     def opponent_kills(self):
-        """int    the number of kills that the opponent had"""
+        """
+        Returns:
+            datetime: the date and time for the team's last game in epoch milliseconds
+        """
         return self.data.opposingTeamKills
 
     @property
     def opponent(self):
-        """str    the name of the opposing team"""
+        """
+        Returns:
+            datetime: the date and time for the team's last game in epoch milliseconds
+        """
         return self.data.opposingTeamName
 
     @property
     def win(self):
-        """bool    whether or not the team won this match"""
+        """
+        Returns:
+            datetime: the date and time for the team's last game in epoch milliseconds
+        """
         return self.data.win
 
     @cassiopeia.type.core.common.immutablemethod
     def match(self):
-        """Gets the full information for this match
-
-        return    Match    the match
+        """
+        Returns:
+            datetime: the date and time for the team's last game in epoch milliseconds
         """
         return cassiopeia.riotapi.get_match(self.id)
 
@@ -207,22 +288,34 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def average_games_played(self):
-        """float    the average number of games played"""
+        """
+        Returns:
+            datetime: the date and time for when the most recent team member joined in epoch milliseconds
+        """
         return self.data.averageGamesPlayed
 
     @property
     def losses(self):
-        """int    the number of times this team has lost"""
+        """
+        Returns:
+            datetime: the date and time for when the most recent team member joined in epoch milliseconds
+        """
         return self.data.losses
 
     @property
     def queue(self):
-        """Queue    the queue type that these stats were aggregated for"""
+        """
+        Returns:
+            datetime: the date and time for when the most recent team member joined in epoch milliseconds
+        """
         return cassiopeia.type.core.common.Queue(self.data.teamStatType) if self.data.teamStatType else None
 
     @property
     def wins(self):
-        """int    the number of times this team has won"""
+        """
+        Returns:
+            datetime: the date and time for when the most recent team member joined in epoch milliseconds
+        """
         return self.data.wins
 
 
@@ -235,22 +328,34 @@ class TeamMember(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.lazyproperty
     def invite(self):
-        """datetime    the date this team member was invited to team specified as epoch milliseconds"""
+        """
+        Returns:
+            datetime: the date and time for when the most recent team member joined in epoch milliseconds
+        """
         return datetime.datetime.utcfromtimestamp(self.data.inviteDate / 1000) if self.data.inviteDate else None
 
     @cassiopeia.type.core.common.lazyproperty
     def join(self):
-        """datetime    the date this team member joined the team specified as epoch milliseconds"""
+        """
+        Returns:
+            datetime: the date and time for when the most recent team member joined in epoch milliseconds
+        """
         return datetime.datetime.utcfromtimestamp(self.data.joinDate / 1000) if self.data.joinDate else None
 
     @property
     def summoner(self):
-        """Summoner    the summoner associated with this team member"""
+        """
+        Returns:
+            datetime: the date and time for when the most recent team member joined in epoch milliseconds
+        """
         return cassiopeia.riotapi.get_summoner_by_id(self.data.playerId)
 
     @property
     def status(self):
-        """str     the status of this team member"""
+        """
+        Returns:
+            datetime: the date and time for when the most recent team member joined in epoch milliseconds
+        """
         return self.data.status
 
 

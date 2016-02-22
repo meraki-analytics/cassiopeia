@@ -12,32 +12,50 @@ class ChampionStatus(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def enabled(self):
-        """bool    whether the champion is currently enabled"""
+        """
+        Returns:
+            bool: whether the champion is currently enabled
+        """
         return self.data.active
 
     @property
     def custom_enabled(self):
-        """bool    whether the champion is currently enabled for custom games"""
+        """
+        Returns:
+            bool: whether the champion is currently enabled
+        """
         return self.data.botEnabled
 
     @property
     def coop_ai_enabled(self):
-        """bool    whether the champion is currently enabled for coop vs ai games"""
+        """
+        Returns:
+            bool: whether the champion is currently enabled
+        """
         return self.data.botMmEnabled
 
     @property
     def free(self):
-        """bool    whether the champion is currently free this week"""
+        """
+        Returns:
+            bool: whether the champion is currently enabled
+        """
         return self.data.freeToPlay
 
     @property
     def champion(self):
-        """Champion    the Champion this status is for"""
+        """
+        Returns:
+            bool: whether the champion is currently enabled
+        """
         return cassiopeia.riotapi.get_champion_by_id(self.data.id) if self.data.id else None
 
     @property
     def ranked_enabled(self):
-        """bool    whether the champion is currently enabled for ranked games"""
+        """
+        Returns:
+            bool: whether the champion is currently enabled
+        """
         return self.data.rankedPlayEnabled
 
 

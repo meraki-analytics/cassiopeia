@@ -4,12 +4,15 @@ import cassiopeia.type.dto.championmastery
 
 
 def get_champion_mastery(summoner_id, champion_id):
-    """https://developer.riotgames.com/api/methods#!/1034/3545
+    """
+    https://developer.riotgames.com/api/methods#!/1034/3545
 
-    summoner_id    int                      the summoner ID to get champion mastery for
-    champion_id    int                      the champion ID for the desired champion
+    Args:
+        summoner_id (int): the summoner ID to get champion mastery for
+        champion_id (int): the champion ID for the desired champion
 
-    return         list<ChampionMastery>    the summoner's champion mastery value for the specified champion
+    Returns:
+        list<ChampionMastery>: the summoner's champion mastery value for the specified champion
     """
     region = cassiopeia.type.core.common.Region(cassiopeia.dto.requests.region)
     platform = cassiopeia.type.core.common.Platform[region.name]
@@ -20,11 +23,14 @@ def get_champion_mastery(summoner_id, champion_id):
 
 
 def get_champion_masteries(summoner_id):
-    """https://developer.riotgames.com/api/methods#!/1034/3544
+    """
+    https://developer.riotgames.com/api/methods#!/1034/3544
 
-    summoner_id    int                      the summoner ID to get champion masteries for
+    Args:
+        summoner_id (int): the summoner ID to get champion masteries for
 
-    return         list<ChampionMastery>    the summoner's champion masteries
+    Returns:
+        list<ChampionMastery>: the summoner's champion masteries
     """
     region = cassiopeia.type.core.common.Region(cassiopeia.dto.requests.region)
     platform = cassiopeia.type.core.common.Platform[region.name]
@@ -38,11 +44,14 @@ def get_champion_masteries(summoner_id):
 
 
 def get_champion_mastery_score(summoner_id):
-    """https://developer.riotgames.com/api/methods#!/1034/3546
+    """
+    https://developer.riotgames.com/api/methods#!/1034/3546
 
-    summoner_id    int    the summoner ID to get champion masteries for
+    Args:
+        summoner_id (int): the summoner ID to get champion masteries for
 
-    return         int    the summoner's total champion mastery score
+    Returns:
+        int: the summoner's total champion mastery score
     """
     region = cassiopeia.type.core.common.Region(cassiopeia.dto.requests.region)
     platform = cassiopeia.type.core.common.Platform[region.name]
@@ -53,12 +62,15 @@ def get_champion_mastery_score(summoner_id):
 
 
 def get_top_champion_masteries(summoner_id, count=3):
-    """https://developer.riotgames.com/api/methods#!/1034/3540
+    """
+    https://developer.riotgames.com/api/methods#!/1034/3540
 
-    summoner_id    int                      the summoner ID to get champion masteries for
-    count          int                      the maximum number of entires to retrieve (default 3)
+    Args:
+        summoner_id (int): the summoner ID to get champion masteries for
+        count (int): the maximum number of entires to retrieve (default 3)
 
-    return         list<ChampionMastery>    the summoner's top champion masteries
+    Returns:
+        list<ChampionMastery>: the summoner's top champion masteries
     """
     region = cassiopeia.type.core.common.Region(cassiopeia.dto.requests.region)
     platform = cassiopeia.type.core.common.Platform[region.name]

@@ -4,11 +4,14 @@ import cassiopeia.type.core.game
 
 
 def get_recent_games(summoner):
-    """Gets the most recent games a summoner played
+    """
+    Gets the most recent games a summoner played
 
-    summoner    Summoner      the summoner to get recent games for
+    Args:
+        summoner (Summoner): the summoner to get recent games for
 
-    return      list<Game>    the summoner's recent games
+    Returns:
+        list<Game>: the summoner's recent games
     """
     games = cassiopeia.dto.gameapi.get_recent_games(summoner.id)
 
