@@ -67,7 +67,7 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
         Returns:
             Champion: the champion that the summoner played for the summoner that was used to pull this match reference
         """
-        return cassiopeia.type.core.common.Platform(self.data.platformid) if self.data.platformid else None
+        return cassiopeia.type.core.common.Platform(self.data.platformId) if self.data.platformId else None
 
     @property
     def queue(self):
