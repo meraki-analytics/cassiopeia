@@ -130,6 +130,12 @@ class LoadPolicy(enum.Enum):
     eager = "EAGER"
 
 
+class MasteryType(enum.Enum):
+    ferocity = "Ferocity"
+    resolve = "Resolve"
+    cunning = "Cunning"
+
+
 class Lane(enum.Enum):
     top_lane = "TOP"
     jungle = "JUNGLE"
