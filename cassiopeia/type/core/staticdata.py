@@ -2026,7 +2026,7 @@ class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
         Returns:
             str: what type the item set is (e.g. starting items)
         """
-        return self.data.masteryTree
+        return cassiopeia.type.core.common.MasteryType(self.data.masteryTree)
 
     @property
     def name(self):
