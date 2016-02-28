@@ -7,7 +7,7 @@ pulls every game.
 If you have an SQLAlchemy database set up, all of this information will be stored
 automatically.
 
-In addition, we definte a helpful get_match function that automatically retries a
+In addition, we define a helpful get_match function that automatically retries a
 failed match request.
 """
 
@@ -26,7 +26,7 @@ def main():
     riotapi.print_calls(True)
     key = os.environ["DEV_KEY"]  # You can create an env var called "DEV_KEY" that holds your developer key. It will be loaded here.
     riotapi.set_api_key(key)
-    riotapi.set_load_policy(LoadPolicy.lazy)
+    riotapi.set_load_policy(LoadPolicy.eager)
 
     # Load and connect to your database. (Comment this code to use local memory. Don't forget to comment db.close() below too.)
     db = SQLAlchemyDB("mysql+mysqlconnector", "databse_hostname", "database_name", "username", "password")

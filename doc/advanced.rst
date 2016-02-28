@@ -1,6 +1,11 @@
 Advanced Topics
 ###############
 
+Understanding Core and Dto Datatypes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Core datatypes (those found in ``cassiopeia.types.core``) are used by ``riotapi``, and Dto datatypes (those found in ``cassiopeia.types.dto``) are used by ``baseriotapi``. The Dto layer fits the Riot API's specification exactly, meaning all variables have the same structure and same names as those returned from the Riot API. The Core layer is a usability layer that provides additional functionality and fixes many of the unusual variable names and structures returned by the Riot API. When Core objects are interacted with, they call lookups on the Dto layer, so modifying a Dto layer's variables will change the returned values of the Core layer. Read some of the ``@property`` attributes in a core layer for more information on exactly how they interact with the Dto layer.
+
 Using Both Core and Dto Datatypes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

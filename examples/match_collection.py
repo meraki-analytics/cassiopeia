@@ -33,7 +33,7 @@ from cassiopeia.type.api.store import SQLAlchemyDB
 
 
 def auto_retry(api_call_method):
-    """ A decorator to automatically retry 500s (Service Unavailable) and skip 400s (Bad Request) or 404 (Not Found). """
+    """ A decorator to automatically retry 500s (Service Unavailable) and skip 400s (Bad Request) or 404s (Not Found). """
     def call_wrapper(*args, **kwargs):
         try:
             return api_call_method(*args, **kwargs)
