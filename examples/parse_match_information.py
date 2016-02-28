@@ -16,8 +16,8 @@ def main():
 
     dyrus = riotapi.get_summoner_by_name("Dyrus")  # SummonerID is 5908
 
-    match_list = riotapi.get_match_list(dyrus)
-    match = riotapi.get_match(match_list[0])
+    match_list = dyrus.match_list()
+    match = match_list[0].match()
 
     print("Basic match information:")
     print("  Match ID: {0}".format(match.id))

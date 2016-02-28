@@ -23,7 +23,7 @@ def main():
     dyrus = riotapi.get_summoner_by_name("Dyrus")  # SummonerID is 5908
     # dyrus = riotapi.get_summoner_by_id(5908)  # You could use this as well
 
-    match_list = riotapi.get_match_list(dyrus)
+    match_list = dyrus.match_list()
 
     num_matches = 20
 
@@ -34,7 +34,7 @@ def main():
     print("Calculating K/D/A from the past {0} matches...".format(num_matches))
 
     for i, match_reference in enumerate(match_list[0:num_matches]):
-        match = riotapi.get_match(match_reference)
+        match = match_reference.match()
         for participant in match.participants:
             if participant.summoner_id == dyrus.id:
                 kills += participant.stats.kills
@@ -47,7 +47,7 @@ def main():
 
     print()
     print("If we want K/D/A we really should be using the /stats/ endpoint, but it seems to be inaccurate or missing key information.")
-    stats = riotapi.get_stats(dyrus)
+    stats = dyrus.stats()
     stats = stats[StatSummaryType.ranked_fives].stats
     print("Total ranked K/D/A for {0}:  {1}/{2}/{3} == {4}".format(dyrus.name, stats.kills, stats.deaths, stats.assists, round(stats.kda, 3)))
 

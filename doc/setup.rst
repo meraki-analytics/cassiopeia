@@ -21,6 +21,11 @@ Restart your terminal.
 
 For more information, consult Google.
 
+Dependencies
+^^^^^^^^^^^^
+
+Cassiopeia depends on [SQLAlchemy](http://www.sqlalchemy.org/). It should be automatically installed for you if you install with pip. Otherwise, do `pip install sqlalchemy`.
+
 
 Setting Additional Environment Variables
 ========================================
