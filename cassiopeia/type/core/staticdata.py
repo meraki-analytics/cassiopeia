@@ -38,6 +38,296 @@ class SetItem(cassiopeia.type.core.common.CassiopeiaObject):
 
 
 @cassiopeia.type.core.common.inheritdocs
+class Item(cassiopeia.type.core.common.CassiopeiaObject):
+    dto_type = cassiopeia.type.dto.staticdata.Item
+
+    __stat_patterns = {
+        "percent_base_attack_damage": "\\+(\\d+)% Base Attack Damage",
+        "percent_cooldown_reduction": "\\+(\\d+) *% Cooldown Reduction",
+        "armor_pen": "\\+(\\d+) <a href='FlatArmorPen'>Armor Penetration</a>",
+        "percent_bonus_armor_pen": "\\+(\\d+)% <a href='BonusArmorPen'>Bonus Armor Penetration</a>",
+        "magic_pen": "\\+(\\d+) <a href='FlatMagicPen'>Magic Penetration</a>",
+        "percent_magic_pen": "\\+(\\d+)% <a href='TotalMagicPen'>Magic Penetration</a>",
+        "gold_per_ten": "\\+(\\d+) *Gold per 10 seconds",
+        "percent_ability_power": "Increases Ability Power by (\\d+)%",
+        "life_steal": "(?:Dealing physical damage heals for (\\d+)% of the damage dealt)|(?:\\+(\\d+)% Life Steal)",
+        "spell_vamp": "(?:\\+(\\d+)% <a href='SpellVamp'>Spell Vamp</a>)|(?:Your spells and abilities heal you for (\\d+)% of the damage dealt)",
+        "percent_base_mana_regen": "\\+(\\d+)% Base Mana Regen",
+        "percent_base_health_regen": "\\+(\\d+)% Base Health Regen",
+        "percent_bonus_health": "\\+(\\d+)% Bonus Health",
+        "percent_movespeed": "\\+(\\d+)% Movement Speed",
+        "tenacity": "Tenacity:</unique> Reduces the duration of stuns, slows, taunts, fears, silences, blinds, polymorphs, and immobilizes by (\\d+)%"
+    }
+
+    def __str__(self):
+        return self.name
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __ne__(self, other):
+        return self.id != other.id
+
+    def __hash__(self):
+        return hash(self.id)
+
+    @property
+    def keywords(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return self.data.colloq
+
+    @property
+    def consume_on_full(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return self.data.consumeOnFull
+
+    @property
+    def consumable(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return self.data.consumed
+
+    @property
+    def tier(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return self.data.depth
+
+    @property
+    def description(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return self.data.description
+
+    @property
+    def effect(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return self.effect
+
+    @property
+    def components(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return cassiopeia.riotapi.get_items([int(id_) for id_ in self.data.from_])
+
+    @cassiopeia.type.core.common.lazyproperty
+    def gold(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return Gold(self.data.gold) if self.data.gold else None
+
+    @property
+    def group(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return self.data.group
+
+    @property
+    def hide(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return self.data.hide_from_all
+
+    @property
+    def id(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return self.data.id
+
+    @cassiopeia.type.core.common.lazyproperty
+    def image(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return Image(self.data.image) if self.data.image else None
+
+    @property
+    def in_store(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return self.data.inStore
+
+    @property
+    def component_of(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return cassiopeia.riotapi.get_items([int(id_) for id_ in self.data.into])
+
+    @property
+    def maps(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return {cassiopeia.type.core.common.Map(int(id_)): allowed for id_, allowed in self.data.maps.items()}
+
+    @property
+    def name(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return self.data.name
+
+    @property
+    def blurb(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return self.data.plaintext
+
+    @property
+    def required_champion(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return cassiopeia.riotapi.get_champion_by_name(self.data.requiredChampion) if self.data.requiredChampion else None
+
+    @cassiopeia.type.core.common.lazyproperty
+    def meta_data(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return MetaData(self.data.rune) if self.data.rune else None
+
+    @property
+    def sanitized_description(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return self.data.sanitizedDescription
+
+    @property
+    def special_recipe(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return self.data.specialRecipe
+
+    @property
+    def stacks(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return self.data.stacks
+
+    @cassiopeia.type.core.common.lazyproperty
+    def stats(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        scraped_stats = {}
+        for stat, regex in Item.__stat_patterns.items():
+            match = re.search(regex, self.description)
+            if match:
+                value = [match.group(i) for i in range(1, re.compile(regex).groups + 1) if match.group(i) is not None]
+                value = sum([float(v) for v in value])
+                scraped_stats[stat] = value
+        if scraped_stats and self.data.stats is None:
+            self.data.stats = cassiopeia.type.dto.staticdata.BasicDataStats({})
+        return ItemStats(self.data.stats, scraped_stats) if self.data.stats else None
+
+    @property
+    def tags(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        return self.data.tags
+
+    # Left out these: attack_range, percent_time_dead, percent_time_dead_per_level, time_dead, time_dead_per_level, gold_per_ten, starting_gold, percent_xp_bonus, xp_bonus
+    __item_categories = {
+        "Defense": {
+            "Health": ["base_health", "health", "percent_health", "percent_bonus_health", "health_regen", "base_health_regen", "health_regen_per_level", "bonus_health_regen", "percent_health_regen", "percent_base_health_regen", "health_per_level", "base_health_regen", "bonus_health"],
+            "Armor": ["armor", "bonus_armor", "armor_per_level", "base_armor", "percent_armor"],
+            "Magic Resist": ["magic_resist_per_level", "base_magic_resist", "magic_resist", "percent_magic_resist", "bonus_magic_resist"],
+            "Tenacity": ["tenacity"],
+            "Other": ["dodge_chance", "dodge_chance_per_level", "block", "percent_block", "tenacity"]
+        },
+        "Attack": {
+            "Damage": ["bonus_attack_damage", "attack_damage", "base_attack_damage", "percent_attack_damage", "percent_total_damage_increase", "attack_damage_per_level"],
+            "Critical Strike": ["percent_critical_strike_damage", "critical_strike_chance_per_level", "critical_strike_damage", "critical_strike_damage_per_level", "critical_strike_chance", "critical_strike_chance_per_level"],
+            "Attack Speed": ["percent_attack_speed", "attack_speed", "bonus_attack_speed", "attack_speed_per_level", "base_attack_speed", "percent_attack_speed_per_level"],
+            "Life Steal": ["life_steal"],
+            "Other": ["armor_penetration", "percent_armor_penetration", "percent_bonus_armor_penetration", "armor_penetration_per_level", "percent_armor_penetration_per_level", "magic_penetration", "percent_magic_penetration", "magic_penetration_per_level", "percent_magic_pen_per_level"]
+        },
+        "Magic": {
+            "Ability Power": ["ability_power", "ability_power_per_level", "percent_ability_power"],
+            "Cooldown Reduction": ["item_cooldown_reduction", "cooldown_reduction_per_level", "cooldown_reduction"],
+            "Spell Vamp": ["spell_vamp"],
+            "Mana": ["base_mana", "bonus_mana", "energy_per_level", "energy", "mana_per_level", "mana", "percent_mana", "base_mana_regen"],
+            "Mana Regen": ["base_mana_regen", "bonus_mana_regen", "mana_regen_per_level", "percent_mana_regen", "percent_base_mana_regen", "mana_regen", "energy_regen", "energy_regen_per_level"],
+            "Other": []
+        },
+        "Movement": {
+            "Other Movement Items": ["out_of_combat_movespeed", "percent_movespeed", "movespeed_per_level", "movespeed", "percent_movespeed_per_level"],
+            "Other": []
+        }
+    }
+    __boot_ids = {"1001", "3117", "3158", "3111", "3006", "3009", "3020", "3047"}
+
+    @cassiopeia.type.core.common.lazyproperty
+    def categories(self):
+        """
+        Returns:
+            str: what type the item set is (e.g. starting items)
+        """
+        if self.consumable:
+            cats = {"Consumable"}
+        else:
+            cats = set()
+        if self.stats is not None:
+            for cat_name, cat in Item.__item_categories.items():
+                for subcat, attrs in cat.items():
+                    for attr in attrs:
+                        if getattr(self.stats, attr, 0.0) != 0.0:
+                            cats.add(cat_name)
+                            cats.add(subcat)
+        if str(self.id) in Item.__boot_ids or len(set(self.data.from_) & Item.__boot_ids) > 0:
+            cats.add("Boots")
+            cats.remove("Other Movement Items")
+
+        return list(cats)
+
+
+@cassiopeia.type.core.common.inheritdocs
 class ItemSet(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.Block
 
@@ -1074,6 +1364,12 @@ class Gold(cassiopeia.type.core.common.CassiopeiaObject):
 class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.staticdata.BasicDataStats
 
+    __stats = set()
+    for tag, tags in Item._Item__item_categories.items():
+        for tag, stats in tags.items():
+            for stat in stats:
+                __stats.add(stat)
+
     def __init__(self, data, scraped_stats={}):
         super().__init__(data)
         for k, v in scraped_stats.items():
@@ -1082,7 +1378,12 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
         self.__scraped_stats = scraped_stats
 
     def __str__(self):
-        return "Item Stats"
+        stats = {}
+        for stat in ItemStats._ItemStats__stats:
+            value = getattr(self, stat, 0.0)
+            if value != 0.0:
+                stats[stat] = value
+        return str(stats)
 
     @property
     def armor(self):
@@ -1322,7 +1623,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
         Returns:
             str: what type the item set is (e.g. starting items)
         """
-        return self.__scraped_stats.get("base_mana_regen", 0.0)
+        return self.__scraped_stats.get("base_mana_regen", 0.0) + self.__scraped_stats.get("percent_base_mana_regen", 0.0)
 
     @property
     def percent_ability_power(self):
@@ -1635,294 +1936,6 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
             str: what type the item set is (e.g. starting items)
         """
         return abs(self.data.rPercentTimeDeadModPerLevel)
-
-
-@cassiopeia.type.core.common.inheritdocs
-class Item(cassiopeia.type.core.common.CassiopeiaObject):
-    dto_type = cassiopeia.type.dto.staticdata.Item
-
-    __stat_patterns = {
-        "percent_base_attack_damage": "\\+(\\d+)% Base Attack Damage",
-        "percent_cooldown_reduction": "\\+(\\d+) *% Cooldown Reduction",
-        "armor_pen": "\\+(\\d+) <a href='FlatArmorPen'>Armor Penetration</a>",
-        "percent_bonus_armor_pen": "\\+(\\d+)% <a href='BonusArmorPen'>Bonus Armor Penetration</a>",
-        "magic_pen": "\\+(\\d+) <a href='FlatMagicPen'>Magic Penetration</a>",
-        "percent_magic_pen": "\\+(\\d+)% <a href='TotalMagicPen'>Magic Penetration</a>",
-        "gold_per_ten": "\\+(\\d+) *Gold per 10 seconds",
-        "percent_ability_power": "Increases Ability Power by (\\d+)%",
-        "life_steal": "(?:Dealing physical damage heals for (\\d+)% of the damage dealt)|(?:\\+(\\d+)% Life Steal)",
-        "spell_vamp": "(?:\\+(\\d+)% <a href='SpellVamp'>Spell Vamp</a>)|(?:Your spells and abilities heal you for (\\d+)% of the damage dealt)",
-        "percent_base_mana_regen": "\\+(\\d+)% Base Mana Regen",
-        "percent_base_health_regen": "\\+(\\d+)% Base Health Regen",
-        "percent_bonus_health": "\\+(\\d+)% Bonus Health",
-        "percent_movespeed": "\\+(\\d+)% Movement Speed",
-        "tenacity": "Tenacity:</unique> Reduces the duration of stuns, slows, taunts, fears, silences, blinds, polymorphs, and immobilizes by (\\d+)%"
-    }
-
-    def __str__(self):
-        return self.name
-
-    def __eq__(self, other):
-        return self.id == other.id
-
-    def __ne__(self, other):
-        return self.id != other.id
-
-    def __hash__(self):
-        return hash(self.id)
-
-    @property
-    def keywords(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return self.data.colloq
-
-    @property
-    def consume_on_full(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return self.data.consumeOnFull
-
-    @property
-    def consumable(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return self.data.consumed
-
-    @property
-    def tier(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return self.data.depth
-
-    @property
-    def description(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return self.data.description
-
-    @property
-    def effect(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return self.effect
-
-    @property
-    def components(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return cassiopeia.riotapi.get_items([int(id_) for id_ in self.data.from_])
-
-    @cassiopeia.type.core.common.lazyproperty
-    def gold(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return Gold(self.data.gold) if self.data.gold else None
-
-    @property
-    def group(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return self.data.group
-
-    @property
-    def hide(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return self.data.hide_from_all
-
-    @property
-    def id(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return self.data.id
-
-    @cassiopeia.type.core.common.lazyproperty
-    def image(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return Image(self.data.image) if self.data.image else None
-
-    @property
-    def in_store(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return self.data.inStore
-
-    @property
-    def component_of(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return cassiopeia.riotapi.get_items([int(id_) for id_ in self.data.into])
-
-    @property
-    def maps(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return {cassiopeia.type.core.common.Map(int(id_)): allowed for id_, allowed in self.data.maps.items()}
-
-    @property
-    def name(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return self.data.name
-
-    @property
-    def blurb(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return self.data.plaintext
-
-    @property
-    def required_champion(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return cassiopeia.riotapi.get_champion_by_name(self.data.requiredChampion) if self.data.requiredChampion else None
-
-    @cassiopeia.type.core.common.lazyproperty
-    def meta_data(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return MetaData(self.data.rune) if self.data.rune else None
-
-    @property
-    def sanitized_description(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return self.data.sanitizedDescription
-
-    @property
-    def special_recipe(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return self.data.specialRecipe
-
-    @property
-    def stacks(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return self.data.stacks
-
-    @cassiopeia.type.core.common.lazyproperty
-    def stats(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        scraped_stats = {}
-        for stat, regex in Item.__stat_patterns.items():
-            match = re.search(regex, self.description)
-            if match:
-                value = [match.group(i) for i in range(1, re.compile(regex).groups + 1) if match.group(i) is not None]
-                value = sum([float(v) for v in value])
-                scraped_stats[stat] = value
-        return ItemStats(self.data.stats, scraped_stats) if self.data.stats else None
-
-    @property
-    def tags(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        return self.data.tags
-
-    # Left out these: attack_range, percent_time_dead, percent_time_dead_per_level, time_dead, time_dead_per_level, gold_per_ten, starting_gold, percent_xp_bonus, xp_bonus
-    __item_categories = {
-        "Defense": {
-            "Health": ["base_health", "health", "percent_health", "percent_bonus_health", "health_regen", "base_health_regen", "health_regen_per_level", "bonus_health_regen", "percent_health_regen", "percent_base_health_regen", "health_per_level", "base_health_regen", "bonus_health"],
-            "Armor": ["armor", "bonus_armor", "armor_per_level", "base_armor", "percent_armor"],
-            "Magic Resist": ["magic_resist_per_level", "base_magic_resist", "magic_resist", "percent_magic_resist", "bonus_magic_resist"],
-            "Tenacity": ["tenacity"],
-            "Other": ["dodge_chance", "dodge_chance_per_level", "block", "percent_block", "tenacity"]
-        },
-        "Attack": {
-            "Damage": ["bonus_attack_damage", "attack_damage", "base_attack_damage", "percent_attack_damage", "percent_total_damage_increase", "attack_damage_per_level"],
-            "Critical Strike": ["percent_critical_strike_damage", "critical_strike_chance_per_level", "critical_strike_damage", "critical_strike_damage_per_level", "critical_strike_chance", "critical_strike_chance_per_level"],
-            "Attack Speed": ["percent_attack_speed", "attack_speed", "bonus_attack_speed", "attack_speed_per_level", "base_attack_speed", "percent_attack_speed_per_level"],
-            "Life Steal": ["life_steal"],
-            "Other": ["armor_penetration", "percent_armor_penetration", "percent_bonus_armor_penetration", "armor_penetration_per_level", "percent_armor_penetration_per_level", "magic_penetration", "percent_magic_penetration", "magic_penetration_per_level", "percent_magic_pen_per_level"]
-        },
-        "Magic": {
-            "Ability Power": ["ability_power", "ability_power_per_level", "percent_ability_power"],
-            "Cooldown Reduction": ["item_cooldown_reduction", "cooldown_reduction_per_level", "cooldown_reduction"],
-            "Spell Vamp": ["spell_vamp"],
-            "Mana": ["base_mana", "bonus_mana", "energy_per_level", "energy", "mana_per_level", "mana", "percent_mana", "base_mana_regen"],
-            "Mana Regen": ["base_mana_regen", "bonus_mana_regen", "mana_regen_per_level", "percent_mana_regen", "percent_base_mana_regen", "mana_regen", "energy_regen", "energy_regen_per_level"],
-            "Other": []
-        },
-        "Movement": {
-            "Other Movement Items": ["out_of_combat_movespeed", "percent_movespeed", "movespeed_per_level", "movespeed", "percent_movespeed_per_level"],
-            "Other": []
-        }
-    }
-    __boot_ids = {"1001", "3117", "3158", "3111", "3006", "3009", "3020", "3047"}
-
-    @cassiopeia.type.core.common.lazyproperty
-    def categories(self):
-        """
-        Returns:
-            str: what type the item set is (e.g. starting items)
-        """
-        if self.consumable:
-            cats = {"Consumable"}
-        else:
-            cats = set()
-        if self.stats is not None:
-            for cat_name, cat in Item.__item_categories.items():
-                for subcat, attrs in cat.items():
-                    for attr in attrs:
-                        if getattr(self.stats, attr, 0.0) != 0.0:
-                            cats.add(cat_name)
-                            cats.add(subcat)
-        if str(self.id) in Item.__boot_ids or len(set(self.data.from_) & Item.__boot_ids) > 0:
-            cats.add("Boots")
-            cats.remove("Other Movement Items")
-
-        return list(cats)
 
 
 ################
