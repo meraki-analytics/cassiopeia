@@ -48,7 +48,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def creation(self):
         """
         Returns:
-            Map: the map the match was played on
+            datetime: when the match was created
         """
         return datetime.datetime.utcfromtimestamp(self.data.matchCreation / 1000) if self.data.matchCreation else None
 
@@ -56,7 +56,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def duration(self):
         """
         Returns:
-            Map: the map the match was played on
+            datetime: duration of the match
         """
         return datetime.timedelta(seconds=self.data.matchDuration)
 
@@ -64,7 +64,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def id(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the match ID
         """
         return self.data.matchId
 
@@ -72,7 +72,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def mode(self):
         """
         Returns:
-            Map: the map the match was played on
+            GameMode: the game mode
         """
         return cassiopeia.type.core.common.GameMode(self.data.matchMode) if self.data.matchMode else None
 
@@ -80,7 +80,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def type(self):
         """
         Returns:
-            Map: the map the match was played on
+            GameType: the game type
         """
         return cassiopeia.type.core.common.GameType(self.data.matchType) if self.data.matchType else None
 
@@ -88,7 +88,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def version(self):
         """
         Returns:
-            Map: the map the match was played on
+            str: the patch this match was played in
         """
         return self.data.matchVersion
 
@@ -96,7 +96,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def participants(self):
         """
         Returns:
-            Map: the map the match was played on
+            Participants (list<Participant>): the participants in this match
         """
         participants = []
         for i in range(len(self.data.participants)):
@@ -108,7 +108,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def platform(self):
         """
         Returns:
-            Map: the map the match was played on
+            Platform: the platform (ie server) for this match
         """
         return cassiopeia.type.core.common.Platform(self.data.platformId) if self.data.platformId else None
 
@@ -116,7 +116,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def queue(self):
         """
         Returns:
-            Map: the map the match was played on
+            Queue: the queue type for this match
         """
         return cassiopeia.type.core.common.Queue(self.data.queueType) if self.data.queueType else None
 
@@ -124,7 +124,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def region(self):
         """
         Returns:
-            Map: the map the match was played on
+            Region: the region the match was played in
         """
         return cassiopeia.type.core.common.Region(self.data.region.lower()) if self.data.region else None
 
@@ -132,7 +132,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def season(self):
         """
         Returns:
-            Map: the map the match was played on
+            Season: the season this match was played in
         """
         return cassiopeia.type.core.common.Season(self.data.season) if self.data.season else None
 
@@ -140,7 +140,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def blue_team(self):
         """
         Returns:
-            Map: the map the match was played on
+            Team: the blue team
         """
         for team in self.data.teams:
             if team.teamId == cassiopeia.type.core.common.Side.blue.value:
@@ -151,7 +151,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def red_team(self):
         """
         Returns:
-            Map: the map the match was played on
+            Team: the red team
         """
         for team in self.data.teams:
             if team.teamId == cassiopeia.type.core.common.Side.red.value:
@@ -162,7 +162,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def timeline(self):
         """
         Returns:
-            Map: the map the match was played on
+            Timeline: the match timeline
         """
         return Timeline(self.data.timeline, self.participants) if self.data.timeline else None
 
@@ -170,7 +170,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def frames(self):
         """
         Returns:
-            Map: the map the match was played on
+            list<Frame>: the frames in this match
         """
         return self.timeline.frames
 
@@ -219,7 +219,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def champion(self):
         """
         Returns:
-            Map: the map the match was played on
+            Champion: the champion this participant played
         """
         return cassiopeia.riotapi.get_champion_by_id(self.data.participant.championId) if self.data.participant.championId else None
 
@@ -227,7 +227,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def previous_season_tier(self):
         """
         Returns:
-            Map: the map the match was played on
+            Tier: the participant's tier last season
         """
         return cassiopeia.type.core.common.Tier(self.data.participant.highestAchievedSeasonTier) if self.data.participant.highestAchievedSeasonTier else None
 
@@ -235,7 +235,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def masteries(self):
         """
         Returns:
-            Map: the map the match was played on
+            list<Mastery>: the participant's masteries
         """
         masteries = []
         ranks = []
@@ -248,7 +248,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def id(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the participant ID
         """
         return self.data.participant.participantId
 
@@ -256,7 +256,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def runes(self):
         """
         Returns:
-            Map: the map the match was played on
+            list<Rune>: the participant's current runes
         """
         runes = []
         counts = []
@@ -269,7 +269,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def summoner_spell_d(self):
         """
         Returns:
-            Map: the map the match was played on
+            SummonerSpell: the participant's first summoner spell
         """
         return cassiopeia.riotapi.get_summoner_spell(self.data.participant.spell1Id) if self.data.participant.spell1Id else None
 
@@ -277,7 +277,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def summoner_spell_f(self):
         """
         Returns:
-            Map: the map the match was played on
+            SummonerSpell: the participant's second summoner spell
         """
         return cassiopeia.riotapi.get_summoner_spell(self.data.participant.spell2Id) if self.data.participant.spell2Id else None
 
@@ -285,7 +285,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def stats(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantStats: the participant's stats
         """
         return ParticipantStats(self.data.participant.stats) if self.data.participant.stats else None
 
@@ -293,7 +293,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def side(self):
         """
         Returns:
-            Map: the map the match was played on
+            Side: the side this participant was on
         """
         return cassiopeia.type.core.common.Side(self.data.participant.teamId) if self.data.participant.teamId else None
 
@@ -301,7 +301,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def timeline(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimeline: the participant's timeline
         """
         return ParticipantTimeline(self.data.participant.timeline) if self.data.participant.timeline else None
 
@@ -309,7 +309,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def match_history_uri(self):
         """
         Returns:
-            Map: the map the match was played on
+            str: the the URI to access this player's match history online
         """
         return self.data.identity.player.matchHistoryUri if self.data.identity.player else None
 
@@ -317,7 +317,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def summoner(self):
         """
         Returns:
-            Map: the map the match was played on
+            Summoner: the summoner associated with this participant
         """
         return cassiopeia.riotapi.get_summoner_by_id(self.data.identity.player.summonerId) if self.data.identity.player and self.data.identity.player.summonerId else None
 
@@ -325,7 +325,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def summoner_id(self):
         """
         Returns:
-            Map: the map the match was played on
+            str: the participant's summoner id
         """
         return self.data.identity.player.summonerId if self.data.identity.player else None
 
@@ -333,7 +333,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def summoner_name(self):
         """
         Returns:
-            Map: the map the match was played on
+            str: the participant's summoner name
         """
         return self.data.identity.player.summonerName if self.data.identity.player else None
 
@@ -362,7 +362,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
     def participants(self):
         """
         Returns:
-            Map: the map the match was played on
+            Participants (list<Participant>): the participants on this team
         """
         return self.__participants
 
@@ -370,7 +370,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
     def bans(self):
         """
         Returns:
-            Map: the map the match was played on
+            list<Ban>: the bans for this game
         """
         return [Ban(ban) for ban in self.data.bans]
 
@@ -378,7 +378,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
     def baron_kills(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of times the team killed Baron
         """
         return self.data.baronKills
 
@@ -386,7 +386,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
     def victory_score(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: dominion only, the points the team had at game end
         """
         return self.data.dominionVictoryScore
 
@@ -394,7 +394,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
     def dragon_kills(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of times the team killed Dragon
         """
         return self.data.dragonKills
 
@@ -402,7 +402,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
     def first_baron(self):
         """
         Returns:
-            Map: the map the match was played on
+            bool: whether or not the team killed the first baron
         """
         return self.data.firstBaron
 
@@ -410,7 +410,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
     def first_blood(self):
         """
         Returns:
-            Map: the map the match was played on
+            bool: whether this team got first blood
         """
         return self.data.firstBlood
 
@@ -418,7 +418,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
     def first_dragon(self):
         """
         Returns:
-            Map: the map the match was played on
+            bool: whether or not this team killed the first dragon
         """
         return self.data.firstDragon
 
@@ -426,7 +426,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
     def first_inhibitor(self):
         """
         Returns:
-            Map: the map the match was played on
+            bool: flag indicating if this team destroyed the first inhibitor
         """
         return self.data.firstInhibitor
 
@@ -434,7 +434,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
     def first_rift_herald(self):
         """
         Returns:
-            Map: the map the match was played on
+            bool: flag indicating if this team killed the first rift herald
         """
         return self.data.firstRiftHerald
 
@@ -442,7 +442,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
     def first_turret(self):
         """
         Returns:
-            Map: the map the match was played on
+            bool: flag indicating if this team destroyed the first tower
         """
         return self.data.firstTower
 
@@ -450,7 +450,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
     def inhibitor_kills(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of inhibitors this team killed
         """
         return self.data.inhibitorKills
 
@@ -458,7 +458,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
     def rift_herald_kills(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of rift heralds this team killed
         """
         return self.data.riftHeraldKills
 
@@ -466,7 +466,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
     def side(self):
         """
         Returns:
-            Map: the map the match was played on
+            Side: the side this team was on
         """
         return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.teamId else None
 
@@ -474,7 +474,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
     def turret_kills(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of turret kills this team had
         """
         return self.data.towerKills
 
@@ -482,7 +482,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
     def vilemaw_kills(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of times the team has killed Vilemaw
         """
         return self.data.vilemawKills
 
@@ -490,7 +490,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
     def win(self):
         """
         Returns:
-            Map: the map the match was played on
+            bool: whether or not the team won the game
         """
         return self.data.winner
 
@@ -519,7 +519,7 @@ class Timeline(cassiopeia.type.core.common.CassiopeiaObject):
     def frame_interval(self):
         """
         Returns:
-            Map: the map the match was played on
+            timedelta: the number of milliseconds between frames
         """
         return datetime.timedelta(milliseconds=self.data.frameInterval)
 
@@ -527,7 +527,7 @@ class Timeline(cassiopeia.type.core.common.CassiopeiaObject):
     def frames(self):
         """
         Returns:
-            Map: the map the match was played on
+            list<Frame>: the frames in this match
         """
         participants = {participant.id: participant for participant in self.__participants}
         value = [Frame(frame, participants) for frame in self.data.frames]
@@ -546,7 +546,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def kda(self):
         """
         Returns:
-            Map: the map the match was played on
+            float: the participant's kda
         """
         return (self.kills + self.assists) / (self.deaths if self.deaths else 1)
 
@@ -554,7 +554,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def assists(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the total number of assists this participant had
         """
         return self.data.assists
 
@@ -562,7 +562,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def champion_level(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the champion level of the participant when the game ended
         """
         return self.data.champLevel
 
@@ -570,7 +570,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def combat_score(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: dominion only. the part of the participant's score that came from combat-related activities
         """
         return self.data.combatPlayerScore
 
@@ -582,7 +582,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def deaths(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of deaths this participant had
         """
         return self.data.deaths
 
@@ -590,7 +590,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def double_kills(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of double kills this participant had
         """
         return self.data.doubleKills
 
@@ -598,7 +598,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def first_blood_assist(self):
         """
         Returns:
-            Map: the map the match was played on
+            bool: flag indicating if participant got an assist on first blood
         """
         return self.data.firstBloodAssist
 
@@ -606,7 +606,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def first_blood(self):
         """
         Returns:
-            Map: the map the match was played on
+            bool: whether participant team got first blood
         """
         return self.data.firstBloodKill
 
@@ -614,7 +614,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def first_inhibitor_assist(self):
         """
         Returns:
-            Map: the map the match was played on
+            bool: flag indicating if participant got an assist on the first inhibitor
         """
         return self.data.firstInhibitorAssist
 
@@ -622,7 +622,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def first_inhibitor(self):
         """
         Returns:
-            Map: the map the match was played on
+            bool: flag indicating if this participant destroyed the first inhibitor
         """
         return self.data.firstInhibitorKill
 
@@ -630,7 +630,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def first_turret_assist(self):
         """
         Returns:
-            Map: the map the match was played on
+            bool: flag indicating if participant got an assist on the first tower
         """
         return self.data.firstTowerAssist
 
@@ -638,7 +638,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def first_turret(self):
         """
         Returns:
-            Map: the map the match was played on
+            bool: flag indicating if this team destroyed the first tower
         """
         return self.data.firstTowerKill
 
@@ -646,7 +646,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def gold_earned(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the participant's total gold
         """
         return self.data.goldEarned
 
@@ -654,7 +654,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def gold_spent(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the participant's spent gold
         """
         return self.data.goldSpent
 
@@ -662,7 +662,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def inhibitor_kills(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of inhibitors this team killed
         """
         return self.data.inhibitorKills
 
@@ -670,7 +670,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def item0(self):
         """
         Returns:
-            Map: the map the match was played on
+            Item: the participant's first item
         """
         return cassiopeia.riotapi.get_item(self.data.item0) if self.data.item0 else None
 
@@ -678,7 +678,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def item1(self):
         """
         Returns:
-            Map: the map the match was played on
+            Item: the participant's second item
         """
         return cassiopeia.riotapi.get_item(self.data.item1) if self.data.item1 else None
 
@@ -686,7 +686,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def item2(self):
         """
         Returns:
-            Map: the map the match was played on
+            Item: the participant's third item
         """
         return cassiopeia.riotapi.get_item(self.data.item2) if self.data.item2 else None
 
@@ -694,7 +694,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def item3(self):
         """
         Returns:
-            Map: the map the match was played on
+            Item: the participant's fourth item
         """
         return cassiopeia.riotapi.get_item(self.data.item3) if self.data.item3 else None
 
@@ -702,7 +702,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def item4(self):
         """
         Returns:
-            Map: the map the match was played on
+            Item: the participant's fifth item
         """
         return cassiopeia.riotapi.get_item(self.data.item4) if self.data.item4 else None
 
@@ -714,7 +714,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def item6(self):
         """
         Returns:
-            Map: the map the match was played on
+            Item: the participant's seventh item (i.e. their ward)
         """
         return cassiopeia.riotapi.get_item(self.data.item6) if self.data.item6 else None
 
@@ -722,7 +722,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def items(self):
         """
         Returns:
-            Map: the map the match was played on
+            list<Item>: the participant's items
         """
         return [self.item0, self.item1, self.item2, self.item3, self.item4, self.item5, self.item6]
 
@@ -730,7 +730,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def killing_sprees(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of killing sprees this participant had
         """
         return self.data.killingSprees
 
@@ -738,7 +738,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def kills(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the total number of kills this participant had
         """
         return self.data.kills
 
@@ -746,7 +746,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def largest_critical_strike(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the largest critical strike this participant had
         """
         return self.data.largestCriticalStrike
 
@@ -754,7 +754,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def largest_killing_spree(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the larges killing spree this participant had
         """
         return self.data.largestKillingSpree
 
@@ -762,7 +762,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def largest_multi_kill(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the largest multikill this participant had
         """
         return self.data.largestMultiKill
 
@@ -770,7 +770,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def magic_damage_dealt(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the total magic damage this participant dealt
         """
         return self.data.magicDamageDealt
 
@@ -778,7 +778,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def magic_damage_dealt_to_champions(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the total magic damage this participant dealt to champions
         """
         return self.data.magicDamageDealtToChampions
 
@@ -786,7 +786,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def magic_damage_taken(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the total magic damage this participant received
         """
         return self.data.magicDamageTaken
 
@@ -794,7 +794,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def minion_kills(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of minions killed
         """
         return self.data.minionsKilled
 
@@ -802,7 +802,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def monster_kills(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of neutral minions this participant killed
         """
         return self.data.neutralMinionsKilled
 
@@ -810,7 +810,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def enemy_monster_kills(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of neutral jungle minions killed in the enemy team's jungle
         """
         return self.data.neutralMinionsKilledEnemyJungle
 
@@ -818,7 +818,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def ally_monster_kills(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of neutral jungle minions killed in your team's jungle
         """
         return self.data.neutralMinionsKilledTeamJungle
 
@@ -826,7 +826,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def nodes_captured(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: dominion only. the number of nodes this participant captured
         """
         return self.data.nodeCapture
 
@@ -834,7 +834,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def node_capture_assists(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: dominion only. the number of nodes this participant assisted in capturing
         """
         return self.data.nodeCaptureAssist
 
@@ -842,7 +842,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def node_neutralizations(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: dominion only. the number of nodes this participant neutralized
         """
         return self.data.nodeNeutralize
 
@@ -850,7 +850,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def node_neutralization_assists(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: dominion only. the number of nodes this participant assisted in neutralizing
         """
         return self.data.nodeNeutralizeAssist
 
@@ -858,7 +858,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def objective_score(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: dominion only. the part of the participant's score that came from objective-related activities
         """
         return self.data.objectivePlayerScore
 
@@ -866,7 +866,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def penta_kills(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of penta kills this participant had
         """
         return self.data.pentaKills
 
@@ -874,7 +874,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def physical_damage_dealt(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the total physical damage this participant dealt
         """
         return self.data.physicalDamageDealt
 
@@ -882,7 +882,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def physical_damage_dealt_to_champions(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the total physical damage this participant dealt to champions
         """
         return self.data.physicalDamageDealtToChampions
 
@@ -890,7 +890,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def physical_damage_taken(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the total physical damage this participant received
         """
         return self.data.physicalDamageTaken
 
@@ -898,7 +898,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def quadra_kills(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of quadra kills this participant had
         """
         return self.data.quadraKills
 
@@ -906,7 +906,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def sight_wards_bought(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of sight wards this participant bought
         """
         return self.data.sightWardsBoughtInGame
 
@@ -914,7 +914,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def team_objectives(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: if game was a dominion game, number of completed team objectives (i.e., quests)
         """
         return self.data.teamObjective
 
@@ -922,7 +922,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def damage_dealt(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the total damage this participant dealt
         """
         return self.data.totalDamageDealt
 
@@ -930,7 +930,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def damage_dealt_to_champions(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the total damage this participant dealt to champions
         """
         return self.data.totalDamageDealtToChampions
 
@@ -938,7 +938,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def damage_taken(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the total damage this participant received
         """
         return self.data.totalDamageTaken
 
@@ -946,7 +946,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def healing_done(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the amount of healing this participant did
         """
         return self.data.totalHeal
 
@@ -954,7 +954,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def score(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: dominion only. the score for this participant
         """
         return self.data.totalPlayerScore
 
@@ -962,7 +962,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def score_rank(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: if game was a dominion game, team rank of the player's total score (e.g., 1-5)
         """
         return self.data.totalScoreRank
 
@@ -970,7 +970,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def crowd_control_dealt(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the total amount of crowd control this participant dealt (in seconds)
         """
         return self.data.totalTimeCrowdControlDealt
 
@@ -978,7 +978,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def units_healed(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of units this participant healed
         """
         return self.data.totalUnitsHealed
 
@@ -986,7 +986,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def turret_kills(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of turret kills this participant had
         """
         return self.data.towerKills
 
@@ -994,7 +994,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def triple_kills(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of triple kills this participant had
         """
         return self.data.tripleKills
 
@@ -1002,7 +1002,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def true_damage_dealt(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the total true damage this participant dealth
         """
         return self.data.trueDamageDealt
 
@@ -1010,7 +1010,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def true_damage_dealt_to_champions(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the total damage this participant dealt to champions
         """
         return self.data.trueDamageDealtToChampions
 
@@ -1018,7 +1018,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def true_damage_taken(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the total true damage this participant received
         """
         return self.data.trueDamageTaken
 
@@ -1026,7 +1026,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def unreal_kills(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of unreal kills this participant had
         """
         return self.data.unrealKills
 
@@ -1034,7 +1034,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def vision_wards_bought(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of vision wards sprees this participant bought
         """
         return self.data.visionWardsBoughtInGame
 
@@ -1042,7 +1042,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def ward_kills(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of wards this participant killed
         """
         return self.data.wardsKilled
 
@@ -1050,7 +1050,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def wards_placed(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of wards this participant placed
         """
         return self.data.wardsPlaced
 
@@ -1058,7 +1058,7 @@ class ParticipantStats(cassiopeia.type.core.common.CassiopeiaObject):
     def win(self):
         """
         Returns:
-            Map: the map the match was played on
+            bool: whether or not the participant won the game
         """
         return self.data.winner
 
@@ -1074,7 +1074,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def ancient_golem_assists_per_min_counts(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: ancient golem assists per minute timeline counts
         """
         return ParticipantTimelineData(self.data.ancientGolemAssistsPerMinCounts) if self.data.ancientGolemAssistsPerMinCounts else None
 
@@ -1082,7 +1082,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def ancient_golem_kills_per_min_counts(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: ancient golem kills per minute timeline counts
         """
         return ParticipantTimelineData(self.data.ancientGolemKillsPerMinCounts) if self.data.ancientGolemKillsPerMinCounts else None
 
@@ -1090,7 +1090,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def assisted_lane_deaths_per_min_deltas(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: assisted lane deaths per minute timeline data
         """
         return ParticipantTimelineData(self.data.assistedLaneDeathsPerMinDeltas) if self.data.assistedLaneDeathsPerMinDeltas else None
 
@@ -1098,7 +1098,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def assisted_lane_kills_per_min_deltas(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: assisted lane kills per minute timeline data
         """
         return ParticipantTimelineData(self.data.assistedLaneKillsPerMinDeltas) if self.data.assistedLaneKillsPerMinDeltas else None
 
@@ -1106,7 +1106,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def baron_assists_per_min_counts(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: baron assists per minute timeline counts
         """
         return ParticipantTimelineData(self.data.baronAssistsPerMinCounts) if self.data.baronAssistsPerMinCounts else None
 
@@ -1114,7 +1114,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def baron_kills_per_min_counts(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: baron kills per minute timeline counts
         """
         return ParticipantTimelineData(self.data.baronKillsPerMinCounts) if self.data.baronKillsPerMinCounts else None
 
@@ -1122,7 +1122,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def creeps_per_min_deltas(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: creeps per minute timeline data
         """
         return ParticipantTimelineData(self.data.creepsPerMinDeltas) if self.data.creepsPerMinDeltas else None
 
@@ -1130,7 +1130,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def cs_diff_per_min_deltas(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: creep score difference per minute timeline data
         """
         return ParticipantTimelineData(self.data.csDiffPerMinDeltas) if self.data.csDiffPerMinDeltas else None
 
@@ -1138,7 +1138,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def damage_taken_diff_per_min_deltas(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: damage taken difference per minute timeline data
         """
         return ParticipantTimelineData(self.data.damageTakenDiffPerMinDeltas) if self.data.damageTakenDiffPerMinDeltas else None
 
@@ -1146,7 +1146,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def damage_taken_per_min_deltas(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: damage taken per minute timeline data
         """
         return ParticipantTimelineData(self.data.damageTakenPerMinDeltas) if self.data.damageTakenPerMinDeltas else None
 
@@ -1154,7 +1154,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def dragon_assists_per_min_counts(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: dragon assists per minute timeline counts
         """
         return ParticipantTimelineData(self.data.dragonAssistsPerMinCounts) if self.data.dragonAssistsPerMinCounts else None
 
@@ -1162,7 +1162,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def dragon_kills_per_min_counts(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: dragon kills per minute timeline counts
         """
         return ParticipantTimelineData(self.data.dragonKillsPerMinCounts) if self.data.dragonKillsPerMinCounts else None
 
@@ -1170,7 +1170,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def elder_lizard_assists_per_min_counts(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: elder lizard assists per minute timeline counts
         """
         return ParticipantTimelineData(self.data.elderLizardAssistsPerMinCounts) if self.data.elderLizardAssistsPerMinCounts else None
 
@@ -1178,7 +1178,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def elder_lizard_kills_per_min_counts(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: elder lizard kills per minute timeline counts
         """
         return ParticipantTimelineData(self.data.elderLizardKillsPerMinCounts) if self.data.elderLizardKillsPerMinCounts else None
 
@@ -1186,7 +1186,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def gold_per_min_deltas(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: gold per minute timeline data
         """
         return ParticipantTimelineData(self.data.goldPerMinDeltas) if self.data.goldPerMinDeltas else None
 
@@ -1194,7 +1194,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def inhibitor_assists_per_min_counts(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: inhibitor assists per minute timeline counts
         """
         return ParticipantTimelineData(self.data.inhibitorAssistsPerMinCounts) if self.data.inhibitorAssistsPerMinCounts else None
 
@@ -1202,7 +1202,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def inhibitor_kills_per_min_counts(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: inhibitor kills per minute timeline counts
         """
         return ParticipantTimelineData(self.data.inhibitorKillsPerMinCounts) if self.data.inhibitorKillsPerMinCounts else None
 
@@ -1210,7 +1210,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def lane(self):
         """
         Returns:
-            Map: the map the match was played on
+            Lane: the lane this participant was in
         """
         lane = self.data.lane
         lane = "MIDDLE" if lane == "MID" else lane
@@ -1221,7 +1221,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def role(self):
         """
         Returns:
-            Map: the map the match was played on
+            Role: the role of this particiant
         """
         return cassiopeia.type.core.common.Role(self.data.role) if self.data.role else None
 
@@ -1229,7 +1229,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def turret_assists_per_min_counts(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: tower assists per minute timeline counts
         """
         return ParticipantTimelineData(self.data.towerAssistsPerMinCounts) if self.data.towerAssistsPerMinCounts else None
 
@@ -1237,7 +1237,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def turret_kills_per_min_counts(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: tower kills per minute timeline counts
         """
         return ParticipantTimelineData(self.data.towerKillsPerMinCounts) if self.data.towerKillsPerMinCounts else None
 
@@ -1245,7 +1245,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def turret_Kills_per_min_deltas(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: tower kills per minute timeline data
         """
         return ParticipantTimelineData(self.data.towerKillsPerMinDeltas) if self.data.towerKillsPerMinDeltas else None
 
@@ -1253,7 +1253,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def spider_assists_per_min_counts(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: vilemaw assists per minute timeline counts
         """
         return ParticipantTimelineData(self.data.vilemawAssistsPerMinCounts) if self.data.vilemawAssistsPerMinCounts else None
 
@@ -1261,7 +1261,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def spider_kills_per_min_counts(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: vilemaw kills per minute timeline counts
         """
         return ParticipantTimelineData(self.data.vilemawKillsPerMinCounts) if self.data.vilemawKillsPerMinCounts else None
 
@@ -1269,7 +1269,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def wards_per_min_deltas(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: wards placed per minute timeline data
         """
         return ParticipantTimelineData(self.data.wardsPerMinDeltas) if self.data.wardsPerMinDeltas else None
 
@@ -1277,7 +1277,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def xp_diff_per_min_deltas(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: experience difference per minute timeline data
         """
         return ParticipantTimelineData(self.data.xpDiffPerMinDeltas) if self.data.xpDiffPerMinDeltas else None
 
@@ -1285,7 +1285,7 @@ class ParticipantTimeline(cassiopeia.type.core.common.CassiopeiaObject):
     def xp_per_min_deltas(self):
         """
         Returns:
-            Map: the map the match was played on
+            ParticipantTimelineData: experience per minute timeline data
         """
         return ParticipantTimelineData(self.data.xpPerMinDeltas) if self.data.xpPerMinDeltas else None
 
@@ -1301,7 +1301,7 @@ class Ban(cassiopeia.type.core.common.CassiopeiaObject):
     def champion(self):
         """
         Returns:
-            Map: the map the match was played on
+            Champion: the champion that was banned
         """
         return cassiopeia.riotapi.get_champion_by_id(self.data.championId) if self.data.championId else None
 
@@ -1309,7 +1309,7 @@ class Ban(cassiopeia.type.core.common.CassiopeiaObject):
     def pick_turn(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: which pick turn this ban was on
         """
         return self.data.pickTurn
 
@@ -1346,7 +1346,7 @@ class Frame(cassiopeia.type.core.common.CassiopeiaObject):
     def events(self):
         """
         Returns:
-            Map: the map the match was played on
+            list<Event>: the events in this frame
         """
         value = [Event(event, self.__participants) for event in self.data.events]
         self.__count_participant()
@@ -1356,7 +1356,7 @@ class Frame(cassiopeia.type.core.common.CassiopeiaObject):
     def participant_frames(self):
         """
         Returns:
-            Map: the map the match was played on
+            dict<participantID:ParticipantFrame>: the frames in for each participant
         """
         value = {participant: ParticipantFrame(self.data.participantFrames[str(id_)], self.__participants) for id_, participant in self.__participants.items()}
         self.__count_participant()
@@ -1366,7 +1366,7 @@ class Frame(cassiopeia.type.core.common.CassiopeiaObject):
     def timestamp(self):
         """
         Returns:
-            Map: the map the match was played on
+            datetime: the timestamp for this frame
         """
         return datetime.timedelta(milliseconds=self.data.timestamp)
 
@@ -1382,7 +1382,7 @@ class ParticipantTimelineData(cassiopeia.type.core.common.CassiopeiaObject):
     def ten_to_twenty(self):
         """
         Returns:
-            Map: the map the match was played on
+            float: value per minute from 10 min to 20 min
         """
         return self.data.tenToTwenty
 
@@ -1390,7 +1390,7 @@ class ParticipantTimelineData(cassiopeia.type.core.common.CassiopeiaObject):
     def thirty_to_end(self):
         """
         Returns:
-            Map: the map the match was played on
+            float: value per minute from 30 min to the end of the game
         """
         return self.data.thirtyToEnd
 
@@ -1398,7 +1398,7 @@ class ParticipantTimelineData(cassiopeia.type.core.common.CassiopeiaObject):
     def twenty_to_thirty(self):
         """
         Returns:
-            Map: the map the match was played on
+            float: value per minute from 20 min to 30 min
         """
         return self.data.twentyToThirty
 
@@ -1406,7 +1406,7 @@ class ParticipantTimelineData(cassiopeia.type.core.common.CassiopeiaObject):
     def zero_to_ten(self):
         """
         Returns:
-            Map: the map the match was played on
+            float: value per minute from the beginning of the game to 10 min
         """
         return self.data.zeroToTen
 
@@ -1434,7 +1434,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def ascended(self):
         """
         Returns:
-            Map: the map the match was played on
+            Ascended: what died in the event
         """
         return cassiopeia.type.core.common.Ascended(self.data.ascendedType) if self.data.ascendedType else None
 
@@ -1442,7 +1442,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def assists(self):
         """
         Returns:
-            Map: the map the match was played on
+            list<Participant>: the participants who assisted in the event
         """
         value = [self.__participants[i] for i in self.data.assistingParticipantIds]
         self.__count_participant()
@@ -1452,7 +1452,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def building(self):
         """
         Returns:
-            Map: the map the match was played on
+            Building: the building type associated with the event, if any
         """
         return cassiopeia.type.core.common.Building(self.data.buildingType) if self.data.buildingType else None
 
@@ -1460,7 +1460,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def creator(self):
         """
         Returns:
-            Map: the map the match was played on
+            Participant: the participant who created the event
         """
         value = self.__participants[self.data.creatorId] if self.data.creatorId else None
         self.__count_participant()
@@ -1470,7 +1470,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def type(self):
         """
         Returns:
-            Map: the map the match was played on
+            EventType: the event type
         """
         return cassiopeia.type.core.common.EventType(self.data.eventType) if self.data.eventType else None
 
@@ -1478,7 +1478,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def item_after(self):
         """
         Returns:
-            Map: the map the match was played on
+            Item: the item involved before the event happened
         """
         return cassiopeia.riotapi.get_item(self.data.itemAfter) if self.data.itemAfter else None
 
@@ -1486,7 +1486,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def item_before(self):
         """
         Returns:
-            Map: the map the match was played on
+            Item: the item involved after the event happened
         """
         return cassiopeia.riotapi.get_item(self.data.itemBefore) if self.data.itemBefore else None
 
@@ -1494,7 +1494,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def item(self):
         """
         Returns:
-            Map: the map the match was played on
+            Item: the item involved in the event
         """
         return cassiopeia.riotapi.get_item(self.data.itemId) if self.data.itemId else None
 
@@ -1502,7 +1502,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def killer(self):
         """
         Returns:
-            Map: the map the match was played on
+            Participant: the participant who did the killing
         """
         value = self.__participants[self.data.killerId] if self.data.killerId else None
         self.__count_participant()
@@ -1512,7 +1512,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def lane(self):
         """
         Returns:
-            Map: the map the match was played on
+            Lane: the lane this event happened in
         """
         return cassiopeia.type.core.common.LaneType(self.data.laneType) if self.data.laneType else None
 
@@ -1520,7 +1520,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def level_up(self):
         """
         Returns:
-            Map: the map the match was played on
+            LevelUp: the level up type of the event
         """
         return cassiopeia.type.core.common.LevelUp(self.data.levelUpType) if self.data.levelUpType else None
 
@@ -1528,7 +1528,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def monster(self):
         """
         Returns:
-            Map: the map the match was played on
+            Monster: the monster that was involved in the event
         """
         return cassiopeia.type.core.common.Monster(self.data.monsterType) if self.data.monsterType else None
 
@@ -1536,7 +1536,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def participant(self):
         """
         Returns:
-            Map: the map the match was played on
+            Participant: the primary participant that event happened to or who was involved in the event
         """
         value = self.__participants[self.data.participantId] if self.data.participantId else None
         self.__count_participant()
@@ -1546,7 +1546,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def point_captured(self):
         """
         Returns:
-            Map: the map the match was played on
+            Point: dominion only, which point was captured
         """
         return cassiopeia.type.core.common.Point(self.data.pointCaptured) if self.data.pointCaptured else None
 
@@ -1554,7 +1554,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def position(self):
         """
         Returns:
-            Map: the map the match was played on
+            Position: the position where the event occurred
         """
         return Position(self.data.position) if self.data.position else None
 
@@ -1562,7 +1562,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def skill_slot(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the skill slot of the event
         """
         return self.data.skillSlot
 
@@ -1570,7 +1570,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def tower(self):
         """
         Returns:
-            Map: the map the match was played on
+            Tower: which tower was involved in the event
         """
         return cassiopeia.type.core.common.Turret(self.data.towerType) if self.data.teamId else None
 
@@ -1578,7 +1578,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def timestamp(self):
         """
         Returns:
-            Map: the map the match was played on
+            datetime: the timestamp for this event
         """
         return datetime.timedelta(milliseconds=self.data.timestamp)
 
@@ -1586,7 +1586,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def side(self):
         """
         Returns:
-            Map: the map the match was played on
+            Side: the side this participant was on
         """
         return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.towerType else None
 
@@ -1594,7 +1594,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def victim(self):
         """
         Returns:
-            Map: the map the match was played on
+            Participant: the victim!
         """
         value = self.__participants[self.data.victimId] if self.data.victimId else None
         self.__count_participant()
@@ -1604,7 +1604,7 @@ class Event(cassiopeia.type.core.common.CassiopeiaObject):
     def ward(self):
         """
         Returns:
-            Map: the map the match was played on
+            Ward: the ward type associated with this event
         """
         return cassiopeia.type.core.common.Ward(self.data.wardType) if self.data.wardType else None
 
@@ -1624,7 +1624,7 @@ class ParticipantFrame(cassiopeia.type.core.common.CassiopeiaObject):
     def gold(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the participant's current gold
         """
         return self.data.currentGold
 
@@ -1632,7 +1632,7 @@ class ParticipantFrame(cassiopeia.type.core.common.CassiopeiaObject):
     def score(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: dominion only. the score for this participant
         """
         return self.data.dominionScore
 
@@ -1640,7 +1640,7 @@ class ParticipantFrame(cassiopeia.type.core.common.CassiopeiaObject):
     def jungle_monsters_killed(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of neutral jungle monsters killed
         """
         return self.data.jungleMinionsKilled
 
@@ -1648,7 +1648,7 @@ class ParticipantFrame(cassiopeia.type.core.common.CassiopeiaObject):
     def level(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the participant's champion level
         """
         return self.data.level
 
@@ -1656,7 +1656,7 @@ class ParticipantFrame(cassiopeia.type.core.common.CassiopeiaObject):
     def minion_kills(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the number of minions killed
         """
         return self.data.minionsKilled
 
@@ -1664,7 +1664,7 @@ class ParticipantFrame(cassiopeia.type.core.common.CassiopeiaObject):
     def participant(self):
         """
         Returns:
-            Map: the map the match was played on
+            Participant: the participant whose frames you are looking at
         """
         return self.__participant
 
@@ -1672,7 +1672,7 @@ class ParticipantFrame(cassiopeia.type.core.common.CassiopeiaObject):
     def position(self):
         """
         Returns:
-            Map: the map the match was played on
+            Position: the position of the participant
         """
         return Position(self.data.position) if self.data.position else None
 
@@ -1680,7 +1680,7 @@ class ParticipantFrame(cassiopeia.type.core.common.CassiopeiaObject):
     def team_score(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the team score for the participant
         """
         return self.data.teamScore
 
@@ -1688,7 +1688,7 @@ class ParticipantFrame(cassiopeia.type.core.common.CassiopeiaObject):
     def xp(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the amount of XP the participant has
         """
         return self.data.xp
 
@@ -1704,7 +1704,7 @@ class Position(cassiopeia.type.core.common.CassiopeiaObject):
     def x(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the x-position of the pixel
         """
         return self.data.x
 
@@ -1712,7 +1712,7 @@ class Position(cassiopeia.type.core.common.CassiopeiaObject):
     def y(self):
         """
         Returns:
-            Map: the map the match was played on
+            int: the y-position of the pixel
         """
         return self.data.y
 

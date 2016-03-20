@@ -59,7 +59,7 @@ class TournamentCode(cassiopeia.type.core.common.CassiopeiaObject):
     def id(self):
         """
         Returns:
-            str: the tournament code
+            int: the tournament code's ID
         """
         return self.data.id
 
@@ -67,7 +67,7 @@ class TournamentCode(cassiopeia.type.core.common.CassiopeiaObject):
     def name(self):
         """
         Returns:
-            str: the tournament code
+            str: the lobby name
         """
         return self.data.lobbyName
 
@@ -75,7 +75,7 @@ class TournamentCode(cassiopeia.type.core.common.CassiopeiaObject):
     def map(self):
         """
         Returns:
-            str: the tournament code
+            str: the map for the game
         """
         return MapType(self.data.map) if self.data.map else None
 
@@ -83,7 +83,7 @@ class TournamentCode(cassiopeia.type.core.common.CassiopeiaObject):
     def meta_data(self):
         """
         Returns:
-            str: the tournament code
+            str: the metadata for the game
         """
         return self.data.metaData
 
@@ -91,7 +91,7 @@ class TournamentCode(cassiopeia.type.core.common.CassiopeiaObject):
     def participants(self):
         """
         Returns:
-            str: the tournament code
+            list<Summoner>: the summoners participating in the tournament
         """
         return cassiopeia.riotapi.get_summoners_by_id(self.data.participants) if self.data.participants else []
 
@@ -99,7 +99,7 @@ class TournamentCode(cassiopeia.type.core.common.CassiopeiaObject):
     def password(self):
         """
         Returns:
-            str: the tournament code
+            str: the password for the lobby
         """
         return self.data.password
 
@@ -107,7 +107,7 @@ class TournamentCode(cassiopeia.type.core.common.CassiopeiaObject):
     def pick_type(self):
         """
         Returns:
-            str: the tournament code
+            PickType: the pick mode for the game
         """
         return PickType(self.data.pickType) if self.data.pickType else None
 
@@ -115,7 +115,7 @@ class TournamentCode(cassiopeia.type.core.common.CassiopeiaObject):
     def provider_id(self):
         """
         Returns:
-            str: the tournament code
+            int: the provider's ID
         """
         return self.data.providerId
 
@@ -123,7 +123,7 @@ class TournamentCode(cassiopeia.type.core.common.CassiopeiaObject):
     def region(self):
         """
         Returns:
-            str: the tournament code
+            TournamentRegion: the tournament's region
         """
         return TournamentRegion(self.data.region) if self.data.region else None
 
@@ -131,7 +131,7 @@ class TournamentCode(cassiopeia.type.core.common.CassiopeiaObject):
     def spectator_type(self):
         """
         Returns:
-            str: the tournament code
+            SpectatorType: the spectator mode for the game
         """
         return SpectatorType(self.data.spectators) if self.data.spectators else None
 
@@ -139,7 +139,7 @@ class TournamentCode(cassiopeia.type.core.common.CassiopeiaObject):
     def team_size(self):
         """
         Returns:
-            str: the tournament code
+            int: the team size for the game
         """
         return self.data.teamSize
 
@@ -147,7 +147,7 @@ class TournamentCode(cassiopeia.type.core.common.CassiopeiaObject):
     def tournament_id(self):
         """
         Returns:
-            str: the tournament code
+            int: the tournament's ID
         """
         return self.data.tournamentId
 
@@ -163,7 +163,7 @@ class LobbyEvent(cassiopeia.type.core.common.CassiopeiaObject):
     def type(self):
         """
         Returns:
-            str: the tournament code
+            str: the type of the event
         """
         return self.data.eventType
 
@@ -171,7 +171,7 @@ class LobbyEvent(cassiopeia.type.core.common.CassiopeiaObject):
     def summoner(self):
         """
         Returns:
-            str: the tournament code
+            Summoner: the summoner that triggered the event
         """
         return cassiopeia.riotapi.get_summoner_by_id(int(self.data.summonerId)) if self.data.summonerId else None
 
@@ -179,7 +179,7 @@ class LobbyEvent(cassiopeia.type.core.common.CassiopeiaObject):
     def timestamp(self):
         """
         Returns:
-            str: the tournament code
+            str: the time that the event occurred
         """
         return self.data.timestamp
 

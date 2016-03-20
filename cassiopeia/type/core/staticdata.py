@@ -32,7 +32,7 @@ class SetItem(cassiopeia.type.core.common.CassiopeiaObject):
     def item(self):
         """
         Returns:
-            int: how many of this item are in the block
+            Item: the item itself
         """
         return cassiopeia.riotapi.get_item(self.data.id)
 
@@ -75,7 +75,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def keywords(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: a string formatted list of search keywords for this item in the shop
         """
         return self.data.colloq
 
@@ -83,7 +83,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def consume_on_full(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            bool: well, we don't know what this one is. let us know if you figure it out.
         """
         return self.data.consumeOnFull
 
@@ -91,7 +91,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def consumable(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            bool: whether the item is a consumable
         """
         return self.data.consumed
 
@@ -99,7 +99,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def tier(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: what tier the item is
         """
         return self.data.depth
 
@@ -107,7 +107,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def description(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the description of the item
         """
         return self.data.description
 
@@ -115,7 +115,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def effect(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            dict<str, bool>: the item's effects
         """
         return self.effect
 
@@ -123,7 +123,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def components(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            list<Item>: the components for this item
         """
         return cassiopeia.riotapi.get_items([int(id_) for id_ in self.data.from_])
 
@@ -131,7 +131,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def gold(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            Gold: price information for this item
         """
         return Gold(self.data.gold) if self.data.gold else None
 
@@ -139,7 +139,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def group(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the group for this item
         """
         return self.data.group
 
@@ -147,7 +147,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def hide(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            bool: well, we don't know what this one is. let us know if you figure it out.
         """
         return self.data.hide_from_all
 
@@ -155,7 +155,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def id(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            int: the ID of this item
         """
         return self.data.id
 
@@ -163,7 +163,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def image(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            Image: the image of this item
         """
         return Image(self.data.image) if self.data.image else None
 
@@ -171,7 +171,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def in_store(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            bool: well, we don't know what this one is. let us know if you figure it out.
         """
         return self.data.inStore
 
@@ -179,7 +179,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def component_of(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            list<Item>: the items this one is a component of
         """
         return cassiopeia.riotapi.get_items([int(id_) for id_ in self.data.into])
 
@@ -187,7 +187,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def maps(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            dict<Map, bool>: a listing of whether this item is available on each map
         """
         return {cassiopeia.type.core.common.Map(int(id_)): allowed for id_, allowed in self.data.maps.items()}
 
@@ -195,7 +195,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def name(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the name of this item
         """
         return self.data.name
 
@@ -203,7 +203,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def blurb(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the blurb for this item
         """
         return self.data.plaintext
 
@@ -211,7 +211,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def required_champion(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            Champion: the required champion for this item
         """
         return cassiopeia.riotapi.get_champion_by_name(self.data.requiredChampion) if self.data.requiredChampion else None
 
@@ -219,7 +219,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def meta_data(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            MetaData: meta data about this item
         """
         return MetaData(self.data.rune) if self.data.rune else None
 
@@ -227,7 +227,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def sanitized_description(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the sanitized description of this item
         """
         return self.data.sanitizedDescription
 
@@ -235,7 +235,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def special_recipe(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            int: well, we don't know what this one is. let us know if you figure it out.
         """
         return self.data.specialRecipe
 
@@ -243,7 +243,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def stacks(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            int: the number of stacks this item can have
         """
         return self.data.stacks
 
@@ -251,7 +251,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def stats(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            ItemStats: the stats for this item
         """
         scraped_stats = {}
         for stat, regex in Item.__stat_patterns.items():
@@ -268,7 +268,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def tags(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            list<str>: this item's tags for sorting items
         """
         return self.data.tags
 
@@ -307,7 +307,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
     def categories(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            list<str>: the shop categories that this item belongs to
         """
         if self.consumable:
             cats = {"Consumable"}
@@ -347,7 +347,7 @@ class ItemSet(cassiopeia.type.core.common.CassiopeiaObject):
     def items(self):
         """
         Returns:
-            int: how many of this item are in the block
+            list<SetItem>: the items in this item set
         """
         return [SetItem(item) for item in self.data.items]
 
@@ -355,7 +355,7 @@ class ItemSet(cassiopeia.type.core.common.CassiopeiaObject):
     def rec_math(self):
         """
         Returns:
-            int: how many of this item are in the block
+            bool: well, we don't know what this one is. let us know if you figure it out.
         """
         return self.data.recMath
 
@@ -363,7 +363,7 @@ class ItemSet(cassiopeia.type.core.common.CassiopeiaObject):
     def type(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: what type the item set is (e.g. starting items)
         """
         return self.data.type
 
@@ -379,7 +379,7 @@ class SpellVariables(cassiopeia.type.core.common.CassiopeiaObject):
     def coefficients(self):
         """
         Returns:
-            int: how many of this item are in the block
+            list<float>: the coefficients for determining spell scaling
         """
         return self.data.coeff
 
@@ -387,7 +387,7 @@ class SpellVariables(cassiopeia.type.core.common.CassiopeiaObject):
     def dynamic(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: whether the spell variables are dynamic
         """
         return self.data.dyn
 
@@ -395,7 +395,7 @@ class SpellVariables(cassiopeia.type.core.common.CassiopeiaObject):
     def key(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: this spell's identifying key
         """
         return self.data.key
 
@@ -403,7 +403,7 @@ class SpellVariables(cassiopeia.type.core.common.CassiopeiaObject):
     def link(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: the link to the image. See https://developer.riotgames.com/docs/static-data for more information.
         """
         return self.data.link
 
@@ -411,7 +411,7 @@ class SpellVariables(cassiopeia.type.core.common.CassiopeiaObject):
     def ranks_with(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: what these variables rank with
         """
         return self.data.ranksWith
 
@@ -427,7 +427,7 @@ class LevelTip(cassiopeia.type.core.common.CassiopeiaObject):
     def effects(self):
         """
         Returns:
-            int: how many of this item are in the block
+            list<list<float>>: the level-by-level replacements for {{ e# }} tags in other values
         """
         return self.data.effect
 
@@ -435,7 +435,7 @@ class LevelTip(cassiopeia.type.core.common.CassiopeiaObject):
     def labels(self):
         """
         Returns:
-            int: how many of this item are in the block
+            list<str>: the labels for the changes in effects
         """
         return self.data.label
 
@@ -451,7 +451,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def armor(self):
         """
         Returns:
-            int: how many of this item are in the block
+            float: armor
         """
         return self.data.armor
 
@@ -459,7 +459,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def armor_per_level(self):
         """
         Returns:
-            int: how many of this item are in the block
+            float: armor per level
         """
         return self.data.armorperlevel
 
@@ -467,7 +467,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def attack_damage(self):
         """
         Returns:
-            int: how many of this item are in the block
+            float: attack damage
         """
         return self.data.attackdamage
 
@@ -475,7 +475,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def attack_damage_per_level(self):
         """
         Returns:
-            int: how many of this item are in the block
+            float: attack damage per level
         """
         return self.data.attackdamageperlevel
 
@@ -483,7 +483,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def attack_range(self):
         """
         Returns:
-            int: how many of this item are in the block
+            float: attack range
         """
         return self.data.attackrange
 
@@ -491,7 +491,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def attack_speed(self):
         """
         Returns:
-            int: how many of this item are in the block
+            float: attack speed
         """
         return 0.625 / (1.0 + self.data.attackspeedoffset)
 
@@ -499,7 +499,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_attack_speed_per_level(self):
         """
         Returns:
-            int: how many of this item are in the block
+            float: attack speed per level
         """
         return self.data.attackspeedperlevel / 100
 
@@ -507,7 +507,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def critical_strike_chance(self):
         """
         Returns:
-            int: how many of this item are in the block
+            float: crititical strike chance
         """
         return self.data.crit
 
@@ -515,7 +515,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def critical_strike_chance_per_level(self):
         """
         Returns:
-            int: how many of this item are in the block
+            float: crititical strike chance per level
         """
         return self.data.critperlevel
 
@@ -523,7 +523,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def health(self):
         """
         Returns:
-            int: how many of this item are in the block
+            float: health
         """
         return self.data.hp
 
@@ -531,7 +531,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def health_per_level(self):
         """
         Returns:
-            int: how many of this item are in the block
+            float: health per level
         """
         return self.data.hpperlevel
 
@@ -539,7 +539,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def health_regen(self):
         """
         Returns:
-            int: how many of this item are in the block
+            float: health regen
         """
         return self.data.hpregen
 
@@ -547,7 +547,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def health_regen_per_level(self):
         """
         Returns:
-            int: how many of this item are in the block
+            float: health regen per level
         """
         return self.data.hpregenperlevel
 
@@ -555,7 +555,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def movespeed(self):
         """
         Returns:
-            int: how many of this item are in the block
+            float: movespeed
         """
         return self.data.movespeed
 
@@ -563,7 +563,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def mana(self):
         """
         Returns:
-            int: how many of this item are in the block
+            float: mana
         """
         return self.data.mp
 
@@ -571,7 +571,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def mana_per_level(self):
         """
         Returns:
-            int: how many of this item are in the block
+            float: mana per level
         """
         return self.data.mpperlevel
 
@@ -579,7 +579,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def mana_regen(self):
         """
         Returns:
-            int: how many of this item are in the block
+            float: mana regen
         """
         return self.data.mpregen
 
@@ -587,7 +587,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def mana_regen_per_level(self):
         """
         Returns:
-            int: how many of this item are in the block
+            float: mana regen per level
         """
         return self.data.mpregenperlevel
 
@@ -595,7 +595,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def magic_resist(self):
         """
         Returns:
-            int: how many of this item are in the block
+            float: magic resist
         """
         return self.data.spellblock
 
@@ -603,7 +603,7 @@ class ChampionStats(cassiopeia.type.core.common.CassiopeiaObject):
     def magic_resist_per_level(self):
         """
         Returns:
-            int: how many of this item are in the block
+            float: magic resist per level
         """
         return self.data.spellblockperlevel
 
@@ -632,7 +632,7 @@ class Skin(cassiopeia.type.core.common.CassiopeiaObject):
     def splash(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: the link to the splash art for this skin
         """
         return "http://ddragon.leagueoflegends.com/cdn/img/champion/splash/{0}_{1}.jpg".format(self.__key, self.number)
 
@@ -640,7 +640,7 @@ class Skin(cassiopeia.type.core.common.CassiopeiaObject):
     def loading(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: the link to the loading art for this skin
         """
         return "http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{0}_{1}.jpg".format(self.__key, self.number)
 
@@ -648,7 +648,7 @@ class Skin(cassiopeia.type.core.common.CassiopeiaObject):
     def id(self):
         """
         Returns:
-            int: how many of this item are in the block
+            int: the ID of this skin
         """
         return self.data.id
 
@@ -656,7 +656,7 @@ class Skin(cassiopeia.type.core.common.CassiopeiaObject):
     def name(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: the name of this skin
         """
         return self.data.name
 
@@ -664,7 +664,7 @@ class Skin(cassiopeia.type.core.common.CassiopeiaObject):
     def number(self):
         """
         Returns:
-            int: how many of this item are in the block
+            int: where in the skin order this skin comes
         """
         return self.data.num
 
@@ -689,7 +689,7 @@ class RecommendedItems(cassiopeia.type.core.common.CassiopeiaObject):
     def item_sets(self):
         """
         Returns:
-            int: how many of this item are in the block
+            list<ItemSet>: the sets of items that make up this reommended page
         """
         return [ItemSet(block) for block in self.data.blocks]
 
@@ -697,7 +697,7 @@ class RecommendedItems(cassiopeia.type.core.common.CassiopeiaObject):
     def champion(self):
         """
         Returns:
-            int: how many of this item are in the block
+            Champion: the champion these recommendations are for
         """
         return cassiopeia.riotapi.get_champion_by_name(self.data.champion) if self.data.champion else None
 
@@ -705,7 +705,7 @@ class RecommendedItems(cassiopeia.type.core.common.CassiopeiaObject):
     def map(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: the name of the map these recommendations are for
         """
         return self.data.map
 
@@ -713,7 +713,7 @@ class RecommendedItems(cassiopeia.type.core.common.CassiopeiaObject):
     def mode(self):
         """
         Returns:
-            int: how many of this item are in the block
+            GameMode: the game mode these recommendations are for
         """
         return cassiopeia.type.core.common.GameMode(self.data.mode) if self.data.mode else None
 
@@ -721,7 +721,7 @@ class RecommendedItems(cassiopeia.type.core.common.CassiopeiaObject):
     def priority(self):
         """
         Returns:
-            int: how many of this item are in the block
+            bool: whether this is a priority recommendation
         """
         return self.data.priority
 
@@ -729,7 +729,7 @@ class RecommendedItems(cassiopeia.type.core.common.CassiopeiaObject):
     def name(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: the name of this item
         """
         return self.data.title
 
@@ -737,7 +737,7 @@ class RecommendedItems(cassiopeia.type.core.common.CassiopeiaObject):
     def type(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: the type of recommended items
         """
         return self.data.type
 
@@ -753,7 +753,7 @@ class Image(cassiopeia.type.core.common.CassiopeiaObject):
     def link(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: the link to the image. See https://developer.riotgames.com/docs/static-data for more information.
         """
         return self.data.full
 
@@ -769,7 +769,7 @@ class Image(cassiopeia.type.core.common.CassiopeiaObject):
     def height(self):
         """
         Returns:
-            int: how many of this item are in the block
+            int: the height of the image
         """
         return self.data.h
 
@@ -777,7 +777,7 @@ class Image(cassiopeia.type.core.common.CassiopeiaObject):
     def sprite(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: the sprite image link. See https://developer.riotgames.com/docs/static-data for more information.
         """
         return self.data.sprite
 
@@ -785,7 +785,7 @@ class Image(cassiopeia.type.core.common.CassiopeiaObject):
     def width(self):
         """
         Returns:
-            int: how many of this item are in the block
+            int: the width of the image
         """
         return self.data.w
 
@@ -793,7 +793,7 @@ class Image(cassiopeia.type.core.common.CassiopeiaObject):
     def x(self):
         """
         Returns:
-            int: how many of this item are in the block
+            int: the x offset of the image
         """
         return self.data.x
 
@@ -801,7 +801,7 @@ class Image(cassiopeia.type.core.common.CassiopeiaObject):
     def y(self):
         """
         Returns:
-            int: how many of this item are in the block
+            int: the y offset of the image
         """
         return self.data.y
 
@@ -817,7 +817,7 @@ class Passive(cassiopeia.type.core.common.CassiopeiaObject):
     def description(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: the description of the passive
         """
         return self.data.description
 
@@ -825,7 +825,7 @@ class Passive(cassiopeia.type.core.common.CassiopeiaObject):
     def image(self):
         """
         Returns:
-            int: how many of this item are in the block
+            Image: the image of this passive
         """
         return Image(self.data.image) if self.data.image else None
 
@@ -833,7 +833,7 @@ class Passive(cassiopeia.type.core.common.CassiopeiaObject):
     def name(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: the name of this passive
         """
         return self.data.name
 
@@ -841,7 +841,7 @@ class Passive(cassiopeia.type.core.common.CassiopeiaObject):
     def sanitized_description(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: the sanitized description of this passive
         """
         return self.data.sanitizedDescription
 
@@ -857,7 +857,7 @@ class ChampionInfo(cassiopeia.type.core.common.CassiopeiaObject):
     def physical(self):
         """
         Returns:
-            int: how many of this item are in the block
+            int: physical damage output rating (out of 10)
         """
         return self.data.attack
 
@@ -865,7 +865,7 @@ class ChampionInfo(cassiopeia.type.core.common.CassiopeiaObject):
     def defense(self):
         """
         Returns:
-            int: how many of this item are in the block
+            int: defensive rating (out of 10)
         """
         return self.data.defense
 
@@ -873,7 +873,7 @@ class ChampionInfo(cassiopeia.type.core.common.CassiopeiaObject):
     def difficulty(self):
         """
         Returns:
-            int: how many of this item are in the block
+            int: difficulty rating (out of 10)
         """
         return self.data.difficulty
 
@@ -881,7 +881,7 @@ class ChampionInfo(cassiopeia.type.core.common.CassiopeiaObject):
     def magic(self):
         """
         Returns:
-            int: how many of this item are in the block
+            int: magic damage output rating (out of 10)
         """
         return self.data.magic
 
@@ -906,7 +906,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def alternate_images(self):
         """
         Returns:
-            int: how many of this item are in the block
+            list<Image>: the alternate images for this spell
         """
         return [Image(img) for img in self.data.altimages]
 
@@ -914,7 +914,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def cooldowns(self):
         """
         Returns:
-            int: how many of this item are in the block
+            list<float>: the cooldowns of this spell level-by-level
         """
         return self.data.cooldown
 
@@ -922,7 +922,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def cooldown_burn(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: a string formatted list of the spell's cooldowns by level
         """
         return self.data.cooldownBurn
 
@@ -930,7 +930,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def costs(self):
         """
         Returns:
-            int: how many of this item are in the block
+            list<int>: the cost of the spell level-by-level
         """
         return self.data.cost
 
@@ -938,7 +938,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def cost_burn(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: a string formatted list of the spell's cost by level
         """
         return self.data.costBurn
 
@@ -946,7 +946,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def cost_type(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: what the spell costs to use (e.g. mana or energy)
         """
         return self.data.costType
 
@@ -954,7 +954,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def description(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: the description of the spell
         """
         return self.data.description
 
@@ -962,7 +962,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def effects(self):
         """
         Returns:
-            int: how many of this item are in the block
+            list<list<float>>: the level-by-level replacements for {{ e# }} tags in other values
         """
         return self.data.effect
 
@@ -970,7 +970,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def effect_burn(self):
         """
         Returns:
-            int: how many of this item are in the block
+            list<str>: the string formatted replacements for {{ e# }} tags in other values by level
         """
         return self.data.effectBurn
 
@@ -978,7 +978,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def image(self):
         """
         Returns:
-            int: how many of this item are in the block
+            Image: the image of this spell
         """
         return Image(self.data.image) if self.data.image else None
 
@@ -986,7 +986,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def key(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: this spell's identifying key
         """
         return self.data.key
 
@@ -994,7 +994,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def level_tip(self):
         """
         Returns:
-            int: how many of this item are in the block
+            LevelTip: the level-up tips for this spell
         """
         return LevelTip(self.data.leveltip) if self.data.leveltip else None
 
@@ -1002,7 +1002,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def max_rank(self):
         """
         Returns:
-            int: how many of this item are in the block
+            int: the maximum level for this spell
         """
         return self.data.maxrank
 
@@ -1010,7 +1010,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def name(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: the name of this spell
         """
         return self.data.name
 
@@ -1018,7 +1018,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def range(self):
         """
         Returns:
-            int: how many of this item are in the block
+            self | list<int>: the level-by-level range of this spell
         """
         return self.data.range
 
@@ -1026,7 +1026,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def range_burn(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: the string formatted range of this spell by level
         """
         return self.data.rangeBurn
 
@@ -1034,7 +1034,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def resource(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: what resource this spell uses
         """
         return self.data.resource
 
@@ -1042,7 +1042,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def sanitized_description(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: the sanitized description of this spell
         """
         return self.data.sanitizedDescription
 
@@ -1050,7 +1050,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def sanitized_tooltip(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: the sanitized tooltip for this spell
         """
         return self.data.sanitizedTooltip
 
@@ -1058,7 +1058,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def tooltip(self):
         """
         Returns:
-            int: how many of this item are in the block
+            str: the tooltip for this spell
         """
         return self.data.tooltip
 
@@ -1066,7 +1066,7 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
     def variables(self):
         """
         Returns:
-            int: how many of this item are in the block
+            SpellVariables: the variables that determine this spell's damage
         """
         return [SpellVariables(svars) for svars in self.data.vars]
 
@@ -1101,7 +1101,12 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.immutablemethod
     def tooltip_for_level(self, level, rank):
-        """
+        """Gets the tooltip for this spell for a specific level/rank
+
+        Args:
+            level (int): the level of the champion
+            rank (int): the rank of this spell
+
         Returns:
             int: how many of this item are in the block
         """
@@ -1109,9 +1114,14 @@ class Spell(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.immutablemethod
     def sanitized_tooltip_for_level(self, level, rank):
-        """
+        """Gets the sanitized tooltip for this spell for a specific level/rank
+
+        Args:
+            level (int): the level of the champion
+            rank (int): the rank of this spell
+
         Returns:
-            Item: the item itself
+            str: the sanitized tooltip for this spell for the specified level and rank
         """
         return self.__replace_variables(self.sanitized_tooltip, level, rank)
 
@@ -1136,7 +1146,7 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
     def ally_tips(self):
         """
         Returns:
-            list<SetItem>: the items in this item set
+            list<str>: the set of tips for allies of this champion
         """
         return self.data.allytips
 
@@ -1152,7 +1162,7 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
     def enemy_tips(self):
         """
         Returns:
-            list<SetItem>: the items in this item set
+            list<str>: the set of tips for enemies of this champion
         """
         return self.data.enemytips
 
@@ -1160,7 +1170,7 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
     def id(self):
         """
         Returns:
-            list<SetItem>: the items in this item set
+            int: the ID of this champion
         """
         return self.data.id
 
@@ -1168,7 +1178,7 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
     def image(self):
         """
         Returns:
-            list<SetItem>: the items in this item set
+            Image: the image of this champion
         """
         return Image(self.data.image) if self.data.image else None
 
@@ -1176,7 +1186,7 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
     def info(self):
         """
         Returns:
-            list<SetItem>: the items in this item set
+            ChampionInfo: ratings of what this champion is good/bad at
         """
         return ChampionInfo(self.data.info) if self.data.info else None
 
@@ -1184,7 +1194,7 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
     def key(self):
         """
         Returns:
-            list<SetItem>: the items in this item set
+            str: this champion's identifying key
         """
         return self.data.key
 
@@ -1192,7 +1202,7 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
     def lore(self):
         """
         Returns:
-            list<SetItem>: the items in this item set
+            str: this champion's lore
         """
         return self.data.lore
 
@@ -1200,7 +1210,7 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
     def name(self):
         """
         Returns:
-            list<SetItem>: the items in this item set
+            str: the name of this champion
         """
         return self.data.name
 
@@ -1216,7 +1226,7 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
     def passive(self):
         """
         Returns:
-            list<SetItem>: the items in this item set
+            Passive: this champion's passive
         """
         return Passive(self.data.passive) if self.data.passive else None
 
@@ -1224,7 +1234,7 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
     def recommended_items(self):
         """
         Returns:
-            list<SetItem>: the items in this item set
+            list<RecommendedItems>: item recommendations for this champion
         """
         return [RecommendedItems(rec) for rec in self.data.recommended]
 
@@ -1232,7 +1242,7 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
     def skins(self):
         """
         Returns:
-            list<SetItem>: the items in this item set
+            list<Skin>: this champion's skins
         """
         return [Skin(skin, self.key) for skin in self.data.skins]
 
@@ -1240,7 +1250,7 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
     def spells(self):
         """
         Returns:
-            list<SetItem>: the items in this item set
+            list<Spell>: this champion's spells
         """
         return [Spell(spell) for spell in self.data.spells]
 
@@ -1248,7 +1258,7 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
     def stats(self):
         """
         Returns:
-            list<SetItem>: the items in this item set
+            ChampionStats: the stats for this champion
         """
         return ChampionStats(self.data.stats) if self.data.stats else None
 
@@ -1256,7 +1266,7 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
     def tags(self):
         """
         Returns:
-            list<SetItem>: the items in this item set
+            list<str>: this champions's tags for sorting champions
         """
         return self.data.tags
 
@@ -1264,7 +1274,7 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
     def title(self):
         """
         Returns:
-            list<SetItem>: the items in this item set
+            str: this champion's title
         """
         return self.data.title
 
@@ -1278,7 +1288,9 @@ class Champion(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.immutablemethod
     def mastery_level(self, summoner):
-        """
+        """Gets the ChampionMastery object for the specified summoner
+        Args:
+            summoner (Summoner): the summoner to get champion mastery for
         Returns:
             bool: well, we don't know what this one is. let us know if you figure it out.
         """
@@ -1299,7 +1311,7 @@ class MetaData(cassiopeia.type.core.common.CassiopeiaObject):
     def rune(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            bool: whether the item is a rune
         """
         return self.data.isRune
 
@@ -1307,7 +1319,7 @@ class MetaData(cassiopeia.type.core.common.CassiopeiaObject):
     def tier(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: what tier the item is
         """
         return self.data.tier
 
@@ -1315,7 +1327,7 @@ class MetaData(cassiopeia.type.core.common.CassiopeiaObject):
     def type(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the type of meta data
         """
         return self.data.type
 
@@ -1331,7 +1343,7 @@ class Gold(cassiopeia.type.core.common.CassiopeiaObject):
     def base(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            int: the base price of the item
         """
         return self.data.base
 
@@ -1339,7 +1351,7 @@ class Gold(cassiopeia.type.core.common.CassiopeiaObject):
     def purchasable(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            bool: whether the item can be bought
         """
         return self.data.purchasable
 
@@ -1347,7 +1359,7 @@ class Gold(cassiopeia.type.core.common.CassiopeiaObject):
     def sell(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            int: the sell price of the item
         """
         return self.data.sell
 
@@ -1355,7 +1367,7 @@ class Gold(cassiopeia.type.core.common.CassiopeiaObject):
     def total(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            int: the total price of the item
         """
         return self.data.total
 
@@ -1389,7 +1401,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def armor(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: armor
         """
         return self.data.FlatArmorMod
 
@@ -1397,7 +1409,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def attack_speed(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: attack speed
         """
         return self.data.FlatAttackSpeedMod
 
@@ -1405,7 +1417,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def block(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: blocked damage per attack
         """
         return self.data.FlatBlockMod
 
@@ -1413,7 +1425,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_block(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent blocked damage per attack
         """
         return self.data.PercentBlockMod
 
@@ -1421,7 +1433,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def critical_strike_chance(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: critical strike chance
         """
         return self.data.FlatCritChanceMod + self.data.PercentCritChanceMod
 
@@ -1429,7 +1441,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def critical_strike_damage(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: critical strike damage modification
         """
         return self.data.FlatCritDamageMod
 
@@ -1437,7 +1449,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def xp_bonus(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: experience bonus
         """
         return self.data.FlatEXPBonus
 
@@ -1445,7 +1457,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def energy(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: energy
         """
         return self.data.FlatEnergyPoolMod
 
@@ -1453,7 +1465,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def energy_regen(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: energy regen
         """
         return self.data.FlatEnergyRegenMod
 
@@ -1461,7 +1473,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def health(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            flaot: health
         """
         return self.data.FlatHPPoolMod
 
@@ -1469,7 +1481,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def health_regen(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: health regen
         """
         return self.data.FlatHPRegenMod
 
@@ -1477,7 +1489,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def mana(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: mana
         """
         return self.data.FlatMPPoolMod
 
@@ -1485,7 +1497,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def mana_regen(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float mana regen
         """
         return self.data.FlatMPRegenMod
 
@@ -1493,7 +1505,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def ability_power(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: ability power
         """
         return self.data.FlatMagicDamageMod
 
@@ -1501,7 +1513,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def movespeed(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: movespeed
         """
         return self.data.FlatMovementSpeedMod
 
@@ -1509,7 +1521,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def attack_damage(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: attack damage
         """
         return self.data.FlatPhysicalDamageMod
 
@@ -1517,7 +1529,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def magic_resist(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: magic resist
         """
         return self.data.FlatSpellBlockMod
 
@@ -1525,7 +1537,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def tenacity(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: tenacity
         """
         return self.__scraped_stats.get("tenacity", 0.0)
 
@@ -1533,7 +1545,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_armor(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent armor
         """
         return self.data.PercentArmorMod
 
@@ -1541,7 +1553,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_attack_speed(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent attack speed
         """
         return self.data.PercentAttackSpeedMod
 
@@ -1549,7 +1561,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_critical_strike_damage(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent critical strike damage modification
         """
         return self.data.PercentCritDamageMod
 
@@ -1557,7 +1569,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_xp_bonus(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent experience bonus
         """
         return self.data.PercentEXPBonus
 
@@ -1565,7 +1577,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_health(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent health
         """
         return self.data.PercentHPPoolMod
 
@@ -1573,7 +1585,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_bonus_health(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent bonus health
         """
         return self.__scraped_stats.get("percent_bonus_health", 0.0)
 
@@ -1581,7 +1593,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_health_regen(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent health regen
         """
         return self.data.PercentHPRegenMod
 
@@ -1589,7 +1601,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_base_health_regen(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent base health regen
         """
         return self.__scraped_stats.get("percent_base_health_regen", 0.0)
 
@@ -1597,7 +1609,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def life_steal(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: life steal
         """
         return self.data.PercentLifeStealMod + self.__scraped_stats.get("life_steal", 0.0)
 
@@ -1605,7 +1617,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_mana(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent mana
         """
         return self.data.PercentMPPoolMod
 
@@ -1613,7 +1625,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_mana_regen(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent mana regen
         """
         return self.data.PercentMPRegenMod
 
@@ -1621,7 +1633,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_base_mana_regen(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent base mana regen
         """
         return self.__scraped_stats.get("base_mana_regen", 0.0) + self.__scraped_stats.get("percent_base_mana_regen", 0.0)
 
@@ -1629,7 +1641,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_ability_power(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent ability power
         """
         return self.data.PercentMagicDamageMod + self.__scraped_stats.get("percent_ability_power", 0.0)
 
@@ -1637,7 +1649,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_movespeed(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent movespeed
         """
         return self.data.PercentMovementSpeedMod + self.__scraped_stats.get("percent_movespeed", 0.0)
 
@@ -1645,7 +1657,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_attack_damage(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent attack damage
         """
         return self.data.PercentPhysicalDamageMod
 
@@ -1653,7 +1665,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_base_attack_damage(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent attack damage
         """
         return self.__scraped_stats.get("percent_base_attack_damage", 0.0)
 
@@ -1661,7 +1673,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_magic_resist(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent magic resist
         """
         return self.data.PercentSpellBlockMod
 
@@ -1669,7 +1681,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def spell_vamp(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: spell vamp
         """
         return self.data.PercentSpellVampMod + self.__scraped_stats.get("spell_vamp", 0.0)
 
@@ -1677,7 +1689,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def armor_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: armor per level
         """
         return self.data.rFlatArmorModPerLevel
 
@@ -1685,7 +1697,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def armor_penetration(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: armor penetration
         """
         return self.data.rFlatArmorPenetrationMod + self.__scraped_stats.get("armor_pen", 0.0)
 
@@ -1693,7 +1705,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def armor_penetration_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: armor penetration per level
         """
         return self.data.rFlatArmorPenetrationModPerLevel
 
@@ -1701,7 +1713,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def critical_strike_chance_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: critical strike chance per level
         """
         return self.data.rFlatCritChanceModPerLevel
 
@@ -1709,7 +1721,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def critical_strike_damage_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: critical strike damage per level
         """
         return self.data.rFlatCritDamageModPerLevel
 
@@ -1717,7 +1729,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def dodge_chance(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: dodge chance
         """
         return self.data.rFlatDodgeMod + self.data.PercentDodgeMod
 
@@ -1725,7 +1737,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def dodge_chance_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: dodge change per level
         """
         return self.data.rFlatDodgeModPerLevel
 
@@ -1733,7 +1745,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def energy_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: energy per level
         """
         return self.data.rFlatEnergyModPerLevel
 
@@ -1741,7 +1753,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def energy_regen_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: energy regen per level
         """
         return self.data.rFlatEnergyRegenModPerLevel
 
@@ -1749,7 +1761,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def gold_per_ten(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: gold per 10 seconds
         """
         return self.data.rFlatGoldPer10Mod + self.__scraped_stats.get("gold_per_ten", 0.0)
 
@@ -1757,7 +1769,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def health_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: health per level
         """
         return self.data.rFlatHPModPerLevel
 
@@ -1765,7 +1777,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def health_regen_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: health regen per level
         """
         return self.data.rFlatHPRegenModPerLevel
 
@@ -1773,7 +1785,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def mana_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: armor per level
         """
         return self.data.rFlatMPModPerLevel
 
@@ -1781,7 +1793,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def mana_regen_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: mana regen per level
         """
         return self.data.rFlatMPRegenModPerLevel
 
@@ -1789,7 +1801,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def ability_power_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: ability power per level
         """
         return self.data.rFlatMagicDamageModPerLevel
 
@@ -1797,7 +1809,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def magic_penetration(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: magic penetration
         """
         return self.data.rFlatMagicPenetrationMod + self.__scraped_stats.get("magic_pen", 0.0)
 
@@ -1805,7 +1817,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def magic_penetration_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: magic penetration per level
         """
         return self.data.rFlatMagicPenetrationModPerLevel
 
@@ -1813,7 +1825,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def movespeed_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: movespeed per level
         """
         return self.data.rFlatMovementSpeedModPerLevel
 
@@ -1821,7 +1833,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def attack_damage_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float attack damage per level
         """
         return self.data.rFlatPhysicalDamageModPerLevel
 
@@ -1829,7 +1841,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def magic_resist_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: magic resist per level
         """
         return self.data.rFlatSpellBlockModPerLevel
 
@@ -1837,7 +1849,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def time_dead(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: time dead modification
         """
         return abs(self.data.rFlatTimeDeadMod)
 
@@ -1845,7 +1857,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def time_dead_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: time dead modification per level
         """
         return abs(self.data.rFlatTimeDeadModPerLevel)
 
@@ -1853,7 +1865,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_armor_penetration(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent armor pentration
         """
         return self.data.rPercentArmorPenetrationMod + self.__scraped_stats.get("percent_armor_pen", 0.0)
 
@@ -1861,7 +1873,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_armor_penetration_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent armor penetration per level
         """
         return self.data.rPercentArmorPenetrationModPerLevel
 
@@ -1869,7 +1881,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_bonus_armor_penetration(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent armor pentration
         """
         return self.__scraped_stats.get("percent_bonus_armor_pen", 0.0)
 
@@ -1877,7 +1889,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_attack_speed_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent attack speed per level
         """
         return self.data.rPercentAttackSpeedModPerLevel
 
@@ -1885,7 +1897,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def cooldown_reduction(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: cooldown reduction
         """
         return abs(self.data.rPercentCooldownMod + self.__scraped_stats.get("percent_cooldown_reduction", 0.0))
 
@@ -1893,7 +1905,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def cooldown_reduction_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: cooldown reduction per level
         """
         return abs(self.data.rPercentCooldownModPerLevel)
 
@@ -1901,7 +1913,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_magic_penetration(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent magic penetration
         """
         return self.data.rPercentMagicPenetrationMod + self.__scraped_stats.get("percent_magic_pen", 0.0)
 
@@ -1909,7 +1921,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_magic_pen_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent magic penetration per level
         """
         return self.data.rPercentMagicPenetrationModPerLevel
 
@@ -1917,7 +1929,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_movespeed_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent movespeed per level
         """
         return self.data.rPercentMovementSpeedModPerLevel
 
@@ -1925,7 +1937,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_time_dead(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent time dead modification
         """
         return abs(self.data.rPercentTimeDeadMod)
 
@@ -1933,7 +1945,7 @@ class ItemStats(cassiopeia.type.core.common.CassiopeiaObject):
     def percent_time_dead_per_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            float: percent time dead modification per level
         """
         return abs(self.data.rPercentTimeDeadModPerLevel)
 
@@ -1961,7 +1973,7 @@ class MapDetails(cassiopeia.type.core.common.CassiopeiaObject):
     def image(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            Image: the image of this map
         """
         return Image(self.data.image) if self.data.image else None
 
@@ -1969,7 +1981,7 @@ class MapDetails(cassiopeia.type.core.common.CassiopeiaObject):
     def map_id(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            int: the ID of this map
         """
         return self.data.mapId
 
@@ -1977,7 +1989,7 @@ class MapDetails(cassiopeia.type.core.common.CassiopeiaObject):
     def map(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            Map: the type of this map
         """
         return cassiopeia.type.core.common.Map(self.data.mapId) if self.data.mapId else None
 
@@ -1985,7 +1997,7 @@ class MapDetails(cassiopeia.type.core.common.CassiopeiaObject):
     def unpurchasable_items(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            list<Item>: the items that can't be bought on this map
         """
         return list(filter(None, cassiopeia.riotapi.get_items(self.data.unpurchasableItemList)))
 
@@ -2013,7 +2025,7 @@ class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
     def descriptions(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            list<str>: descriptions of this mastery by rank
         """
         return self.data.description
 
@@ -2021,7 +2033,7 @@ class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
     def id(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            int: the ID of this mastery
         """
         return self.data.id
 
@@ -2029,7 +2041,7 @@ class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
     def image(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            Image: the image of this mastery
         """
         return Image(self.data.image) if self.data.image else None
 
@@ -2037,7 +2049,7 @@ class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
     def tree(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: which mastery tree this mastery belongs to
         """
         return cassiopeia.type.core.common.MasteryType(self.data.masteryTree)
 
@@ -2045,7 +2057,7 @@ class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
     def name(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the name of this mastery
         """
         return self.data.name.strip()
 
@@ -2053,7 +2065,7 @@ class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
     def prerequisite(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            Mastery: the prerequisite for this mastery
         """
         return cassiopeia.riotapi.get_mastery(int(self.data.prereq)) if self.data.prereq else None
 
@@ -2061,7 +2073,7 @@ class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
     def max_rank(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            int: the max rank for this mastery
         """
         return self.data.ranks
 
@@ -2069,7 +2081,7 @@ class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
     def sanitized_descriptions(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            list<str>: sanitized descriptions of this mastery by rank
         """
         return self.data.sanitizedDescription
 
@@ -2097,7 +2109,7 @@ class Realm(cassiopeia.type.core.common.CassiopeiaObject):
     def cdn(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the base CDN url
         """
         return self.data.cdn
 
@@ -2105,7 +2117,7 @@ class Realm(cassiopeia.type.core.common.CassiopeiaObject):
     def css(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the latest version of the Dragon Magic's css file
         """
         return self.data.css
 
@@ -2113,7 +2125,7 @@ class Realm(cassiopeia.type.core.common.CassiopeiaObject):
     def dragon_magic(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the lastest version of Dragon Magic
         """
         return self.data.dd
 
@@ -2121,7 +2133,7 @@ class Realm(cassiopeia.type.core.common.CassiopeiaObject):
     def language(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the default locale for this realm
         """
         return self.data.l
 
@@ -2129,7 +2141,7 @@ class Realm(cassiopeia.type.core.common.CassiopeiaObject):
     def legacy(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the legacy script mode for IE6 or older
         """
         return self.data.lg
 
@@ -2137,7 +2149,7 @@ class Realm(cassiopeia.type.core.common.CassiopeiaObject):
     def data_type_versions(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            dict<str, str>: the latest versions for listed data types
         """
         return self.data.n
 
@@ -2145,7 +2157,7 @@ class Realm(cassiopeia.type.core.common.CassiopeiaObject):
     def profile_icon_id_max(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            int: the largest profileicon id that can be used under 500.0 Any profileicon that is requested between this number and 500 should be mapped to 0.0.
         """
         return self.data.profileiconmax
 
@@ -2153,7 +2165,7 @@ class Realm(cassiopeia.type.core.common.CassiopeiaObject):
     def store(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: additional api data drawn from other sources that may be related to data dragon functionality
         """
         return self.data.store
 
@@ -2161,7 +2173,7 @@ class Realm(cassiopeia.type.core.common.CassiopeiaObject):
     def version(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the current version of this file
         """
         return self.data.v
 
@@ -2189,7 +2201,7 @@ class Rune(cassiopeia.type.core.common.CassiopeiaObject):
     def description(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the description of the rune
         """
         return self.data.description
 
@@ -2197,7 +2209,7 @@ class Rune(cassiopeia.type.core.common.CassiopeiaObject):
     def id(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            int: the ID of this rune
         """
         return self.data.id
 
@@ -2205,7 +2217,7 @@ class Rune(cassiopeia.type.core.common.CassiopeiaObject):
     def image(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            Image: the image of this rune
         """
         return Image(self.data.image) if self.data.image else None
 
@@ -2213,7 +2225,7 @@ class Rune(cassiopeia.type.core.common.CassiopeiaObject):
     def name(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the name of this rune
         """
         return self.data.name
 
@@ -2221,7 +2233,7 @@ class Rune(cassiopeia.type.core.common.CassiopeiaObject):
     def meta_data(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            MetaData: meta data about this rune
         """
         return MetaData(self.data.rune) if self.data.rune else None
 
@@ -2229,7 +2241,7 @@ class Rune(cassiopeia.type.core.common.CassiopeiaObject):
     def sanitized_description(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the sanitized description of this rune
         """
         return self.data.sanitizedDescription
 
@@ -2237,7 +2249,7 @@ class Rune(cassiopeia.type.core.common.CassiopeiaObject):
     def stats(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            ItemStats: the stats for this rune
         """
         return ItemStats(self.data.stats) if self.data.stats else None
 
@@ -2245,7 +2257,7 @@ class Rune(cassiopeia.type.core.common.CassiopeiaObject):
     def tags(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            list<str>: this rune's tags for sorting runes
         """
         return self.data.tags
 
@@ -2253,7 +2265,7 @@ class Rune(cassiopeia.type.core.common.CassiopeiaObject):
     def rune_type(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: what type of rune this is
         """
         try:
             return next(iter(set(self.tags).intersection({"mark", "seal", "glyph", "quintessence"})))
@@ -2284,7 +2296,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def cooldowns(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            list<float>: the cooldowns of this spell level-by-level
         """
         return self.data.cooldown
 
@@ -2292,7 +2304,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def cooldown_burn(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: formatted list of the spell's cooldowns by level
         """
         return self.data.cooldownBurn
 
@@ -2300,7 +2312,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def costs(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            list<int>: the cost of the spell level-by-level
         """
         return self.data.cost
 
@@ -2308,7 +2320,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def cost_burn(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: formatted list of the spell's cost by level
         """
         return self.data.costBurn
 
@@ -2316,7 +2328,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def cost_type(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: what the spell costs to use (e.g. mana or energy)
         """
         return self.data.costType
 
@@ -2324,7 +2336,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def description(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the description of the summoner spell
         """
         return self.data.description
 
@@ -2332,7 +2344,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def effects(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            list<list<float>>: the level-by-level replacements for {{ e# }} tags in other values
         """
         return self.data.effect
 
@@ -2340,7 +2352,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def effect_burn(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            list<str>: the string formatted replacements for {{ e# }} tags in other values by level
         """
         return self.data.effectBurn
 
@@ -2348,7 +2360,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def id(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            int: the ID of this summoner spell
         """
         return self.data.id
 
@@ -2356,7 +2368,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def image(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            Image: the image of this summoner spell
         """
         return Image(self.data.image) if self.data.image else None
 
@@ -2364,7 +2376,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def key(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: this summoner spell's identifying key
         """
         return self.data.key
 
@@ -2372,7 +2384,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def leveltip(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            LevelTip: the level-up tips for this spell
         """
         return LevelTip(self.data.leveltip) if self.data.leveltip else None
 
@@ -2380,7 +2392,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def max_rank(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            the maximum level for this spell
         """
         return self.data.maxrank
 
@@ -2388,7 +2400,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def modes(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            list<GameMode>: the game modes that this spell is allowed on
         """
         return [cassiopeia.type.core.common.GameMode(mode) for mode in self.data.modes]
 
@@ -2396,7 +2408,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def name(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the name of this spell
         """
         return self.data.name
 
@@ -2404,7 +2416,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def range(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            list<int>: the level-by-level range of this spell
         """
         return self.data.range
 
@@ -2412,7 +2424,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def range_burn(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: formatted range of this spell by level
         """
         return self.data.rangeBurn
 
@@ -2420,7 +2432,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def resource(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: what resource this spell uses
         """
         return self.data.resource
 
@@ -2428,7 +2440,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def sanitized_description(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the sanitized description of this summoner spell
         """
         return self.data.sanitizedDescription
 
@@ -2436,7 +2448,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def sanitized_tooltip(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the sanitized tooltip for this summoner spell
         """
         return self.data.sanitizedTooltip
 
@@ -2444,7 +2456,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def summoner_level(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            int: the summoner level required to use this spell
         """
         return self.data.summonerLevel
 
@@ -2452,7 +2464,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def tooltip(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the tooltip for this spell
         """
         return self.data.tooltip
 
@@ -2460,7 +2472,7 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
     def variables(self):
         """
         Returns:
-            str: what type the item set is (e.g. starting items)
+            SpellVariables: the variables that determine this spell's effects
         """
         return [SpellVariables(svars) for svars in self.data.vars]
 
@@ -2476,17 +2488,25 @@ class SummonerSpell(cassiopeia.type.core.common.CassiopeiaObject):
 
     @cassiopeia.type.core.common.immutablemethod
     def tooltip_for_level(self, level):
-        """
+        """Gets the tooltip for this spell for a specific level
+
+        Args:
+            level (int): the level of the champion
+
         Returns:
-            str: what type the item set is (e.g. starting items)
+            str: the tooltip for that rank/level
         """
         return self.__replace_variables(self.tooltip, level)
 
     @cassiopeia.type.core.common.immutablemethod
     def sanitized_tooltip_for_level(self, level):
-        """
+        """Gets the sanitized tooltip for this spell for a specific level
+
+        Args:
+            level (int): the level of the champion
+
         Returns:
-            list<float>: the coefficients for determining spell scaling
+            str: the sanitized tooltip for this summoner spell for the provided level
         """
         return self.__replace_variables(self.sanitized_tooltip, level)
 

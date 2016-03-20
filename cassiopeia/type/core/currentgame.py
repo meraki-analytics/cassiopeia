@@ -24,7 +24,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def champion(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            Champion: the champion this participant is playing
         """
         return cassiopeia.riotapi.get_champion_by_id(self.data.championId) if self.data.championId else None
 
@@ -32,7 +32,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def masteries(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            list<Mastery>: the participant's masteries
         """
         masteries = []
         ranks = []
@@ -45,7 +45,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def profile_icon_id(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            int: the participant's profile icon's id
         """
         return self.data.profileIconId
 
@@ -53,7 +53,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def runes(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            list<Rune>: the participant's rune
         """
         runes = []
         counts = []
@@ -66,7 +66,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def summoner_spell_d(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            SummonerSpell: the participant's first summoner spell
         """
         return cassiopeia.riotapi.get_summoner_spell(self.data.spell1Id) if self.data.spell1Id else None
 
@@ -74,7 +74,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def summoner_spell_f(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            SummonerSpell: the participant's second summoner spell
         """
         return cassiopeia.riotapi.get_summoner_spell(self.data.spell2Id) if self.data.spell2Id else None
 
@@ -82,7 +82,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def summoner(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            Summoner: the summoner associated with this participant
         """
         return cassiopeia.riotapi.get_summoner_by_id(self.data.summonerId) if self.data.summonerId else None
 
@@ -90,7 +90,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def summoner_name(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            str: the participant's summoner name
         """
         return self.data.summonerName
 
@@ -98,7 +98,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def side(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            Side: which side of the map the participant is on
         """
         return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.teamId else None
 
@@ -114,7 +114,7 @@ class Ban(cassiopeia.type.core.common.CassiopeiaObject):
     def champion(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            Side: which side banned this champion
         """
         return cassiopeia.riotapi.get_champion_by_id(self.data.championId) if self.data.championId else None
 
@@ -122,7 +122,7 @@ class Ban(cassiopeia.type.core.common.CassiopeiaObject):
     def pick_turn(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            int: which pick turn this ban was on
         """
         return self.data.pickturn
 
@@ -130,7 +130,7 @@ class Ban(cassiopeia.type.core.common.CassiopeiaObject):
     def side(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            Side: the team that made this ban
         """
         return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.teamId else None
 
@@ -164,7 +164,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def bans(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            list<Ban>: the bans for this game
         """
         return [Ban(ban) for ban in self.data.bannedChampions]
 
@@ -172,7 +172,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def id(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            int: the game id
         """
         return self.data.gameId
 
@@ -180,7 +180,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def duration(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            timedelta: current duration of the game
         """
         return datetime.timedelta(seconds=self.data.gameLength)
 
@@ -188,7 +188,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def mode(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            GameMode: what game mode is being played in this game
         """
         return cassiopeia.type.core.common.GameMode(self.data.gameMode) if self.data.gameMode else None
 
@@ -196,7 +196,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def queue(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            Queue: the queue type for this game
         """
         return cassiopeia.type.core.common.Queue.for_id(self.data.gameQueueConfigId) if self.data.gameQueueConfigId else None
 
@@ -204,7 +204,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def creation(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            datetime: the creation timestamp for this game
         """
         return datetime.datetime.utcfromtimestamp(self.data.gameStartTime / 1000) if self.data.gameStartTime else None
 
@@ -212,7 +212,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def type(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            GameType: the game type
         """
         return cassiopeia.type.core.common.GameType(self.data.gameType) if self.data.gameType else None
 
@@ -220,7 +220,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def map(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            Map: the map for this game
         """
         return cassiopeia.type.core.common.Map(self.data.mapId) if self.data.mapId else None
 
@@ -228,7 +228,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def observer_token(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            str: the token associated with the observer for this game
         """
         return self.data.observers.encryptionKey
 
@@ -236,7 +236,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def participants(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            list<Participant>: the game's participants
         """
         return [Participant(participant) for participant in self.data.participants]
 
@@ -244,7 +244,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def platform(self):
         """
         Returns:
-            bool: whether the participant is a bot
+            Platform: which platform (ie server) the game is being played on
         """
         return cassiopeia.type.core.common.Platform(self.data.platformId) if self.data.platformId else None
 
