@@ -22,7 +22,7 @@ class Series(cassiopeia.type.core.common.CassiopeiaObject):
     def progress(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            str: string showing the current, sequential mini series progress where 'W' represents a win, 'L' epresents a loss, and 'N' represents a game that hasn't been played yet
         """
         return self.data.progress
 
@@ -30,7 +30,7 @@ class Series(cassiopeia.type.core.common.CassiopeiaObject):
     def wins_required(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            int: number of wins required for promotion
         """
         return self.data.target
 
@@ -38,7 +38,7 @@ class Series(cassiopeia.type.core.common.CassiopeiaObject):
     def wins(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            int: number of current wins in the mini series
         """
         return self.data.wins
 
@@ -54,7 +54,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
     def division(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            Division: the league division of the participant
         """
         return cassiopeia.type.core.common.Division(self.data.division) if self.data.division else None
 
@@ -62,7 +62,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
     def fresh_blood(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            bool: specifies if the participant is fresh blood (ie if they have just joined the league)
         """
         return self.data.isFreshBlood
 
@@ -70,7 +70,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
     def hot_streak(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            bool: specifies if the participant is on a hot streak
         """
         return self.data.isHotStreak
 
@@ -78,7 +78,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
     def inactive(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            bool: specifies if the participant is inactive
         """
         return self.data.isInactive
 
@@ -86,7 +86,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
     def veteran(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            bool: specifies if the participant is a veteran (ie they have been in this league for a long time)
         """
         return self.data.isVeteran
 
@@ -94,7 +94,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
     def league_points(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            int: the league points of the participant
         """
         return self.data.leaguePoints
 
@@ -102,7 +102,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
     def losses(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            int: number of current losses for the participant
         """
         return self.data.losses
 
@@ -110,7 +110,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
     def series(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            Series: series data for the participant. Only present if the participant is currently in a mini series
         """
         return Series(self.data.miniSeries) if self.data.miniSeries else None
 
@@ -118,7 +118,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
     def summoner(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            Summoner: the summoner represented by this entry. None if this entry is for a team
         """
         if not self.data.playerOrTeamId:
             return None
@@ -133,7 +133,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
     def team(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            Team: the team represented by this entry. None if this entry is for a summoner
         """
         if not self.data.playerOrTeamId:
             return None
@@ -148,7 +148,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
     def summoner_name(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            str: the name of the summoner represented by this entry. An empty string if this entry is for a team
         """
         if not self.data.playerOrTeamId:
             return ""
@@ -163,7 +163,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
     def team_name(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            str: the name of the team represented by this entry. An empty string if this entry is for a summoner
         """
         try:
             int(self.data.playerOrTeamId)
@@ -175,7 +175,7 @@ class Entry(cassiopeia.type.core.common.CassiopeiaObject):
     def wins(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            int: the number of wins for the participant
         """
         return self.data.wins
 
@@ -200,7 +200,7 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
     def entries(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            list<Entry>: a list of the requested league entries, sorted by LP
         """
         return sorted([Entry(entry) for entry in self.data.entries], key=lambda entry: entry.league_points, reverse=True)
 
@@ -208,7 +208,7 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
     def name(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            str: the name of the league
         """
         return self.data.name
 
@@ -216,7 +216,7 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
     def participant_entry(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            Entry: the entry for the relevant team or summoner that is a member of this league. Only present when full league is requested so that participant's entry can be identified. None when individual entry is requested
         """
         for entry in self.entries:
             if entry.data.playerOrTeamId == self.data.participantId:
@@ -227,7 +227,7 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
     def summoner(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            Summoner: the relevant summoner that is a member of this league. Only present when full league is requested so that participant's entry can be identified. None when individual entry is requested or the participant is a team.
         """
         if not self.data.participantId:
             return None
@@ -242,7 +242,7 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
     def team(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            Team: the relevant team that is a member of this league. Only present when full league is requested so that participant's entry can be identified. None when individual entry is requested or the participant is a summoner.
         """
         if not self.data.participantId:
             return None
@@ -257,7 +257,7 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
     def queue(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            Queue: the league's queue type
         """
         return cassiopeia.type.core.common.Queue(self.data.queue) if self.data.queue else None
 
@@ -265,7 +265,7 @@ class League(cassiopeia.type.core.common.CassiopeiaObject):
     def tier(self):
         """
         Returns:
-            int: number of current losses in the mini series
+            Tier: the league's tier
         """
         return cassiopeia.type.core.common.Tier(self.data.tier) if self.data.tier else None
 

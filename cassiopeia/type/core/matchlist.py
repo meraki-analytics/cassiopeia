@@ -46,7 +46,7 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
     def lane(self):
         """
         Returns:
-            Champion: the champion that the summoner played for the summoner that was used to pull this match reference
+            Lane: the lane that the summoner was in for the summoner that was used to  pull this match reference
         """
         lane = self.data.lane
         lane = "MIDDLE" if lane == "MID" else lane
@@ -57,7 +57,7 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
     def id(self):
         """
         Returns:
-            Champion: the champion that the summoner played for the summoner that was used to pull this match reference
+            int: the match id for this match
         """
         return self.data.matchId
 
@@ -65,7 +65,7 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
     def platform(self):
         """
         Returns:
-            Champion: the champion that the summoner played for the summoner that was used to pull this match reference
+            Platform: the platform (ie server) for this match
         """
         return cassiopeia.type.core.common.Platform(self.data.platformId) if self.data.platformId else None
 
@@ -73,7 +73,7 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
     def queue(self):
         """
         Returns:
-            Champion: the champion that the summoner played for the summoner that was used to pull this match reference
+            Queue: the queue type for this match
         """
         return cassiopeia.type.core.common.Queue(self.data.queue) if self.data.queue else None
 
@@ -81,7 +81,7 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
     def role(self):
         """
         Returns:
-            Champion: the champion that the summoner played for the summoner that was used to pull this match reference
+            Role: the role that the summoner was in for the summoner that was used to  pull this match reference
         """
         return cassiopeia.type.core.common.Role(self.data.role) if self.data.role else None
 
@@ -89,7 +89,7 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
     def season(self):
         """
         Returns:
-            Champion: the champion that the summoner played for the summoner that was used to pull this match reference
+            Season: the season that this match was played in
         """
         return cassiopeia.type.core.common.Season(self.data.season) if self.data.season else None
 
@@ -97,7 +97,7 @@ class MatchReference(cassiopeia.type.core.common.CassiopeiaObject):
     def timestamp(self):
         """
         Returns:
-            Champion: the champion that the summoner played for the summoner that was used to pull this match reference
+            datetime: the timestamp for this match
         """
         return datetime.datetime.utcfromtimestamp(self.data.timestamp / 1000) if self.data.timestamp else None
 

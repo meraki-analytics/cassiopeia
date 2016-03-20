@@ -23,7 +23,7 @@ class StatsSummary(cassiopeia.type.core.common.CassiopeiaObject):
     def losses(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: how many loses this participant has
         """
         return self.data.losses
 
@@ -31,7 +31,7 @@ class StatsSummary(cassiopeia.type.core.common.CassiopeiaObject):
     def modify_date(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            datetime: the date when the stats were last updated (in epoch milliseconds)
         """
         return datetime.datetime.utcfromtimestamp(self.data.modifyDate / 1000) if self.data.modifyDate else None
 
@@ -39,7 +39,7 @@ class StatsSummary(cassiopeia.type.core.common.CassiopeiaObject):
     def type(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            StatSummaryType: the identifier for what queue this stat summary is for
         """
         return cassiopeia.type.core.common.StatSummaryType(self.data.playerStatSummaryType) if self.data.playerStatSummaryType else None
 
@@ -47,7 +47,7 @@ class StatsSummary(cassiopeia.type.core.common.CassiopeiaObject):
     def wins(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: how many wins this participant has
         """
         return self.data.wins
 
@@ -63,7 +63,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def kda(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            float: the participant's kda
         """
         return (self.data.totalChampionKills + self.data.totalAssists) / (self.data.totalDeathsPerSession if self.data.totalDeathsPerSession else 1)
 
@@ -71,7 +71,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def average_assists(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            float: dominion only
         """
         return self.data.averageAssists
 
@@ -79,7 +79,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def average_kills(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            float: dominion only
         """
         return self.data.averageChampionsKilled
 
@@ -87,7 +87,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def average_combat_score(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            float: dominion only. the part of your score in dominion that comes from combat-related activities
         """
         return self.data.averageCombatPlayerScore
 
@@ -95,7 +95,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def average_node_captures(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            float: dominion only
         """
         return self.data.averageNodeCapture
 
@@ -103,7 +103,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def average_node_capture_assists(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            float: dominion only
         """
         return self.data.averageNodeCaptureAssist
 
@@ -111,7 +111,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def average_node_neutralizations(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            float: dominion only
         """
         return self.data.averageNodeNeutralize
 
@@ -119,7 +119,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def average_node_neutralization_assists(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            float: dominion only
         """
         return self.data.averageNodeNeutralizeAssist
 
@@ -127,7 +127,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def average_deaths(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            float: dominion only
         """
         return self.data.averageNumDeaths
 
@@ -135,7 +135,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def average_objective_score(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            float: dominion only. the part of your score in dominion that comes from object-based activities
         """
         return self.data.averageObjectivePlayerScore
 
@@ -143,7 +143,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def average_team_score(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            float: dominion only
         """
         return self.data.averageTeamObjective
 
@@ -151,7 +151,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def average_score(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            float: dominion only
         """
         return self.data.averageTotalPlayerScore
 
@@ -159,7 +159,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def bot_games(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the number of bot games the participant has played
         """
         return self.data.botGamesPlayed
 
@@ -167,7 +167,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def killing_sprees(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: how many killing sprees the participant has had
         """
         return self.data.killingSpree
 
@@ -175,7 +175,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def max_assists(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: dominion only. the most assists the participant has ever had
         """
         return self.data.maxAssists
 
@@ -183,7 +183,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def max_kills(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the most kills the participant has ever had
         """
         return self.data.maxChampionsKilled
 
@@ -191,7 +191,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def max_combat_score(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: dominion only. the highest combat score the participant has ever had
         """
         return self.data.maxCombatPlayerScore
 
@@ -199,7 +199,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def max_crit(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the highest damage crit the participant has ever had
         """
         return self.data.maxLargestCriticalStrike
 
@@ -207,7 +207,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def max_killing_spree(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the largest killing spree the participant has ever had
         """
         return self.data.maxLargestKillingSpree
 
@@ -215,7 +215,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def max_node_captures(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: dominion only. the most node captures the particiant has ever had
         """
         return self.data.maxNodeCapture
 
@@ -223,7 +223,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def max_node_capture_assists(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: dominion only. the most node capture assists the participant has ever had
         """
         return self.data.maxNodeCaptureAssist
 
@@ -231,7 +231,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def max_node_neutralizations(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: dominion only. the most node neutralizations the participant has ever had
         """
         return self.data.maxNodeNeutralize
 
@@ -239,7 +239,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def max_node_neutralize_assist(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: dominion only. the most node neutralization assists the participant has ever had
         """
         return self.data.maxNodeNeutralizeAssist
 
@@ -247,7 +247,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def max_deaths(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: only returned for ranked statistics. the most deaths the participant has ever had
         """
         return self.data.maxNumDeaths
 
@@ -255,7 +255,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def max_objective_score(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: dominion only. the highest object score the participant has ever had
         """
         return self.data.maxObjectivePlayerScore
 
@@ -263,7 +263,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def max_team_score(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: dominion only. the highest team score the participant has ever had
         """
         return self.data.maxTeamObjective
 
@@ -271,7 +271,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def max_game_time(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the longest a participant has ever been in a game
         """
         return self.data.maxTimePlayed
 
@@ -279,7 +279,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def max_time_alive(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the longest a participant has ever been alive
         """
         return self.data.maxTimeSpentLiving
 
@@ -287,7 +287,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def max_score(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: dominion only. the highest dominion score the participant has ever obtained
         """
         return self.data.maxTotalPlayerScore
 
@@ -295,7 +295,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def max_kills_per_session(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: well, we don't know what this one is. let us know if you figure it out.
         """
         return self.data.mostChampionKillsPerSession
 
@@ -303,7 +303,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def max_spells_cast(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the most spell casts the participant has ever done in a game
         """
         return self.data.mostSpellsCast
 
@@ -311,7 +311,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def normal_games(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the number of normal games the participant has played
         """
         return self.data.normalGamesPlayed
 
@@ -319,7 +319,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def ranked_premade_games(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: how many premade, ranked games the participant has played
         """
         return self.data.rankedPremadeGamesPlayed
 
@@ -327,7 +327,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def ranked_solo_games(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: how many premade, solo games the participant has played
         """
         return self.data.rankedSoloGamesPlayed
 
@@ -335,7 +335,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def assists(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the total number of assists this participant has had
         """
         return self.data.totalAssists
 
@@ -343,7 +343,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def kills(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the total number of champion kills this participant has had
         """
         return self.data.totalChampionKills
 
@@ -351,7 +351,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def damage_dealt(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the total amount of damage this participant has dealt
         """
         return self.data.totalDamageDealt
 
@@ -359,7 +359,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def damage_taken(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the total amount of damage this participant has taken
         """
         return self.data.totalDamageTaken
 
@@ -367,7 +367,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def deaths(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the total number of deaths this participant has had
         """
         return self.data.totalDeathsPerSession
 
@@ -375,7 +375,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def double_kills(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the total number of double kills this participant has had
         """
         return self.data.totalDoubleKills
 
@@ -383,7 +383,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def first_bloods(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the total number of first bloods this participant has had
         """
         return self.data.totalFirstBlood
 
@@ -391,7 +391,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def gold_earned(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the total amount of gold earned this participant has had
         """
         return self.data.totalGoldEarned
 
@@ -399,7 +399,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def healing_done(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the total amount of healing this participant has done
         """
         return self.data.totalHeal
 
@@ -407,7 +407,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def magic_damage_dealt(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the total amount of magic damage this participant has dealt
         """
         return self.data.totalMagicDamageDealt
 
@@ -415,7 +415,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def minions_killed(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the total number of minion kills this participant has had
         """
         return self.data.totalMinionKills
 
@@ -423,7 +423,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def neutral_monster_killed(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the total number of neutral monster kills this participant has had
         """
         return self.data.totalNeutralMinionsKilled
 
@@ -431,7 +431,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def node_captures(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: dominion only. the total number of nodes this participant has captured
         """
         return self.data.totalNodeCapture
 
@@ -439,7 +439,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def node_neutralizations(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: dominion only. the total number of nodes this participant has neutralized
         """
         return self.data.totalNodeNeutralize
 
@@ -447,7 +447,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def penta_kills(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the total number of penta kills this participant has gotten
         """
         return self.data.totalPentaKills
 
@@ -455,7 +455,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def physical_damage_dealt(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the total amount of physical damage this participant has dealt
         """
         return self.data.totalPhysicalDamageDealt
 
@@ -463,7 +463,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def quadra_kills(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the total number of quadra kills this participant has gotten
         """
         return self.data.totalQuadraKills
 
@@ -471,7 +471,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def losses(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: how many loses this participant has had
         """
         return self.data.totalSessionsLost
 
@@ -479,7 +479,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def games_played(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the total number of games this participant has played
         """
         return self.data.totalSessionsPlayed
 
@@ -487,7 +487,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def wins(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: how many wins this participant has had
         """
         return self.data.totalSessionsWon
 
@@ -495,7 +495,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def triple_kills(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the total number of triple kills this participant has gotten
         """
         return self.data.totalTripleKills
 
@@ -503,7 +503,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def turrets_killed(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the total number of turrets this participant has killed
         """
         return self.data.totalTurretsKilled
 
@@ -511,7 +511,7 @@ class AggregatedStats(cassiopeia.type.core.common.CassiopeiaObject):
     def unreal_kills(self):
         """
         Returns:
-            AggregatedStats: the aggregated stats (contains pretty much every stat you probably want to access)
+            int: the total number of unreal kills this participant has gotten
         """
         return self.data.totalUnrealKills
 

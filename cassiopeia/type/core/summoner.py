@@ -34,7 +34,7 @@ class RunePage(cassiopeia.type.core.common.CassiopeiaObject):
     def current(self):
         """
         Returns:
-            bool: whether or not this page is active
+            bool: whether or not this rune page is active
         """
         return self.data.current
 
@@ -42,7 +42,7 @@ class RunePage(cassiopeia.type.core.common.CassiopeiaObject):
     def id(self):
         """
         Returns:
-            bool: whether or not this page is active
+            int: the rune page's id
         """
         return self.data.id
 
@@ -50,7 +50,7 @@ class RunePage(cassiopeia.type.core.common.CassiopeiaObject):
     def name(self):
         """
         Returns:
-            bool: whether or not this page is active
+            str: the rune page's name
         """
         return self.data.name
 
@@ -58,7 +58,7 @@ class RunePage(cassiopeia.type.core.common.CassiopeiaObject):
     def runes(self):
         """
         Returns:
-            bool: whether or not this page is active
+            list<Rune>: the runes in this rune page
         """
         runes = {}
         for slot in self.data.slots:
@@ -100,7 +100,7 @@ class MasteryPage(cassiopeia.type.core.common.CassiopeiaObject):
     def current(self):
         """
         Returns:
-            bool: whether or not this page is active
+            bool: whether or not this mastery page is active
         """
         return self.data.current
 
@@ -108,7 +108,7 @@ class MasteryPage(cassiopeia.type.core.common.CassiopeiaObject):
     def id(self):
         """
         Returns:
-            bool: whether or not this page is active
+            int: the mastery page's id
         """
         return self.data.id
 
@@ -116,7 +116,7 @@ class MasteryPage(cassiopeia.type.core.common.CassiopeiaObject):
     def masteries(self):
         """
         Returns:
-            bool: whether or not this page is active
+            list<Mastery>: this mastery page's masteries
         """
         masteries = []
         ranks = []
@@ -129,7 +129,7 @@ class MasteryPage(cassiopeia.type.core.common.CassiopeiaObject):
     def name(self):
         """
         Returns:
-            bool: whether or not this page is active
+            str: the mastery page's name
         """
         return self.data.name
 
@@ -154,7 +154,7 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
     def id(self):
         """
         Returns:
-            bool: whether or not this page is active
+            int: the summoner's id
         """
         return self.data.id
 
@@ -162,7 +162,7 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
     def name(self):
         """
         Returns:
-            bool: whether or not this page is active
+            str: the summoner's name
         """
         return self.data.name
 
@@ -170,7 +170,7 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
     def profile_icon_id(self):
         """
         Returns:
-            bool: whether or not this page is active
+            int: the ID of the summoner icon associated with the summoner
         """
         return self.data.profileIconId
 
@@ -178,7 +178,7 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
     def modify_date(self):
         """
         Returns:
-            bool: whether or not this page is active
+            datetime: the date this summoner was last modified specified as epoch milliseconds. The following events will update this timestamp: profile icon change, playing the tutorial or advanced tutorial, finishing a game, summoner name change
         """
         return datetime.datetime.utcfromtimestamp(self.data.revisionDate / 1000) if self.data.revisionDate else None
 
@@ -186,15 +186,16 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
     def level(self):
         """
         Returns:
-            bool: whether or not this page is active
+            int: the Summoner's level
         """
         return self.data.summonerLevel
 
     @cassiopeia.type.core.common.immutablemethod
     def current_game(self):
-        """
+        """Gets the game the summoner is currently in, if they're in one
+
         Returns:
-            bool: whether or not this page is active
+            Game: the game they're in (or None if they aren't in one)
         """
         return cassiopeia.riotapi.get_current_game(self)
 

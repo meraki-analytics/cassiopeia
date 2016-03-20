@@ -23,7 +23,7 @@ class Shard(cassiopeia.type.core.common.CassiopeiaObject):
     def locales(self):
         """
         Returns:
-            str: the domain name of the server
+            list<str>: the languages that you can have api results in
         """
         return self.data.locales
 
@@ -31,7 +31,7 @@ class Shard(cassiopeia.type.core.common.CassiopeiaObject):
     def name(self):
         """
         Returns:
-            str: the domain name of the server
+            str: the name of this service
         """
         return self.data.name
 
@@ -39,7 +39,7 @@ class Shard(cassiopeia.type.core.common.CassiopeiaObject):
     def platform(self):
         """
         Returns:
-            str: the domain name of the server
+            Platform: the platform (i.e. server) for this match
         """
         return cassiopeia.type.core.common.Platform(self.data.region_tag.upper()) if self.data.region_tag else None
 
@@ -47,7 +47,7 @@ class Shard(cassiopeia.type.core.common.CassiopeiaObject):
     def region(self):
         """
         Returns:
-            str: the domain name of the server
+            Region: the region of the server is located in
         """
         return cassiopeia.type.core.common.Region(self.data.slug.upper()) if self.data.slug else None
 
@@ -80,7 +80,7 @@ class ShardStatus(cassiopeia.type.core.common.CassiopeiaObject):
     def locales(self):
         """
         Returns:
-            str: the domain name of the server
+            list<str>: the languages that you can have api results in
         """
         return self.data.locales
 
@@ -88,7 +88,7 @@ class ShardStatus(cassiopeia.type.core.common.CassiopeiaObject):
     def name(self):
         """
         Returns:
-            str: the domain name of the server
+            str: the full name of the region the server is located in
         """
         return self.data.name
 
@@ -96,7 +96,7 @@ class ShardStatus(cassiopeia.type.core.common.CassiopeiaObject):
     def platform(self):
         """
         Returns:
-            str: the domain name of the server
+            Platform: the platform (i.e. server) for this match
         """
         return cassiopeia.type.core.common.Platform(self.data.region_tag.upper()) if self.data.region_tag else None
 
@@ -104,7 +104,7 @@ class ShardStatus(cassiopeia.type.core.common.CassiopeiaObject):
     def services(self):
         """
         Returns:
-            str: the domain name of the server
+            list<Service>: the services that this region offers
         """
         return [Service(service) for service in self.data.services]
 
@@ -112,7 +112,7 @@ class ShardStatus(cassiopeia.type.core.common.CassiopeiaObject):
     def region(self):
         """
         Returns:
-            str: the domain name of the server
+            Region: the region of the server is located in
         """
         return cassiopeia.type.core.common.Region(self.data.slug.upper()) if self.data.slug else None
 
@@ -137,7 +137,7 @@ class Service(cassiopeia.type.core.common.CassiopeiaObject):
     def incidents(self):
         """
         Returns:
-            str: the domain name of the server
+            list<Incident>: the incidents associated with this server
         """
         return [Incident(incident) for incident in self.data.incidents]
 
@@ -145,7 +145,7 @@ class Service(cassiopeia.type.core.common.CassiopeiaObject):
     def name(self):
         """
         Returns:
-            str: the domain name of the server
+            str: the name of this service
         """
         return self.data.name
 
@@ -153,7 +153,7 @@ class Service(cassiopeia.type.core.common.CassiopeiaObject):
     def slug(self):
         """
         Returns:
-            str: the domain name of the server
+            str: the name of the service in lowercase
         """
         return self.data.slug
 
@@ -161,7 +161,7 @@ class Service(cassiopeia.type.core.common.CassiopeiaObject):
     def status(self):
         """
         Returns:
-            str: the domain name of the server
+            str: the status of the service
         """
         return self.data.status
 
@@ -195,7 +195,7 @@ class Incident(cassiopeia.type.core.common.CassiopeiaObject):
     def active(self):
         """
         Returns:
-            str: the domain name of the server
+            boolean: whether or not this incident is active
         """
         return self.data.active
 
@@ -203,7 +203,7 @@ class Incident(cassiopeia.type.core.common.CassiopeiaObject):
     def created(self):
         """
         Returns:
-            str: the domain name of the server
+            datetime.datetime: whent his message was created
         """
         return datetime.datetime.strptime(self.data.created_at, "%Y-%m-%dT%H:%M:%SZ") if self.data.created_at else None
 
@@ -211,7 +211,7 @@ class Incident(cassiopeia.type.core.common.CassiopeiaObject):
     def id(self):
         """
         Returns:
-            str: the domain name of the server
+            int: the id of this message
         """
         return self.data.id
 
@@ -219,7 +219,7 @@ class Incident(cassiopeia.type.core.common.CassiopeiaObject):
     def updates(self):
         """
         Returns:
-            str: the domain name of the server
+            list<Message>: the updates associated with this incident
         """
         return [Message(update) for update in self.data.updates]
 
@@ -253,7 +253,7 @@ class Message(cassiopeia.type.core.common.CassiopeiaObject):
     def author(self):
         """
         Returns:
-            str: the domain name of the server
+            str: who wrote this message
         """
         return self.author
 
@@ -261,7 +261,7 @@ class Message(cassiopeia.type.core.common.CassiopeiaObject):
     def content(self):
         """
         Returns:
-            str: the domain name of the server
+            str: the content of this message
         """
         return self.content
 
@@ -269,7 +269,7 @@ class Message(cassiopeia.type.core.common.CassiopeiaObject):
     def created(self):
         """
         Returns:
-            str: the domain name of the server
+            datetime.datetime: whent his incident was created
         """
         return datetime.datetime.strptime(self.data.created_at, "%Y-%m-%dT%H:%M:%SZ") if self.data.created_at else None
 
@@ -277,7 +277,7 @@ class Message(cassiopeia.type.core.common.CassiopeiaObject):
     def id(self):
         """
         Returns:
-            str: the domain name of the server
+            int: the id of this incident
         """
         return self.data.id
 
@@ -285,7 +285,7 @@ class Message(cassiopeia.type.core.common.CassiopeiaObject):
     def severity(self):
         """
         Returns:
-            str: the domain name of the server
+            str: the severity of this message
         """
         return self.data.severity
 
@@ -293,7 +293,7 @@ class Message(cassiopeia.type.core.common.CassiopeiaObject):
     def translations(self):
         """
         Returns:
-            str: the domain name of the server
+            dict<translation.locale: Translation>: the translated text of this message
         """
         return {translation.locale: Translation(translation) for translation in self.data.translations}
 
@@ -301,7 +301,7 @@ class Message(cassiopeia.type.core.common.CassiopeiaObject):
     def updated(self):
         """
         Returns:
-            str: the domain name of the server
+            datetime.datetime: when this message was last updated
         """
         return datetime.datetime.strptime(self.data.updated_at, "%Y-%m-%dT%H:%M:%SZ") if self.data.updated_at else None
 
@@ -317,7 +317,7 @@ class Translation(cassiopeia.type.core.common.CassiopeiaObject):
     def content(self):
         """
         Returns:
-            str: the domain name of the server
+            str: the content of this translation
         """
         return self.data.content
 
@@ -325,7 +325,7 @@ class Translation(cassiopeia.type.core.common.CassiopeiaObject):
     def locale(self):
         """
         Returns:
-            str: the domain name of the server
+            str: the content of this translation
         """
         return self.data.locale
 
@@ -333,7 +333,7 @@ class Translation(cassiopeia.type.core.common.CassiopeiaObject):
     def updated(self):
         """
         Returns:
-            str: the domain name of the server
+            datetime.datetime: when this translation was last updated
         """
         return datetime.datetime.strptime(self.data.updated_at, "%Y-%m-%dT%H:%M:%SZ") if self.data.updated_at else None
 

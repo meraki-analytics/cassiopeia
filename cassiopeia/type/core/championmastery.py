@@ -24,7 +24,7 @@ class ChampionMastery(cassiopeia.type.core.common.CassiopeiaObject):
     def level(self):
         """
         Returns:
-            Champion: champion for this entry
+            int: champion level for specified player and champion combination
         """
         return self.data.championLevel
 
@@ -32,7 +32,7 @@ class ChampionMastery(cassiopeia.type.core.common.CassiopeiaObject):
     def points(self):
         """
         Returns:
-            Champion: champion for this entry
+            int: total number of champion points for this player and champion combination - they are used to determine champion_level
         """
         return self.data.championPoints
 
@@ -40,7 +40,7 @@ class ChampionMastery(cassiopeia.type.core.common.CassiopeiaObject):
     def points_since_last_level(self):
         """
         Returns:
-            Champion: champion for this entry
+            int: number of points earned since current level has been achieved. Zero if player reached maximum champion level for this champion.
         """
         return self.data.championPointsSinceLastLevel
 
@@ -48,7 +48,7 @@ class ChampionMastery(cassiopeia.type.core.common.CassiopeiaObject):
     def points_until_next_level(self):
         """
         Returns:
-            Champion: champion for this entry
+            int: number of points needed to achieve next level. Zero if player reached maximum champion level for this champion.
         """
         return self.data.championPointsUntilNextLevel
 
@@ -56,7 +56,7 @@ class ChampionMastery(cassiopeia.type.core.common.CassiopeiaObject):
     def chest_granted(self):
         """
         Returns:
-            Champion: champion for this entry
+            bool: is chest granted for this champion or not in current season
         """
         return self.data.chestGranted
 
@@ -64,7 +64,7 @@ class ChampionMastery(cassiopeia.type.core.common.CassiopeiaObject):
     def highest_grade(self):
         """
         Returns:
-            Champion: champion for this entry
+            str: the highest grade of this champion of current season
         """
         return self.data.highestGrade
 
@@ -72,7 +72,7 @@ class ChampionMastery(cassiopeia.type.core.common.CassiopeiaObject):
     def last_played(self):
         """
         Returns:
-            Champion: champion for this entry
+            datetime: last time this champion was played by this player
         """
         return datetime.datetime.utcfromtimestamp(self.data.lastPlayTime / 1000) if self.data.lastPlayTime else None
 
@@ -80,7 +80,7 @@ class ChampionMastery(cassiopeia.type.core.common.CassiopeiaObject):
     def summoner(self):
         """
         Returns:
-            Champion: champion for this entry
+            Summoner: the player this mastery information is for
         """
         return cassiopeia.riotapi.get_summoner_by_id(self.data.playerId) if self.data.playerId else None
 

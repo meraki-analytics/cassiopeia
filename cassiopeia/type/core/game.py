@@ -29,7 +29,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def assists(self):
         """
         Returns:
-            float: the participant's kda
+            int: the total number of assists this participant had
         """
         return self.data.assists
 
@@ -37,7 +37,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def inhibitor_kills(self):
         """
         Returns:
-            float: the participant's kda
+            int: the total number of inhibitors this participant killed
         """
         return self.data.barracksKilled
 
@@ -45,7 +45,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def kills(self):
         """
         Returns:
-            float: the participant's kda
+            int: the total number of kills this participant had
         """
         return self.data.championsKilled
 
@@ -53,7 +53,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def combat_score(self):
         """
         Returns:
-            float: the participant's kda
+            int: dominion only. the part of the participant's score that came from combat-related activities
         """
         return self.data.combatPlayerScore
 
@@ -61,7 +61,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def consumables_bought(self):
         """
         Returns:
-            float: the participant's kda
+            list<Item>: the consumables that the participant bought (careful, they might have just sold them back or hit undo?)
         """
         return self.data.consumablesPurchased
 
@@ -69,7 +69,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def damage_dealt_player(self):
         """
         Returns:
-            float: the participant's kda
+            int: well, we don't know what this one is. let us know if you figure it out.
         """
         return self.data.damageDealtPlayer
 
@@ -77,7 +77,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def double_kills(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of double kills this participant had
         """
         return self.data.doubleKills
 
@@ -85,7 +85,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def first_blood(self):
         """
         Returns:
-            float: the participant's kda
+            bool: whether this participant got first blood
         """
         return self.data.firstBlood
 
@@ -93,7 +93,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def gold(self):
         """
         Returns:
-            float: the participant's kda
+            int: the participant's current gold
         """
         return self.data.gold
 
@@ -101,7 +101,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def gold_earned(self):
         """
         Returns:
-            float: the participant's kda
+            int: the participant's total gold
         """
         return self.data.goldEarned
 
@@ -109,7 +109,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def gold_spent(self):
         """
         Returns:
-            float: the participant's kda
+            int: the participant's spent gold
         """
         return self.data.goldSpent
 
@@ -117,7 +117,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def item0(self):
         """
         Returns:
-            float: the participant's kda
+            Item: the participant's first item
         """
         return cassiopeia.riotapi.get_item(self.data.item0) if self.data.item0 else None
 
@@ -125,7 +125,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def item1(self):
         """
         Returns:
-            float: the participant's kda
+            Item: the participant's second item
         """
         return cassiopeia.riotapi.get_item(self.data.item1) if self.data.item1 else None
 
@@ -133,7 +133,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def item2(self):
         """
         Returns:
-            float: the participant's kda
+            Item: the participant's third item
         """
         return cassiopeia.riotapi.get_item(self.data.item2) if self.data.item2 else None
 
@@ -141,7 +141,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def item3(self):
         """
         Returns:
-            float: the participant's kda
+            Item: the participant's fourth item
         """
         return cassiopeia.riotapi.get_item(self.data.item3) if self.data.item3 else None
 
@@ -149,7 +149,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def item4(self):
         """
         Returns:
-            float: the participant's kda
+            Item: the participant's fifth item
         """
         return cassiopeia.riotapi.get_item(self.data.item4) if self.data.item4 else None
 
@@ -157,7 +157,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def item5(self):
         """
         Returns:
-            float: the participant's kda
+            Item: the participant's sixth item
         """
         return cassiopeia.riotapi.get_item(self.data.item5) if self.data.item5 else None
 
@@ -165,7 +165,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def item6(self):
         """
         Returns:
-            float: the participant's kda
+            Item: the participant's seventh item (i.e. their ward)
         """
         return cassiopeia.riotapi.get_item(self.data.item6) if self.data.item6 else None
 
@@ -173,7 +173,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def items(self):
         """
         Returns:
-            float: the participant's kda
+            list<Item>: the participant's items
         """
         return [self.item0, self.item1, self.item2, self.item3, self.item4, self.item5, self.item6]
 
@@ -181,7 +181,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def killing_sprees(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of killing sprees this participant had
         """
         return self.data.killingSprees
 
@@ -189,7 +189,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def largest_critical_strike(self):
         """
         Returns:
-            float: the participant's kda
+            int: the largest critical strike this participant had
         """
         return self.data.largestCriticalStrike
 
@@ -197,7 +197,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def largest_killing_spree(self):
         """
         Returns:
-            float: the participant's kda
+            int: the larges killing spree this participant had
         """
         return self.data.largestKillingSpree
 
@@ -205,7 +205,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def largest_multi_kill(self):
         """
         Returns:
-            float: the participant's kda
+            int: the largest multikill this participant had
         """
         return self.data.largestMultiKill
 
@@ -213,7 +213,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def tier_3_items_bought(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of tier 3 items built
         """
         return self.data.legendaryItemsCreated
 
@@ -221,7 +221,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def level(self):
         """
         Returns:
-            float: the participant's kda
+            int: the participant's champion level
         """
         return self.data.level
 
@@ -229,7 +229,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def magic_damage_dealt(self):
         """
         Returns:
-            float: the participant's kda
+            int: the total magic damage this participant dealt
         """
         return self.data.magicDamageDealtPlayer
 
@@ -237,7 +237,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def magic_damage_dealt_to_champions(self):
         """
         Returns:
-            float: the participant's kda
+            int: the total magic damage this participant dealt to champions
         """
         return self.data.magicDamageDealtToChampions
 
@@ -245,7 +245,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def magic_damage_taken(self):
         """
         Returns:
-            float: the participant's kda
+            int: the total magic damage this participant received
         """
         return self.data.magicDamageTaken
 
@@ -253,7 +253,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def minion_denies(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of minions this participant denied to the enemy. let us know if you figure out what this actually is
         """
         return self.data.minionsDenied
 
@@ -261,7 +261,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def minion_kills(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of minions this participant killed
         """
         return self.data.minionsKilled
 
@@ -269,7 +269,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def monster_kills(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of neutral minions this participant killed
         """
         return self.data.neutralMinionsKilled
 
@@ -277,7 +277,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def enemy_monster_kills(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of neutral enemy minions this participant killed
         """
         return self.data.neutralMinionsKilledEnemyJungle
 
@@ -285,7 +285,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def ally_monster_kills(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of neutral ally minions this participant killed
         """
         return self.data.neutralMinionsKilledYourJungle
 
@@ -293,7 +293,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def nexus_killed(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of nexuses this participant killed
         """
         return self.data.nexusKilled
 
@@ -301,7 +301,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def node_captured(self):
         """
         Returns:
-            float: the participant's kda
+            int: dominion only. the number of nodes this participant captured
         """
         return self.data.nodeCapture
 
@@ -309,7 +309,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def node_capture_assists(self):
         """
         Returns:
-            float: the participant's kda
+            int: dominion only. the number of nodes this participant assisted in capturing
         """
         return self.data.nodeCaptureAssist
 
@@ -317,7 +317,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def node_neutralizations(self):
         """
         Returns:
-            float: the participant's kda
+            int: dominion only. the number of nodes this participant neutralized
         """
         return self.data.nodeNeutralize
 
@@ -325,7 +325,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def node_neutralization_assists(self):
         """
         Returns:
-            float: the participant's kda
+            int: dominion only. the number of nodes this participant assisted in neutralizing
         """
         return self.data.nodeNeutralizeAssist
 
@@ -333,7 +333,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def deaths(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of deaths this participant had
         """
         return self.data.numDeaths
 
@@ -341,7 +341,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def items_bought(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of items this participant bought
         """
         return self.data.numItemsBought
 
@@ -349,7 +349,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def objective_score(self):
         """
         Returns:
-            float: the participant's kda
+            int: dominion only. the part of the participant's score that came from objective-related activities
         """
         return self.data.objectivePlayerScore
 
@@ -357,7 +357,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def penta_kills(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of penta kills this participant had
         """
         return self.data.pentaKills
 
@@ -365,7 +365,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def physical_damage_dealt(self):
         """
         Returns:
-            float: the participant's kda
+            int: the total physical damage this participant dealt
         """
         return self.data.physicalDamageDealtPlayer
 
@@ -373,7 +373,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def physical_damage_dealt_to_champions(self):
         """
         Returns:
-            float: the participant's kda
+            int: the total physical damage this participant dealt to champions
         """
         return self.data.physicalDamageDealtToChampions
 
@@ -381,7 +381,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def physical_damage_taken(self):
         """
         Returns:
-            float: the participant's kda
+            int: the total physical damage this participant received
         """
         return self.data.physicalDamageTaken
 
@@ -389,7 +389,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def lane(self):
         """
         Returns:
-            float: the participant's kda
+            Lane: the lane this participant was in
         """
         return cassiopeia.type.core.common.Lane.for_id(self.data.playerPosition) if self.data.playerPosition else None
 
@@ -397,7 +397,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def role(self):
         """
         Returns:
-            float: the participant's kda
+            Role: the role of this particiant
         """
         return cassiopeia.type.core.common.Role.for_id(self.data.playerRole) if self.data.playerRole else None
 
@@ -405,7 +405,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def quadra_kills(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of quadra kills this participant had
         """
         return self.data.quadraKills
 
@@ -413,7 +413,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def sight_wards_bought(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of sight wards this participant bought
         """
         return self.data.sightWardsBought
 
@@ -421,7 +421,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def q_casts(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of times this participant cast his Q
         """
         return self.data.spell1Cast
 
@@ -429,7 +429,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def w_casts(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of tiems this participant cast his W
         """
         return self.data.spell2Cast
 
@@ -437,7 +437,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def e_casts(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of times this participant cast his E
         """
         return self.data.spell3Cast
 
@@ -445,7 +445,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def r_casts(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of times this participant cast his R
         """
         return self.data.spell4Cast
 
@@ -453,7 +453,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def d_casts(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of times this participant cast his D summoner spell
         """
         return self.data.summonSpell1Cast
 
@@ -461,7 +461,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def f_casts(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of times this participant cast his F summoner spell
         """
         return self.data.summonSpell2Cast
 
@@ -469,7 +469,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def elite_monsters_kills(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of elite monsters this participant killed
         """
         return self.data.superMonsterKilled
 
@@ -477,7 +477,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def side(self):
         """
         Returns:
-            float: the participant's kda
+            Side: the side the participant was on
         """
         return cassiopeia.type.core.common.Side(self.data.team) if self.data.team else None
 
@@ -485,7 +485,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def objectives(self):
         """
         Returns:
-            float: the participant's kda
+            int: well, we don't know what this one is. let us know if you figure it out.
         """
         return self.data.teamObjective
 
@@ -493,7 +493,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def time_played(self):
         """
         Returns:
-            float: the participant's kda
+            int: the amount of time this participant played
         """
         return self.data.timePlayed
 
@@ -501,7 +501,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def damage_dealt(self):
         """
         Returns:
-            float: the participant's kda
+            int: the total damage this participant dealt
         """
         return self.data.totalDamageDealt
 
@@ -509,7 +509,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def damage_dealt_to_champions(self):
         """
         Returns:
-            float: the participant's kda
+            int: the total damage this participant dealt to champions
         """
         return self.data.totalDamageDealtToChampions
 
@@ -517,7 +517,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def damage_taken(self):
         """
         Returns:
-            float: the participant's kda
+            int: the total damage this participant received
         """
         return self.data.totalDamageTaken
 
@@ -525,7 +525,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def healing_done(self):
         """
         Returns:
-            float: the participant's kda
+            int: the amount of healing this participant did
         """
         return self.data.totalHeal
 
@@ -533,7 +533,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def score(self):
         """
         Returns:
-            float: the participant's kda
+            int: the score for this participant
         """
         return self.data.totalPlayerScore
 
@@ -541,7 +541,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def score_rank(self):
         """
         Returns:
-            float: the participant's kda
+            int: if game was a dominion game, team rank of the player's total score (e.g., 1-5)
         """
         return self.data.totalScoreRank
 
@@ -549,7 +549,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def crowd_control_dealt(self):
         """
         Returns:
-            float: the participant's kda
+            int: the total amount of crowd control this participant dealt (in seconds)
         """
         return self.data.totalTimeCrowdControlDealt
 
@@ -557,7 +557,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def units_healed(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of units this participant healed
         """
         return self.data.totalUnitsHealed
 
@@ -565,7 +565,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def triple_kills(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of triple kills this participant had
         """
         return self.data.tripleKills
 
@@ -573,7 +573,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def true_damage_dealt(self):
         """
         Returns:
-            float: the participant's kda
+            int: the total true damage this participant dealth
         """
         return self.data.trueDamageDealtPlayer
 
@@ -581,7 +581,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def true_damage_dealt_to_champions(self):
         """
         Returns:
-            float: the participant's kda
+            int: the total damage this participant dealt to champions
         """
         return self.data.trueDamageDealtToChampions
 
@@ -589,7 +589,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def true_damage_taken(self):
         """
         Returns:
-            float: the participant's kda
+            int: the total true damage this participant received
         """
         return self.data.trueDamageTaken
 
@@ -597,7 +597,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def turret_kills(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of turret kills this participant had
         """
         return self.data.turretsKilled
 
@@ -605,7 +605,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def unreal_kills(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of unreal kills this participant had
         """
         return self.data.unrealKills
 
@@ -613,7 +613,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def victory_points(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of victory points this participant gained from winning or losing this game
         """
         return self.data.victoryPointTotal
 
@@ -621,7 +621,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def vision_wards_bought(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of vision wards sprees this participant bought
         """
         return self.data.visionWardsBought
 
@@ -629,7 +629,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def ward_kills(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of wards sprees this participant killed
         """
         return self.data.wardKilled
 
@@ -637,7 +637,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def wards_placed(self):
         """
         Returns:
-            float: the participant's kda
+            int: the number of wards this participant placed
         """
         return self.data.wardPlaced
 
@@ -645,7 +645,7 @@ class Stats(cassiopeia.type.core.common.CassiopeiaObject):
     def win(self):
         """
         Returns:
-            float: the participant's kda
+            bool: whether the participant won the game or not
         """
         return self.data.win
 
@@ -661,7 +661,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def champion(self):
         """
         Returns:
-            float: the participant's kda
+            Champion: the champion for this participant
         """
         return cassiopeia.riotapi.get_champion_by_id(self.data.championId) if self.data.championId else None
 
@@ -669,7 +669,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def summoner(self):
         """
         Returns:
-            float: the participant's kda
+            Summoner: the summoner for this participant
         """
         return cassiopeia.riotapi.get_summoner_by_id(self.data.summonerId) if self.data.summonerId else None
 
@@ -677,7 +677,7 @@ class Participant(cassiopeia.type.core.common.CassiopeiaObject):
     def side(self):
         """
         Returns:
-            float: the participant's kda
+            Side: the side the participant was on
         """
         return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.teamId else None
 
@@ -706,7 +706,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def summoner(self):
         """
         Returns:
-            float: the participant's kda
+            Summoner: the summoner for this participant
         """
         return cassiopeia.riotapi.get_summoner_by_id(self.__summoner_id) if self.__summoner_id else None
 
@@ -714,7 +714,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def champion(self):
         """
         Returns:
-            float: the participant's kda
+            Champion: the champion for this participant
         """
         return cassiopeia.riotapi.get_champion_by_id(self.data.championId) if self.data.championId else None
 
@@ -722,7 +722,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def creation(self):
         """
         Returns:
-            float: the participant's kda
+            datetime: the time when this game was created
         """
         return datetime.datetime.utcfromtimestamp(self.data.createDate / 1000) if self.data.createDate else None
 
@@ -730,7 +730,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def participants(self):
         """
         Returns:
-            float: the participant's kda
+            list<Participant>: the participants in this game
         """
         parts = [Participant(player) for player in self.data.fellowPlayers]
         parts.append(Participant(cassiopeia.type.dto.game.Player({
@@ -744,7 +744,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def id(self):
         """
         Returns:
-            float: the participant's kda
+            int: the match ID
         """
         return self.data.gameId
 
@@ -752,7 +752,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def mode(self):
         """
         Returns:
-            float: the participant's kda
+            GameMode: the game mode
         """
         return cassiopeia.type.core.common.GameMode(self.data.gameMode) if self.data.gameMode else None
 
@@ -760,7 +760,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def type(self):
         """
         Returns:
-            float: the participant's kda
+            GameType: the game type
         """
         return cassiopeia.type.core.common.GameType(self.data.gameType) if self.data.gameType else None
 
@@ -768,7 +768,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def invalid(self):
         """
         Returns:
-            float: the participant's kda
+            bool: well, we don't know what this one is. let us know if you figure it out.
         """
         return self.data.invalid
 
@@ -776,7 +776,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def ip(self):
         """
         Returns:
-            float: the participant's kda
+            int: the amount of IP the participant gained for this game (the one that this game was pulled using)
         """
         return self.data.ipEarned
 
@@ -784,7 +784,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def level(self):
         """
         Returns:
-            float: the participant's kda
+            int: the participant's champion level
         """
         return self.data.level
 
@@ -792,7 +792,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def map(self):
         """
         Returns:
-            float: the participant's kda
+            Map: the map this game was played on
         """
         return cassiopeia.type.core.common.Map(self.data.mapId) if self.data.mapId else None
 
@@ -800,7 +800,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def summoner_spell_d(self):
         """
         Returns:
-            float: the participant's kda
+            SummonerSpell: the particpant's first summoner spell (the one that this game was pulled using)
         """
         return cassiopeia.riotapi.get_summoner_spell(self.data.spell1) if self.data.spell1 else None
 
@@ -808,7 +808,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def summoner_spell_f(self):
         """
         Returns:
-            float: the participant's kda
+            SummonerSpell: the participant's second summoner spell (the one that this game was pulled using)
         """
         return cassiopeia.riotapi.get_summoner_spell(self.data.spell2) if self.data.spell2 else None
 
@@ -816,7 +816,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def stats(self):
         """
         Returns:
-            float: the participant's kda
+            Stats: the participant's stats (the one that this game was pulled using)
         """
         return Stats(self.data.stats) if self.data.stats else None
 
@@ -824,7 +824,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def sub_type(self):
         """
         Returns:
-            float: the participant's kda
+            SubType: the game's sub-type
         """
         return cassiopeia.type.core.common.SubType(self.data.subType) if self.data.subType else None
 
@@ -832,7 +832,7 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
     def side(self):
         """
         Returns:
-            float: the participant's kda
+            Side: the side the participant was on
         """
         return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.teamId else None
 
