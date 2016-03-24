@@ -10,7 +10,7 @@ class ChampionMastery(cassiopeia.type.core.common.CassiopeiaObject):
     dto_type = cassiopeia.type.dto.championmastery.ChampionMastery
 
     def __str__(self):
-        return "{champion} ({level})".format(self.champion, self.level)
+        return "{champion} ({level})".format(champion=self.champion, level=self.level)
 
     @property
     def champion(self):
