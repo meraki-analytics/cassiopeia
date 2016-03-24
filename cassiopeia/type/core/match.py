@@ -93,6 +93,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.matchVersion
 
     @cassiopeia.type.core.common.lazyproperty
+    #@cassiopeia.type.core.common.indexable([("summoner_name", str), ("summoner_id", int), ("champion.name", str), ("champion.id", int), ("champion", cassiopeia.type.core.staticdata.Champion), ("summoner", cassiopeia.type.core.summoner.Summoner)])
     def participants(self):
         """
         Returns:
@@ -102,7 +103,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
         for i in range(len(self.data.participants)):
             p = CombinedParticipant(self.data.participants[i], self.data.participantIdentities[i])
             participants.append(Participant(p))
-        return Participants(sorted(participants, key=lambda p: p.id))
+        return sorted(participants, key=lambda p: p.id)
 
     @property
     def platform(self):
@@ -173,32 +174,6 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
             list<Frame>: the frames in this match
         """
         return self.timeline.frames
-
-
-@cassiopeia.type.core.common.inheritdocs
-class Participants(list):
-    def __getitem__(self, key):
-        try:
-            return super().__getitem__(key)
-        except TypeError:
-            return self.__lookup(key)
-
-    def __lookup(self, key):
-        if isinstance(key, str):
-            for p in self:
-                if p.summoner_name == key or p.champion.name == key:
-                    return p
-        elif isinstance(key, cassiopeia.type.core.summoner.Summoner):
-            for p in self:
-                if p.summoner_id == key.id:
-                    return p
-        elif isinstance(key, cassiopeia.type.core.staticdata.Champion):
-            for p in self:
-                if p.champion.id == key.id:
-                    return p
-        else:
-            raise TypeError("Participant indices must be integers, slices, strings, summoners, or champions, not {t}".format(t=type(key)))
-        raise KeyError(key)
 
 
 @cassiopeia.type.core.common.inheritdocs

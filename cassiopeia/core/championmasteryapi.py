@@ -2,6 +2,7 @@ import cassiopeia.riotapi
 import cassiopeia.core.requests
 import cassiopeia.dto.championmasteryapi
 import cassiopeia.type.core.championmastery
+import cassiopeia.type.core.common
 
 
 def get_champion_mastery(summoner, champion):
@@ -19,6 +20,7 @@ def get_champion_mastery(summoner, champion):
     return cassiopeia.type.core.championmastery.ChampionMastery(champion_mastery)
 
 
+#@cassiopeia.type.core.common.indexable([("name", str), ("id", int)])
 def get_champion_masteries(summoner):
     """
     Gets all the ChampionMastery objects for the specified summoner

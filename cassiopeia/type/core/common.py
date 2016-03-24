@@ -125,6 +125,74 @@ def inheritdocs(class_):
     return class_
 
 
+class LookupableMixin(object):
+    def __init__(self, fields, args):
+        super().__init__(args)
+        self.fields = fields
+
+    def __getitem__(self, key):
+        try:
+            return super().__getitem__(key)
+        except (TypeError, IndexError, KeyError, AttributeError):
+            return self._lookup(key)
+
+
+class LookupableList(LookupableMixin, list):
+    def _lookup(self, key):
+        for field, _type in self.fields:
+            if isinstance(key, _type):
+                for item in self:
+                    # The next 7 lines allow lookup keys such as 'champion.name'
+                    attr = item
+                    _field = field
+                    while '.' in _field:
+                        _field, tail = _field.split('.', 1)
+                        attr = getattr(attr, _field)
+                        _field = tail
+                    attr = getattr(attr, _field)
+                    if key == attr:
+                        return item
+        else:
+            raise KeyError(key)
+
+
+class LookupableDict(LookupableMixin, dict):
+    def _lookup(self, key):
+        for field, _type in self.fields:
+            if isinstance(key, _type):
+                for item in self:
+                    # The next 7 lines allow lookup keys such as 'champion.name'
+                    attr = item
+                    _field = field
+                    while '.' in _field:
+                        _field, tail = _field.split('.', 1)
+                        attr = getattr(attr, _field)
+                        _field = tail
+                    attr = getattr(attr, _field)
+                    if key == attr:
+                        return self[item]
+        else:
+            raise KeyError(key)
+
+
+def indexable(fields):
+    """
+        Args:
+            fields (list<tuple<str, type>>): a list of tuples of the form (attribute_name, attribute_type) to perform the lookup on in the objects in the list or dict
+    """
+    @cassiopeia.type.core.common.inheritdocs
+    def _wrapper(func):
+        def wrapper(*args, **kwargs):
+            result = func(*args, **kwargs)
+            if isinstance(result, list):
+                result = LookupableList(fields, result)
+            if isinstance(result, dict):
+                result = LookupableDict(fields, result)
+            return result
+        return wrapper
+    return _wrapper
+
+
 class LoadPolicy(enum.Enum):
     lazy = "LAZY"
     eager = "EAGER"
