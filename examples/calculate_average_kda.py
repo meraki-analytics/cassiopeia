@@ -38,7 +38,7 @@ def main():
         for participant in match.participants:
             if participant.summoner_id == dyrus.id:
                 kills += participant.stats.kills
-                deaths += participant.stats.kills
+                deaths += participant.stats.deaths
                 assists += participant.stats.assists
         kda = (kills + assists) / deaths
         print("Rolling K/D/A for {0}:  {1}/{2}/{3} == {4} over most recent {5} matches".format(dyrus.name, kills, deaths, assists, round(kda, 3), i + 1))
