@@ -29,17 +29,17 @@ In a similar manner, the ``get_champions`` and ``get_challenger`` methods are ca
   best_na = challenger_league[0].summoner
   print("He's much better at writing Python code than he is at LoL. He'll never be as good as {name}.".format(name=best_na.name))
 
-You can find more examples within Cassiopeia's `examples <https://github.com/meraki-analytics/cassiopeia/tree/master/example>`_ directory.
+You can find more examples within Cassiopeia's `examples <https://github.com/meraki-analytics/cassiopeia/tree/master/examples>`_ directory.
 
 
 More Examples
 =============
 
-* `Getting Champion Names and IDs <https://github.com/meraki-analytics/cassiopeia/blob/master/example/champion_id_to_name_mapping.py>`_
-* `Calculating K/D/A <https://github.com/meraki-analytics/cassiopeia/blob/master/example/calculate_average_kda.py>`_
-* `Checking if a Summoner is in Game <https://github.com/meraki-analytics/cassiopeia/blob/master/example/is_dyrus_in_game.py>`_
-* `Accessing Lane and Role Information from a Match <https://github.com/meraki-analytics/cassiopeia/blob/master/example/lane_and_role_from_match.py>`_
-* `Accessing More Match Data <https://github.com/meraki-analytics/cassiopeia/blob/master/example/parse_match_information.py>`_
-* `Working with Dates and Times <https://github.com/meraki-analytics/cassiopeia/blob/master/example/time_and_date_info.py>`_
-* `Pull All Summoners in the Master Tier <https://github.com/meraki-analytics/cassiopeia/blob/master/example/pull_masters_tier.py>`_
-* `Advanced: Recursive Match Collection <https://github.com/meraki-analytics/cassiopeia/blob/master/example/match_collection.py>`_
+* `Getting Champion Names and IDs <https://github.com/meraki-analytics/cassiopeia/blob/master/examples/champion_id_to_name_mapping.py>`_
+* `Calculating K/D/A <https://github.com/meraki-analytics/cassiopeia/blob/master/examples/calculate_average_kda.py>`_
+* `Checking if a Summoner is in Game <https://github.com/meraki-analytics/cassiopeia/blob/master/examples/is_dyrus_in_game.py>`_
+* `Accessing Lane and Role Information from a Match <https://github.com/meraki-analytics/cassiopeia/blob/master/examples/lane_and_role_from_match.py>`_
+* `Accessing More Match Data <https://github.com/meraki-analytics/cassiopeia/blob/master/examples/parse_match_information.py>`_
+* `Working with Dates and Times <https://github.com/meraki-analytics/cassiopeia/blob/master/examples/time_and_date_info.py>`_
+* `Pull All Summoners in the Master Tier <https://github.com/meraki-analytics/cassiopeia/blob/master/examples/pull_masters_tier.py>`_
+* `Advanced: Recursive Match Collection <https://github.com/meraki-analytics/cassiopeia/blob/master/examples/match_collection.py>`_
