@@ -48,7 +48,7 @@ def main():
     print()
     print("If we want K/D/A we really should be using the /stats/ endpoint, but it seems to be inaccurate or missing key information.")
     stats = dyrus.stats()
-    stats = stats[StatSummaryType.ranked_fives].stats
+    stats = stats[StatSummaryType.normal_fives].stats
     print("Total ranked K/D/A for {0}:  {1}/{2}/{3} == {4}".format(dyrus.name, stats.kills, stats.deaths, stats.assists, round(stats.kda, 3)))
 
 
