@@ -76,7 +76,7 @@ We can also see how much gold every participant had at every minute:
 .. code-block:: python
 
     for frame in match.timeline.frames:
-        print("The amount of gold for each participant at minute {} was:".format(frame.timestamp.time.minute))
+        print("The amount of gold for each participant at minute {} was:".format(int(frame.timestamp.seconds/60)))
         for participant_frame in frame:
             print("  {summoner} had {amount} gold".format(summoner=participant_frame.participant.name, participant_frame.gold))
 
