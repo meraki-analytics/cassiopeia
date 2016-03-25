@@ -12,7 +12,7 @@ Riot API
 * Automatically throttles requests to fit `rate limits <ratelimiting.html>`_
 * Useability-focused type system that replaces foreign key ID values with the referenced object to make using the Riot API easy
 
-  * e.g. ``match.participants['Dyrus'].champion`` returns a ``Champion`` object so you can easily access information such as the champion name or image url: ``match.participants['Dyrus'].champion.name`` or ``match.participants['Dyrus'].champion.image.full``
+  * e.g. ``match.participants['Dyrus'].champion`` returns a ``Champion`` object so you can easily access information such as the champion name or image url: ``match.participants['Dyrus'].champion.name`` or ``match.participants['Dyrus'].champion.image.link``
 
 * Option to `lazy load <loadpolicy.html#lazy>`_ referenced objects right when you need them or batch them up and `eagerly load <loadpolicy.html#eager>`_ them to minimize API calls
 * Caches static data and summoner information to accelerate access and reduce API load
