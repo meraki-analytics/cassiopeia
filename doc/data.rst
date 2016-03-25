@@ -77,8 +77,8 @@ We can also see how much gold every participant had at every minute:
 
     for frame in match.timeline.frames:
         print("The amount of gold for each participant at minute {} was:".format(int(frame.timestamp.seconds/60)))
-        for participant_frame in frame:
-            print("  {summoner} had {amount} gold".format(summoner=participant_frame.participant.name, participant_frame.gold))
+        for participant, participant_frame in frame.participant_frames.items():
+            print("  {summoner} had {amount} gold".format(summoner=participant_frame.participant.summoner.name, amount=participant_frame.gold))
 
 You can continue by pulling, accessing, and printing all of the information that the Riot API will return. By this point we hope you are beginning to understand the "flow" of Cassiopeia. Ideally, the code you write through Cassiopeia should be easily readable and understandable. That's our goal. Sometimes the lines get long, but this is normal for a service like the Riot API.
 
