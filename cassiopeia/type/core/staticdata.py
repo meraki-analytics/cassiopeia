@@ -2067,7 +2067,7 @@ class Mastery(cassiopeia.type.core.common.CassiopeiaObject):
         Returns:
             Mastery: the prerequisite for this mastery
         """
-        return cassiopeia.riotapi.get_mastery(int(self.data.prereq)) if self.data.prereq else None
+        return cassiopeia.riotapi.get_mastery(int(self.data.prereq)) if int(self.data.prereq) else None
 
     @property
     def max_rank(self):
