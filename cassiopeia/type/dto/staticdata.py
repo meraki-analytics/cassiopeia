@@ -17,6 +17,7 @@ class BlockItem(cassiopeia.type.dto.common.CassiopeiaDto):
         count (int): item count
         id (int): item ID
     """
+
     def __init__(self, dictionary):
         self.count = dictionary.get("count", 0)
         self.id = dictionary.get("id", 0)
@@ -30,6 +31,7 @@ class Block(cassiopeia.type.dto.common.CassiopeiaDto):
         recMath (bool): rec math
         type (str): type
     """
+
     def __init__(self, dictionary):
         self.items = [(BlockItem(item) if not isinstance(item, BlockItem) else item) for item in dictionary.get("items", []) if item]
         self.recMath = dictionary.get("recMath", False)
@@ -46,6 +48,7 @@ class SpellVars(cassiopeia.type.dto.common.CassiopeiaDto):
         link (str): link
         ranksWith (str): ranks with
     """
+
     def __init__(self, dictionary):
         self.coeff = dictionary.get("coeff", [])
         self.dyn = dictionary.get("dyn", "")
@@ -61,6 +64,7 @@ class LevelTip(cassiopeia.type.dto.common.CassiopeiaDto):
         effect (list<str>): effects
         label (list<str>): labels
     """
+
     def __init__(self, dictionary):
         self.effect = dictionary.get("effect", [])
         self.label = dictionary.get("label", [])
@@ -91,6 +95,7 @@ class Stats(cassiopeia.type.dto.common.CassiopeiaDto):
         spellblock (float): magic resist
         spellblockperlevel (float): magic resist per level
     """
+
     def __init__(self, dictionary):
         self.armor = dictionary.get("armor", 0.0)
         self.armorperlevel = dictionary.get("armorperlevel", 0.0)
@@ -122,6 +127,7 @@ class Skin(cassiopeia.type.dto.common.CassiopeiaDto):
         name (str): name
         num (int): number
     """
+
     def __init__(self, dictionary):
         self.id = dictionary.get("id", 0)
         self.name = dictionary.get("name", "")
@@ -140,6 +146,7 @@ class Recommended(cassiopeia.type.dto.common.CassiopeiaDto):
         title (str): title
         type (str): type
     """
+
     def __init__(self, dictionary):
         self.blocks = [(Block(block) if not isinstance(block, Block) else block) for block in dictionary.get("blocks", []) if block]
         self.champion = dictionary.get("champion", "")
@@ -162,6 +169,7 @@ class Image(cassiopeia.type.dto.common.CassiopeiaDto):
         x (int): x
         y (int): y
     """
+
     def __init__(self, dictionary, is_alt=False):
         self.full = dictionary.get("full", "")
         self.group = dictionary.get("group", "")
@@ -182,6 +190,7 @@ class Passive(cassiopeia.type.dto.common.CassiopeiaDto):
         name (str): name
         sanitizedDescription (str): sanitized description
     """
+
     def __init__(self, dictionary):
         self.description = dictionary.get("description", "")
         val = dictionary.get("image", None)
@@ -199,6 +208,7 @@ class Info(cassiopeia.type.dto.common.CassiopeiaDto):
         difficulty (int): difficulty rating
         magic (int): magic rating
     """
+
     def __init__(self, dictionary):
         self.attack = dictionary.get("attack", 0)
         self.defense = dictionary.get("defense", 0)
@@ -232,6 +242,7 @@ class ChampionSpell(cassiopeia.type.dto.common.CassiopeiaDto):
         tooltip (str): tooltip
         vars (list<SpellVars>): vars
     """
+
     def __init__(self, dictionary):
         self.altimages = [(Image(img, True) if not isinstance(img, Image) else img) for img in dictionary.get("altimages", []) if img]
         self.cooldown = dictionary.get("cooldown", [])
@@ -280,6 +291,7 @@ class Champion(cassiopeia.type.dto.common.CassiopeiaDto):
         tags (list<str>): tags
         title (str): title
     """
+
     def __init__(self, dictionary):
         self.allytips = dictionary.get("allytips", [])
         self.blurb = dictionary.get("blurb", "")
@@ -321,6 +333,7 @@ class ChampionList(cassiopeia.type.dto.common.CassiopeiaDto):
     """
     Gets all item IDs contained in this object
     """
+
     def __init__(self, dictionary):
         self.data = {name: Champion(champ) if not isinstance(champ, Champion) else champ for name, champ in dictionary.get("data", {}).items()}
         self.format = dictionary.get("format", "")
@@ -357,6 +370,7 @@ class MetaData(cassiopeia.type.dto.common.CassiopeiaDto):
         type (str): type
         version (str): version
     """
+
     def __init__(self, dictionary):
         self.isRune = dictionary.get("isRune", False)
         self.tier = dictionary.get("tier", "")
@@ -368,6 +382,7 @@ class Gold(cassiopeia.type.dto.common.CassiopeiaDto):
     """
     Gets all item IDs contained in this object
     """
+
     def __init__(self, dictionary):
         self.base = dictionary.get("base", 0)
         self.purchasable = dictionary.get("purchasable", False)
@@ -383,6 +398,7 @@ class BasicDataStats(cassiopeia.type.dto.common.CassiopeiaDto):
         tier (str): tier
         type (str): type
     """
+
     def __init__(self, dictionary):
         self.FlatArmorMod = dictionary.get("FlatArmorMod", 0.0)
         self.FlatAttackSpeedMod = dictionary.get("FlatAttackSpeedMod", 0.0)
@@ -460,6 +476,7 @@ class ItemTree(cassiopeia.type.dto.common.CassiopeiaDto):
         sell (int): sell price
         total (int): total price
     """
+
     def __init__(self, dictionary):
         self.header = dictionary.get("header", "")
         self.tags = dictionary.get("tags", [])
@@ -535,6 +552,7 @@ class Item(cassiopeia.type.dto.common.CassiopeiaDto):
         rPercentTimeDeadMod (float): the rPercentTimeDeadMod
         rPercentTimeDeadModPerLevel (float): the rPercentTimeDeadModPerLevel
     """
+
     def __init__(self, dictionary):
         self.colloq = dictionary.get("colloq", "")
         self.consumeOnFull = dictionary.get("consumeOnFull", False)
@@ -587,6 +605,7 @@ class Group(cassiopeia.type.dto.common.CassiopeiaDto):
         header (str): the header
         tags (list[str]): tags
     """
+
     def __init__(self, dictionary):
         self.MaxGroupOwnable = dictionary.get("MaxGroupOwnable", "")
         self.key = dictionary.get("key", "")
@@ -621,6 +640,7 @@ class BasicData(cassiopeia.type.dto.common.CassiopeiaDto):
         stats (BasicDataStats): stats
         tags (list<str>): tags
     """
+
     def __init__(self, dictionary):
         self.colloq = dictionary.get("colloq", "")
         self.consumeOnFull = dictionary.get("consumeOnFull", False)
@@ -656,6 +676,7 @@ class ItemList(cassiopeia.type.dto.common.CassiopeiaDto):
     """
     Gets all other item IDs contained in this object
     """
+
     def __init__(self, dictionary):
         val = dictionary.get("basic", None)
         self.basic = BasicData(val) if val and not isinstance(val, BasicData) else val
@@ -676,6 +697,7 @@ class LanguageStrings(cassiopeia.type.dto.common.CassiopeiaDto):
         MaxGroupOwnable (str): max ownable of group
         key (str): key
     """
+
     def __init__(self, dictionary):
         self.data = dictionary.get("data", {})
         self.type = dictionary.get("type", "")
@@ -713,6 +735,7 @@ class MapDetails(cassiopeia.type.dto.common.CassiopeiaDto):
         stats (BasicDataStats): stats
         tags (list[str]): tags
     """
+
     def __init__(self, dictionary):
         val = dictionary.get("image", None)
         self.image = Image(val) if val and not isinstance(val, Image) else val
@@ -732,6 +755,7 @@ class MapData(cassiopeia.type.dto.common.CassiopeiaDto):
         type (str): type
         version (str): version
     """
+
     def __init__(self, dictionary):
         self.data = {id_: MapDetails(map_) if not isinstance(map_, MapDetails) else map_ for id_, map_ in dictionary.get("data", {}).items()}
         self.type = dictionary.get("type", "")
@@ -749,6 +773,7 @@ class MasteryTreeItem(cassiopeia.type.dto.common.CassiopeiaDto):
         type (str): type
         version (str): version
     """
+
     def __init__(self, dictionary):
         self.masteryId = dictionary.get("masteryId", 0)
         self.prereq = dictionary.get("prereq", "")
@@ -763,6 +788,7 @@ class MasteryTreeList(cassiopeia.type.dto.common.CassiopeiaDto):
         mapName (str): name
         unpurchasableItemList (list<int>): items that can't be purchased on this map (IDs)
     """
+
     def __init__(self, dictionary):
         self.masteryTreeItems = [(MasteryTreeItem(item) if not isinstance(item, MasteryTreeItem) else item) for item in dictionary.get("masteryTreeItems", []) if item]
 
@@ -775,10 +801,11 @@ class MasteryTree(cassiopeia.type.dto.common.CassiopeiaDto):
         type (str): type
         version (str): version
     """
+
     def __init__(self, dictionary):
-        self.Defense = [(MasteryTreeList(list_) if not isinstance(list_, MasteryTreeList) else list_) for list_ in dictionary.get("Defense", []) if list_]
-        self.Offense = [(MasteryTreeList(list_) if not isinstance(list_, MasteryTreeList) else list_) for list_ in dictionary.get("Offense", []) if list_]
-        self.Utility = [(MasteryTreeList(list_) if not isinstance(list_, MasteryTreeList) else list_) for list_ in dictionary.get("Utility", []) if list_]
+        self.Cunning = [(MasteryTreeList(list_) if not isinstance(list_, MasteryTreeList) else list_) for list_ in dictionary.get("Cunning", []) if list_]
+        self.Ferocity = [(MasteryTreeList(list_) if not isinstance(list_, MasteryTreeList) else list_) for list_ in dictionary.get("Ferocity", []) if list_]
+        self.Resolve = [(MasteryTreeList(list_) if not isinstance(list_, MasteryTreeList) else list_) for list_ in dictionary.get("Resolve", []) if list_]
 
 
 @cassiopeia.type.core.common.inheritdocs
@@ -788,6 +815,7 @@ class Mastery(cassiopeia.type.dto.common.CassiopeiaDto):
         masteryId (int): mastery ID
         prereq (str): prerequisites
     """
+
     def __init__(self, dictionary):
         self.description = dictionary.get("description", [])
         self.id = dictionary.get("id", 0)
@@ -817,6 +845,7 @@ class MasteryList(cassiopeia.type.dto.common.CassiopeiaDto):
     Args:
         masteryTreeItems (list<MasteryTreeItem>): mastery tree items
     """
+
     def __init__(self, dictionary):
         self.data = {id_: Mastery(mastery) if not isinstance(mastery, Mastery) else mastery for id_, mastery in dictionary.get("data", {}).items()}
         val = dictionary.get("tree", None)
@@ -836,6 +865,7 @@ class Realm(cassiopeia.type.dto.common.CassiopeiaDto):
         Offense (list<MasteryTreeList>): offense tree
         Utility (list<MasteryTreeList>): utility tree
     """
+
     def __init__(self, dictionary):
         self.cdn = dictionary.get("cdn", "")
         self.css = dictionary.get("css", "")
@@ -864,6 +894,7 @@ class Rune(cassiopeia.type.dto.common.CassiopeiaDto):
         ranks (int): ranks
         sanitizedDescription (list<str>): sanitized description
     """
+
     def __init__(self, dictionary):
         self.colloq = dictionary.get("colloq", "")
         self.consumeOnFull = dictionary.get("consumeOnFull", False)
@@ -897,6 +928,7 @@ class RuneList(cassiopeia.type.dto.common.CassiopeiaDto):
     """
     Gets all other mastery IDs contained in this object
     """
+
     def __init__(self, dictionary):
         val = dictionary.get("basic", None)
         self.basic = BasicData(val) if val and not isinstance(val, BasicData) else val
@@ -917,6 +949,7 @@ class SummonerSpell(cassiopeia.type.dto.common.CassiopeiaDto):
         type (str): type
         version (str): version
     """
+
     def __init__(self, dictionary):
         self.cooldown = dictionary.get("cooldown", [])
         self.cooldownBurn = dictionary.get("cooldownBurn", "")
@@ -959,6 +992,7 @@ class SummonerSpellList(cassiopeia.type.dto.common.CassiopeiaDto):
         store (str): additional api data drawn from other sources that may be related to data dragon functionality
         v (str): current version of this file for this realm
     """
+
     def __init__(self, dictionary):
         self.data = {id_: SummonerSpell(spell) if not isinstance(spell, SummonerSpell) else spell for id_, spell in dictionary.get("data", {}).items()}
         self.type = dictionary.get("type", "")
