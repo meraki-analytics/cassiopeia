@@ -97,7 +97,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
     def participants(self):
         """
         Returns:
-            Participants (list<Participant>): the participants in this match
+            list<Participant>: the participants in this match
         """
         participants = []
         for i in range(len(self.data.participants)):
@@ -145,7 +145,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
         """
         for team in self.data.teams:
             if team.teamId == cassiopeia.type.core.common.Side.blue.value:
-                return Team(team, Participants([part for part in self.participants if part.side is cassiopeia.type.core.common.Side.blue]))
+                return Team(team, [part for part in self.participants if part.side is cassiopeia.type.core.common.Side.blue])
         return None
 
     @cassiopeia.type.core.common.lazyproperty
@@ -156,7 +156,7 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
         """
         for team in self.data.teams:
             if team.teamId == cassiopeia.type.core.common.Side.red.value:
-                return Team(team, Participants([part for part in self.participants if part.side is cassiopeia.type.core.common.Side.red]))
+                return Team(team, [part for part in self.participants if part.side is cassiopeia.type.core.common.Side.red])
         return None
 
     @cassiopeia.type.core.common.lazyproperty
@@ -337,7 +337,7 @@ class Team(cassiopeia.type.core.common.CassiopeiaObject):
     def participants(self):
         """
         Returns:
-            Participants (list<Participant>): the participants on this team
+            list<Participant>: the participants on this team
         """
         return self.__participants
 
@@ -1331,7 +1331,7 @@ class Frame(cassiopeia.type.core.common.CassiopeiaObject):
     def participant_frames(self):
         """
         Returns:
-            dict<participantID:ParticipantFrame>: the frames in for each participant
+            dict<participantID, ParticipantFrame>: the frames in for each participant
         """
         value = {participant: ParticipantFrame(self.data.participantFrames[str(id_)], self.__participants) for id_, participant in self.__participants.items()}
         self.__count_participant()
@@ -1597,6 +1597,14 @@ class ParticipantFrame(cassiopeia.type.core.common.CassiopeiaObject):
 
     @property
     def gold(self):
+        """
+        Returns:
+            int: the participant's total gold
+        """
+        return self.data.totalGold
+
+    @property
+    def current_gold(self):
         """
         Returns:
             int: the participant's current gold
