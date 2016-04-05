@@ -371,6 +371,7 @@ class Region(enum.Enum):
     brazil = "br"
     europe_north_east = "eune"
     europe_west = "euw"
+    japan = "jp"
     korea = "kr"
     latin_america_north = "lan"
     latin_america_south = "las"
