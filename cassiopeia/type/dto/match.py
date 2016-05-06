@@ -595,7 +595,7 @@ def _sa_bind_match_detail():
         mapId = sqlalchemy.Column(sqlalchemy.Integer)
         matchCreation = sqlalchemy.Column(sqlalchemy.BigInteger)
         matchDuration = sqlalchemy.Column(sqlalchemy.Integer)
-        matchId = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+        matchId = sqlalchemy.Column(sqlalchemy.BigInteger, primary_key=True)
         matchMode = sqlalchemy.Column(sqlalchemy.String(30))
         matchType = sqlalchemy.Column(sqlalchemy.String(30))
         matchVersion = sqlalchemy.Column(sqlalchemy.String(30))
