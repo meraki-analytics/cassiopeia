@@ -130,7 +130,10 @@ def execute_request(url, method, payload=""):
         response = urllib.request.urlopen(request)
         content = response.read()
         if content:
-            content = zlib.decompress(content, zlib.MAX_WBITS | 16).decode(encoding="UTF-8")
+            if "gzip" == response.getheader("Content-Encoding"):
+                content = zlib.decompress(content, zlib.MAX_WBITS | 16).decode(encoding="UTF-8")
+            else:
+                content = content.decode("UTF-8")
         return content
     finally:
         if response:
