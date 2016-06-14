@@ -96,6 +96,8 @@ def main():
             # If you pull a match twice, the second time it will be loaded from the database rather than pulled from Riot
             # and therefore will not count against your rate limit. This is true of all datatypes, include Summoner.
             match = riotapi.get_match(match_reference)
+            if match is None:  # If the match still fails to load, continue on to the next one
+                continue
             print("Stored {0} in my database".format(match))
             for participant in match.participants:
                 if participant.summoner not in unpulled_summoners and participant.summoner not in pulled_summoners:
