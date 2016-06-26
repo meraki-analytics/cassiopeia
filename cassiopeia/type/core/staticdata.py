@@ -117,7 +117,7 @@ class Item(cassiopeia.type.core.common.CassiopeiaObject):
         Returns:
             dict<str, bool>: the item's effects
         """
-        return self.effect
+        return self.data.effect
 
     @property
     def components(self):
