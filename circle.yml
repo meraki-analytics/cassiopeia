@@ -1,16 +1,13 @@
-machine:
-  python:
-    version: 3.5.0
-
 dependencies:
-  override:
-    # Have to upgrade virtualenv to make a virtualenv with python3
-    - (deactivate && pip install --upgrade virtualenv && virtualenv ~/virtualenvs/venv-3.5.0 -p /home/ubuntu/.pyenv/versions/3.5.0/bin/python3)
-    - (deactivate && source ~/virtualenvs/venv-3.5.0/bin/activate && pip install -r requirements35.txt)
-    - (deactivate && source ~/virtualenvs/venv-2.7.5/bin/activate && pip install -r requirements27.txt)
+  pre:
+    - pyenv shell 2.7.10; $(pyenv which pip) install --upgrade pip setuptools
+    - pyenv shell 3.5.0; $(pyenv which pip) install --upgrade pip setuptools
+    
+    - pyenv shell 2.7.10; $(pyenv which pip) install -r requirements27.txt
+    - pyenv shell 3.5.0; $(pyenv which pip) install -r requirements35.txt
 
 test:
   override:
-    - (deactivate && source ~/virtualenvs/venv-3.5.0/bin/activate && py.test -n 4)
-    - (deactivate && source ~/virtualenvs/venv-2.7.5/bin/activate && py.test -n 4)
+    - pyenv shell 2.7.10; $(pyenv which py.test) -n 4
+    - pyenv shell 3.5.0; $(pyenv which py.test) -n 4
     - flake8
