@@ -199,6 +199,7 @@ if cassiopeia.type.dto.common.sqlalchemy_imported:
         class_ = sqlalchemy.Column(sqlalchemy.String(50), primary_key=True)
         have_all = sqlalchemy.Column(sqlalchemy.Boolean)
 
+        @staticmethod
         def get_name(class_):
             return "{module}.{name}".format(module=class_.dto_type.__module__, name=class_.dto_type.__name__)
 
