@@ -285,6 +285,7 @@ class Queue(enum.Enum):
     poro_king = "KING_PORO_5x5"
     nemesis_draft = "COUNTER_PICK"
     black_market = "BILGEWATER_5x5"
+    nexus_siege = "SIEGE"
     dynamic_queue = "TEAM_BUILDER_DRAFT_UNRANKED_5x5"
     ranked_dynamic_queue = "TEAM_BUILDER_DRAFT_RANKED_5x5"
 
@@ -328,6 +329,7 @@ Queue.by_id = {
     310: Queue.nemesis_draft,
     73: Queue.showdown_duo,
     313: Queue.black_market,
+    315: Queue.nexus_siege
     61: Queue.team_builder,
     400: Queue.dynamic_queue,
     410: Queue.ranked_dynamic_queue
@@ -416,6 +418,7 @@ class GameMode(enum.Enum):
     dominion = "ODIN"
     one_for_all = "ONEFORALL"
     tutorial = "TUTORIAL"
+    nexus_siege = "SIEGE"
 
 
 class GameType(enum.Enum):
@@ -448,6 +451,7 @@ class SubType(enum.Enum):
     poro_king = "KING_PORO"
     nemesis_draft = "COUNTER_PICK"
     black_market = "BILGEWATER"
+    nexus_siege = "SIEGE"
 
 
 class StatSummaryType(enum.Enum):
@@ -475,6 +479,7 @@ class StatSummaryType(enum.Enum):
     poro_king = "KingPoro"
     nemesis_draft = "CounterPick"
     black_market = "Bilgewater"
+    nexus_siege = "Siege"
 
 
 class Ascended(enum.Enum):
