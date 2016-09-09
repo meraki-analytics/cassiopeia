@@ -329,7 +329,7 @@ Queue.by_id = {
     310: Queue.nemesis_draft,
     73: Queue.showdown_duo,
     313: Queue.black_market,
-    315: Queue.nexus_siege
+    315: Queue.nexus_siege,
     61: Queue.team_builder,
     400: Queue.dynamic_queue,
     410: Queue.ranked_dynamic_queue
