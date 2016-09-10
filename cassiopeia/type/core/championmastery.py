@@ -61,14 +61,6 @@ class ChampionMastery(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.chestGranted
 
     @property
-    def highest_grade(self):
-        """
-        Returns:
-            str: the highest grade of this champion of current season
-        """
-        return self.data.highestGrade
-
-    @property
     def last_played(self):
         """
         Returns:
@@ -84,6 +76,13 @@ class ChampionMastery(cassiopeia.type.core.common.CassiopeiaObject):
         """
         return cassiopeia.riotapi.get_summoner_by_id(self.data.playerId) if self.data.playerId else None
 
+    @property
+    def tokens_earned(self):
+        """
+        Returns:
+            int: number of tokens earned to next level mastery
+        """
+        return self.data.tokensEarned
 
 ###############################
 # Dynamic SQLAlchemy bindings #
