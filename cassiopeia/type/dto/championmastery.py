@@ -17,9 +17,9 @@ class ChampionMastery(cassiopeia.type.dto.common.CassiopeiaDto):
         championPointsSinceLastLevel (int): number of points earned since current level has been achieved. Zero if player reached maximum champion level for this champion.
         championPointsUntilNextLevel (int): number of points needed to achieve next level. Zero if player reached maximum champion level for this champion.
         chestGranted (bool): is chest granted for this champion or not in current season
-        highestGrade (str): the highest grade of this champion of current season
         lastPlayTime (int): last time this champion was played by this player - in Unix milliseconds time format
         playerId (int): player ID for this entry
+        tokensEarned (int): number of token earned for next level mastery
     """
     def __init__(self, dictionary):
         self.championId = dictionary.get("championId", 0)
@@ -28,9 +28,9 @@ class ChampionMastery(cassiopeia.type.dto.common.CassiopeiaDto):
         self.championPointsSinceLastLevel = dictionary.get("championPointsSinceLastLevel", 0)
         self.championPointsUntilNextLevel = dictionary.get("championPointsUntilNextLevel", 0)
         self.chestGranted = dictionary.get("chestGranted", False)
-        self.highestGrade = dictionary.get("highestGrade", "")
         self.lastPlayTime = dictionary.get("lastPlayTime", 0)
         self.playerId = dictionary.get("playerId", 0)
+        self.tokensEarned = dictionary.get("tokensEarned", 0)
 
 
 ###############################
