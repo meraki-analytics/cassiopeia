@@ -7,6 +7,7 @@ import urllib.request
 import urllib.error
 import json
 import zlib
+import time
 
 import cassiopeia.type.api.exception
 import cassiopeia.type.api.rates
@@ -93,12 +94,16 @@ def make_request(request, method, params={}, payload=None, static=False, include
     except urllib.error.HTTPError as e:
         # Reset rate limiter and retry on 429 (rate limit exceeded)
         if e.code == 429 and limiter:
-            retry_after = 1
-            if e.headers["Retry-After"]:
-                retry_after += int(e.headers["Retry-After"])
+            if "X-Rate-Limit-Type" not in e.headers or e.headers["X-Rate-Limit-Type"] == "service":
+                time.sleep(1)  # Backoff for 1 second before retrying
+                return make_request(request, method, params, payload, static, include_base, tournament)
+            else:
+                retry_after = 1
+                if e.headers["Retry-After"]:
+                    retry_after += int(e.headers["Retry-After"])
 
-            limiter.reset_in(retry_after)
-            return make_request(request, method, params, payload, static, include_base, tournament)
+                limiter.reset_in(retry_after)
+                return make_request(request, method, params, payload, static, include_base, tournament)
         else:
             raise cassiopeia.type.api.exception.APIError("Server returned error {code} on call: {url}".format(code=e.code, url=url), e.code)
 
