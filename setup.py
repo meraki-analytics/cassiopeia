@@ -21,7 +21,7 @@ setup(
     version="0.1.2",
     author="Rob Rua",
     author_email="robrua@alumni.cmu.edu",
-    url="https://github.com/robrua/cassiopeia",
+    url="https://github.com/meraki-analytics/cassiopeia",
     description="Riot Games Developer API Wrapper (3rd Party)",
     keywords=["LoL", "League of Legends", "Riot Games", "API", "REST"],
     classifiers=[
