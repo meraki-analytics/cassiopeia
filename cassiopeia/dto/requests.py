@@ -94,7 +94,6 @@ def make_request(request, method, params={}, payload=None, static=False, include
     except urllib.error.HTTPError as e:
         # Reset rate limiter and retry on 429 (rate limit exceeded)
         if e.code == 429 and limiter:
-            print("SERVICE 429" if "X-Rate-Limit-Type" not in e.headers else "{} 429".format(e.headers["X-Rate-Limit-Type"]))
             if "X-Rate-Limit-Type" not in e.headers or e.headers["X-Rate-Limit-Type"] == "service":
                 time.sleep(1)  # Backoff for 1 second before retrying
             else:
