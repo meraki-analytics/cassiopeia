@@ -26,11 +26,17 @@ def call_with_ensured_size(method, max_size, arg):
     if isinstance(results, list):
         while(i < len(arg)):
             sublist = arg[i:i + max_size]
-            results = results + method(sublist)
+            try:
+                results = results + method(sublist)
+            except:
+                results = results + ([None] * len(sublist))
             i += max_size
     elif isinstance(results, dict):
         while(i < len(arg)):
             sublist = arg[i:i + max_size]
-            results.update(method(sublist))
+            try:
+                results.update(method(sublist))
+            except:
+                pass
             i += max_size
     return results
