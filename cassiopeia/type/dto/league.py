@@ -47,7 +47,7 @@ class LeagueEntry(cassiopeia.type.dto.common.CassiopeiaDto):
         self.isVeteran = dictionary.get("isVeteran", False)
         self.leaguePoints = dictionary.get("leaguePoints", 0)
         self.losses = dictionary.get("losses", 0)
-        val = dictionary.get("series", None)
+        val = dictionary.get("miniSeries", None)
         self.miniSeries = MiniSeries(val) if val and not isinstance(val, MiniSeries) else val
         self.playerOrTeamId = dictionary.get("playerOrTeamId", "")
         self.playerOrTeamName = dictionary.get("playerOrTeamName", "")
