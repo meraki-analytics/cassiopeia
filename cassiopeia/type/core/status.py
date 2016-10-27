@@ -336,15 +336,3 @@ class Translation(cassiopeia.type.core.common.CassiopeiaObject):
             datetime.datetime: when this translation was last updated
         """
         return datetime.datetime.strptime(self.data.updated_at, "%Y-%m-%dT%H:%M:%SZ") if self.data.updated_at else None
-
-
-###############################
-# Dynamic SQLAlchemy bindings #
-###############################
-def _sa_rebind_all():
-    Shard.dto_type = cassiopeia.type.dto.status.Shard
-    ShardStatus.dto_type = cassiopeia.type.dto.status.ShardStatus
-    Service.dto_type = cassiopeia.type.dto.status.Service
-    Incident.dto_type = cassiopeia.type.dto.status.Incident
-    Message.dto_type = cassiopeia.type.dto.status.Message
-    Translation.dto_type = cassiopeia.type.dto.status.Translation

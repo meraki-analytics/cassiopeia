@@ -83,9 +83,3 @@ class ChampionMastery(cassiopeia.type.core.common.CassiopeiaObject):
             int: number of tokens earned to next level mastery
         """
         return self.data.tokensEarned
-
-###############################
-# Dynamic SQLAlchemy bindings #
-###############################
-def _sa_rebind_all():
-    ChampionMastery.dto_type = cassiopeia.type.dto.championmastery.ChampionMastery

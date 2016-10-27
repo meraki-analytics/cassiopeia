@@ -1,6 +1,6 @@
-import cassiopeia.riotapi
-import cassiopeia.dto.summonerapi
 import cassiopeia.core.requests
+import cassiopeia.dto.summonerapi
+import cassiopeia.riotapi
 import cassiopeia.type.core.common
 import cassiopeia.type.core.summoner
 
@@ -79,9 +79,6 @@ def get_summoner_by_id(id_):
     Returns:
         Summoner: the summoner
     """
-    summoner = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, id_, "id")
-    if summoner:
-        return summoner
 
     try:
         summoner = cassiopeia.dto.summonerapi.get_summoners_by_id(id_)[str(id_)]
@@ -89,8 +86,6 @@ def get_summoner_by_id(id_):
     except KeyError:
         return None
 
-    cassiopeia.core.requests.data_store.store(summoner, id_)
-    cassiopeia.core.requests.data_store.store(summoner, summoner.name)
     return summoner
 
 
@@ -104,9 +99,6 @@ def get_summoner_by_name(name):
     Returns:
         Summoner: the summoner
     """
-    summoner = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, name, "name")
-    if summoner:
-        return summoner
 
     try:
         summoner = cassiopeia.dto.summonerapi.get_summoners_by_name(name)[__standardize(name)]
@@ -114,8 +106,6 @@ def get_summoner_by_name(name):
     except KeyError:
         return None
 
-    cassiopeia.core.requests.data_store.store(summoner, name)
-    cassiopeia.core.requests.data_store.store(summoner, summoner.id)
     return summoner
 
 
@@ -129,32 +119,17 @@ def get_summoners_by_id(ids):
     Returns:
         list<Summoner>: the summoners
     """
-    summoners = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, ids, "id")
-
-    # Find which summoners weren't cached
-    missing = []
-    loc = []
-    for i in range(len(ids)):
-        if not summoners[i]:
-            missing.append(ids[i])
-            loc.append(i)
-
-    if not missing:
-        return summoners
 
     # Make requests to get them
-    new = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.summonerapi.get_summoners_by_id, 40, missing)
-    to_store = []
-    for i in range(len(missing)):
+    summoners = []
+    new = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.summonerapi.get_summoners_by_id, 40, ids)
+    for i in range(len(ids)):
         try:
-            summoner = cassiopeia.type.core.summoner.Summoner(new[str(missing[i])])
-            to_store.append(summoner)
+            summoner = cassiopeia.type.core.summoner.Summoner(new[str(ids[i])])
         except KeyError:
             summoner = None
-        summoners[loc[i]] = summoner
+        summoners.append(summoner)
 
-    cassiopeia.core.requests.data_store.store(to_store, [summoner.id for summoner in to_store])
-    cassiopeia.core.requests.data_store.store(to_store, [summoner.name for summoner in to_store])
     return summoners
 
 
@@ -168,32 +143,17 @@ def get_summoners_by_name(names):
     Returns:
         list<Summoner>: the summoners
     """
-    summoners = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, names, "name")
-
-    # Find which summoners weren't cached
-    missing = []
-    loc = []
-    for i in range(len(names)):
-        if not summoners[i]:
-            missing.append(names[i])
-            loc.append(i)
-
-    if not missing:
-        return summoners
 
     # Make requests to get them
-    new = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.summonerapi.get_summoners_by_name, 40, missing)
-    to_store = []
-    for i in range(len(missing)):
+    summoners = []
+    new = cassiopeia.core.requests.call_with_ensured_size(cassiopeia.dto.summonerapi.get_summoners_by_name, 40, names)
+    for i in range(len(names)):
         try:
-            summoner = cassiopeia.type.core.summoner.Summoner(new[__standardize(missing[i])])
-            to_store.append(summoner)
+            summoner = cassiopeia.type.core.summoner.Summoner(new[__standardize(names[i])])
         except KeyError:
             summoner = None
-        summoners[loc[i]] = summoner
+        summoners.append(summoner)
 
-    cassiopeia.core.requests.data_store.store(to_store, [summoner.id for summoner in to_store])
-    cassiopeia.core.requests.data_store.store(to_store, [summoner.name for summoner in to_store])
     return summoners
 
 
@@ -207,9 +167,6 @@ def get_summoner_name(id_):
     Returns:
         str: the summoner's name
     """
-    summoner = cassiopeia.core.requests.data_store.get(cassiopeia.type.core.summoner.Summoner, id_, "id")
-    if summoner:
-        return summoner.name
 
     return cassiopeia.dto.summonerapi.get_summoner_names(id_)[str(id_)]
 

@@ -23,17 +23,17 @@ collection.
 """
 
 import os
-from datetime import datetime
 from collections import deque
+from datetime import datetime
 
 from cassiopeia import riotapi
 from cassiopeia.type.api.exception import APIError
 from cassiopeia.type.core.common import LoadPolicy
-from cassiopeia.type.api.store import SQLAlchemyDB
 
 
 def auto_retry(api_call_method):
     """ A decorator to automatically retry 500s (Service Unavailable) and skip 400s (Bad Request) or 404s (Not Found). """
+
     def call_wrapper(*args, **kwargs):
         try:
             return api_call_method(*args, **kwargs)
@@ -57,6 +57,7 @@ def auto_retry(api_call_method):
             # Fatal
             else:
                 raise error
+
     return call_wrapper
 
 
@@ -71,13 +72,10 @@ def main():
     # Setup riotapi
     riotapi.set_region("NA")
     riotapi.print_calls(True)
-    key = os.environ["DEV_KEY"]  # You can create an env var called "DEV_KEY" that holds your developer key. It will be loaded here.
+    key = os.environ[
+        "DEV_KEY"]  # You can create an env var called "DEV_KEY" that holds your developer key. It will be loaded here.
     riotapi.set_api_key(key)
     riotapi.set_load_policy(LoadPolicy.lazy)
-
-    # Load and connect to your database. (Comment this code to use local memory. Don't forget to comment db.close() below too.)
-    db = SQLAlchemyDB("mysql+mysqlconnector", "databse_hostname", "database_name", "username", "password")
-    riotapi.set_data_store(db)
 
     # We will seed with all the summoners in Master's tier
     unpulled_summoners = deque(entry.summoner for entry in riotapi.get_master())
@@ -104,7 +102,6 @@ def main():
                     unpulled_summoners.append(participant.summoner)
         pulled_summoners.append(summoner)
 
-    db.close()
 
 if __name__ == "__main__":
     main()

@@ -835,12 +835,3 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
             Side: the side the participant was on
         """
         return cassiopeia.type.core.common.Side(self.data.teamId) if self.data.teamId else None
-
-
-###############################
-# Dynamic SQLAlchemy bindings #
-###############################
-def _sa_rebind_all():
-    Stats.dto_type = cassiopeia.type.dto.game.RawStats
-    Participant.dto_type = cassiopeia.type.dto.game.Player
-    Game.dto_type = cassiopeia.type.dto.game.Game

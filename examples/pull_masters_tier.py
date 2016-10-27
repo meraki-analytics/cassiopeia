@@ -17,7 +17,6 @@ from datetime import datetime
 from cassiopeia import riotapi
 from cassiopeia.type.api.exception import APIError
 from cassiopeia.type.core.common import LoadPolicy
-from cassiopeia.type.api.store import SQLAlchemyDB
 
 
 def main():
@@ -27,10 +26,6 @@ def main():
     key = os.environ["DEV_KEY"]  # You can create an env var called "DEV_KEY" that holds your developer key. It will be loaded here.
     riotapi.set_api_key(key)
     riotapi.set_load_policy(LoadPolicy.eager)
-
-    # Load and connect to your database. (Comment this code to use local memory. Don't forget to comment db.close() below too.)
-    db = SQLAlchemyDB("mysql+mysqlconnector", "databse_hostname", "database_name", "username", "password")
-    riotapi.set_data_store(db)
 
     master = [entry.summoner for entry in riotapi.get_master()]
     print("Pulled Master tier. Got {0} summoners.".format(len(master)))
@@ -44,8 +39,6 @@ def main():
             # and therefore will not count against your rate limit. This is true of all datatypes, not just Match.
             match = get_match(match)
             print("Stored {0} in my database".format(match))
-
-    db.close()
 
 
 def get_match(reference):

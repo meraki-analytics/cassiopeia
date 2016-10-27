@@ -1,10 +1,5 @@
-import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
-
-
-if cassiopeia.type.dto.common.sqlalchemy_imported:
-    import sqlalchemy
-    import sqlalchemy.orm
+import cassiopeia.type.dto.common
 
 
 @cassiopeia.type.core.common.inheritdocs
@@ -21,6 +16,7 @@ class ChampionMastery(cassiopeia.type.dto.common.CassiopeiaDto):
         playerId (int): player ID for this entry
         tokensEarned (int): number of token earned for next level mastery
     """
+
     def __init__(self, dictionary):
         self.championId = dictionary.get("championId", 0)
         self.championLevel = dictionary.get("championLevel", 0)
@@ -31,27 +27,3 @@ class ChampionMastery(cassiopeia.type.dto.common.CassiopeiaDto):
         self.lastPlayTime = dictionary.get("lastPlayTime", 0)
         self.playerId = dictionary.get("playerId", 0)
         self.tokensEarned = dictionary.get("tokensEarned", 0)
-
-
-###############################
-# Dynamic SQLAlchemy bindings #
-###############################
-def _sa_bind_champion_mastery():
-    global ChampionMastery
-
-    @cassiopeia.type.core.common.inheritdocs
-    class ChampionMastery(ChampionMastery, cassiopeia.type.dto.common.BaseDB):
-        __tablename__ = "ChampionMastery"
-        championId = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-        championLevel = sqlalchemy.Column(sqlalchemy.Integer)
-        championPoints = sqlalchemy.Column(sqlalchemy.Integer)
-        championPointsSinceLastLevel = sqlalchemy.Column(sqlalchemy.Integer)
-        championPointsUntilNextLevel = sqlalchemy.Column(sqlalchemy.Integer)
-        chestGranted = sqlalchemy.Column(sqlalchemy.Boolean)
-        highestGrade = sqlalchemy.Column(sqlalchemy.String(30))
-        lastPlayTime = sqlalchemy.Column(sqlalchemy.BigInteger)
-        playerId = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-
-
-def _sa_bind_all():
-    _sa_bind_champion_mastery()
