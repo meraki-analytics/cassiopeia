@@ -1,8 +1,6 @@
 import cassiopeia.type.core.common
-import cassiopeia.type.api.store
 
 load_policy = cassiopeia.type.core.common.LoadPolicy.eager
-data_store = cassiopeia.type.api.store.Cache()
 
 
 def call_with_ensured_size(method, max_size, arg):

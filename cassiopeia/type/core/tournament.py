@@ -182,11 +182,3 @@ class LobbyEvent(cassiopeia.type.core.common.CassiopeiaObject):
             str: the time that the event occurred
         """
         return self.data.timestamp
-
-
-###############################
-# Dynamic SQLAlchemy bindings #
-###############################
-def _sa_rebind_all():
-    TournamentCode.dto_type = cassiopeia.type.dto.tournament.TournamentCode
-    LobbyEvent.dto_type = cassiopeia.type.dto.tournament.LobbyEvent

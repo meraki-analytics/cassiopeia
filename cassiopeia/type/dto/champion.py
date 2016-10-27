@@ -1,9 +1,5 @@
-import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
-
-
-if cassiopeia.type.dto.common.sqlalchemy_imported:
-    import sqlalchemy
+import cassiopeia.type.dto.common
 
 
 @cassiopeia.type.core.common.inheritdocs
@@ -17,6 +13,7 @@ class Champion(cassiopeia.type.dto.common.CassiopeiaDto):
         id (int): champion ID. For static information correlating to champion IDs, please refer to the LoL Static Data API.
         rankedPlayEnabled (bool): ranked play enabled flag
     """
+
     def __init__(self, dictionary):
         self.active = dictionary.get("active", False)
         self.botEnabled = dictionary.get("botEnabled", False)
@@ -32,8 +29,10 @@ class ChampionList(cassiopeia.type.dto.common.CassiopeiaDto):
     Args:
         champions (list<Champion>): the collection of champion information
     """
+
     def __init__(self, dictionary):
-        self.champions = [(Champion(champ) if not isinstance(champ, Champion) else champ) for champ in dictionary.get("champions", []) if champ]
+        self.champions = [(Champion(champ) if not isinstance(champ, Champion) else champ) for champ in
+                          dictionary.get("champions", []) if champ]
 
     @property
     def champion_ids(self):
@@ -44,24 +43,3 @@ class ChampionList(cassiopeia.type.dto.common.CassiopeiaDto):
         for champ in self.champions:
             ids.add(champ.id)
         return ids
-
-
-###############################
-# Dynamic SQLAlchemy bindings #
-###############################
-def _sa_bind_champion():
-    global Champion
-
-    @cassiopeia.type.core.common.inheritdocs
-    class Champion(Champion, cassiopeia.type.dto.common.BaseDB):
-        __tablename__ = "ChampionStatus"
-        active = sqlalchemy.Column(sqlalchemy.Boolean)
-        botEnabled = sqlalchemy.Column(sqlalchemy.Boolean)
-        botMmEnabled = sqlalchemy.Column(sqlalchemy.Boolean)
-        freeToPlay = sqlalchemy.Column(sqlalchemy.Boolean)
-        id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-        rankedPlayEnabled = sqlalchemy.Column(sqlalchemy.Boolean)
-
-
-def _sa_bind_all():
-    _sa_bind_champion()

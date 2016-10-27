@@ -57,10 +57,3 @@ class ChampionStatus(cassiopeia.type.core.common.CassiopeiaObject):
             bool: whether the champion is currently enabled for ranked games
         """
         return self.data.rankedPlayEnabled
-
-
-###############################
-# Dynamic SQLAlchemy bindings #
-###############################
-def _sa_rebind_all():
-    ChampionStatus.dto_type = cassiopeia.type.dto.champion.Champion

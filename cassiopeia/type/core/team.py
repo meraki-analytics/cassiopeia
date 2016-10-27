@@ -357,13 +357,3 @@ class TeamMember(cassiopeia.type.core.common.CassiopeiaObject):
             datetime: the date and time for when the most recent team member joined in epoch milliseconds
         """
         return self.data.status
-
-
-###############################
-# Dynamic SQLAlchemy bindings #
-###############################
-def _sa_rebind_all():
-    Team.dto_type = cassiopeia.type.dto.team.Team
-    MatchSummary.dto_type = cassiopeia.type.dto.team.MatchHistorySummary
-    Stats.dto_type = cassiopeia.type.dto.team.TeamStatDetail
-    TeamMember.dto_type = cassiopeia.type.dto.team.TeamMemberInfo

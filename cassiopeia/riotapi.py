@@ -9,7 +9,6 @@ import cassiopeia.type.api.rates
 import cassiopeia.dto.staticdataapi
 import cassiopeia.core.requests
 import cassiopeia.type.core.common
-import cassiopeia.type.api.store
 from cassiopeia.core.championapi import *
 from cassiopeia.core.championmasteryapi import *
 from cassiopeia.core.currentgameapi import *
@@ -164,16 +163,3 @@ def set_load_policy(policy):
     if not isinstance(policy, cassiopeia.type.core.common.LoadPolicy):
         policy = cassiopeia.type.core.common.LoadPolicy(policy.upper())
     cassiopeia.core.requests.load_policy = policy
-
-
-def set_data_store(store):
-    """
-    Sets the data store to use for caching the results of API calls.
-
-    Args:
-        store (cassiopeia.type.api.store.DataStore): the data store to use for storing results
-    """
-    if not store:
-        cassiopeia.core.requests.data_store = cassiopeia.type.api.store.VoidDataStore()
-    else:
-        cassiopeia.core.requests.data_store = store

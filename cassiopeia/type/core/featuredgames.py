@@ -213,12 +213,3 @@ class Game(cassiopeia.type.core.common.CassiopeiaObject):
             Platform: which platform (ie server) the game is being played on
         """
         return cassiopeia.type.core.common.Platform(self.data.platformId) if self.data.platformId else None
-
-
-###############################
-# Dynamic SQLAlchemy bindings #
-###############################
-def _sa_rebind_all():
-    Participant.dto_type = cassiopeia.type.dto.featuredgames.Participant
-    Ban.dto_type = cassiopeia.type.dto.featuredgames.BannedChampion
-    Game.dto_type = cassiopeia.type.dto.featuredgames.FeaturedGameInfo

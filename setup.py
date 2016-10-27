@@ -6,7 +6,6 @@ from setuptools import setup, find_packages
 
 
 install_requires = [
-    "sqlalchemy"
 ]
 
 # Install python 2.7 dependencies

@@ -313,12 +313,3 @@ class Summoner(cassiopeia.type.core.common.CassiopeiaObject):
             Game: the game they're in (or None if they aren't in one)
         """
         return cassiopeia.riotapi.get_top_champion_masteries(self, max_entries)
-
-
-###############################
-# Dynamic SQLAlchemy bindings #
-###############################
-def _sa_rebind_all():
-    RunePage.dto_type = cassiopeia.type.dto.summoner.RunePage
-    MasteryPage.dto_type = cassiopeia.type.dto.summoner.MasteryPage
-    Summoner.dto_type = cassiopeia.type.dto.summoner.Summoner
