@@ -84,8 +84,10 @@ class ChampionMastery(cassiopeia.type.core.common.CassiopeiaObject):
         """
         return self.data.tokensEarned
 
+
 ###############################
 # Dynamic SQLAlchemy bindings #
 ###############################
+
 def _sa_rebind_all():
     ChampionMastery.dto_type = cassiopeia.type.dto.championmastery.ChampionMastery
