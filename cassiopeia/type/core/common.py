@@ -88,6 +88,7 @@ class immutablemethod(object):
     Returns:
         function: the method as a lazy property
     """
+
     def __init__(self, method):
         """
         Makes a method un-deletable and un-repleacable
@@ -125,74 +126,6 @@ def inheritdocs(class_):
     return class_
 
 
-class LookupableMixin(object):
-    def __init__(self, fields, args):
-        super().__init__(args)
-        self.fields = fields
-
-    def __getitem__(self, key):
-        try:
-            return super().__getitem__(key)
-        except (TypeError, IndexError, KeyError, AttributeError):
-            return self._lookup(key)
-
-
-class LookupableList(LookupableMixin, list):
-    def _lookup(self, key):
-        for field, _type in self.fields:
-            if isinstance(key, _type):
-                for item in self:
-                    # The next 7 lines allow lookup keys such as 'champion.name'
-                    attr = item
-                    _field = field
-                    while '.' in _field:
-                        _field, tail = _field.split('.', 1)
-                        attr = getattr(attr, _field)
-                        _field = tail
-                    attr = getattr(attr, _field)
-                    if key == attr:
-                        return item
-        else:
-            raise KeyError(key)
-
-
-class LookupableDict(LookupableMixin, dict):
-    def _lookup(self, key):
-        for field, _type in self.fields:
-            if isinstance(key, _type):
-                for item in self:
-                    # The next 7 lines allow lookup keys such as 'champion.name'
-                    attr = item
-                    _field = field
-                    while '.' in _field:
-                        _field, tail = _field.split('.', 1)
-                        attr = getattr(attr, _field)
-                        _field = tail
-                    attr = getattr(attr, _field)
-                    if key == attr:
-                        return self[item]
-        else:
-            raise KeyError(key)
-
-
-def indexable(fields):
-    """
-        Args:
-            fields (list<tuple<str, type>>): a list of tuples of the form (attribute_name, attribute_type) to perform the lookup on in the objects in the list or dict
-    """
-    @cassiopeia.type.core.common.inheritdocs
-    def _wrapper(func):
-        def wrapper(*args, **kwargs):
-            result = func(*args, **kwargs)
-            if isinstance(result, list):
-                result = LookupableList(fields, result)
-            if isinstance(result, dict):
-                result = LookupableDict(fields, result)
-            return result
-        return wrapper
-    return _wrapper
-
-
 class LoadPolicy(enum.Enum):
     lazy = "LAZY"
     eager = "EAGER"
@@ -216,6 +149,7 @@ class Lane(enum.Enum):
         except:
             return None
 
+
 Lane.by_id = {
     1: Lane.top_lane,
     2: Lane.mid_lane,
@@ -236,6 +170,7 @@ class Role(enum.Enum):
             return Role.by_id[id_]
         except:
             return None
+
 
 Role.by_id = {
     1: Role.duo,
@@ -294,6 +229,7 @@ class Queue(enum.Enum):
             return Queue.by_id[id_]
         except:
             return None
+
 
 Queue.by_id = {
     0: Queue.custom,
@@ -365,6 +301,7 @@ class Season(enum.Enum):
     season_5 = "SEASON2015"
     preseason_6 = "PRESEASON2016"
     season_6 = "SEASON2016"
+
 
 stats_seasons = {Season.season_3, Season.season_4, Season.season_5, Season.season_6}
 

@@ -93,7 +93,6 @@ class Match(cassiopeia.type.core.common.CassiopeiaObject):
         return self.data.matchVersion
 
     @cassiopeia.type.core.common.lazyproperty
-    #@cassiopeia.type.core.common.indexable([("summoner_name", str), ("summoner_id", int), ("champion.name", str), ("champion.id", int), ("champion", cassiopeia.type.core.staticdata.Champion), ("summoner", cassiopeia.type.core.summoner.Summoner)])
     def participants(self):
         """
         Returns:
