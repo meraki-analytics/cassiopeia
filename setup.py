@@ -18,7 +18,7 @@ if sys.version_info.major == 2:
 
 setup(
     name="cassiopeia",
-    version="0.1.2",
+    version="0.1.3",
     author="Rob Rua",
     author_email="robrua@alumni.cmu.edu",
     url="https://github.com/meraki-analytics/cassiopeia",
