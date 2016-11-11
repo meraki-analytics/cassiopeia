@@ -278,7 +278,7 @@ Queue.by_id = {
     410: Queue.ranked_dynamic_queue,
     440: Queue.flex
 }
-ranked_queues = {Queue.ranked_solo, Queue.ranked_threes, Queue.ranked_fives, Queue.ranked_dynamic_queue}
+ranked_queues = {Queue.ranked_solo, Queue.ranked_threes, Queue.ranked_fives, Queue.ranked_dynamic_queue, Queue.flex}
 
 
 class Tier(enum.Enum):
@@ -309,9 +309,8 @@ class Season(enum.Enum):
     season_5 = "SEASON2015"
     preseason_6 = "PRESEASON2016"
     season_6 = "SEASON2016"
-
-
-stats_seasons = {Season.season_3, Season.season_4, Season.season_5, Season.season_6}
+    preseason_7 = "PRESEASON2017"
+    season_7 = "SEASON2017"
 
 
 class Region(enum.Enum):
