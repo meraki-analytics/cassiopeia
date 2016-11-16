@@ -227,6 +227,7 @@ class Queue(enum.Enum):
     dynamic_queue = "TEAM_BUILDER_DRAFT_UNRANKED_5x5"
     ranked_dynamic_queue = "TEAM_BUILDER_DRAFT_RANKED_5x5"
     flex = "RANKED_FLEX_SR"
+    flex_3 = "RANKED_FLEX_TT"
 
     def for_id(id_):
         try:
