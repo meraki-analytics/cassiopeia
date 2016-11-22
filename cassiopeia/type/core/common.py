@@ -398,6 +398,7 @@ class SubType(enum.Enum):
     black_market = "BILGEWATER"
     nexus_siege = "SIEGE"
     flex = "RANKED_FLEX_SR"
+    flex_threes = "RANKED_FLEX_TT"
 
 
 class StatSummaryType(enum.Enum):
