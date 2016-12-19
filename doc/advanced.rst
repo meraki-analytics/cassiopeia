@@ -14,7 +14,7 @@ You can use both ``cassiopeia.riotapi`` and ``cassiopeia.baseriotapi`` within th
 Retry 500s
 ^^^^^^^^^^
 
-By default, Cassiopeia will wait and retry if a request returns a 429 (although this should rarely happen). If you are running a long gather data script, it can be helpful to do the same on 500s. See the decorator `here <https://github.com/meraki-analytics/cassiopeia/blob/master/example/match_collection.py>`_ for an example on how to extend Cassiopeia's request functionality to retry under certain conditions (such as 500s).
+By default, Cassiopeia will wait and retry if a request returns a 429 (although this should rarely happen). If you are running a long gather data script, it can be helpful to do the same on 500s. See the decorator `here <https://github.com/meraki-analytics/cassiopeia/blob/master/examples/match_collection.py>`_ for an example on how to extend Cassiopeia's request functionality to retry under certain conditions (such as 500s).
 
 Changing the Value of Attributes Cassiopeia Objects
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
