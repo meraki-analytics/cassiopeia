@@ -626,7 +626,7 @@ def _sa_bind_participant():
         teamId = sqlalchemy.Column(sqlalchemy.Integer)
         timeline = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.ParticipantTimeline", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-        _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchDetail.matchId", ondelete="CASCADE"))
+        _match_id = sqlalchemy.Column(sqlalchemy.BigInteger, sqlalchemy.ForeignKey("MatchDetail.matchId", ondelete="CASCADE"))
 
 
 def _sa_bind_participant_identity():
@@ -638,7 +638,7 @@ def _sa_bind_participant_identity():
         participantId = sqlalchemy.Column(sqlalchemy.Integer)
         player = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Player", uselist=False, cascade="all, delete-orphan", passive_deletes=True)
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-        _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchDetail.matchId", ondelete="CASCADE"))
+        _match_id = sqlalchemy.Column(sqlalchemy.BigInteger, sqlalchemy.ForeignKey("MatchDetail.matchId", ondelete="CASCADE"))
 
 
 def _sa_bind_team():
@@ -662,7 +662,7 @@ def _sa_bind_team():
         vilemawKills = sqlalchemy.Column(sqlalchemy.Integer)
         winner = sqlalchemy.Column(sqlalchemy.Boolean)
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-        _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchDetail.matchId", ondelete="CASCADE"))
+        _match_id = sqlalchemy.Column(sqlalchemy.BigInteger, sqlalchemy.ForeignKey("MatchDetail.matchId", ondelete="CASCADE"))
 
 
 def _sa_bind_timeline():
