@@ -674,7 +674,7 @@ def _sa_bind_timeline():
         frameInterval = sqlalchemy.Column(sqlalchemy.Integer)
         frames = sqlalchemy.orm.relationship("cassiopeia.type.dto.match.Frame", cascade="all, delete-orphan", passive_deletes=True)
         _id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-        _match_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("MatchDetail.matchId", ondelete="CASCADE"))
+        _match_id = sqlalchemy.Column(sqlalchemy.BigInteger, sqlalchemy.ForeignKey("MatchDetail.matchId", ondelete="CASCADE"))
 
 
 def _sa_bind_mastery():
