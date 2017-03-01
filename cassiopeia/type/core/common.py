@@ -367,6 +367,7 @@ class GameMode(enum.Enum):
     one_for_all = "ONEFORALL"
     tutorial = "TUTORIAL"
     nexus_siege = "SIEGE"
+    assassinate = "ASSASSINATE"
 
 
 class GameType(enum.Enum):
@@ -432,6 +433,7 @@ class StatSummaryType(enum.Enum):
     flex_summoners_rift = "RankedFlexSR"
     ranked_premade_threes = "RankedPremade3x3"  # Not listed on game constants documentation page
     ranked_premade_fives = "RankedPremade5x5"   # Not listed on game constants documentation page
+    assassinate = "Assassinate"
 
 
 class Ascended(enum.Enum):
@@ -506,3 +508,4 @@ class Ward(enum.Enum):
     upgraded_yellow_trinket = "YELLOW_TRINKET_UPGRADE"
     mushroom = "TEEMO_MUSHROOM"
     undefined = "UNDEFINED"
+
