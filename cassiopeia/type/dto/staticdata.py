@@ -580,7 +580,10 @@ class Item(cassiopeia.type.dto.common.CassiopeiaDto):
         self.specialRecipe = dictionary.get("specialRecipe", 0)
         self.stacks = dictionary.get("stacks", 0)
         val = dictionary.get("stats", None)
-        self.stats = None if not val else BasicDataStats(val) if not isinstance(val, BasicDataStats) else val
+        if val:  # I'm not convinced this is the correct fix, but see issue #95
+            self.stats = None if not val else BasicDataStats(val) if not isinstance(val, BasicDataStats) else val
+        else:
+            self.stats = None
         self.tags = dictionary.get("tags", [])
 
     @property
@@ -919,7 +922,8 @@ class Rune(cassiopeia.type.dto.common.CassiopeiaDto):
         self.specialRecipe = dictionary.get("specialRecipe", 0)
         self.stacks = dictionary.get("stacks", 0)
         val = dictionary.get("stats", None)
-        self.stats = BasicDataStats(val) if val and not isinstance(val, BasicDataStats) else val
+        if val != {}:
+            self.stats = BasicDataStats(val) if val and not isinstance(val, BasicDataStats) else val
         self.tags = dictionary.get("tags", [])
 
 
