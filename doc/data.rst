@@ -50,7 +50,7 @@ Okay, you get the idea. Let's move on to a more in-depth example and look at one
 .. code-block:: python
 
     match_list = dyrus.match_list()
-    matchreference = match_list[-1]  # Get the last match reference in the list
+    matchreference = match_list[0]  # Get the most recent match reference in the list
     match = matchreference.match()
 
 Now that we have the match, let's see what champions each participant played:
