@@ -236,7 +236,10 @@ if cassiopeia.type.dto.common.sqlalchemy_imported:
                 complete_sets (list<type>): include any types for which it should be marked that all possible values are stored
             """
             _sa_bind_typesystem()
-            self.db = sqlalchemy.create_engine("{flavor}://{username}:{password}@{host}/{database}".format(flavor=flavor, host=host, database=database, username=username, password=password))
+            if flavor == 'sqlite':
+                self.db = sqlalchemy.create_engine("{flavor}://{database}".format(flavor=flavor, database=database))
+            else:
+                self.db = sqlalchemy.create_engine("{flavor}://{username}:{password}@{host}/{database}".format(flavor=flavor, host=host, database=database, username=username, password=password))
             cassiopeia.type.dto.common.BaseDB.metadata.create_all(self.db)
             self.session = sqlalchemy.orm.sessionmaker(bind=self.db)()
 
