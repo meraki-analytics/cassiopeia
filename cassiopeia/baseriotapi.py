@@ -157,5 +157,5 @@ def set_tournament_destination(destination):
     Args:
         destination (str): url param setting for public/stub version of the tournament api endpoints
     """
-    cassiopeia.dto.request.destination = destination
+    cassiopeia.dto.requests.destination = destination
 
