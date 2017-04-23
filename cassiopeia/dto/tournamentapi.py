@@ -16,7 +16,7 @@ def create_tournament_codes(tournament_id, parameters, count=1):
     """
     if count < 1 or count > 1000:
         raise ValueError("Count must be between 1 and 1000")
-    request = "https://{server}.api.pvp.net/tournament/public/{version}/code".format(server=cassiopeia.dto.requests.region, version=cassiopeia.dto.requests.api_versions["tournament"])
+    request = "https://{server}.api.pvp.net/tournament/{destination}/{version}/code".format(server=cassiopeia.dto.requests.region, version=cassiopeia.dto.requests.api_versions["tournament"], destination=cassiopeia.dto.requests.destination)
 
     query_params = {
         "tournamentId": tournament_id,
@@ -35,7 +35,7 @@ def get_tournament_code(tournament_code):
     Returns:
         TournamentCode: information about the tournament code
     """
-    request = "https://{server}.api.pvp.net/tournament/public/{version}/code/{code}".format(server=cassiopeia.dto.requests.region, version=cassiopeia.dto.requests.api_versions["tournament"], code=tournament_code)
+    request = "https://{server}.api.pvp.net/tournament/{destination}/{version}/code/{code}".format(server=cassiopeia.dto.requests.region, version=cassiopeia.dto.requests.api_versions["tournament"], code=tournament_code, destination=cassiopeia.dto.requests.destination)
     return cassiopeia.type.dto.tournament.TournamentCode(cassiopeia.dto.requests.get(request, include_base=False, tournament=True))
 
 
@@ -47,7 +47,7 @@ def update_tournament_code(tournament_code, parameters):
         tournament_code (str): the tournament code to update
         parameters (TournamentCodeUpdateParameters): the new parameters for the tournament code
     """
-    request = "https://{server}.api.pvp.net/tournament/public/{version}/code/{code}".format(server=cassiopeia.dto.requests.region, version=cassiopeia.dto.requests.api_versions["tournament"], code=tournament_code)
+    request = "https://{server}.api.pvp.net/tournament/{destination}/{version}/code/{code}".format(server=cassiopeia.dto.requests.region, version=cassiopeia.dto.requests.api_versions["tournament"], code=tournament_code, destination=cassiopeia.dto.requests.destination)
     cassiopeia.dto.requests.put(request, parameters, include_base=False, tournament=True)
 
 
@@ -61,7 +61,7 @@ def get_lobby_events(tournament_code):
     Returns:
         LobbyEventWrapper: the lobby events for that tournament code
     """
-    request = "https://{server}.api.pvp.net/tournament/public/{version}/lobby/events/by-code/{code}".format(server=cassiopeia.dto.requests.region, version=cassiopeia.dto.requests.api_versions["tournament"], code=tournament_code)
+    request = "https://{server}.api.pvp.net/tournament/{destination}/{version}/lobby/events/by-code/{code}".format(server=cassiopeia.dto.requests.region, version=cassiopeia.dto.requests.api_versions["tournament"], code=tournament_code, destination=cassiopeia.dto.requests.destination)
     return cassiopeia.type.dto.tournament.LobbyEventWrapper(cassiopeia.dto.requests.get(request, include_base=False, tournament=True))
 
 
@@ -75,7 +75,7 @@ def create_tournament_provider(parameters):
     Returns:
         int: the provider ID
     """
-    request = "https://{server}.api.pvp.net/tournament/public/{version}/provider".format(server=cassiopeia.dto.requests.region, version=cassiopeia.dto.requests.api_versions["tournament"])
+    request = "https://{server}.api.pvp.net/tournament/{destination}/{version}/provider".format(server=cassiopeia.dto.requests.region, version=cassiopeia.dto.requests.api_versions["tournament"], destination=cassiopeia.dto.requests.destination)
     return cassiopeia.dto.requests.post(request, parameters, include_base=False, tournament=True)
 
 
@@ -89,5 +89,5 @@ def create_tournament(parameters):
     Returns:
         int: the tournament ID
     """
-    request = "https://{server}.api.pvp.net/tournament/public/{version}/tournament".format(server=cassiopeia.dto.requests.region, version=cassiopeia.dto.requests.api_versions["tournament"])
+    request = "https://{server}.api.pvp.net/tournament/{destination}/{version}/tournament".format(server=cassiopeia.dto.requests.region, version=cassiopeia.dto.requests.api_versions["tournament"], destination=cassiopeia.dto.requests.destination)
     return cassiopeia.dto.requests.post(request, parameters, include_base=False, tournament=True)

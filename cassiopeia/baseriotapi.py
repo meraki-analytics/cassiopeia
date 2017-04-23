@@ -147,3 +147,15 @@ def set_locale(locale):
         locale (str): the locale to use for calls to the API
     """
     cassiopeia.dto.staticdataapi._locale = locale
+
+def set_tournament_destination(destination):
+    """
+    Sets the tournament v1 destination url param.
+    Tournament endpoints have a static stub version for development
+    This is set as `public` by default
+
+    Args:
+        destination (str): url param setting for public/stub version of the tournament api endpoints
+    """
+    cassiopeia.dto.request.destination = destination
+

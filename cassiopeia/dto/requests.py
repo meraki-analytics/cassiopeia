@@ -36,6 +36,7 @@ region = ""
 print_calls = False
 rate_limiter = None
 tournament_rate_limiter = None
+destination = 'public'
 
 
 def get(request, params={}, static=False, include_base=True, tournament=False):
