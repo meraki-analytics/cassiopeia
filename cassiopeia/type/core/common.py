@@ -355,6 +355,7 @@ class Map(enum.Enum):
     summoners_rift = 11
     howling_abyss = 12
     butchers_bridge = 14
+    cosmic_ruins = 16
 
 
 class GameMode(enum.Enum):
