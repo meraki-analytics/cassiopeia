@@ -437,6 +437,8 @@ class StatSummaryType(enum.Enum):
     ranked_premade_threes = "RankedPremade3x3"  # Not listed on game constants documentation page
     ranked_premade_fives = "RankedPremade5x5"   # Not listed on game constants documentation page
     assassinate = "Assassinate"
+    Arsr = "Arsr" # All random summoner's rift
+    Darkstar = "Darkstar"
 
 
 class Ascended(enum.Enum):
