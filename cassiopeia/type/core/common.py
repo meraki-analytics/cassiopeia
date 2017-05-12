@@ -370,6 +370,7 @@ class GameMode(enum.Enum):
     nexus_siege = "SIEGE"
     assassinate = "ASSASSINATE"
     dark_star = "DARKSTAR"
+    arsr = "ARSR"
 
 
 class GameType(enum.Enum):
