@@ -1,6 +1,12 @@
 import cassiopeia.type.dto.common
 import cassiopeia.type.core.common
+import json
+import zlib
 
+try:
+    import redis
+except ImportError:
+    print("Warning: could not import redis, RedisCache won't work")
 
 if cassiopeia.type.dto.common.sqlalchemy_imported:
     import sqlalchemy
@@ -188,6 +194,88 @@ class Cache(DataStore):
         if complete_sets:
             for class_ in complete_sets:
                 self._has_all[class_] = True
+
+#########################
+# Redis Cache resources #
+#########################
+class RedisCache(DataStore):
+
+    def __init__(self, host, port, db, compress=False):
+        self.redis = redis.StrictRedis(host, port, db)
+        self.compress = compress
+
+
+    def _dumps(self, obj):
+        value = obj.to_json()
+        if self.compress:
+            value = zlib.compress(value)
+        return value
+
+
+    def _loads(self, class_, value):
+        if self.compress:
+            value = zlib.decompress(value)
+        dto = class_.dto_type(json.loads(value.decode('utf-8')))
+        return class_(dto)
+
+
+    def redis_key(self, prefix, key):
+        return "%s:%s" % (prefix, str(key).lower())
+
+
+    def has_all(self, class_):
+        if self.redis.exists(self.redis_key(class_.__name__, "has_all")):
+            return self.redis.get(self.redis_key(class_.__name__, "has_all"))
+        return False
+
+
+    def get_all(self, class_):
+        results = []
+        keys = self.redis.smembers(class_.__name__)
+        for key in keys:
+            results.append(self._loads(class_, self.redis.get(self.redis_key(class_.__name__, key))))
+        return results
+
+    def iterate(self, class_):
+        # Really necessary ?
+        pass 
+
+
+    def get(self, class_, keys, key_field):
+        if not isinstance(keys, list):
+            if self.redis.exists(self.redis_key(class_.__name__, keys)):
+                return self._loads(class_, self.redis.get(self.redis_key(class_.__name__, keys)))
+            return None
+        else:
+            results = []
+            for key in keys:
+                if self.redis.exists(self.redis_key(class_.__name__, key)):
+                    results.append(self._loads(class_, self.redis.get(self.redis_key(class_.__name__, key))))
+                else:
+                    results.append(None)
+            return results
+
+
+    def store(self, objs, keys, complete_sets=[]):
+        is_list = isinstance(objs, list)
+        if is_list != isinstance(keys, list):
+            raise ValueError("Object(s) and Key(s) must both be lists or both be non-lists")
+
+        if not is_list:
+            class_ = type(objs)
+            self.redis.set(self.redis_key(class_.__name__, keys), self._dumps(objs))
+            self.redis.sadd(class_.__name__, keys)
+        else:
+            if len(objs) != len(keys):
+                raise ValueError("Objects and Keys must be the same length")
+            for i, o in enumerate(objs):
+                class_ = type(o)
+                self.redis.set(self.redis_key(class_.__name__, keys[i]), self._dumps(o))
+                self.redis.sadd(class_.__name__, keys[i])
+
+        for class_ in complete_sets:
+            self.redis.set(self.redis_key(class_.__name__, "has_all"), "True")
+
 
 
 ########################
