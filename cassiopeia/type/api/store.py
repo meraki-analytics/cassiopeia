@@ -208,7 +208,7 @@ class RedisCache(DataStore):
     def _dumps(self, obj):
         value = obj.to_json()
         if self.compress:
-            value = zlib.compress(value)
+            value = zlib.compress(value.encode('utf-8'))
         return value
 
 
@@ -238,7 +238,7 @@ class RedisCache(DataStore):
 
     def iterate(self, class_):
         # Really necessary ?
-        pass 
+        pass
 
 
     def get(self, class_, keys, key_field):
