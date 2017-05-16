@@ -35,6 +35,14 @@ def get_match_list(summoner, num_matches=0, begin_index=0, begin_time=0, end_tim
     elif isinstance(ranked_queues, list) and all(isinstance(q, str) for q in ranked_queues):
         ranked_queues = [cassiopeia.type.core.common.Queue(q.upper().replace("5X5", "5x5").replace("3X3", "3x3")) for q in ranked_queues]
 
+    if seasons and isinstance(seasons, list):
+        for season in seasons:
+            if season not in cassiopeia.type.core.common.Season:
+                raise ValueError("{season} is not a season".format(season=season))
+    elif seasons:
+        if seasons not in cassiopeia.type.core.common.Season:
+            raise ValueError("{season} is not a season".format(season=seasons))
+
     # Convert core types to API-ready types
     if isinstance(begin_time, datetime.datetime):
         epoch = datetime.datetime.utcfromtimestamp(0)
