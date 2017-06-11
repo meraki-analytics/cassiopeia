@@ -371,6 +371,7 @@ class GameMode(enum.Enum):
     assassinate = "ASSASSINATE"
     dark_star = "DARKSTAR"
     arsr = "ARSR"
+    doom_bots = "DOOMBOTSTEEMO"
 
 
 class GameType(enum.Enum):
