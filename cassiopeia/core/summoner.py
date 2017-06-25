@@ -174,7 +174,7 @@ class Summoner(CassiopeiaGhost):
 
     # Special core methods
 
-    @lazy_property
+    @property
     def champion_masteries(self):
         from .championmastery import ChampionMastery
         from ..dto.staticdata.champion import ChampionListDto
@@ -183,7 +183,7 @@ class Summoner(CassiopeiaGhost):
         champions = champions["data"].values()
         return SearchableList([ChampionMastery(summoner=self, champion=champion["id"]) for champion in champions])
 
-    @lazy_property
+    @property
     def mastery_pages(self):
         from .masterypage import MasteryPagesData, MasteryPage
         mastery_pages = settings.pipeline.get(MasteryPagesData, query={"summonerId": self.id, "region": self.region.value, "platform": self.platform.value})
@@ -191,7 +191,7 @@ class Summoner(CassiopeiaGhost):
             mastery_pages[i] = MasteryPage(data=page)
         return SearchableList(mastery_pages)
 
-    @lazy_property
+    @property
     def rune_pages(self):
         from .runepage import RunePagesData, RunePage
         rune_pages = settings.pipeline.get(RunePagesData, query={"summonerId": self.id, "region": self.region.value, "platform": self.platform.value})
@@ -199,11 +199,15 @@ class Summoner(CassiopeiaGhost):
             rune_pages[i] = RunePage(data=page)
         return SearchableList(rune_pages)
 
+    @property
+    def matches(self):
+        from .match import Match, MatchListData
+        matchlist = settings.pipeline.get(MatchListData, query={"accountId": self.account.id, "region": self.region, "platform": self.platform.value})
+        return SearchableList([Match.from_match_reference(ref) for ref in matchlist])
+
     #def league(self):
     #    raise NotImplemented
     #def league_entry(self):
-    #    raise NotImplemented
-    #def matches(self):
     #    raise NotImplemented
     #def current_game(self):
     #    raise NotImplemented

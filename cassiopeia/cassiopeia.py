@@ -6,8 +6,21 @@ from merakicommons.container import SearchableList
 from .configuration import settings
 from .data import PATCHES, Region
 from .patches import Patch
-from .core import VersionListData, Champion, ChampionData, ChampionListData, Summoner, Account, ChampionMastery, Rune, RuneListData, Mastery, MasteryListData, Item, ItemListData, RunePage, RunePagesData, MasteryPage, MasteryPagesData, RunePage, MasteryPage, Match, MatchData
+from .core import VersionListData, Champion, ChampionData, ChampionListData, Summoner, Account, ChampionMastery, Rune, RuneListData, Mastery, MasteryListData, Item, ItemListData, RunePage, RunePagesData, MasteryPage, MasteryPagesData, RunePage, MasteryPage, Match, MatchData, MatchListData
 from .dto.staticdata.version import VersionListDto
+
+
+def get_matches(summoner: Union[Summoner, int, str], region: Region = None):
+    if region is None:
+        region = settings.default_region
+    elif not isinstance(region, Region):
+        region = Region(region)
+    if isinstance(summoner, int):
+        summoner = Summoner(id=summoner)
+    elif isinstance(summoner, str):
+        summoner = Summoner(name=summoner)
+    matchlist = settings.pipeline.get(MatchListData, query={"accountId": summoner.account.id, "region": region, "platform": region.platform.value})
+    return SearchableList([Match.from_match_reference(ref) for ref in matchlist])
 
 
 def get_match(id, region: Region = None):

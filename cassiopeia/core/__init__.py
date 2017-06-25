@@ -12,4 +12,4 @@ from .summoner import SummonerData
 from .championmastery import ChampionMasteryData
 from .runepage import RunePageData, RunePagesData
 from .masterypage import MasteryPageData, MasteryPagesData
-from .match import MatchData
+from .match import MatchData, MatchListData

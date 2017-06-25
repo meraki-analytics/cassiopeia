@@ -21,6 +21,11 @@ from .staticdata.version import VersionListData
 # Data Types #
 ##############
 
+
+class MatchListData(list):
+    pass
+
+
 class ParticipantTimelineData(DataObject):  # TODO
     pass
 #ParticipantTimelineDto
@@ -616,7 +621,7 @@ class Match(CassiopeiaGhost):
     @classmethod
     def from_match_reference(cls, ref):
         # TODO Somehow put in ref.lane, ref.role, and ref.champion_id
-        instance = cls(id=ref.id, season=ref.season_id, queue=ref.queue_id, platform=ref.platform_id, creation=ref.creation)
+        instance = cls(id=ref.id, season_id=ref.season_id, queue_id=ref.queue_id, platform_id=ref.platform_id, creation=ref.creation)
         return instance
 
     @lazy_property
