@@ -1,0 +1,2 @@
+class VersionListData(list):
+    pass

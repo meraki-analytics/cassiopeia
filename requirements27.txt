@@ -1,3 +1,0 @@
--r requirements-base.txt
-future==0.15.2
-enum34==1.1.1

@@ -1,0 +1,2 @@
+class DataDragonImage(object):
+    pass
