@@ -2,16 +2,14 @@ import cassiopeia as cass
 from cassiopeia.core import Summoner
 
 def test_cass():
-    name = "Kalturi"
-    me = Summoner(name=name)
+    me = Summoner(name="Kalturi", id=21359666)
 
-    match_id = 2530719537
-    match = cass.get_match(match_id)
+    #matches = cass.get_matches(me)
+    matches = me.matches
+    match = matches[0]
     print(match.id)
-    print(match.creation)
     for p in match.participants:
         print(p.id, p.champion.name)
-    return
 
 
 if __name__ == "__main__":

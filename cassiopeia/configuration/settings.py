@@ -16,6 +16,7 @@ def create_default_pipeline(api_key, verbose=False):
     from ..transformers.staticdata import StaticDataTransformer
     from ..transformers.champion import ChampionTransformer
     from ..transformers.summoner import SummonerTransformer
+    from ..transformers.match import MatchTransformer
 
     services = [
         RiotAPI(api_key=api_key),
@@ -24,7 +25,8 @@ def create_default_pipeline(api_key, verbose=False):
     riotapi_transformers = [
         StaticDataTransformer(),
         ChampionTransformer(),
-        SummonerTransformer()
+        SummonerTransformer(),
+        MatchTransformer()
     ]
     pipeline = DataPipeline(services, riotapi_transformers)
 
