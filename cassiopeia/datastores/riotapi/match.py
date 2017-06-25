@@ -34,7 +34,7 @@ class MatchAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/match/v3/matches/{id}".format(platform=query["platform"].value.lower(), id=query["gameId"])
         try:
-            data = self._get(url, {})
+            data = self._get(url, {}, self._rate_limiter(query["platform"], "matches/id"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -56,7 +56,7 @@ class MatchAPI(RiotAPIService):
             for id in query["ids"]:
                 url = "https://{platform}.api.riotgames.com/lol/match/v3/matches/{id}".format(platform=query["platform"].value.lower(), id=id)
                 try:
-                    data = self._get(url, {})
+                    data = self._get(url, {}, self._rate_limiter(query["platform"], "matches/id"))
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
@@ -120,7 +120,7 @@ class MatchAPI(RiotAPIService):
 
             url = "https://{platform}.api.riotgames.com/lol/match/v3/matchlists/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=query["accountId"])
             try:
-                data = self._get(url, params)
+                data = self._get(url, params, self._rate_limiter(query["platform"], "matchlists/by-account/accountId"))
             except APINotFoundError as error:
                 raise NotFoundError(str(error)) from error
 
@@ -158,7 +158,7 @@ class MatchAPI(RiotAPIService):
                 for id in query["accountIds"]:
                     url = "https://{platform}.api.riotgames.com/lol/match/v3/matchlists/by-account/{accountId}/recent".format(platform=query["platform"].value.lower(), accountId=id)
                     try:
-                        data = self._get(url, {})
+                        data = self._get(url, {}, self._rate_limiter(query["platform"], "matchlists/by-account/accountId/recent"))
                     except APINotFoundError as error:
                         raise NotFoundError(str(error)) from error
 
@@ -194,7 +194,7 @@ class MatchAPI(RiotAPIService):
                 for id in query["accountIds"]:
                     url = "https://{platform}.api.riotgames.com/lol/match/v3/matchlists/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=id)
                     try:
-                        data = self._get(url, params)
+                        data = self._get(url, params, self._rate_limiter(query["platform"], "matchlists/by-account/accountId"))
                     except APINotFoundError as error:
                         raise NotFoundError(str(error)) from error
 
@@ -224,7 +224,7 @@ class MatchAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/match/v3/timelines/by-match/{id}".format(platform=query["platform"].value.lower(), id=query["gameId"])
         try:
-            data = self._get(url, {})
+            data = self._get(url, {}, self._rate_limiter(query["platform"], "timelines/by-match/id"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -246,7 +246,7 @@ class MatchAPI(RiotAPIService):
             for id in query["ids"]:
                 url = "https://{platform}.api.riotgames.com/lol/match/v3/timelines/by-match/{id}".format(platform=query["platform"].value.lower(), id=id)
                 try:
-                    data = self._get(url, {})
+                    data = self._get(url, {}, self._rate_limiter(query["platform"], "timelines/by-match/id"))
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
