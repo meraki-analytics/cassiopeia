@@ -64,7 +64,7 @@ class Settings(object):
     def pipeline(self):
         if self.__pipeline is None:
             if not self.__key.startswith("RGAPI"):
-                self.__key = os.environ["DEV_KEY"]
+                self.__key = os.environ[self.__key]
             self.__pipeline = create_default_pipeline(api_key=self.__key, verbose=False)
         return self.__pipeline
 
