@@ -222,7 +222,9 @@ patches = [
     Patch(name="Season 7", patch="7.8", start=datetime.datetime.strptime("2017-04-19", "%Y-%m-%d"), end=datetime.datetime.strptime("2017-05-03", "%Y-%m-%d")),
     Patch(name="Season 7", patch="7.9", start=datetime.datetime.strptime("2017-05-03", "%Y-%m-%d"), end=datetime.datetime.strptime("2017-05-17", "%Y-%m-%d")),
     Patch(name="Season 7", patch="7.10", start=datetime.datetime.strptime("2017-05-17", "%Y-%m-%d"), end=datetime.datetime.strptime("2017-06-01", "%Y-%m-%d")),
-    Patch(name="Season 7", patch="7.11", start=datetime.datetime.strptime("2017-06-01", "%Y-%m-%d"), end=None)
+    Patch(name="Season 7", patch="7.11", start=datetime.datetime.strptime("2017-06-01", "%Y-%m-%d"), end=datetime.datetime.strptime("2017-06-14", "%Y-%m-%d")),
+    Patch(name="Season 7", patch="7.12", start=datetime.datetime.strptime("2017-06-14", "%Y-%m-%d"), end=datetime.datetime.strptime("2017-06-28", "%Y-%m-%d")),
+    Patch(name="Season 7", patch="7.13", start=datetime.datetime.strptime("2017-06-28", "%Y-%m-%d"), end=None)
 ]
 
 Patch._Patch__patches = patches
