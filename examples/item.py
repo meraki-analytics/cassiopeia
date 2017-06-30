@@ -13,7 +13,6 @@ def test_cass():
                 print(item.name)
             except:
                 pass
-    return
 
 
 if __name__ == "__main__":

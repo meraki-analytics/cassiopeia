@@ -15,7 +15,6 @@ def test_cass():
     page = pages[0]
     for mastery, count in page.masteries.items():
         print(mastery.name, count)
-    return
 
 
 if __name__ == "__main__":

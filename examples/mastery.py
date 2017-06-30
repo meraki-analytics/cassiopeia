@@ -7,7 +7,6 @@ def test_cass():
     masteries = cass.get_masteries()
     for mastery in masteries:
         print(mastery.name)
-    return
 
 
 if __name__ == "__main__":
