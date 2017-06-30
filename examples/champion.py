@@ -30,7 +30,6 @@ def test_cass():
         for var in spell.variables:
             print(spell.name, var)
     print(ziggs._Ghost__all_loaded)
-    return
 
 
 if __name__ == "__main__":

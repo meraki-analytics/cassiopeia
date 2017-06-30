@@ -21,7 +21,6 @@ def test_cass():
     me = cass.get_summoner(name=name)
     me = cass.get_summoner(id=id)
     me = cass.get_summoner(account_id=account_id)
-    return
 
 
 if __name__ == "__main__":

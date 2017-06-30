@@ -15,7 +15,6 @@ def test_cass():
     page = pages[0]
     for rune, count in page.runes.items():
         print(rune.name, count)
-    return
 
 
 if __name__ == "__main__":

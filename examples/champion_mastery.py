@@ -21,7 +21,6 @@ def test_cass():
     cms = me.champion_masteries
     print(cms[0].points)
     #print(cms["Karma"].points)  # Does a ton of calls without a cache
-    return
 
 
 if __name__ == "__main__":

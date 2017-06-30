@@ -8,7 +8,6 @@ def test_cass():
     for rune in runes:
         if rune.tier == 3:
             print(rune.name)
-    return
 
 
 if __name__ == "__main__":
