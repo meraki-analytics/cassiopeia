@@ -16,12 +16,11 @@ def test_cass():
     print(annie.free_to_play)
     print(annie._Ghost__all_loaded)
     print(annie)
-    return
 
     print()
 
     #ziggs = cass.get_champion(region="NA", "Ziggs")
-    ziggs = cass.get_champion("Renekton")
+    ziggs = cass.get_champion("Ziggs")
     print(ziggs.name)
     print(ziggs.region)
     #print(ziggs.recommended_itemset[0].item_sets[0].items)
