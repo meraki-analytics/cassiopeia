@@ -13,7 +13,7 @@ class Patch(object):
     @classmethod
     def from_str(cls, string):
         for patch in cls.__patches:
-            if string in patch.name:
+            if string in patch.patch:
                 return patch
         else:
             raise ValueError("Unknown patch name {}".format(string))
