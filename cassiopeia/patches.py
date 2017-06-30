@@ -1,9 +1,10 @@
-from collections import namedtuple
 import datetime
+
+from typing import Optional as _Optional
 
 
 class Patch(object):
-    def __init__(self, name: str, patch: str, start: datetime.date, end: datetime.date):
+    def __init__(self, name: str, patch: str, start: datetime.date, end: _Optional[datetime.date]):
         self._name = name
         self._patch = patch
         self._start = start
