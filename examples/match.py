@@ -2,17 +2,16 @@ import cassiopeia as cass
 from cassiopeia.core import Summoner
 
 
-def print_summoner(name: str, id: int):
-    me = Summoner(name="Kalturi", id=21359666)
+def print_newest_match(name: str, region: str):
+    summoner = Summoner(name=name, region=region)
 
-    #matches = cass.get_matches(me)
-    matches = me.matches
+    # matches = cass.get_matches(summoner)
+    matches = summoner.matches
     match = matches[0]
-    print(match.id)
+    print('Match ID:', match.id)
     for p in match.participants:
-        print(p.id, p.champion.name)
+        print(p.name, 'playing', p.champion.name)
 
 
 if __name__ == "__main__":
-    print_summoner(name="Kalturi", id=21359666)
-
+    print_newest_match(name="Kalturi", region="NA")
