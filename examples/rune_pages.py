@@ -1,21 +1,22 @@
 import cassiopeia as cass
 from cassiopeia.core import Summoner
 
-def test_cass():
-    name = "Kalturi"
 
-    me = Summoner(name=name, id=21359666)
-    print("Name:", me.name)
-    print("Id:", me.id)
+def print_rune_pages(summoner_name: str):
 
-    #pages = cass.get_rune_pages(me)
-    pages = me.rune_pages
+    summoner = Summoner(name=summoner_name)
+    print("Name:", summoner.name)
+    print("ID:", summoner.id)
+
+    # pages = cass.get_rune_pages(summoner)
+    pages = summoner.rune_pages
     for page in pages:
         print(page.name)
+
     page = pages[0]
     for rune, count in page.runes.items():
         print(rune.name, count)
 
 
 if __name__ == "__main__":
-    test_cass()
+    print_rune_pages("Kalturi")
