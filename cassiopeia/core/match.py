@@ -118,7 +118,7 @@ class ParticipantStatsData(DataObject):  # TODO
 
 
 class ParticipantData(DataObject):
-    _renamed = {"id": "participantId", "team": "teamId", "summoner_spell_d": "spell1Id", "summoner_spell_f": "spell2Id", "champion_id": "championId", "rank_last_season":"highestAchievedSeasonTier"}
+    _renamed = {"id": "participantId", "side": "teamId", "summoner_spell_d": "spell1Id", "summoner_spell_f": "spell2Id", "champion_id": "championId", "rank_last_season":"highestAchievedSeasonTier"}
 
     @property
     def stats(self) -> ParticipantStatsData:
@@ -141,8 +141,8 @@ class ParticipantData(DataObject):
         return ParticipantTimelineData(self._dto["timeline"])
 
     @property
-    def team(self) -> "TeamData":
-        return TeamData(self._dto["teamId"])
+    def side(self) -> int:
+        return self._dto["teamId"]
 
     @property
     def summoner_spell_d(self) -> "SummonerSpellData":
@@ -240,7 +240,7 @@ class TeamData(DataObject):
     @property
     def bans(self) -> List["ChampionData"]:
         from .staticdata.champion import ChampionData
-        return [ChampionData(id=ban["championId"]) for ban in self._dto["bans"]]
+        return [ChampionData({"id": ban["championId"]}) for ban in self._dto["bans"]]
 
     @property
     def baron_kills(self) -> int:
@@ -392,6 +392,10 @@ class ParticipantStats(CassiopeiaObject):  # TODO
 class Participant(CassiopeiaObject):
     _data_types = {ParticipantData, PlayerData}
 
+    def __init__(self, data: DataObject = None, match: "Match" = None, **kwargs):
+        self.__match = match
+        super().__init__(data, **kwargs)
+
     @lazy_property
     def stats(self) -> ParticipantStats:
         return ParticipantStats(self._data[ParticipantData].stats)
@@ -413,8 +417,17 @@ class Participant(CassiopeiaObject):
         return ParticipantTimeline(self._data[ParticipantData].timeline)
 
     @lazy_property
-    def team(self) -> "Team":
-        return Team(self._data[ParticipantData].team)
+    def side(self) -> Side:
+        try:
+            return Side(self._data[ParticipantData].side)
+        except KeyError:  # teamId
+            # The match has only partially loaded this participant and it doesn't have all it's data, so load the full match
+            self.__match.__load__(MatchData)
+            self.__match._Ghost__set_loaded(MatchData)
+            for participant in self.__match.participants:
+                if participant.summoner.name == self.summoner.name:
+                    self._data[ParticipantData] = participant._data[ParticipantData]
+                    return Side(self._data[ParticipantData].side)
 
     @lazy_property
     def summoner_spell_d(self) -> "SummonerSpell":
@@ -457,33 +470,44 @@ class Participant(CassiopeiaObject):
             pass
         return Summoner(**data)
 
+    @property
+    def team(self) -> "Team":
+        if self.side == Side.blue:
+            return self.__match.blue_team
+        else:
+            return self.__match.red_team
+
 
 class Team(CassiopeiaObject):
     _data_types = {TeamData}
 
+    def __init__(self, data: DataObject, participants: List[Participant], **kwargs):
+        self.__participants = participants
+        super().__init__(data, **kwargs)
+
     @property
     def first_dragon(self) -> bool:
-        return self._data[TeamData].firstDragon
+        return self._data[TeamData].first_dragon
 
     @property
     def first_inhibitor(self) -> bool:
-        return self._data[TeamData].firstInhibitor
+        return self._data[TeamData].first_inhibitor
 
     @property
     def first_rift_herald(self) -> bool:
-        return self._data[TeamData].firstRiftHerald
+        return self._data[TeamData].first_rift_herald
 
     @property
     def first_baron(self) -> bool:
-        return self._data[TeamData].firstBaron
+        return self._data[TeamData].first_baron
 
     @property
     def first_tower(self) -> bool:
-        return self._data[TeamData].firstTower
+        return self._data[TeamData].first_tower
 
     @property
     def first_blood(self) -> bool:
-        return self._data[TeamData].firstBlood
+        return self._data[TeamData].first_blood
 
     @property
     def bans(self) -> List["Champion"]:
@@ -491,39 +515,43 @@ class Team(CassiopeiaObject):
 
     @property
     def baron_kills(self) -> int:
-        return self._data[TeamData].baronKills
+        return self._data[TeamData].baron_kills
 
     @property
     def rift_herald_kills(self) -> int:
-        return self._data[TeamData].riftHeraldKills
+        return self._data[TeamData].rift_herald_kills
 
     @property
     def vilemaw_kills(self) -> int:
-        return self._data[TeamData].vilemawKills
+        return self._data[TeamData].vilemaw_kills
 
     @property
     def inhibitor_kills(self) -> int:
-        return self._data[TeamData].inhibitorKills
+        return self._data[TeamData].inhibitor_kills
 
     @property
     def tower_kills(self) -> int:
-        return self._data[TeamData].towerKills
+        return self._data[TeamData].tower_kills
 
     @property
     def dragon_kills(self) -> int:
-        return self._data[TeamData].dragonKills
+        return self._data[TeamData].dragon_kills
 
     @property
     def side(self) -> Side:
-        return Side(self._data[TeamData].teamId)
+        return Side(self._data[TeamData].side)
 
     @property
     def dominion_victory_score(self) -> int:
-        return self._data[TeamData].dominionVictoryScore
+        return self._data[TeamData].dominion_victory_score
 
     @property
     def win(self) -> bool:
-        return self._data[TeamData].win
+        return self._data[TeamData].win != "Fail"
+
+    @property
+    def participants(self) -> List[Participant]:
+        return self.__participants
 
 
 @searchable({})
@@ -606,7 +634,7 @@ class Match(CassiopeiaGhost):
             """A helper function for creating a participant from participant, participant identity, and player data."""
             for pidentity in participant_identities:
                 if pidentity.id == participant_data.id:
-                    participant = Participant()
+                    participant = Participant(data=ParticipantData({}), match=self)
                     participant._data[ParticipantData] = participant_data
                     participant._data[PlayerData] = pidentity.player
                     return participant
@@ -623,16 +651,16 @@ class Match(CassiopeiaGhost):
                 self.__participants.append(participant)
                 yield participant
 
-        # Create all the participants if any haven't been created yet
+        # Create all the participants if any haven't been created yet.
+        # Note that it's importan to overwrite the one from the matchref if it was loaded because we have more data after we load the full match.
         if yielded_one or len(self.__participants) < len(self._data[MatchData].participants):
-            known_names = [p.summoner.name for p in self.__participants]
             if not self._Ghost__is_loaded(MatchData):
                 self.__load__(MatchData)
                 self._Ghost__set_loaded(MatchData)  # __load__ doesn't trigger __set_loaded. is this a "bug"?
-            for p in self._data[MatchData].participants:
+            self.__participants = [None for _ in self._data[MatchData].participants]
+            for i, p in enumerate(self._data[MatchData].participants):
                 participant = construct_participant(p, self._data[MatchData].participant_identities)
-                if participant.summoner.name not in known_names:
-                    self.__participants.append(participant)
+                self.__participants[i] = participant
 
         # Yield the rest of the participants
         for participant in self.__participants[yielded_one:]:
@@ -642,7 +670,21 @@ class Match(CassiopeiaGhost):
     @ghost_load_on(KeyError)
     @lazy
     def teams(self) -> List[Team]:
-        return [Team(t) for t in self._data[MatchData].teams]
+        return [Team(t, participants=[p for p in self.participants if p.side.value == self._data[MatchData].teams[i].side]) for i, t in enumerate(self._data[MatchData].teams)]
+
+    @property
+    def red_team(self) -> Team:
+        if self.teams[0].side is Side.red:
+            return self.teams[0]
+        else:
+            return self.teams[1]
+
+    @property
+    def blue_team(self) -> Team:
+        if self.teams[0].side is Side.blue:
+            return self.teams[0]
+        else:
+            return self.teams[1]
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on(KeyError)
