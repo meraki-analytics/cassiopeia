@@ -1,28 +1,26 @@
 import cassiopeia as cass
 from cassiopeia.core import Summoner
 
-def test_cass():
-    name = "Kalturi"
 
-    me = Summoner(name=name)
-    print("Name:", me.name)
-    print("Id:", me.id)
-    print("Account id:", me.account.id)
-    print("Level:", me.level)
-    print("Revision date:", me.revision_date)
-    print("Profile icon id:", me.profile_icon.id)
-    print("Profile icon name:", me.profile_icon.name)
-    print("Profile icon url:", me.profile_icon.url)
-    print("Profile icon image:", me.profile_icon.image)
-    name = me.name
-    id = me.id
-    account_id = me.account.id
-    me = cass.get_summoner(name)
-    me = cass.get_summoner(name=name)
-    me = cass.get_summoner(id=id)
-    me = cass.get_summoner(account_id=account_id)
-    return
+def print_summoner(name: str, region: str):
+    summoner = Summoner(name=name, region=region)
+    print("Name:", summoner.name)
+    print("ID:", summoner.id)
+    print("Account ID:", summoner.account.id)
+    print("Level:", summoner.level)
+    print("Revision date:", summoner.revision_date)
+    print("Profile icon ID:", summoner.profile_icon.id)
+    print("Profile icon name:", summoner.profile_icon.name)
+    print("Profile icon URL:", summoner.profile_icon.url)
+    print("Profile icon image:", summoner.profile_icon.image)
+
+    # These are equivalent ways of obtaining a Summoner.
+    # Note that the region defaults to NA.
+    #   summoner = cass.get_summoner(name)
+    #   summoner = cass.get_summoner(name=summoner.name)
+    #   summoner = cass.get_summoner(id=summoner.id)
+    #   summoner = cass.get_summoner(account_id=summoner.account.id)
 
 
 if __name__ == "__main__":
-    test_cass()
+    print_summoner("Kalturi", "NA")

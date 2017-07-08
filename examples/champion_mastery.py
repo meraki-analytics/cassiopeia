@@ -1,28 +1,25 @@
 import cassiopeia as cass
 from cassiopeia.core import Summoner, Champion, ChampionMastery
 
-def test_cass():
+def print_champion_mastery():
     # Name: Kalturi
-    # Id: 21359666
-    # Account id: 34718348
+    # ID: 21359666
+    # Account ID: 34718348
 
     me = Summoner(name="Kalturi", id=21359666)
     karma = Champion(name="Karma")
     cm = ChampionMastery(champion=karma, summoner=me)
     cm = cass.get_champion_mastery(champion=karma, summoner=me)
-    print(cm.champion.id)
-    print(cm.points)
-    print(cm.level)
-    print(cm.points_until_next_level)
-    print(cm.champion.id)
-    print()
+    print('Champion ID:', cm.champion.id)
+    print('Mastery points:', cm.points)
+    print('Mastery Level:', cm.level)
+    print('Points until next level:', cm.points_until_next_level)
 
-    #cms = cass.get_champion_masteries(summoner=me)
+    # cms = cass.get_champion_masteries(summoner=me)
     cms = me.champion_masteries
     print(cms[0].points)
-    #print(cms["Karma"].points)  # Does a ton of calls without a cache
-    return
+    # print(cms["Karma"].points)  # Does a ton of calls without a cache
 
 
 if __name__ == "__main__":
-    test_cass()
+    print_champion_mastery()
