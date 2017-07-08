@@ -61,14 +61,12 @@ class HTTPClient(object):
         curl.setopt(curl.HEADERFUNCTION, get_response_headers)
         curl.setopt(curl.HTTPHEADER, request_headers)
 
+        if _print_calls:  # TODO
+            print("Making call: {}".format(url))
         if rate_limiter:
             with rate_limiter:
-                if _print_calls:  # TODO
-                    print("Making call: {}".format(url))
                 status_code = HTTPClient._execute(curl, connection is None)
         else:
-            if _print_calls:  # TODO
-                print("Making call: {}".format(url))
             status_code = HTTPClient._execute(curl, connection is None)
 
         body = buffer.getvalue()

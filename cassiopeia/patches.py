@@ -225,7 +225,8 @@ patches = [
     Patch(name='Season 7', patch='7.10', start=datetime.date(2017, 5, 17), end=datetime.date(2017, 6, 1)),
     Patch(name='Season 7', patch='7.11', start=datetime.date(2017, 6, 1), end=datetime.date(2017, 6, 14)),
     Patch(name='Season 7', patch='7.12', start=datetime.date(2017, 6, 14), end=datetime.date(2017, 6, 28)),
-    Patch(name="Season 7", patch="7.13", start=datetime.date(2017, 6, 28), end=None)
+    Patch(name="Season 7", patch="7.13", start=datetime.date(2017, 6, 28), end=datetime.date(2017, 7, 12)),
+    Patch(name="Season 7", patch="7.14", start=datetime.date(2017, 7, 12), end=None)
 ]
 
 Patch._Patch__patches = patches

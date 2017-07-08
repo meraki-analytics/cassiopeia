@@ -69,7 +69,7 @@ class SummonerData(DataObject):
     @property
     def profile_icon(self) -> ProfileIconData:
         """ID of the summoner icon associated with the summoner."""
-        return ProfileIcon(id=self._dto["profileIconId"])
+        return ProfileIconData({"profileIconId": self._dto["profileIconId"]})
 
     @property
     def revision_date(self) -> datetime.date:
@@ -124,6 +124,11 @@ class Account(CassiopeiaObject):
 @searchable({str: ["name"], int: ["id", "accountId"]})
 class Summoner(CassiopeiaGhost):
     _data_types = {SummonerData}
+    _retyped = {
+        "account": {
+            Account: ("id", "account")
+        }
+    }
 
     def __init__(self, *args, **kwargs):
         if "region" not in kwargs and "platform" not in kwargs:
@@ -132,12 +137,12 @@ class Summoner(CassiopeiaGhost):
 
     @lazy_property
     def region(self) -> Region:
-        """The region for this champion."""
+        """The region for this summoner."""
         return Region(self._data[SummonerData].region)
 
     @lazy_property
     def platform(self) -> Platform:
-        """The platform for this champion."""
+        """The platform for this summoner."""
         return self.region.platform
 
     @CassiopeiaGhost.property(SummonerData)
@@ -164,13 +169,17 @@ class Summoner(CassiopeiaGhost):
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on(KeyError)
     def profile_icon(self) -> ProfileIcon:
-        return self._data[SummonerData].profile_icon
+        return ProfileIcon(self._data[SummonerData].profile_icon)
 
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on(KeyError)
     @lazy
     def revision_date(self) -> datetime.date:
         return datetime.datetime.fromtimestamp(self._data[SummonerData].revision_date / 1000)
+
+    @property
+    def match_history_uri(self) -> str:
+        return "/v1/stats/player_history/{platform}/{id}".format(region=self.platform.value, id=self.account.id)
 
     # Special core methods
 
@@ -203,7 +212,7 @@ class Summoner(CassiopeiaGhost):
     def matches(self):
         from .match import Match, MatchListData
         matchlist = settings.pipeline.get(MatchListData, query={"accountId": self.account.id, "region": self.region, "platform": self.platform.value})
-        return SearchableList([Match.from_match_reference(ref) for ref in matchlist])
+        return SearchableList([Match.from_match_reference(ref, current_account_id=self.account.id, region=self.region.value) for ref in matchlist])
 
     #def league(self):
     #    raise NotImplemented

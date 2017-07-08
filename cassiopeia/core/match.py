@@ -161,14 +161,6 @@ class ParticipantData(DataObject):
         return self._dto["championId"]
 
 
-class ProfileIconData(DataObject):
-    _renamed = {"id": "profileIconId"}
-
-    @property
-    def id(self) -> int:
-        return self._dto["profileIconId"]
-
-
 class PlayerData(DataObject):
     _renamed = {"current_platform_id": "currentPlatformId", "summoner_name": "summonerName", "summoner_id": "summonerId", "match_history_uri": "matchHistoryUri", "platform_id": "platformId", "current_account_id": "currentAccountId", "profile_icon": "profileIcon", "account_id": "accountId"}
 
@@ -193,8 +185,9 @@ class PlayerData(DataObject):
         return self._dto["platformId"]
 
     @property
-    def profile_icon(self) -> ProfileIconData:
-        return ProfileIconData(self._dto["profileIcon"])
+    def profile_icon(self) -> "ProfileIconData":
+        from .summoner import ProfileIconData
+        return ProfileIconData({"id": self._dto["profileIcon"]})
 
     @property
     def current_account_id(self) -> int:
@@ -396,39 +389,8 @@ class ParticipantStats(CassiopeiaObject):  # TODO
     _data_types = {ParticipantStatsData}
 
 
-class ProfileIcon(CassiopeiaObject):
-    _data_types = {ProfileIconData}
-
-    @property
-    def id(self) -> int:
-        return self._data[ProfileIconData].id
-
-    @property
-    def name(self) -> str:
-        global _profile_icon_names
-        if _profile_icon_names is None:
-            module_directory = os.path.dirname(os.path.realpath(__file__))
-            module_directory, _ = os.path.split(module_directory)  # Go up one directory
-            filename = os.path.join(module_directory, 'profile_icon_names.json')
-            _profile_icon_names = json.load(open(filename))
-            _profile_icon_names = {int(key): value for key, value in _profile_icon_names.items()}
-        try:
-            return _profile_icon_names[self._data[ProfileIconData].id]
-        except KeyError:
-            return None
-
-    @property
-    def url(self) -> str:
-        versions = settings.pipeline.get(VersionListData, query={"platform": settings.default_platform})
-        return "http://ddragon.leagueoflegends.com/cdn/{version}/img/profileicon/{id}.png".format(version=versions[0], id=self.id)
-
-    @property
-    def image(self) -> PILImage:
-        return settings.pipeline.get(PILImage, query={"url": self.url})
-
-
 class Participant(CassiopeiaObject):
-    _data_types = {ParticipantData}
+    _data_types = {ParticipantData, PlayerData}
 
     @lazy_property
     def stats(self) -> ParticipantStats:
@@ -471,50 +433,29 @@ class Participant(CassiopeiaObject):
         from .staticdata.champion import Champion
         return Champion(id=self._data[ParticipantData].champion_id)
 
-
-class Player(CassiopeiaObject):
-    _data_types = {PlayerData}
-
-    # TODO Can we rename current_platform and platform to have intuitive names. Same with accounts
-    @property
-    def current_platform(self) -> Platform:
-        return Platform(self._data[PlayerData].current_platform_id)
-
-    @property
-    def platform(self) -> Platform:
-        return Platform(self._data[PlayerData].platform_id)
-
-    @property
+    # All the Player data from ParticipantIdentities.player is contained in the Summoner class.
+    # The non-current accountId and platformId should never be relevant/used, and can be deleted from our type system.
+    #   See: https://discussion.developer.riotgames.com/questions/1713/is-there-any-scenario-where-accountid-should-be-us.html
+    @lazy_property
     def summoner(self) -> "Summoner":
-        return Summoner(id=self._data[PlayerData].summoner_id, name=self._data[PlayerData].summoner_name)
-
-    @property
-    def match_history_uri(self) -> str:
-        return self._dto["matchHistoryUri"]
-
-    @property
-    def profile_icon(self) -> ProfileIcon:
-        return ProfileIcon(self._data[PlayerData].profile_icon)
-
-    @property
-    def current_account(self) -> "Account":
-        return Account(self._data[PlayerData].current_account_id)
-
-    @property
-    def account(self) -> "Account":
-        return Account(self._data[PlayerData].account_id)
-
-
-class ParticipantIdentity(CassiopeiaObject):
-    _data_types = {ParticipantIdentityData}
-
-    @property
-    def player(self) -> PlayerData:
-        return Player(self._data[ParticipantIdentityData].player)
-
-    @property
-    def id(self) -> int:
-        return self._data[ParticipantIdentityData].id
+        data = {}
+        try:
+            data["id"] = self._data[PlayerData].summoner_id
+        except KeyError:
+            pass
+        try:
+            data["name"] = self._data[PlayerData].summoner_name
+        except KeyError:
+            pass
+        from .summoner import Summoner, AccountData, ProfileIcon
+        account = self._data[PlayerData].current_account_id
+        data["account"] = account
+        data["region"] = Platform(self._data[PlayerData].current_platform_id).region
+        try:
+            data["profile_icon"] = ProfileIcon(self._data[PlayerData].profile_icon)
+        except KeyError:
+            pass
+        return Summoner(**data)
 
 
 class Team(CassiopeiaObject):
@@ -589,27 +530,27 @@ class Team(CassiopeiaObject):
 class Match(CassiopeiaGhost):
     _data_types = {MatchData}
     _retyped = {
-      "region": {
-        Region: ("value", "region")
-      },
-      "platform": {
-        Platform: ("value", "platform")
-      },
-      "season": {
-        Season: ("value", "season")
-      },
-      "queue": {
-        Queue: ("value", "queue")
-      },
-      "mode": {
-        GameMode: ("value", "mode")
-      },
-      "map": {
-        Map: ("value", "map")
-      },
-      "type": {
-        GameType: ("value", "type")
-      }
+        "region": {
+            Region: ("value", "region")
+        },
+        "platform": {
+            Platform: ("value", "platform")
+        },
+        "season": {
+            Season: ("value", "season")
+        },
+        "queue": {
+            Queue: ("value", "queue")
+        },
+        "mode": {
+            GameMode: ("value", "mode")
+        },
+        "map": {
+            Map: ("value", "map")
+        },
+        "type": {
+            GameType: ("value", "type")
+        }
     }
     # TODO We may need _retyped to accept methods so that it can convert duration and creation.
 
@@ -617,17 +558,22 @@ class Match(CassiopeiaGhost):
         if "region" not in kwargs and "platform" not in kwargs:
             kwargs["region"] = settings.default_region.value
         super().__init__(*args, **kwargs)
+        self.__participants = []  # For lazy-loading the participants in a special way
 
     @classmethod
-    def from_match_reference(cls, ref):
+    def from_match_reference(cls, ref, **kwargs):
         # TODO Somehow put in ref.lane, ref.role, and ref.champion_id
+        participant = {"participantId": 0, "championId": ref.champion_id}
+        player = {"participantId": 0, "currentAccountId": kwargs["current_account_id"], "currentPlatformId": ref.platform_id}
         instance = cls(id=ref.id, season_id=ref.season_id, queue_id=ref.queue_id, platform_id=ref.platform_id, creation=ref.creation)
+        instance._data[MatchData]._dto["participants"] = [participant]
+        instance._data[MatchData]._dto["participantIdentities"] = [{"participantId": 0, "player": player}]
         return instance
 
     @lazy_property
     def region(self) -> Region:
         """The region for this champion."""
-        return Region(self._data[SummonerData].region)
+        return Region(self._data[MatchData].region)
 
     @lazy_property
     def platform(self) -> Platform:
@@ -652,15 +598,45 @@ class Match(CassiopeiaGhost):
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on(KeyError)
-    @lazy
+    # This method is lazy-loaded in a special way because of its unique behavior
     def participants(self) -> List[Participant]:
-        return [Participant(p) for p in self._data[MatchData].participants]
+        # This is a complicated function because we don't want to load the particpants if the only one the user cares about is the one loaded from a match ref
 
-    @CassiopeiaGhost.property(MatchData)
-    @ghost_load_on(KeyError)
-    @lazy
-    def participant_identities(self) -> List[ParticipantIdentity]:
-        return [ParticipantIdentity(p) for p in self._data[MatchData].participant_identities]
+        def construct_participant(participant_data, participant_identities):
+            """A helper function for creating a participant from participant, participant identity, and player data."""
+            for pidentity in participant_identities:
+                if pidentity.id == participant_data.id:
+                    participant = Participant()
+                    participant._data[ParticipantData] = participant_data
+                    participant._data[PlayerData] = pidentity.player
+                    return participant
+
+        # If a participant was provided from a matchref, yield that first
+        yielded_one = False
+        if len(self._data[MatchData].participants) == 1:
+            yielded_one = True
+            try:
+                yield self.__participants[0]
+            except IndexError:
+                p = self._data[MatchData].participants[0]
+                participant = construct_participant(p, self._data[MatchData].participant_identities)
+                self.__participants.append(participant)
+                yield participant
+
+        # Create all the participants if any haven't been created yet
+        if yielded_one or len(self.__participants) < len(self._data[MatchData].participants):
+            known_names = [p.summoner.name for p in self.__participants]
+            if not self._Ghost__is_loaded(MatchData):
+                self.__load__(MatchData)
+                self._Ghost__set_loaded(MatchData)  # __load__ doesn't trigger __set_loaded. is this a "bug"?
+            for p in self._data[MatchData].participants:
+                participant = construct_participant(p, self._data[MatchData].participant_identities)
+                if participant.summoner.name not in known_names:
+                    self.__participants.append(participant)
+
+        # Yield the rest of the participants
+        for participant in self.__participants[yielded_one:]:
+            yield participant
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on(KeyError)
