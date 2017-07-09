@@ -15,6 +15,7 @@ def create_default_pipeline(api_key, verbose=False):
     from ..datastores.datadragon import DataDragonService
     from ..transformers.staticdata import StaticDataTransformer
     from ..transformers.champion import ChampionTransformer
+    from ..transformers.championmastery import ChampionMasteryTransformer
     from ..transformers.summoner import SummonerTransformer
     from ..transformers.match import MatchTransformer
 
@@ -25,6 +26,7 @@ def create_default_pipeline(api_key, verbose=False):
     riotapi_transformers = [
         StaticDataTransformer(),
         ChampionTransformer(),
+        ChampionMasteryTransformer(),
         SummonerTransformer(),
         MatchTransformer()
     ]

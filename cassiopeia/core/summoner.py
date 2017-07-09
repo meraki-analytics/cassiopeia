@@ -185,12 +185,11 @@ class Summoner(CassiopeiaGhost):
 
     @property
     def champion_masteries(self):
-        from .championmastery import ChampionMastery
-        from ..dto.staticdata.champion import ChampionListDto
-        # We don't need the entire champion data, we just need the dtos
-        champions = settings.pipeline.get(ChampionListDto, query={"region": self.region, "platform": self.platform.value, "tags": {"all"}})
-        champions = champions["data"].values()
-        return SearchableList([ChampionMastery(summoner=self, champion=champion["id"]) for champion in champions])
+        from .championmastery import ChampionMastery, ChampionMasteryListData
+        cms = settings.pipeline.get(ChampionMasteryListData, query={"playerId": self.id, "region": self.region, "platform": self.platform.value})
+        for i, cm in enumerate(cms):
+            cms[i] = ChampionMastery(data=cm)
+        return SearchableList(cms)
 
     @property
     def mastery_pages(self):

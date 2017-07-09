@@ -6,7 +6,7 @@ from merakicommons.container import SearchableList
 from .configuration import settings
 from .data import PATCHES, Region
 from .patches import Patch
-from .core import VersionListData, Champion, ChampionData, ChampionListData, Summoner, Account, ChampionMastery, Rune, RuneListData, Mastery, MasteryListData, Item, ItemListData, RunePage, RunePagesData, MasteryPage, MasteryPagesData, RunePage, MasteryPage, Match, MatchData, MatchListData
+from .core import VersionListData, Champion, ChampionData, ChampionListData, Summoner, Account, ChampionMastery, ChampionMasteryListData, Rune, RuneListData, Mastery, MasteryListData, Item, ItemListData, RunePage, RunePagesData, MasteryPage, MasteryPagesData, RunePage, MasteryPage, Match, MatchData, MatchListData
 from .dto.staticdata.version import VersionListDto
 
 
@@ -32,12 +32,18 @@ def get_match(id, region: Region = None):
 
 
 def get_champion_masteries(summoner: Union[Summoner, int, str], region: Region = None):
+    if region is None:
+        region = settings.default_region
+    elif not isinstance(region, Region):
+        region = Region(region)
     if isinstance(summoner, int):
         summoner = Summoner(id=summoner)
     elif isinstance(summoner, str):
         summoner = Summoner(name=summoner)
-    champions = get_champions(region=region)
-    return SearchableList([ChampionMastery(summoner=summoner, champion=champion) for champion in champions])
+    cms = settings.pipeline.get(ChampionMasteryListData, query={"playerId": summoner.id, "region": region, "platform": region.platform.value})
+    for i, cm in enumerate(cms):
+        cms[i] = ChampionMastery(data=cm)
+    return SearchableList(cms)
 
 
 def get_champion_mastery(summoner: Union[Summoner, int, str], champion: Union[Champion, int, str], region: Region = None):
