@@ -9,7 +9,7 @@ from .match import Match
 from .champion import ChampionData as ChampionStatusData, ChampionListData as ChampionStatusListData
 from .staticdata import ChampionData, ChampionListData, VersionListData, RuneData, RuneListData, MasteryData, MasteryListData, ItemData, ItemListData
 from .summoner import SummonerData
-from .championmastery import ChampionMasteryData
+from .championmastery import ChampionMasteryData, ChampionMasteryListData
 from .runepage import RunePageData, RunePagesData
 from .masterypage import MasteryPageData, MasteryPagesData
 from .match import MatchData, MatchListData

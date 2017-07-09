@@ -10,11 +10,16 @@ from .common import DataObject, CassiopeiaObject, CassiopeiaGhost
 from ..dto.championmastery import ChampionMasteryDto
 from .staticdata.champion import Champion
 from .summoner import Summoner
+from ..dto import championmastery as dto
 
 
 ##############
 # Data Types #
 ##############
+
+
+class ChampionMasteryListData(list):
+    _dto_type = dto.ChampionMasteryListDto
 
 
 class ChampionMasteryData(DataObject):
@@ -31,7 +36,7 @@ class ChampionMasteryData(DataObject):
 
     @property
     def summoner_id(self) -> int:
-        return self._dto["summonerId"]
+        return self._dto["playerId"]
 
     @property
     def chest_granted(self) -> bool:
@@ -87,6 +92,21 @@ class ChampionMastery(CassiopeiaGhost):
         if "region" not in kwargs and "platform" not in kwargs:
             kwargs["region"] = settings.default_region.value
         super().__init__(*args, **kwargs)
+
+    def __load__(self, load_group: DataObject = None) -> None:
+        from datapipelines import NotFoundError
+        try:
+            super().__load__(load_group)
+        except NotFoundError:
+            dto = {
+                "championLevel": 0,
+                "chestGranted": False,
+                "championPoints": 0,
+                "championPointsUntilNextLevel": None,  # TODO what is this value?
+                "championPointsSinceLastLevel": 0,
+                "lastPlayTime": None
+            }
+            self.__load_hook__(load_group, dto)
 
     @lazy_property
     def region(self) -> Region:
