@@ -79,7 +79,7 @@ class RunePagesData(list):
 ##############
 
 
-@searchable({str: ["name"], int: ["id"], bool: ["current"]})
+@searchable({str: ["name", "runes", "region", "platform", "locale"], int: ["id"], bool: ["current"], StaticdataRune: ["runes"], Region: ["region"], Platform: ["platform"]})
 class RunePage(CassiopeiaGhost):
     _data_types = {RunePageData}
 

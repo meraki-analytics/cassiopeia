@@ -577,6 +577,7 @@ class Image(CassiopeiaObject):
         return sprite
 
 
+@searchable({str: ["key"]})
 class SpellVars(CassiopeiaObject):
     _data_types = {SpellVarsData}
 
@@ -606,7 +607,7 @@ class SpellVars(CassiopeiaObject):
         return self._data[SpellVarsData].key
 
 
-@searchable({str: ["name", "key"]})
+@searchable({str: ["name", "key", "keywords", "resource"], Resource: ["resource"]})
 class ChampionSpell(CassiopeiaObject):
     _data_types = {ChampionSpellData}
 
@@ -628,7 +629,7 @@ class ChampionSpell(CassiopeiaObject):
     @property
     def resource(self) -> str:
         """The resource consumed when using this spell."""
-        return self._data[ChampionSpellData].resource
+        return Resource(self._data[ChampionSpellData].resource)
 
     @lazy_property
     def image_info(self) -> Image:
@@ -696,6 +697,7 @@ class ChampionSpell(CassiopeiaObject):
         return self._data[ChampionSpellData].name
 
 
+@searchable({str: ["type", "items"], Item: ["items"]})
 class ItemSet(CassiopeiaObject):
     _data_types = {BlockData}
 
@@ -715,6 +717,7 @@ class ItemSet(CassiopeiaObject):
         return self._data[BlockData].type
 
 
+@searchable({str: ["item_sets", "map", "title", "mode", "type"], Item: ["item_sets"], GameMode: ["mode"]})
 class RecommendedItems(CassiopeiaObject):
     _data_types = {RecommendedData}
 
@@ -754,7 +757,7 @@ class RecommendedItems(CassiopeiaObject):
         return self._data[RecommendedData].type
 
 
-@searchable({str: "name"})
+@searchable({str: ["name"]})
 class Passive(CassiopeiaObject):
     _data_types = {PassiveData}
 
@@ -779,7 +782,7 @@ class Passive(CassiopeiaObject):
         return self._data[PassiveData].description
 
 
-@searchable({str: "name", int: "id"})
+@searchable({str: ["name", "splash_url", "loading_image_url"], int: ["id"]})
 class Skin(CassiopeiaObject):
     _data_types = {SkinData}
 
@@ -936,7 +939,7 @@ class Info(CassiopeiaObject):
         return self._data[InfoData].magic
 
 
-@searchable({str: ["name", "key"], int: ["id"]})
+@searchable({str: ["name", "key", "title", "region", "platform", "locale", "resource", "tags"], int: ["id"], Region: ["region"], Platform: ["platform"], bool: ["free_to_play"], Resource: ["resource"]})
 class Champion(CassiopeiaGhost):
     _data_types = {ChampionData, ChampionStatusData}
     _load_types = {ChampionData: ChampionListData, ChampionStatusData: ChampionStatusListData}

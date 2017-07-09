@@ -230,6 +230,7 @@ class RuneData(DataObject):
 ##############
 
 
+@searchable({str: ["sprite", "url"]})
 class Sprite(CassiopeiaObject):
     _data_types = {SpriteData}
     _extension = "png"
@@ -271,6 +272,7 @@ class Sprite(CassiopeiaObject):
         return settings.pipeline.get(PILImage, query={"url": self.url})
 
 
+@searchable({str: ["full", "url"]})
 class Image(CassiopeiaObject):
     _data_types = {ImageData}
     _extension = "png"
@@ -309,7 +311,7 @@ class RuneStats(CassiopeiaObject):  # TODO
     pass
 
 
-@searchable({str: ["name", "type"], int: ["id"], RuneType: ["type"]})
+@searchable({str: ["name", "tags", "type", "region", "platform", "locale"], int: ["id"], RuneType: ["type"], Region: ["region"], Platform: ["platform"]})
 class Rune(CassiopeiaGhost):
     _data_types = {RuneData}
 

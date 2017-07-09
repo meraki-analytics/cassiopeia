@@ -68,7 +68,7 @@ class ChampionMasteryData(DataObject):
 ##############
 
 
-@searchable({str: ["champion"], int: ["points", "level"], bool: ["chest_granted"], datetime.datetime: ["last_played"]})
+@searchable({str: ["champion", "summoner"], int: ["points", "level"], bool: ["chest_granted"], datetime.datetime: ["last_played"], Champion: ["champion"], Summoner: ["summoner"]})
 class ChampionMastery(CassiopeiaGhost):
     _data_types = {ChampionMasteryData}
     _retyped = {

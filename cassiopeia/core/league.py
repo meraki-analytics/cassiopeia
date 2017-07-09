@@ -40,7 +40,7 @@ class MiniSeriesData(DataObject):
 
 class LeagueItemData(DataObject):
     _dto_type = LeagueItemDto
-    _renamed = {"hot_streak": "hotStreak", "promos": "miniSeries", "summoner_id": "playerOrTeamId", "summoner_name": "playerOrTeamName", "league_points": "leaguePoints", "league_name": "leagueName", "queue": "queueType"}
+    _renamed = {"hot_streak": "hotStreak", "promos": "miniSeries", "summoner_id": "playerOrTeamId", "summoner_name": "playerOrTeamName", "league_points": "leaguePoints", "league_name": "leagueName", "queue": "queueType", "division": "rank"}
 
     @property
     def region(self) -> str:
@@ -59,7 +59,7 @@ class LeagueItemData(DataObject):
         return self._dto["leagueName"]
 
     @property
-    def rank(self) -> str:
+    def division(self) -> str:
         return self._dto["rank"]
 
     @property
@@ -152,6 +152,7 @@ class MiniSeries(CassiopeiaObject):
         return [True if p == "W" else False for p in self._data[MiniSeriesData].progress if p is not None]
 
 
+@searchable({str: ["region", "platform", "queue", "tier", "division", "league_name", "summoner"], bool: ["hot_streak", "veteran", "fresh_blood"], Region: ["region"], Platform: ["platform"], Queue: ["queue"], Tier: ["tier"], Division: ["division"], Summoner: ["summoner"]})
 class LeagueSummoner(DataObject):
     _data_types = {LeagueItemData}
 
@@ -173,12 +174,12 @@ class LeagueSummoner(DataObject):
     @CassiopeiaGhost.property(LeagueItemData)
     @ghost_load_on(KeyError)
     def tier(self) -> Tier:
-        return self._data[LeagueItemData].tier
+        return Tier(self._data[LeagueItemData].tier)
 
     @CassiopeiaGhost.property(LeagueItemData)
     @ghost_load_on(KeyError)
     def queue(self) -> Queue:
-        return self._data[LeagueItemData].queue
+        return Queue(self._data[LeagueItemData].queue)
 
     @CassiopeiaGhost.property(LeagueItemData)
     @ghost_load_on(KeyError)
@@ -187,8 +188,8 @@ class LeagueSummoner(DataObject):
 
     @CassiopeiaGhost.property(LeagueItemData)
     @ghost_load_on(KeyError)
-    def rank(self) -> Rank:
-        return self._data[LeagueItemData].rank
+    def division(self) -> Division:
+        return Division(self._data[LeagueItemData].division)
 
     @CassiopeiaGhost.property(LeagueItemData)
     @ghost_load_on(KeyError)
