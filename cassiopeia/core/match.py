@@ -5,7 +5,7 @@ from PIL.Image import Image as PILImage
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable, SearchableList
+from merakicommons.container import searchable, SearchableList, SearchableLazyList
 
 from ..configuration import settings
 from ..data import Region, Platform, Tier, Map, GameType, GameMode, Queue, Division, Side, Season
@@ -389,6 +389,7 @@ class ParticipantStats(CassiopeiaObject):  # TODO
     _data_types = {ParticipantStatsData}
 
 
+@searchable({str: ["summoner", "champion"]})
 class Participant(CassiopeiaObject):
     _data_types = {ParticipantData, PlayerData}
 
@@ -554,7 +555,7 @@ class Team(CassiopeiaObject):
         return self.__participants
 
 
-@searchable({})
+@searchable({str: ["participants"]})
 class Match(CassiopeiaGhost):
     _data_types = {MatchData}
     _retyped = {
@@ -639,32 +640,35 @@ class Match(CassiopeiaGhost):
                     participant._data[PlayerData] = pidentity.player
                     return participant
 
-        # If a participant was provided from a matchref, yield that first
-        yielded_one = False
-        if len(self._data[MatchData].participants) == 1:
-            yielded_one = True
-            try:
-                yield self.__participants[0]
-            except IndexError:
-                p = self._data[MatchData].participants[0]
-                participant = construct_participant(p, self._data[MatchData].participant_identities)
-                self.__participants.append(participant)
+        def generate_participants(match):
+            # If a participant was provided from a matchref, yield that first
+            yielded_one = False
+            if len(match._data[MatchData].participants) == 1:
+                yielded_one = True
+                try:
+                    yield match.__participants[0]
+                except IndexError:
+                    p = match._data[MatchData].participants[0]
+                    participant = construct_participant(p, match._data[MatchData].participant_identities)
+                    match.__participants.append(participant)
+                    yield participant
+
+            # Create all the participants if any haven't been created yet.
+            # Note that it's important to overwrite the one from the matchref if it was loaded because we have more data after we load the full match.
+            if yielded_one or len(match.__participants) < len(match._data[MatchData].participants):
+                if not match._Ghost__is_loaded(MatchData):
+                    match.__load__(MatchData)
+                    match._Ghost__set_loaded(MatchData)  # __load__ doesn't trigger __set_loaded. is this a "bug"?
+                match.__participants = [None for _ in match._data[MatchData].participants]
+                for i, p in enumerate(match._data[MatchData].participants):
+                    participant = construct_participant(p, match._data[MatchData].participant_identities)
+                    match.__participants[i] = participant
+
+            # Yield the rest of the participants
+            for participant in match.__participants[yielded_one:]:
                 yield participant
 
-        # Create all the participants if any haven't been created yet.
-        # Note that it's importan to overwrite the one from the matchref if it was loaded because we have more data after we load the full match.
-        if yielded_one or len(self.__participants) < len(self._data[MatchData].participants):
-            if not self._Ghost__is_loaded(MatchData):
-                self.__load__(MatchData)
-                self._Ghost__set_loaded(MatchData)  # __load__ doesn't trigger __set_loaded. is this a "bug"?
-            self.__participants = [None for _ in self._data[MatchData].participants]
-            for i, p in enumerate(self._data[MatchData].participants):
-                participant = construct_participant(p, self._data[MatchData].participant_identities)
-                self.__participants[i] = participant
-
-        # Yield the rest of the participants
-        for participant in self.__participants[yielded_one:]:
-            yield participant
+        return SearchableLazyList(generate_participants(self))
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on(KeyError)
