@@ -82,6 +82,7 @@ class SummonerData(DataObject):
 ##############
 
 
+@searchable({int: ["id"], str: ["name", "url"], PILImage: ["image"]})
 class ProfileIcon(CassiopeiaObject):
     _data_types = {ProfileIconData}
 
@@ -113,6 +114,7 @@ class ProfileIcon(CassiopeiaObject):
         return settings.pipeline.get(PILImage, query={"url": self.url})
 
 
+@searchable({int: ["id"]})
 class Account(CassiopeiaObject):
     _data_types = {AccountData}
 
@@ -121,7 +123,7 @@ class Account(CassiopeiaObject):
         return self._data[AccountData].id
 
 
-@searchable({str: ["name"], int: ["id", "accountId"]})
+@searchable({str: ["name", "region", "platform"], int: ["id", "account"], Region: ["region"], Platform: ["platform"]})
 class Summoner(CassiopeiaGhost):
     _data_types = {SummonerData}
     _retyped = {

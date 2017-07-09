@@ -143,6 +143,7 @@ class MasteryData(DataObject):
 ##############
 
 
+@searchable({str: ["sprite", "url"]})
 class Sprite(CassiopeiaObject):
     _data_types = {SpriteData}
     _extension = "png"
@@ -184,6 +185,7 @@ class Sprite(CassiopeiaObject):
         return settings.pipeline.get(PILImage, query={"url": self.url})
 
 
+@searchable({str: ["full", "url"]})
 class Image(CassiopeiaObject):
     _data_types = {ImageData}
     _extension = "png"
@@ -218,7 +220,7 @@ class Image(CassiopeiaObject):
         return sprite
 
 
-@searchable({str: ["name", "key"], int: ["id"]})
+@searchable({str: ["name", "key", "region", "platform", "locale", "tree"], int: ["id"], MasteryTree: ["tree"], Region: ["region"], Platform: ["platform"]})
 class Mastery(CassiopeiaGhost):
     _data_types = {MasteryData}
 
@@ -261,7 +263,7 @@ class Mastery(CassiopeiaGhost):
 
     @CassiopeiaGhost.property(MasteryData)
     @ghost_load_on(KeyError)
-    def tree(self) -> "Mastery":
+    def tree(self) -> MasteryTree:
         """The mastery's tree (Cunning, Ferocity, Resolve)."""
         return MasteryTree(self._data[MasteryData].tree)
 

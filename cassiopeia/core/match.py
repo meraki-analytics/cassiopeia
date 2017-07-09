@@ -12,6 +12,10 @@ from ..data import Region, Platform, Tier, Map, GameType, GameMode, Queue, Divis
 from .common import DataObject, CassiopeiaObject, CassiopeiaGhost
 from ..dto import match as dto
 from .staticdata.version import VersionListData
+from .summoner import Summoner
+from .staticdata.champion import Champion
+from .staticdata.rune import Rune
+from .staticdata.mastery import Mastery
 
 
 # TODO Implement timelines
@@ -389,7 +393,7 @@ class ParticipantStats(CassiopeiaObject):  # TODO
     _data_types = {ParticipantStatsData}
 
 
-@searchable({str: ["summoner", "champion"]})
+@searchable({str: ["summoner", "champion", "runes", "masteries", "side", "summoner_spell_d", "summoner_spell_f"], Summoner: ["summoner"], Champion: ["champion"], Side: ["side"], Rune: ["runes"], Mastery: ["masteries"]})
 class Participant(CassiopeiaObject):
     _data_types = {ParticipantData, PlayerData}
 
@@ -479,6 +483,7 @@ class Participant(CassiopeiaObject):
             return self.__match.red_team
 
 
+@searchable({str: ["participants"], bool: ["win"]})
 class Team(CassiopeiaObject):
     _data_types = {TeamData}
 
@@ -555,7 +560,7 @@ class Team(CassiopeiaObject):
         return self.__participants
 
 
-@searchable({str: ["participants"]})
+@searchable({str: ["participants", "region", "platform", "season", "queue", "mode", "map", "type"], Region: ["region"], Platform: ["platform"], Season: ["season"], Queue: ["queue"], GameMode: ["mode"], Map: ["map"], GameType: ["type"]})
 class Match(CassiopeiaGhost):
     _data_types = {MatchData}
     _retyped = {

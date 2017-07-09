@@ -75,7 +75,7 @@ class MasteryPagesData(list):
 ##############
 
 
-@searchable({str: ["name"], int: ["id"], bool: ["current"]})
+@searchable({str: ["name", "masteries", "region", "platform", "locale"], int: ["id"], bool: ["current"], StaticdataMastery: ["masteries"], Region: ["region"], Platform: ["platform"]})
 class MasteryPage(CassiopeiaObject):
     _data_types = {MasteryPageData}
 

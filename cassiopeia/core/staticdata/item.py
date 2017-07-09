@@ -274,6 +274,7 @@ class ItemData(DataObject):
 ##############
 
 
+@searchable({str: ["sprite", "url"]})
 class Sprite(CassiopeiaObject):
     _data_types = {SpriteData}
     _extension = "png"
@@ -315,6 +316,7 @@ class Sprite(CassiopeiaObject):
         return settings.pipeline.get(PILImage, query={"url": self.url})
 
 
+@searchable({str: ["full", "url"]})
 class Image(CassiopeiaObject):
     _data_types = {ImageData}
     _extension = "png"
@@ -373,7 +375,7 @@ class Gold(CassiopeiaObject):
         return self._data[GoldData].purchaseable
 
 
-@searchable({str: ["name"], int: ["id"]})
+@searchable({str: ["name", "region", "platform", "locale", "keywords", "maps", "tags", "tier"], int: ["id"], Region: ["region"], Platform: ["platform"], Map: ["maps"]})
 class Item(CassiopeiaGhost):
     _data_types = {ItemData}
 
@@ -398,7 +400,7 @@ class Item(CassiopeiaGhost):
     def version(self) -> str:
         """The version for this champion."""
         try:
-            return self._data[ChampionData].version
+            return self._data[ItemData].version
         except AttributeError:
             versions = settings.pipeline.get(VersionListData, query={"region": self.region, "platform": self.region.platform})
             version = versions[-1]
@@ -458,8 +460,8 @@ class Item(CassiopeiaGhost):
 
     @CassiopeiaGhost.property(ItemData)
     @ghost_load_on(KeyError)
-    def kewords(self) -> List[str]:
-        return self._data[ItemData].keywords
+    def keywords(self) -> List[str]:
+        return SearchableList(self._data[ItemData].keywords)
 
     @CassiopeiaGhost.property(ItemData)
     @ghost_load_on(KeyError)
