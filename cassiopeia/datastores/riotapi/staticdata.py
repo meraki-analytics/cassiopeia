@@ -7,6 +7,7 @@ from ...dto.staticdata.champion import ChampionDto, ChampionListDto
 from ...dto.staticdata.mastery import MasteryDto, MasteryListDto
 from ...dto.staticdata.rune import RuneDto, RuneListDto
 from ...dto.staticdata.item import ItemDto, ItemListDto
+from ...dto.staticdata.summonerspell import SummonerSpellDto, SummonerSpellListDto
 from ...dto.staticdata.version import VersionListDto
 from ...dto.staticdata.map import MapDto, MapListDto
 
@@ -702,3 +703,76 @@ class StaticDataAPI(RiotAPIService):
         data["region"] = query["platform"].region.value
         data["locale"] = query["locale"]
         return MapListDto(data)
+
+    ###################
+    # Summoner Spells #
+    ###################
+
+    _validate_get_summoner_spell_list_query = Query. \
+        has("platform").as_(Platform).also. \
+        can_have("version").as_(str).also. \
+        can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
+        can_have("includedData").with_default({"all"})
+
+    @get.register(SummonerSpellListDto)
+    def get_summoner_spell_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> SummonerSpellListDto:
+        if "region" in query and "platform" not in query:
+            query["platform"] = Region(query["region"]).platform.value
+        StaticDataAPI._validate_get_summoner_spell_list_query(query, context)
+
+        params = {
+            "locale": query["locale"],
+            "tags": ",".join(list(query["includedData"]))
+        }
+
+        if "version" in query:
+            params["version"] = query["version"]
+
+        url = "https://{platform}.api.riotgames.com/lol/static-data/v3/summoner-spells".format(platform=query["platform"].value.lower())
+        try:
+            data = self._get(url, params)
+        except APINotFoundError as error:
+            raise NotFoundError(str(error)) from error
+
+        data["region"] = query["platform"].region.value
+        data["locale"] = query["locale"]
+        data["includedData"] = query["includedData"]
+        return SummonerSpellListDto(data)
+
+    _validate_get_many_summoner_spell_list_query = Query. \
+        has("platforms").as_(Iterable).also. \
+        can_have("version").as_(str).also. \
+        can_have("locale").as_(str).also. \
+        can_have("includedData").with_default({"all"})
+
+    @get_many.register(SummonerSpellListDto)
+    def get_many_summoner_spell_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[SummonerSpellListDto, None, None]:
+        if "region" in query and "platform" not in query:
+            query["platform"] = Region(query["region"]).platform.value
+        StaticDataAPI._validate_get_many_summoner_spell_list_query(query, context)
+
+        params = {
+            "tags": ",".join(list(query["includedData"]))
+        }
+
+        if "version" in query:
+            params["version"] = query["version"]
+
+        if "locale" in query:
+            params["locale"] = query["locale"]
+
+        def generator():
+            for platform in query["platforms"]:
+                platform = Platform(platform.upper())
+                url = "https://{platform}.api.riotgames.com/lol/static-data/v3/summoner-spells".format(platform=platform.value.lower())
+                try:
+                    data = self._get(url, params)
+                except APINotFoundError as error:
+                    raise NotFoundError(str(error)) from error
+
+                data["region"] = platform.region.value
+                data["locale"] = query["locale"] if "locale" in query else platform.default_locale
+                data["includedData"] = query["includedData"]
+                yield SummonerSpellListDto(data)
+
+        return generator()

@@ -6,7 +6,7 @@ from merakicommons.container import SearchableList
 from .configuration import settings
 from .data import PATCHES, Region
 from .patches import Patch
-from .core import VersionListData, Champion, ChampionData, ChampionListData, Summoner, Account, ChampionMastery, ChampionMasteryListData, Rune, RuneListData, Mastery, MasteryListData, Item, ItemListData, RunePage, RunePagesData, MasteryPage, MasteryPagesData, RunePage, MasteryPage, Match, MatchData, MatchListData, Map, MapListData
+from .core import VersionListData, Champion, ChampionData, ChampionListData, Summoner, Account, ChampionMastery, ChampionMasteryListData, Rune, RuneListData, Mastery, MasteryListData, Item, ItemListData, RunePage, RunePagesData, MasteryPage, MasteryPagesData, RunePage, MasteryPage, Match, MatchData, MatchListData, Map, MapListData, SummonerSpell, SummonerSpellListData
 from .dto.staticdata.version import VersionListDto
 
 
@@ -118,6 +118,17 @@ def get_runes(region: Region = None) -> List[Rune]:
     return SearchableList(runes)
 
 
+def get_summoner_spells(region: Region = None) -> List[SummonerSpell]:
+    if region is None:
+        region = settings.default_region
+    elif not isinstance(region, Region):
+        region = Region(region)
+    summoner_spells = settings.pipeline.get(SummonerSpellListData, query={"region": region, "platform": region.platform.value, "tags": {"all"}})
+    for i, summoner_spell in enumerate(summoner_spells):
+        summoner_spells[i] = SummonerSpell(data=summoner_spell)
+    return SearchableList(summoner_spells)
+
+
 def get_items(region: Region = None) -> List[Item]:
     if region is None:
         region = settings.default_region
@@ -151,15 +162,6 @@ def get_rune_pages(summoner: Summoner, region: Region = None) -> List[RunePage]:
     return SearchableList(rune_pages)
 
 
-def get_maps(region: Region = None) -> List[Map]:
-    if region is None:
-        region = settings.default_region
-    elif not isinstance(region, Region):
-        region = Region(region)
-    versions = settings.pipeline.get(VersionListData, query={"region": region, "platform": region.platform})
-    return versions
-
-
 def get_maps(region: Region = None) -> List[str]:
     if region is None:
         region = settings.default_region
@@ -167,6 +169,15 @@ def get_maps(region: Region = None) -> List[str]:
         region = Region(region)
     maps = settings.pipeline.get(MapListData, query={"region": region, "platform": region.platform})
     return SearchableList([Map(map) for map in maps])
+
+
+def get_versions(region: Region = None) -> List[Map]:
+    if region is None:
+        region = settings.default_region
+    elif not isinstance(region, Region):
+        region = Region(region)
+    versions = settings.pipeline.get(VersionListData, query={"region": region, "platform": region.platform})
+    return versions
 
 
 def get_version(date: datetime.date = None, region: Region = None) -> Union[None, str]:

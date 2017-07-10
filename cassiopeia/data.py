@@ -126,6 +126,8 @@ class GameMode(Enum):
     assassinate = "ASSASSINATE"
     dark_star = "DARKSTAR"
     arsr = "ARSR"
+    urf = "URF"
+    doom_bots = "DOOMBOTSTEEMO"
 
 
 class MasteryTree(Enum):
