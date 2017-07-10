@@ -7,6 +7,7 @@ from ..core.staticdata import ChampionData, ChampionListData
 from ..core.staticdata import MasteryData, MasteryListData
 from ..core.staticdata import RuneData, RuneListData
 from ..core.staticdata import ItemData, ItemListData
+from ..core.staticdata import SummonerSpellData, SummonerSpellListData
 from ..core.staticdata import VersionListData
 from ..core.staticdata import MapData, MapListData
 from ..core.runepage import RunePageData, RunePagesData
@@ -16,6 +17,7 @@ from ..dto.staticdata import ChampionDto, ChampionListDto
 from ..dto.staticdata import MasteryDto, MasteryListDto
 from ..dto.staticdata import RuneDto, RuneListDto
 from ..dto.staticdata import ItemDto, ItemListDto
+from ..dto.staticdata import SummonerSpellDto, SummonerSpellListDto
 from ..dto.staticdata import VersionListDto
 from ..dto.staticdata import MapDto, MapListDto
 from ..dto.runepage import RunePageDto, RunePagesDto
@@ -93,6 +95,22 @@ class StaticDataTransformer(DataTransformer):
 
         data = data["data"]
         return ItemListData(data)
+
+    @transform.register(SummonerSpellDto, SummonerSpellData)
+    def summoner_spell_dto_to_data(self, value: SummonerSpellDto, context: PipelineContext = None) -> SummonerSpellData:
+        data = deepcopy(value)
+        return SummonerSpellData(data)
+
+    @transform.register(SummonerSpellListDto, SummonerSpellListData)
+    def summoner_spell_list_dto_to_data(self, value: SummonerSpellListDto, context: PipelineContext = None) -> SummonerSpellListData:
+        data = deepcopy(value)
+
+        data["data"] = [self.summoner_spell_dto_to_data(c) for c in data["data"].values()]
+        for c in data["data"]:
+            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"]})
+
+        data = data["data"]
+        return SummonerSpellListData(data)
 
     @transform.register(MasteryPageDto, MasteryPageData)
     def mastery_page_dto_to_data(self, value: MasteryPageDto, context: PipelineContext = None) -> MasteryPageData:
