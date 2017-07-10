@@ -197,6 +197,10 @@ class SummonerSpellData(DataObject):
         return [ImageData(alt) for alt in self._dto["altimages"]]
 
     @property
+    def id(self) -> int:
+        return self._dto["id"]
+
+    @property
     def name(self) -> str:
         return self._dto["name"]
 
@@ -325,10 +329,10 @@ class SummonerSpell(CassiopeiaGhost):
                     return item
 
         # The `dto` is a dict of summoner spell dto instances
-        if "id" in self._data[SummonerSpellData]._dto:
-            find = "id", self.id
-        elif "name" in self._data[SummonerSpellData]._dto:
+        if "name" in self._data[SummonerSpellData]._dto:
             find = "name", self.name
+        elif "id" in self._data[SummonerSpellData]._dto:
+            find = "id", self.id
         dto = find_matching_attribute(dto["data"].values(), *find)
 
         super().__load_hook__(load_group, dto)
@@ -472,6 +476,12 @@ class SummonerSpell(CassiopeiaGhost):
     def alternative_images(self) -> List[Image]:
         """The alternative images for this spell. These won't exist after patch NN, when Riot standardized all images."""
         return SearchableList(Image(alt) for alt in self._data[SummonerSpellData].alternative_images)
+
+    @CassiopeiaGhost.property(SummonerSpellData)
+    @ghost_load_on(KeyError)
+    def id(self) -> int:
+        """The spell's id."""
+        return self._data[SummonerSpellData].id
 
     @CassiopeiaGhost.property(SummonerSpellData)
     @ghost_load_on(KeyError)

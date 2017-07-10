@@ -16,6 +16,7 @@ from .summoner import Summoner
 from .staticdata.champion import Champion
 from .staticdata.rune import Rune
 from .staticdata.mastery import Mastery
+from .staticdata.summonerspell import SummonerSpell, SummonerSpellData
 
 
 # TODO Implement timelines
@@ -149,12 +150,12 @@ class ParticipantData(DataObject):
         return self._dto["teamId"]
 
     @property
-    def summoner_spell_d(self) -> "SummonerSpellData":
-        return self._dto["spell1Id"]
+    def summoner_spell_d(self) -> SummonerSpellData:
+        return SummonerSpellData({"id": self._dto["spell1Id"]})
 
     @property
-    def summoner_spell_f(self) -> "SummonerSpellData":
-        return self._dto["spell2Id"]
+    def summoner_spell_f(self) -> SummonerSpellData:
+        return SummonerSpellData({"id": self._dto["spell2Id"]})
 
     @property
     def rank_last_season(self) -> Tuple[str, int]:
@@ -393,7 +394,7 @@ class ParticipantStats(CassiopeiaObject):  # TODO
     _data_types = {ParticipantStatsData}
 
 
-@searchable({str: ["summoner", "champion", "runes", "masteries", "side", "summoner_spell_d", "summoner_spell_f"], Summoner: ["summoner"], Champion: ["champion"], Side: ["side"], Rune: ["runes"], Mastery: ["masteries"]})
+@searchable({str: ["summoner", "champion", "runes", "masteries", "side", "summoner_spell_d", "summoner_spell_f"], Summoner: ["summoner"], Champion: ["champion"], Side: ["side"], Rune: ["runes"], Mastery: ["masteries"], SummonerSpell: ["summoner_spell_d", "summoner_spell_f"]})
 class Participant(CassiopeiaObject):
     _data_types = {ParticipantData, PlayerData}
 
@@ -435,11 +436,11 @@ class Participant(CassiopeiaObject):
                     return Side(self._data[ParticipantData].side)
 
     @lazy_property
-    def summoner_spell_d(self) -> "SummonerSpell":
+    def summoner_spell_d(self) -> SummonerSpell:
         return SummonerSpell(self._data[ParticipantData].summoner_spell_d)
 
     @lazy_property
-    def summoner_spell_f(self) -> "SummonerSpell":
+    def summoner_spell_f(self) -> SummonerSpell:
         return SummonerSpell(self._data[ParticipantData].summoner_spell_f)
 
     @lazy_property
