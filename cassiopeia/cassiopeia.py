@@ -6,7 +6,7 @@ from merakicommons.container import SearchableList
 from .configuration import settings
 from .data import PATCHES, Region
 from .patches import Patch
-from .core import VersionListData, Champion, ChampionData, ChampionListData, Summoner, Account, ChampionMastery, ChampionMasteryListData, Rune, RuneListData, Mastery, MasteryListData, Item, ItemListData, RunePage, RunePagesData, MasteryPage, MasteryPagesData, RunePage, MasteryPage, Match, MatchData, MatchListData
+from .core import VersionListData, Champion, ChampionData, ChampionListData, Summoner, Account, ChampionMastery, ChampionMasteryListData, Rune, RuneListData, Mastery, MasteryListData, Item, ItemListData, RunePage, RunePagesData, MasteryPage, MasteryPagesData, RunePage, MasteryPage, Match, MatchData, MatchListData, Map, MapListData
 from .dto.staticdata.version import VersionListDto
 
 
@@ -151,13 +151,22 @@ def get_rune_pages(summoner: Summoner, region: Region = None) -> List[RunePage]:
     return SearchableList(rune_pages)
 
 
-def get_versions(region: Region = None) -> List[str]:
+def get_maps(region: Region = None) -> List[Map]:
     if region is None:
         region = settings.default_region
     elif not isinstance(region, Region):
         region = Region(region)
     versions = settings.pipeline.get(VersionListData, query={"region": region, "platform": region.platform})
     return versions
+
+
+def get_maps(region: Region = None) -> List[str]:
+    if region is None:
+        region = settings.default_region
+    elif not isinstance(region, Region):
+        region = Region(region)
+    maps = settings.pipeline.get(MapListData, query={"region": region, "platform": region.platform})
+    return SearchableList([Map(map) for map in maps])
 
 
 def get_version(date: datetime.date = None, region: Region = None) -> Union[None, str]:

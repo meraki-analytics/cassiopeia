@@ -8,6 +8,7 @@ from ..core.staticdata import MasteryData, MasteryListData
 from ..core.staticdata import RuneData, RuneListData
 from ..core.staticdata import ItemData, ItemListData
 from ..core.staticdata import VersionListData
+from ..core.staticdata import MapData, MapListData
 from ..core.runepage import RunePageData, RunePagesData
 from ..core.masterypage import MasteryPageData, MasteryPagesData
 
@@ -16,6 +17,7 @@ from ..dto.staticdata import MasteryDto, MasteryListDto
 from ..dto.staticdata import RuneDto, RuneListDto
 from ..dto.staticdata import ItemDto, ItemListDto
 from ..dto.staticdata import VersionListDto
+from ..dto.staticdata import MapDto, MapListDto
 from ..dto.runepage import RunePageDto, RunePagesDto
 from ..dto.masterypage import MasteryPageDto, MasteryPagesDto
 
@@ -120,6 +122,22 @@ class StaticDataTransformer(DataTransformer):
             page["summonerId"] = data["summonerId"]
         data = [self.rune_page_dto_to_data(page) for page in data["pages"]]
         return RunePagesData(data)
+
+    @transform.register(MapDto, MapData)
+    def map_dto_to_data(self, value: MapDto, context: PipelineContext = None) -> MapData:
+        data = deepcopy(value)
+        return MapData(data)
+
+    @transform.register(MapListDto, MapListData)
+    def map_list_dto_to_data(self, value: MapListDto, context: PipelineContext = None) -> MapListData:
+        data = deepcopy(value)
+
+        data["data"] = [self.map_dto_to_data(c) for c in data["data"].values()]
+        for c in data["data"]:
+            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"]})
+
+        data = data["data"]
+        return MapListData(data)
 
     @transform.register(VersionListDto, VersionListData)
     def version_list_dto_to_data(self, value: VersionListDto, context: PipelineContext = None) -> VersionListData:
