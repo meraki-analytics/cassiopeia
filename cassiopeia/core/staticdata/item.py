@@ -7,7 +7,6 @@ from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform, Map
-from ..datadragon import DataDragonImage
 from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, Ghost
 from .version import VersionListData
 from ...dto.staticdata import item as dto
@@ -470,11 +469,6 @@ class Item(CassiopeiaGhost):
 
     @CassiopeiaGhost.property(ItemData)
     @ghost_load_on(KeyError)
-    def image_data(self) -> ImageData:
-        return self._data[ItemData].image_data
-
-    @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
     def description(self) -> str:
         return self._data[ItemData].description
 
@@ -538,7 +532,7 @@ class Item(CassiopeiaGhost):
     @lazy
     def image_info(self) -> Image:
         """The image information for this champion."""
-        return Image(self._data[ChampionData].image, version=self.version)
+        return Image(self._data[ItemData].image, version=self.version)
 
     @lazy_property
     def image(self) -> PILImage:

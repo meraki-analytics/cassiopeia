@@ -8,6 +8,7 @@ from ...dto.staticdata.mastery import MasteryDto, MasteryListDto
 from ...dto.staticdata.rune import RuneDto, RuneListDto
 from ...dto.staticdata.item import ItemDto, ItemListDto
 from ...dto.staticdata.version import VersionListDto
+from ...dto.staticdata.map import MapDto, MapListDto
 
 T = TypeVar("T")
 
@@ -668,3 +669,36 @@ class StaticDataAPI(RiotAPIService):
                 yield ItemListDto(data)
 
         return generator()
+
+    ########
+    # Maps #
+    ########
+
+    _validate_get_map_list_query = Query. \
+        has("platform").as_(Platform).also. \
+        can_have("version").as_(str).also. \
+        can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
+        can_have("includedData").with_default({"all"})
+
+    @get.register(MapListDto)
+    def get_map_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> MapListDto:
+        if "region" in query and "platform" not in query:
+            query["platform"] = Region(query["region"]).platform.value
+        StaticDataAPI._validate_get_map_list_query(query, context)
+
+        params = {
+            "locale": query["locale"]
+        }
+
+        if "version" in query:
+            params["version"] = query["version"]
+
+        url = "https://{platform}.api.riotgames.com/lol/static-data/v3/maps".format(platform=query["platform"].value.lower())
+        try:
+            data = self._get(url, params)
+        except APINotFoundError as error:
+            raise NotFoundError(str(error)) from error
+
+        data["region"] = query["platform"].region.value
+        data["locale"] = query["locale"]
+        return MapListDto(data)
