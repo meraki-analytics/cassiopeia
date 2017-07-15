@@ -27,4 +27,3 @@ def test_match_correct_return():
 
     assert isinstance(match_from_id, cassiopeia.Match)
     assert first_match_data == match_from_id_data
-
