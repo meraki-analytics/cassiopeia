@@ -4,9 +4,11 @@ import pytest
 from merakicommons.container import SearchableList
 from datapipelines.common import NotFoundError
 
+from .constants import SUMMONER_NAME, UNKNOWN_SUMMONER_NAME
+
 
 def test_matches_return_type():
-    matches = cassiopeia.get_matches('Kalturi')
+    matches = cassiopeia.get_matches(SUMMONER_NAME)
 
     assert isinstance(matches, SearchableList)
     assert all(isinstance(m, cassiopeia.Match) for m in matches)
@@ -14,11 +16,11 @@ def test_matches_return_type():
 
 def test_matches_raises_with_unknown_summoner():
     with pytest.raises(NotFoundError):
-        cassiopeia.get_matches('abcaklsjdlaksdjlaksjdla')
+        cassiopeia.get_matches(SUMMONER_NAME)
 
 
 def test_match_correct_return():
-    matches = cassiopeia.get_matches('Kalturi')
+    matches = cassiopeia.get_matches(SUMMONER_NAME)
     first_match = matches[0]
     first_match_data = first_match._data[cassiopeia.MatchData]._dto
 
