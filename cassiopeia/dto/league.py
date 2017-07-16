@@ -11,3 +11,7 @@ class LeagueItemDto(DtoObject):
 
 class MiniSeriesDto(DtoObject):
     pass
+
+
+class LeaguePositionsDto(DtoObject):
+    pass
