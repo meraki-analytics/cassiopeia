@@ -31,7 +31,9 @@ def test_masteries_with_id_or_summoner():
 
 
 def test_mastery_return():
-    champ_mastery = cassiopeia.get_champion_mastery(summoner=SUMMONER_NAME, champion=CHAMP_NAME)
+    summ = cassiopeia.get_summoner(SUMMONER_NAME)
+    champ = cassiopeia.get_champion(CHAMP_NAME)
+    champ_mastery = cassiopeia.get_champion_mastery(summoner=summ, champion=champ)
 
     assert isinstance(champ_mastery, cassiopeia.ChampionMastery)
     assert isinstance(champ_mastery.summoner, cassiopeia.Summoner)
