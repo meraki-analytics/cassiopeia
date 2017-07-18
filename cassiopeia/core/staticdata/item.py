@@ -268,8 +268,8 @@ class ItemData(DataObject):
         return self._dto["locale"]
 
     @property
-    def item_data(self) -> Set[str]:
-        return self._dto["itemData"]
+    def included_data(self) -> Set[str]:
+        return self._dto["includedData"]
 
     @property
     def gold(self) -> GoldData:
@@ -641,9 +641,9 @@ class Item(CassiopeiaGhost):
         return self._data[ItemData].locale
 
     @property
-    def item_data(self) -> Set[str]:
+    def included_data(self) -> Set[str]:
         """A set of tags to return additonal information for this item when it's loaded."""
-        return self._data[ItemData].item_data
+        return self._data[ItemData].included_data
 
     @CassiopeiaGhost.property(ItemData)
     @ghost_load_on(KeyError)
