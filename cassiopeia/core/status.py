@@ -1,16 +1,12 @@
-import os
-import datetime
-from PIL.Image import Image as PILImage
+from typing import List
 
 from merakicommons.ghost import ghost_load_on
-from merakicommons.cache import lazy, lazy_property
+from merakicommons.cache import lazy
 from merakicommons.container import searchable, SearchableList
 
 from ..configuration import settings
 from ..data import Region, Platform
 from .common import DataObject, CassiopeiaObject, CassiopeiaGhost
-from ..dto.summoner import SummonerDto
-from .staticdata.version import VersionListData
 
 
 ##############
@@ -94,7 +90,7 @@ class ServiceData(DataObject):
         return self._dto["status"]
 
     @property
-    def incidents(self) -> List[Incident]:
+    def incidents(self) -> List[IncidentData]:
         return [IncidentData(inc) for inc in self._dto["incidents"]]
 
     @property

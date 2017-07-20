@@ -1,16 +1,14 @@
-from typing import Dict, List, Set, Union, Mapping, Any
-from PIL.Image import Image as PILImage
+from typing import Dict
 
 from merakicommons.ghost import ghost_load_on
-from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable, SearchableList
+from merakicommons.cache import lazy_property
+from merakicommons.container import searchable
 
 from ...configuration import settings
-from ...data import Region, Platform, Map
-from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, Ghost
-from .common import ImageData, SpriteData, Image, Sprite
+from ...data import Region, Platform
+from ..common import DataObject, CassiopeiaGhost
 from .version import VersionListData
-from ...dto.staticdata import realms as dto
+from ...dto.staticdata import realm as dto
 
 
 ##############
@@ -21,7 +19,6 @@ from ...dto.staticdata import realms as dto
 class RealmData(DataObject):
     _dto_type = dto.RealmDto
     _renamed = {"legacy_mode": "lg", "latest_data_dragon": "dd", "language": "l", "latest_versions": "n", "max_profile_icon_id": "profileiconmax", "store": "store", "version": "v", "cdn": "cdn", "css_version": "css"}
-
 
     @property
     def legacy_mode(self) -> str:
@@ -46,7 +43,7 @@ class RealmData(DataObject):
     @property
     def max_profile_icon_id(self) -> int:
         """Special behavior number identifying the largest profile icon ID that can be used under 500. Any profile icon that is requested between this number and 500 should be mapped to 0."""
-        return ImageData(self._dto["profileiconmax"])
+        return self._dto["profileiconmax"]
 
     @property
     def store(self) -> str:
@@ -75,7 +72,7 @@ class RealmData(DataObject):
 
 
 @searchable({})
-class Realm(CassiopeiaGhost):
+class Realms(CassiopeiaGhost):
     _data_types = {RealmData}
 
     def __init__(self, *args, **kwargs):
@@ -111,6 +108,18 @@ class Realm(CassiopeiaGhost):
 
     @CassiopeiaGhost.property(RealmData)
     @ghost_load_on(KeyError)
+    def language(self) -> str:
+        """Default language for this realm."""
+        return self._data[RealmData].language
+
+    @CassiopeiaGhost.property(RealmData)
+    @ghost_load_on(KeyError)
+    def latest_versions(self) -> Dict[str, str]:
+        """Latest changed version for each data type listed."""
+        return self._data[RealmData].latest_versions
+
+    @CassiopeiaGhost.property(RealmData)
+    @ghost_load_on(KeyError)
     def legacy_mode(self) -> str:
         return self._data[RealmData].legacy_mode
 
@@ -126,7 +135,7 @@ class Realm(CassiopeiaGhost):
 
     @CassiopeiaGhost.property(RealmData)
     @ghost_load_on(KeyError)
-    def max_profile_icon_id(self) -> Image:
+    def max_profile_icon_id(self) -> int:
         return self._data[RealmData].max_profile_icon_id
 
     @CassiopeiaGhost.property(RealmData)

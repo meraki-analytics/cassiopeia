@@ -1,18 +1,20 @@
-import os
+from typing import List, Dict
 import datetime
-from PIL.Image import Image as PILImage
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable, SearchableList
+from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
 from ..configuration import settings
-from ..data import Region, Platform
+from ..data import Region, Platform, GameMode, GameType, Queue, Map
 from .common import DataObject, CassiopeiaObject, CassiopeiaGhost
 from ..dto import spectator as dto
 from .staticdata.profileicon import ProfileIcon
 from .staticdata.champion import Champion, ChampionData
-from .staticdata.version import VersionListData
+from .staticdata.rune import Rune
+from .staticdata.mastery import Mastery
+from .staticdata.summonerspell import SummonerSpell
+from .summoner import Summoner
 
 
 ##############
@@ -111,7 +113,7 @@ class TeamData(DataObject):
 
     @property
     def bans(self) -> Dict[int, ChampionData]:
-        return {b["pickTurn"]: ChampionData(id=b["championId"]) for b in self._dto["bans"]}
+        return {b["pickTurn"]: ChampionData({"id": b["championId"]}) for b in self._dto["bans"]}
 
 
 class CurrentGameInfoData(DataObject):
@@ -131,7 +133,7 @@ class CurrentGameInfoData(DataObject):
         return self._dto["platformId"]
 
     @property
-    def teams(self) -> List[TeamData]
+    def teams(self) -> List[TeamData]:
         blue_team = {"participants": [], "bans": []}
         red_team = {"participants": [], "bans": []}
         for p in self._dto["participants"]:
@@ -195,11 +197,11 @@ class Participant(CassiopeiaObject):
 
     @property
     def runes(self) -> Dict[Rune, int]:
-        return SearchableDict(Rune(id=rune.id: rune.count for rune in self._data[CurrentGameParticipantData].runes)
+        return SearchableDictionary({Rune(id=rune.id): rune.count for rune in self._data[CurrentGameParticipantData].runes})
 
     @property
     def masteries(self) -> Dict[Mastery, int]:
-        return SearchableDict(Mastery(id=mastery.id: mastery.rank for mastery in self._data[CurrentGameParticipantData].masteries)
+        return SearchableDictionary({Mastery(id=mastery.id): mastery.rank for mastery in self._data[CurrentGameParticipantData].masteries})
 
     @property
     def is_bot(self) -> bool:
@@ -232,7 +234,7 @@ class Team(CassiopeiaObject):
 
 
 @searchable({})
-class CurrentGame(CassiopeiaGhost):
+class CurrentMatch(CassiopeiaGhost):
     _data_types = {CurrentGameInfoData}
 
     def __init__(self, *args, **kwargs):

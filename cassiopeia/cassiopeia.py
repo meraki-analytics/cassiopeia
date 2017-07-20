@@ -6,8 +6,21 @@ from merakicommons.container import SearchableList
 from .configuration import settings
 from .data import PATCHES, Region
 from .patches import Patch
-from .core import VersionListData, Champion, ChampionData, ChampionListData, Summoner, Account, ChampionMastery, ChampionMasteryListData, Rune, RuneListData, Mastery, MasteryListData, Item, ItemListData, RunePage, RunePagesData, MasteryPage, MasteryPagesData, RunePage, MasteryPage, Match, MatchData, MatchListData, Map, MapListData, SummonerSpell, SummonerSpellListData
-from .dto.staticdata.version import VersionListDto
+from .core import Champion, Summoner, Account, ChampionMastery, Rune, Mastery, Item, RunePage, MasteryPage, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus
+from .core.staticdata.version import VersionListData
+from .core.staticdata.champion import ChampionListData
+from .core.staticdata.rune import RuneListData
+from .core.staticdata.mastery import MasteryListData
+from .core.staticdata.item import ItemListData
+from .core.staticdata.map import MapListData
+from .core.staticdata.summonerspell import SummonerSpellListData
+from .core.staticdata.profileicon import ProfileIconListData
+from .core.staticdata.language import LanguagesData
+from .core.championmastery import ChampionMasteryListData
+from .core.runepage import RunePagesData
+from .core.masterypage import MasteryPagesData
+from .core.match import MatchListData
+# TODO Add featured games
 
 
 def get_matches(summoner: Union[Summoner, int, str], region: Region = None):
@@ -23,12 +36,24 @@ def get_matches(summoner: Union[Summoner, int, str], region: Region = None):
     return SearchableList([Match.from_match_reference(ref) for ref in matchlist])
 
 
-def get_match(id, region: Region = None):
+def get_match(id, region: Region = None) -> Match:
     if region is None:
         region = settings.default_region
     elif not isinstance(region, Region):
         region = Region(region)
     return Match(id=id, region=region)
+
+
+def get_current_match(summoner: Union[Summoner, int, str], region: Region = None):
+    if region is None:
+        region = settings.default_region
+    elif not isinstance(region, Region):
+        region = Region(region)
+    if isinstance(summoner, int):
+        summoner = Summoner(id=summoner)
+    elif isinstance(summoner, str):
+        summoner = Summoner(name=summoner)
+    return CurrentMatch(summoner=summoner, region=region)
 
 
 def get_champion_masteries(summoner: Union[Summoner, int, str], region: Region = None):
@@ -52,14 +77,14 @@ def get_champion_mastery(summoner: Union[Summoner, int, str], champion: Union[Ch
     elif not isinstance(region, Region):
         region = Region(region)
     if isinstance(summoner, int):
-        summoner = Summoner(id=summoner)
+        summoner = Summoner(id=summoner, region=region)
     elif isinstance(summoner, str):
-        summoner = Summoner(name=summoner)
+        summoner = Summoner(name=summoner, region=region)
     if isinstance(champion, int):
-        champion = Champion(id=champion)
+        champion = Champion(id=champion, region=region)
     elif isinstance(champion, str):
-        champion = Champion(name=str)
-    return ChampionMastery(champion=champion, summoner=summoner)
+        champion = Champion(name=str, region=region)
+    return ChampionMastery(champion=champion, summoner=summoner, region=region)
 
 
 def get_summoner(name: Union[str, int] = None, region: Region = None, *, id: int = None, account_id: int = None) -> Summoner:
@@ -69,13 +94,13 @@ def get_summoner(name: Union[str, int] = None, region: Region = None, *, id: int
         region = Region(region)
     if name:
         if isinstance(name, str):
-            return Summoner(name=name)
+            return Summoner(name=name, region=region)
         elif isinstance(name, int):
             raise NameError("specify `id=...` or `account_id=...`")
     elif id:
-        return Summoner(id=id)
+        return Summoner(id=id, region=region)
     elif account_id:
-        return Summoner(account=Account(id=id))
+        return Summoner(account=Account(id=id), region=region)
 
 
 def get_champion(key: Union[str, int], region: Region = None) -> Champion:
@@ -162,7 +187,7 @@ def get_rune_pages(summoner: Summoner, region: Region = None) -> List[RunePage]:
     return SearchableList(rune_pages)
 
 
-def get_maps(region: Region = None) -> List[str]:
+def get_maps(region: Region = None) -> List[Map]:
     if region is None:
         region = settings.default_region
     elif not isinstance(region, Region):
@@ -171,7 +196,49 @@ def get_maps(region: Region = None) -> List[str]:
     return SearchableList([Map(map) for map in maps])
 
 
-def get_versions(region: Region = None) -> List[Map]:
+def get_profile_icons(region: Region = None) -> List[ProfileIcon]:
+    if region is None:
+        region = settings.default_region
+    elif not isinstance(region, Region):
+        region = Region(region)
+    profile_icons = settings.pipeline.get(ProfileIconListData, query={"region": region, "platform": region.platform.value})
+    return SearchableList([ProfileIcon(icon) for icon in profile_icons])
+
+
+def get_realms(region: Region = None) -> Realms:
+    if region is None:
+        region = settings.default_region
+    elif not isinstance(region, Region):
+        region = Region(region)
+    return Realms(region=region)
+
+
+def get_status(region: Region = None) -> ShardStatus:
+    if region is None:
+        region = settings.default_region
+    elif not isinstance(region, Region):
+        region = Region(region)
+    return ShardStatus(region=region)
+
+
+def get_language_strings(region: Region = None) -> LanguageStrings:
+    if region is None:
+        region = settings.default_region
+    elif not isinstance(region, Region):
+        region = Region(region)
+    return LanguageStrings(region=region)
+
+
+def get_languages(region: Region = None) -> List[str]:
+    if region is None:
+        region = settings.default_region
+    elif not isinstance(region, Region):
+        region = Region(region)
+    languages = settings.pipeline.get(LanguagesData, query={"region": region, "platform": region.platform})
+    return languages
+
+
+def get_versions(region: Region = None) -> List[str]:
     if region is None:
         region = settings.default_region
     elif not isinstance(region, Region):
