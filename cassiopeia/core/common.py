@@ -1,10 +1,9 @@
 from abc import abstractmethod, abstractclassmethod
-from typing import Mapping, Any, Dict, Set, Generic
+from typing import Mapping, Any, Set
 from enum import Enum
 import logging
 
 from merakicommons.ghost import Ghost
-from merakicommons.cache import lazy_property
 
 from ..configuration import settings
 

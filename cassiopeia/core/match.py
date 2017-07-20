@@ -36,43 +36,43 @@ class ParticipantTimelineData(DataObject):
 
     @property
     def lane(self) -> str:
-        return ParticipantStatsData(self._dto["lane"])
+        return self._dto["lane"]
 
     @property
     def role(self) -> str:
-        return ParticipantStatsData(self._dto["role"])
+        return self._dto["role"]
 
     @property
     def id(self) -> int:
-        return ParticipantStatsData(self._dto["participantId"])
+        return self._dto["participantId"]
 
     @property
     def cs_diff_per_min_deltas(self) -> Dict[str, float]:
-        return ParticipantStatsData(self._dto["csDiffPerMinDeltas"])
+        return self._dto["csDiffPerMinDeltas"]
 
     @property
     def gold_per_min_deltas(self) -> Dict[str, float]:
-        return ParticipantStatsData(self._dto["goldPerMinDeltas"])
+        return self._dto["goldPerMinDeltas"]
 
     @property
     def xp_diff_per_min_deltas(self) -> Dict[str, float]:
-        return ParticipantStatsData(self._dto["xpDiffPerMinDeltas"])
+        return self._dto["xpDiffPerMinDeltas"]
 
     @property
     def creeps_per_min_deltas(self) -> Dict[str, float]:
-        return ParticipantStatsData(self._dto["creepsPerMinDeltas"])
+        return self._dto["creepsPerMinDeltas"]
 
     @property
     def xp_per_min_deltas(self) -> Dict[str, float]:
-        return ParticipantStatsData(self._dto["xpPerMinDeltas"])
+        return self._dto["xpPerMinDeltas"]
 
     @property
     def damage_taken_per_min_deltas(self) -> Dict[str, float]:
-        return ParticipantStatsData(self._dto["damageTakenPerMinDeltas"])
+        return self._dto["damageTakenPerMinDeltas"]
 
     @property
     def damage_taken_diff_per_min_deltas(self) -> Dict[str, float]:
-        return ParticipantStatsData(self._dto["damageTakenDiffPerMinDeltas"])
+        return self._dto["damageTakenDiffPerMinDeltas"]
 
 
 class ParticipantStatsData(DataObject):
@@ -151,8 +151,8 @@ class ParticipantStatsData(DataObject):
         return self._dto["totalTimeCrowdControlDealt"]
 
     @property
-    def longestTimeSpentLiving(self) -> int:
-        return self._dto["longest_time_spent_living"]
+    def longest_time_spent_living(self) -> int:
+        return self._dto["longestTimeSpentLiving"]
 
     @property
     def wards_killed(self) -> int:
@@ -183,8 +183,8 @@ class ParticipantStatsData(DataObject):
         return self._dto["firstBloodAssist"]
 
     @property
-    def visionScore(self) -> int:
-        return self._dto["vision_score"]
+    def vision_score(self) -> int:
+        return self._dto["visionScore"]
 
     @property
     def wards_placed(self) -> int:
@@ -287,8 +287,8 @@ class ParticipantStatsData(DataObject):
         return self._dto["altarsNeutralized"]
 
     @property
-    def physicalDamageDealtToChampions(self) -> int:
-        return self._dto["physical_damage_dealt_to_champions"]
+    def physical_damage_dealt_to_champions(self) -> int:
+        return self._dto["physicalDamageDealtToChampions"]
 
     @property
     def gold_spent(self) -> int:
@@ -1039,7 +1039,7 @@ class Participant(CassiopeiaObject):
             data["name"] = self._data[PlayerData].summoner_name
         except KeyError:
             pass
-        from .summoner import Summoner, AccountData, ProfileIcon
+        from .summoner import Summoner, ProfileIcon
         account = self._data[PlayerData].current_account_id
         data["account"] = account
         data["region"] = Platform(self._data[PlayerData].current_platform_id).region

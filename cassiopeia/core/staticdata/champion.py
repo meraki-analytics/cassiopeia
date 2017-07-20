@@ -7,7 +7,6 @@ from merakicommons.container import searchable, SearchableList, SearchableDictio
 
 from ...configuration import settings
 from ...data import Resource, Region, Platform, Map, GameMode
-from ..datadragon import DataDragonImage
 from ..champion import ChampionData as ChampionStatusData
 from ..champion import ChampionListData as ChampionStatusListData
 from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost
@@ -627,7 +626,7 @@ class ChampionSpell(CassiopeiaObject):
         return SearchableList(SpellVars(v) for v in self._data[ChampionSpellData].variables)
 
     @property
-    def resource(self) -> str:
+    def resource(self) -> Resource:
         """The resource consumed when using this spell."""
         return Resource(self._data[ChampionSpellData].resource)
 
