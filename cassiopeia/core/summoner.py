@@ -1,5 +1,6 @@
 import os
 import datetime
+from typing import Union
 from PIL.Image import Image as PILImage
 
 from merakicommons.ghost import ghost_load_on
@@ -91,7 +92,7 @@ class ProfileIcon(CassiopeiaObject):
         return self._data[ProfileIconData].id
 
     @property
-    def name(self) -> str:
+    def name(self) -> Union[str, None]:
         global _profile_icon_names
         if _profile_icon_names is None:
             module_directory = os.path.dirname(os.path.realpath(__file__))
@@ -177,11 +178,11 @@ class Summoner(CassiopeiaGhost):
     @ghost_load_on(KeyError)
     @lazy
     def revision_date(self) -> datetime.date:
-        return datetime.datetime.fromtimestamp(self._data[SummonerData].revision_date / 1000)
+        return datetime.datetime.fromtimestamp(self._data[SummonerData].revision_date / 1000).date()
 
     @property
     def match_history_uri(self) -> str:
-        return "/v1/stats/player_history/{platform}/{id}".format(region=self.platform.value, id=self.account.id)
+        return "/v1/stats/player_history/{platform}/{id}".format(platform=self.platform.value, id=self.account.id)
 
     # Special core methods
 
