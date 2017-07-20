@@ -43,7 +43,7 @@ class StaticDataTransformer(DataTransformer):
 
         data["data"] = [self.champion_dto_to_data(c) for c in data["data"].values()]
         for c in data["data"]:
-            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"]})
+            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"], "includedData": data["includedData"]})
 
         data = data["data"]
         return ChampionListData(data)
@@ -59,7 +59,7 @@ class StaticDataTransformer(DataTransformer):
 
         data["data"] = [self.mastery_dto_to_data(c) for c in data["data"].values()]
         for c in data["data"]:
-            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"]})
+            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"], "includedData": data["includedData"]})
 
         data = data["data"]
         return MasteryListData(data)
@@ -75,7 +75,7 @@ class StaticDataTransformer(DataTransformer):
 
         data["data"] = [self.rune_dto_to_data(c) for c in data["data"].values()]
         for c in data["data"]:
-            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"]})
+            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"], "includedData": data["includedData"]})
 
         data = data["data"]
         return RuneListData(data)
@@ -91,7 +91,7 @@ class StaticDataTransformer(DataTransformer):
 
         data["data"] = [self.item_dto_to_data(c) for c in data["data"].values()]
         for c in data["data"]:
-            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"]})
+            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"], "includedData": data["includedData"]})
 
         data = data["data"]
         return ItemListData(data)
@@ -107,7 +107,7 @@ class StaticDataTransformer(DataTransformer):
 
         data["data"] = [self.summoner_spell_dto_to_data(c) for c in data["data"].values()]
         for c in data["data"]:
-            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"]})
+            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"], "includedData": data["includedData"]})
 
         data = data["data"]
         return SummonerSpellListData(data)
@@ -125,7 +125,6 @@ class StaticDataTransformer(DataTransformer):
             page["summonerId"] = data["summonerId"]
         data = [self.mastery_page_dto_to_data(page) for page in data["pages"]]
         return MasteryPagesData(data)
-
 
     @transform.register(RunePageDto, RunePageData)
     def rune_page_dto_to_data(self, value: RunePageDto, context: PipelineContext = None) -> RunePageData:
