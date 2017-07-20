@@ -1,7 +1,6 @@
 import os
 import logging
 
-
 from ..data import Region, Platform
 from .load import config
 
@@ -17,6 +16,10 @@ def create_default_pipeline(api_key, verbose=False):
     from ..transformers.championmastery import ChampionMasteryTransformer
     from ..transformers.summoner import SummonerTransformer
     from ..transformers.match import MatchTransformer
+    from ..transformers.masteries import MasteriesTransformer
+    from ..transformers.runes import RunesTransformer
+    from ..transformers.spectator import SpectatorTransformer
+    from ..transformers.status import StatusTransformer
 
     services = [
         RiotAPI(api_key=api_key)
@@ -26,7 +29,11 @@ def create_default_pipeline(api_key, verbose=False):
         ChampionTransformer(),
         ChampionMasteryTransformer(),
         SummonerTransformer(),
-        MatchTransformer()
+        MatchTransformer(),
+        MasteriesTransformer(),
+        RunesTransformer(),
+        SpectatorTransformer(),
+        StatusTransformer()
     ]
     pipeline = DataPipeline(services, riotapi_transformers)
 

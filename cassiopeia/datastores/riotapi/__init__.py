@@ -1,4 +1,4 @@
-from typing import Iterable, Set, Tuple
+from typing import Iterable, Set
 
 from datapipelines import CompositeDataSource
 from .common import RiotAPIService
@@ -14,6 +14,8 @@ def _default_services(api_key: str) -> Set[RiotAPIService]:
     from .runepage import RunePageAPI
     from .masterypage import MasteryPageAPI
     from .match import MatchAPI
+    from .spectator import SpectatorAPI
+    from .status import StatusAPI
 
     application_rate_limiters = {}
 
@@ -26,7 +28,9 @@ def _default_services(api_key: str) -> Set[RiotAPIService]:
         ChampionMasteryAPI(api_key, client, application_rate_limiters),
         RunePageAPI(api_key, client, application_rate_limiters),
         MasteryPageAPI(api_key, client, application_rate_limiters),
-        MatchAPI(api_key, client, application_rate_limiters)
+        MatchAPI(api_key, client, application_rate_limiters),
+        SpectatorAPI(api_key, client, application_rate_limiters),
+        StatusAPI(api_key, client, application_rate_limiters)
     }
 
     return services

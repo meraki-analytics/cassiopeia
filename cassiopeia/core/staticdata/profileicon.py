@@ -3,15 +3,19 @@ import datetime
 from PIL.Image import Image as PILImage
 
 from merakicommons.ghost import ghost_load_on
-from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable, SearchableList
+from merakicommons.cache import lazy_property
+from merakicommons.container import searchable
 
-from ..configuration import settings
-from ..data import Region, Platform
-from .common import DataObject, CassiopeiaObject, CassiopeiaGhost
-from ..dto.profileicon import ProfileIconDto
-from .staticdata.version import VersionListData
+from ...configuration import settings
+from ...data import Region, Platform
+from ..common import DataObject, CassiopeiaGhost
+from .version import VersionListData
 
+
+try:
+    import ujson as json
+except ImportError:
+    import json
 
 _profile_icon_names = None
 
@@ -19,6 +23,10 @@ _profile_icon_names = None
 ##############
 # Data Types #
 ##############
+
+
+class ProfileIconListData(list):
+    pass
 
 
 class ProfileIconData(DataObject):
@@ -58,7 +66,7 @@ class ProfileIcon(CassiopeiaGhost):
     @lazy_property
     def region(self) -> Region:
         """The region for this profile icon."""
-        return Region(self._data[SummonerData].region)
+        return Region(self._data[ProfileIconData].region)
 
     @lazy_property
     def platform(self) -> Platform:
@@ -108,10 +116,3 @@ class ProfileIcon(CassiopeiaGhost):
     @property
     def image(self) -> PILImage:
         return settings.pipeline.get(PILImage, query={"url": self.url})
-
-
-
-    @CassiopeiaGhost.property(SummonerData)
-    @ghost_load_on(KeyError)
-    def profile_icon(self) -> ProfileIcon:
-        return ProfileIcon(self._data[SummonerData].profile_icon)

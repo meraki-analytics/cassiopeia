@@ -1,15 +1,14 @@
-from typing import Dict, List, Set, Union, Mapping, Any
+from typing import Dict
 
 from merakicommons.ghost import ghost_load_on
-from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable, SearchableList
+from merakicommons.cache import lazy_property
+from merakicommons.container import searchable
 
 from ...configuration import settings
-from ...data import Region, Platform, Map
-from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, Ghost
-from .common import ImageData, SpriteData, Image, Sprite
+from ...data import Region, Platform
+from ..common import DataObject, CassiopeiaGhost
 from .version import VersionListData
-from ...dto.staticdata import realms as dto
+from ...dto.staticdata import realm as dto
 
 
 ##############
@@ -19,7 +18,7 @@ from ...dto.staticdata import realms as dto
 
 class LanguageStringsData(DataObject):
     _dto_type = dto.RealmDto
-    _renamed = {}
+    _renamed = {"strings": "data"}
 
     @property
     def region(self) -> str:
@@ -75,7 +74,7 @@ class LanguageStrings(CassiopeiaGhost):
 
     @CassiopeiaGhost.property(LanguageStringsData)
     @ghost_load_on(KeyError)
-    def strings(self) -> str:
+    def type(self) -> str:
         return self._data[LanguageStringsData].type
 
     @CassiopeiaGhost.property(LanguageStringsData)
