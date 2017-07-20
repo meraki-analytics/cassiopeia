@@ -13,5 +13,5 @@ class MatchDto(DtoObject):
     pass
 
 
-class MatchTimelineDto(DtoObject):
+class TimelineDto(DtoObject):
     pass
