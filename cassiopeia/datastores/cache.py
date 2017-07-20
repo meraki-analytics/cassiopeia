@@ -1,4 +1,4 @@
-from typing import Type, Mapping, Any, Iterable, TypeVar, Tuple, Callable, Generator, Union
+from typing import Type, Mapping, Any, Iterable, TypeVar, Tuple, Callable, Generator
 
 from datapipelines import DataSource, DataSink, PipelineContext, validate_query, NotFoundError
 from merakicommons.cache import Cache as CommonsCache
@@ -17,9 +17,9 @@ T = TypeVar("T")
 
 
 class Cache(DataSource, DataSink):
-    def __init__(self, expiration: Mapping[type, float]) -> None:
+    def __init__(self, expiration: Mapping[type, float] = None) -> None:
         self._cache = CommonsCache()
-        self._expiration = dict(expiration)
+        self._expiration = dict(expiration) if expiration is not None else {}
 
     @DataSource.dispatch
     def get(self, type: Type[T], query: Mapping[str, Any], context: PipelineContext = None) -> T:
@@ -52,12 +52,12 @@ class Cache(DataSource, DataSink):
                 raise NotFoundError from e
 
     @staticmethod
-    def _put_many_generator(items: Iterable[T], key_function: Callable[[T], Any], *key_function_arg_lists: Union[Any, Tuple]) -> Generator[Tuple[Any, T], None, None]:
+    def _put_many_generator(items: Iterable[T], key_function: Callable[[T], Any], *key_function_arg_lists: tuple) -> Generator[Tuple[Any, T], None, None]:
         for item in items:
             for key_function_args in key_function_arg_lists:
                 yield key_function(item, *key_function_args), item
 
-    def _put(self, type: Type[T], item: T, key_function: Callable[[T], Any], *key_function_arg_lists: Union[Any, Tuple], context: PipelineContext = None) -> None:
+    def _put(self, type: Type[T], item: T, key_function: Callable[[T], Any], *key_function_arg_lists: tuple, context: PipelineContext = None) -> None:
         try:
             expire_seconds = self._expiration[type]
         except KeyError:
@@ -68,7 +68,7 @@ class Cache(DataSource, DataSink):
             self._cache.put(key, item, expire_seconds)
         # TODO: Put EXPIRATION into context once cache expiration works
 
-    def _put_many(self, type: Type[T], items: Iterable[T], key_function: Callable[[T], Any], *key_function_arg_lists: Union[Any, Tuple], context: PipelineContext = None) -> None:
+    def _put_many(self, type: Type[T], items: Iterable[T], key_function: Callable[[T], Any], *key_function_arg_lists: tuple, context: PipelineContext = None) -> None:
         try:
             expire_seconds = self._expiration[type]
         except KeyError:
@@ -130,11 +130,11 @@ class Cache(DataSource, DataSink):
 
     @put.register(LeagueSummoner)
     def put_league_summoner(self, item: LeagueSummoner, context: PipelineContext = None) -> None:
-        self._put(LeagueSummoner, item, uniquekeys.for_league_summoner, "id", "account_id", "name", context=context)
+        self._put(LeagueSummoner, item, uniquekeys.for_league_summoner, ("id",), ("account_id",), ("name",), context=context)
 
     @put_many.register(LeagueSummoner)
     def put_many_league_summoner(self, items: Iterable[LeagueSummoner], context: PipelineContext = None) -> None:
-        self._put_many(LeagueSummoner, items, uniquekeys.for_league_summoner, "id", "account_id", "name", context=context)
+        self._put_many(LeagueSummoner, items, uniquekeys.for_league_summoner, ("id",), ("account_id",), ("name",), context=context)
 
     ###################
     # Static Data API #
@@ -154,11 +154,11 @@ class Cache(DataSource, DataSink):
 
     @put.register(Champion)
     def put_champion(self, item: Champion, context: PipelineContext = None) -> None:
-        self._put(Champion, item, uniquekeys.for_champion, "id", "name", context=context)
+        self._put(Champion, item, uniquekeys.for_champion, ("id",), ("name",), context=context)
 
     @put_many.register(Champion)
     def put_many_champion(self, items: Iterable[Champion], context: PipelineContext = None) -> None:
-        self._put_many(Champion, items, uniquekeys.for_champion, "id", "name", context=context)
+        self._put_many(Champion, items, uniquekeys.for_champion, ("id",), ("name",), context=context)
 
     # Item
 
@@ -174,11 +174,11 @@ class Cache(DataSource, DataSink):
 
     @put.register(Item)
     def put_item(self, item: Item, context: PipelineContext = None) -> None:
-        self._put(Item, item, uniquekeys.for_item, "id", "name", context=context)
+        self._put(Item, item, uniquekeys.for_item, ("id",), ("name",), context=context)
 
     @put_many.register(Item)
     def put_many_item(self, items: Iterable[Item], context: PipelineContext = None) -> None:
-        self._put_many(Item, items, uniquekeys.for_item, "id", "name", context=context)
+        self._put_many(Item, items, uniquekeys.for_item, ("id",), ("name",), context=context)
 
     # Language TODO
 
@@ -196,11 +196,11 @@ class Cache(DataSource, DataSink):
 
     @put.register(Map)
     def put_map(self, item: Map, context: PipelineContext = None) -> None:
-        self._put(Map, item, uniquekeys.for_map, "id", "name", context=context)
+        self._put(Map, item, uniquekeys.for_map, ("id",), ("name",), context=context)
 
     @put_many.register(Map)
     def put_many_map(self, items: Iterable[Map], context: PipelineContext = None) -> None:
-        self._put_many(Map, items, uniquekeys.for_map, "id", "name", context=context)
+        self._put_many(Map, items, uniquekeys.for_map, ("id",), ("name",), context=context)
 
     # Mastery
 
@@ -216,11 +216,11 @@ class Cache(DataSource, DataSink):
 
     @put.register(Mastery)
     def put_mastery(self, item: Mastery, context: PipelineContext = None) -> None:
-        self._put(Mastery, item, uniquekeys.for_mastery, "id", "name", context=context)
+        self._put(Mastery, item, uniquekeys.for_mastery, ("id",), ("name",), context=context)
 
     @put_many.register(Mastery)
     def put_many_mastery(self, items: Iterable[Mastery], context: PipelineContext = None) -> None:
-        self._put_many(Mastery, items, uniquekeys.for_mastery, "id", "name", context=context)
+        self._put_many(Mastery, items, uniquekeys.for_mastery, ("id",), ("name",), context=context)
 
     # Profile Icon TODO
 
@@ -240,11 +240,11 @@ class Cache(DataSource, DataSink):
 
     @put.register(Rune)
     def put_rune(self, item: Rune, context: PipelineContext = None) -> None:
-        self._put(Rune, item, uniquekeys.for_rune, "id", "name", context=context)
+        self._put(Rune, item, uniquekeys.for_rune, ("id",), ("name",), context=context)
 
     @put_many.register(Rune)
     def put_many_rune(self, items: Iterable[Rune], context: PipelineContext = None) -> None:
-        self._put_many(Rune, items, uniquekeys.for_rune, "id", "name", context=context)
+        self._put_many(Rune, items, uniquekeys.for_rune, ("id",), ("name",), context=context)
 
     # Summoner Spell
 
@@ -260,11 +260,11 @@ class Cache(DataSource, DataSink):
 
     @put.register(SummonerSpell)
     def put_summoner_spell(self, item: SummonerSpell, context: PipelineContext = None) -> None:
-        self._put(SummonerSpell, item, uniquekeys.for_summoner_spell, "id", "name", context=context)
+        self._put(SummonerSpell, item, uniquekeys.for_summoner_spell, ("id",), ("name",), context=context)
 
     @put_many.register(SummonerSpell)
     def put_many_summoner_spell(self, items: Iterable[SummonerSpell], context: PipelineContext = None) -> None:
-        self._put_many(SummonerSpell, items, uniquekeys.for_summoner_spell, "id", "name", context=context)
+        self._put_many(SummonerSpell, items, uniquekeys.for_summoner_spell, ("id",), ("name",), context=context)
 
     ##############
     # Status API TODO #
@@ -286,11 +286,11 @@ class Cache(DataSource, DataSink):
 
     @put.register(MasteryPage)
     def put_mastery_page(self, item: MasteryPage, context: PipelineContext = None) -> None:
-        self._put(MasteryPage, item, uniquekeys.for_mastery_page, "id", "account_id", "name", context=context)
+        self._put(MasteryPage, item, uniquekeys.for_mastery_page, ("id",), ("account_id",), ("name",), context=context)
 
     @put_many.register(MasteryPage)
     def put_many_mastery_page(self, items: Iterable[MasteryPage], context: PipelineContext = None) -> None:
-        self._put_many(MasteryPage, items, uniquekeys.for_mastery_page, "id", "account_id", "name", context=context)
+        self._put_many(MasteryPage, items, uniquekeys.for_mastery_page, ("id",), ("account_id",), ("name",), context=context)
 
     #############
     # Match API #
@@ -330,11 +330,11 @@ class Cache(DataSource, DataSink):
 
     @put.register(RunePage)
     def put_rune_page(self, item: RunePage, context: PipelineContext = None) -> None:
-        self._put(RunePage, item, uniquekeys.for_rune_page, "id", "account_id", "name", context=context)
+        self._put(RunePage, item, uniquekeys.for_rune_page, ("id",), ("account_id",), ("name",), context=context)
 
     @put_many.register(RunePage)
     def put_many_rune_page(self, items: Iterable[RunePage], context: PipelineContext = None) -> None:
-        self._put_many(RunePage, items, uniquekeys.for_rune_page, "id", "account_id", "name", context=context)
+        self._put_many(RunePage, items, uniquekeys.for_rune_page, ("id",), ("account_id",), ("name",), context=context)
 
     #################
     # Spectator API TODO #
@@ -356,8 +356,8 @@ class Cache(DataSource, DataSink):
 
     @put.register(Summoner)
     def put_summoner(self, item: Summoner, context: PipelineContext = None) -> None:
-        self._put(Summoner, item, uniquekeys.for_summoner, "id", "account_id", "name", context=context)
+        self._put(Summoner, item, uniquekeys.for_summoner, ("id",), ("account_id",), ("name",), context=context)
 
     @put_many.register(Summoner)
     def put_many_summoner(self, items: Iterable[Summoner], context: PipelineContext = None) -> None:
-        self._put_many(Summoner, items, uniquekeys.for_summoner, "id", "account_id", "name", context=context)
+        self._put_many(Summoner, items, uniquekeys.for_summoner, ("id",), ("account_id",), ("name",), context=context)

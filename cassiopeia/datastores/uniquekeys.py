@@ -10,7 +10,7 @@ from ..dto.league import LeagueListDto, LeaguePositionsDto
 from ..dto.staticdata import ChampionDto, ChampionListDto, ItemDto, ItemListDto, LanguageStringsDto, LanguagesDto, MasteryDto, MasteryListDto, ProfileIconDataDto, ProfileIconDetailsDto, RealmDto, RuneDto, RuneListDto, SummonerSpellDto, SummonerSpellListDto, MapDto, MapListDto, VersionListDto
 from ..dto.status import ShardStatusDto
 from ..dto.masterypage import MasteryPagesDto, MasteryPageDto
-from ..dto.match import MatchDto, MatchReferenceDto, MatchTimelineDto
+from ..dto.match import MatchDto, MatchReferenceDto, TimelineDto
 from ..dto.runepage import RunePagesDto, RunePageDto
 from ..dto.spectator import CurrentGameInfoDto, FeaturedGamesDto
 from ..dto.summoner import SummonerDto
@@ -1028,7 +1028,7 @@ validate_many_match_timeline_dto_query = Query. \
     has("matchIds").as_(Iterable)
 
 
-def for_match_timeline_dto(match_timeline: MatchTimelineDto) -> Tuple[str, int]:
+def for_match_timeline_dto(match_timeline: TimelineDto) -> Tuple[str, int]:
     return match_timeline["platform"], match_timeline["matchId"]
 
 
