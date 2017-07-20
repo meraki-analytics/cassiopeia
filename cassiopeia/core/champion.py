@@ -1,5 +1,3 @@
-from typing import Dict
-
 from .common import DataObject
 from ..dto import champion as dto
 

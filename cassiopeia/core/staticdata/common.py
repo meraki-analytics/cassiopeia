@@ -1,8 +1,8 @@
 from merakicommons.cache import lazy_property
+from PIL.Image import Image as PILImage
 
 from ...configuration import settings
 from ..common import DataObject, CassiopeiaObject
-from ..datadragon import DataDragonImage
 
 
 class SpriteData(DataObject):
@@ -106,9 +106,9 @@ class Sprite(CassiopeiaObject):
         return "http://ddragon.leagueoflegends.com/cdn/{version}/img/sprite/{sprite}.{ext}".format(version=self.version, sprite=sprite, ext=self._extension)
 
     @lazy_property
-    def image(self) -> "PIL.Image":
+    def image(self) -> PILImage:
         from PIL import Image
-        image = settings.pipeline.get(DataDragonImage, query={"url": self.url})
+        image = settings.pipeline.get(PILImage, query={"url": self.url})
         return Image.open(image)
 
 
@@ -132,15 +132,17 @@ class Image(CassiopeiaObject):
     def url(self) -> str:
         if "." in self.full:
             full, self._extension = self.full.split(".")
+        else:
+            full = self.full
         # There are not multiple images for different regions; this one works for all regions, so we don't need it
         return "http://ddragon.leagueoflegends.com/cdn/{version}/img/{group}/{full}.{ext}".format(version=self.version, group=self.group, full=full, ext=self._extension)
 
     @lazy_property
     def sprite(self) -> Sprite:
         sprite = Sprite(w=self._data[ImageData].width,
-                      h=self._data[ImageData].height,
-                      x=self._data[ImageData].x,
-                      y=self._data[ImageData].y,
-                      sprite=self._data[ImageData].sprite,
-                      version=self._data[ImageData].version)
+                        h=self._data[ImageData].height,
+                        x=self._data[ImageData].x,
+                        y=self._data[ImageData].y,
+                        sprite=self._data[ImageData].sprite,
+                        version=self._data[ImageData].version)
         return sprite
