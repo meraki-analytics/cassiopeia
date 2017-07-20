@@ -12,7 +12,6 @@ logging.basicConfig(format='%(asctime)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%
 def create_default_pipeline(api_key, verbose=False):
     from datapipelines import DataPipeline
     from ..datastores.riotapi import RiotAPI
-    from ..datastores.datadragon import DataDragonService
     from ..transformers.staticdata import StaticDataTransformer
     from ..transformers.champion import ChampionTransformer
     from ..transformers.championmastery import ChampionMasteryTransformer
@@ -20,8 +19,7 @@ def create_default_pipeline(api_key, verbose=False):
     from ..transformers.match import MatchTransformer
 
     services = [
-        RiotAPI(api_key=api_key),
-        DataDragonService()
+        RiotAPI(api_key=api_key)
     ]
     riotapi_transformers = [
         StaticDataTransformer(),

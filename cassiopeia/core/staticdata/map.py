@@ -60,7 +60,7 @@ class MapData(DataObject):
 ##############
 
 
-
+@searchable({str: ["name", "locale"], int: ["id"]})
 class Map(CassiopeiaGhost):
     _data_types = {MapData}
     _load_types = {MapData: MapListData}
@@ -70,22 +70,22 @@ class Map(CassiopeiaGhost):
             kwargs["region"] = settings.default_region.value
         super().__init__(*args, **kwargs)
 
-    def __load_hook__(self, load_group, dto) -> None:
-        def find_matching_attribute(iterable, attrname, attrvalue):
-            for item in iterable:
-                if item.get(attrname, None) == attrvalue:
+    def __load_hook__(self, load_group, data) -> None:
+        def find_matching_attribute(datalist, attrname, attrvalue):
+            for item in datalist:
+                if getattr(item, attrname, None) == attrvalue:
                     return item
 
-        # The `dto` is a dict of map dto instances
+        # The `data` is a dict of map data instances
         if "mapId" in self._data[MapData]._dto:
             find = "mapId", self.id
         elif "mapName" in self._data[MapData]._dto:
             find = "mapName", self.name
         else:
             raise ValueError("unknown `id` and `name`")
-        dto = find_matching_attribute(dto["data"].values(), *find)
+        data = find_matching_attribute(data, *find)
 
-        super().__load_hook__(load_group, dto)
+        super().__load_hook__(load_group, data)
 
     @lazy_property
     def region(self) -> Region:

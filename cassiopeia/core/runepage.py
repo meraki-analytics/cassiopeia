@@ -79,10 +79,6 @@ class RunePagesData(list):
 class RunePage(CassiopeiaGhost):
     _data_types = {RunePageData}
 
-    def __load_hook__(self, load_group, dto) -> None:
-        dto = list(dto)
-        super().__load_hook__(load_group, dto)
-
     @lazy_property
     def region(self) -> Region:
         return Region(self._data[RunePageData].region)

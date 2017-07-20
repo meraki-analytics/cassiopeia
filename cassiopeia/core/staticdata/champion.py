@@ -10,6 +10,7 @@ from ...data import Resource, Region, Platform, Map, GameMode
 from ..champion import ChampionData as ChampionStatusData
 from ..champion import ChampionListData as ChampionStatusListData
 from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost
+from .common import ImageData, SpriteData, Image, Sprite
 from .version import VersionListData
 from ...dto.staticdata import champion as dto
 from .item import Item
@@ -22,70 +23,6 @@ class ChampionListData(list):
 ##############
 # Data Types #
 ##############
-
-
-class SpriteData(DataObject):
-    _renamed = {"height": "h", "width": "w"}
-
-    @property
-    def version(self) -> str:
-        return self._dto["version"]
-
-    @property
-    def sprite(self) -> str:
-        return self._dto["sprite"]
-
-    @property
-    def x(self) -> int:
-        return self._dto["x"]
-
-    @property
-    def y(self) -> int:
-        return self._dto["y"]
-
-    @property
-    def width(self) -> int:
-        return self._dto["w"]
-
-    @property
-    def height(self) -> int:
-        return self._dto["h"]
-
-
-class ImageData(DataObject):
-    _renamed = {"height": "h", "width": "w"}
-
-    @property
-    def version(self) -> str:
-        return self._dto["version"]
-
-    @property
-    def full(self) -> str:
-        return self._dto["full"]
-
-    @property
-    def group(self) -> str:
-        return self._dto["group"]
-
-    @property
-    def height(self) -> int:
-        return self._dto["h"]
-
-    @property
-    def width(self) -> int:
-        return self._dto["w"]
-
-    @property
-    def y(self) -> int:
-        return self._dto["y"]
-
-    @property
-    def x(self) -> int:
-        return self._dto["x"]
-
-    @property
-    def sprite(self) -> str:
-        return self._dto["sprite"]
 
 
 class SpellVarsData(DataObject):
@@ -504,78 +441,6 @@ class ChampionData(DataObject):
 ##############
 
 
-@searchable({str: ["sprite", "url"]})
-class Sprite(CassiopeiaObject):
-    _data_types = {SpriteData}
-
-    @property
-    def version(self) -> str:
-        return self._data[SpriteData].version
-
-    @property
-    def sprite(self) -> str:
-        return self._data[SpriteData].sprite
-
-    @property
-    def y(self) -> int:
-        return self._data[SpriteData].y
-
-    @property
-    def x(self) -> int:
-        return self._data[SpriteData].x
-
-    @property
-    def width(self) -> int:
-        return self._data[SpriteData].width
-
-    @property
-    def height(self) -> int:
-        return self._data[SpriteData].height
-
-    @property
-    def url(self) -> str:
-        return "http://ddragon.leagueoflegends.com/cdn/{version}/img/sprite/{sprite}".format(version=self.version, sprite=self.sprite)
-
-    @lazy_property
-    def image(self) -> PILImage:
-        return settings.pipeline.get(PILImage, query={"url": self.url}).crop(self.x, self.y, self.width, self.height)
-
-
-@searchable({str: ["full", "url"]})
-class Image(CassiopeiaObject):
-    _data_types = {ImageData}
-
-    @property
-    def version(self) -> str:
-        return self._data[ImageData].version
-
-    @property
-    def full(self) -> str:
-        return self._data[ImageData].full
-
-    @property
-    def group(self) -> str:
-        return self._data[ImageData].group
-
-    @property
-    def url(self) -> str:
-        return "http://ddragon.leagueoflegends.com/cdn/{version}/img/{group}/{full}".format(version=self.version, group=self.group, full=self.full)
-
-    @lazy_property
-    def image(self) -> PILImage:
-        return settings.pipeline.get(PILImage, query={"url": self.url})
-
-    @lazy_property
-    def sprite_info(self) -> Sprite:
-        sprite = Sprite(w=self._data[ImageData].width,
-                        h=self._data[ImageData].height,
-                        x=self._data[ImageData].x,
-                        y=self._data[ImageData].y,
-                        sprite=self._data[ImageData].sprite,
-                        version=self._data[ImageData].version)
-        return sprite
-
-
 @searchable({str: ["key"]})
 class SpellVars(CassiopeiaObject):
     _data_types = {SpellVarsData}
@@ -948,23 +813,23 @@ class Champion(CassiopeiaGhost):
             kwargs["region"] = settings.default_region.value
         super().__init__(*args, **kwargs)
 
-    def __load_hook__(self, load_group, dto) -> None:
-        def find_matching_attribute(iterable, attrname, attrvalue):
-            for item in iterable:
-                if item.get(attrname, None) == attrvalue:
+    def __load_hook__(self, load_group, data) -> None:
+        def find_matching_attribute(datalist, attrname, attrvalue):
+            for item in datalist:
+                if getattr(item, attrname, None) == attrvalue:
                     return item
 
-        # The `dto` is a dict of champion dto instances
+        # The `data` is a list of champion data instances
         if "id" in self._data[ChampionData]._dto or "id" in self._data[ChampionStatusData]._dto:
             find = "id", self.id
         elif "name" in self._data[ChampionData]._dto or "name" in self._data[ChampionStatusData]._dto:
             find = "name", self.name
         if load_group is ChampionData:
-            dto = find_matching_attribute(dto["data"].values(), *find)
+            data = find_matching_attribute(data, *find)
         else:
-            dto = find_matching_attribute(dto["champions"], *find)
+            data = find_matching_attribute(data, *find)
 
-        super().__load_hook__(load_group, dto)
+        super().__load_hook__(load_group, data)
 
     # What do we do about params like this that can exist in both data objects?
     # They will be set on both data objects always, so we can choose either one to return.
