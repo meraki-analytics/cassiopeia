@@ -1,8 +1,10 @@
+from PIL.Image import Image as PILImage
+
+from merakicommons.container import searchable
 from merakicommons.cache import lazy_property
 
 from ...configuration import settings
 from ..common import DataObject, CassiopeiaObject
-from ..datadragon import DataDragonImage
 
 
 class SpriteData(DataObject):
@@ -69,9 +71,9 @@ class ImageData(DataObject):
         return self._dto["sprite"]
 
 
+@searchable({str: ["sprite", "url"]})
 class Sprite(CassiopeiaObject):
     _data_types = {SpriteData}
-    _extension = "png"
 
     @property
     def version(self) -> str:
@@ -99,22 +101,12 @@ class Sprite(CassiopeiaObject):
 
     @property
     def url(self) -> str:
-        sprite = self.sprite
-        if "." in sprite:
-            sprite, self._extension = sprite.split(".")
-        # There are not multiple images for different regions; this one works for all regions, so we don't need it
-        return "http://ddragon.leagueoflegends.com/cdn/{version}/img/sprite/{sprite}.{ext}".format(version=self.version, sprite=sprite, ext=self._extension)
-
-    @lazy_property
-    def image(self) -> "PIL.Image":
-        from PIL import Image
-        image = settings.pipeline.get(DataDragonImage, query={"url": self.url})
-        return Image.open(image)
+        return "http://ddragon.leagueoflegends.com/cdn/{version}/img/sprite/{sprite}".format(version=self.version, sprite=self.sprite)
 
 
+@searchable({str: ["full", "url"]})
 class Image(CassiopeiaObject):
     _data_types = {ImageData}
-    _extension = "png"
 
     @property
     def version(self) -> str:
@@ -130,17 +122,18 @@ class Image(CassiopeiaObject):
 
     @property
     def url(self) -> str:
-        if "." in self.full:
-            full, self._extension = self.full.split(".")
-        # There are not multiple images for different regions; this one works for all regions, so we don't need it
-        return "http://ddragon.leagueoflegends.com/cdn/{version}/img/{group}/{full}.{ext}".format(version=self.version, group=self.group, full=full, ext=self._extension)
+        return "http://ddragon.leagueoflegends.com/cdn/{version}/img/{group}/{full}".format(version=self.version, group=self.group, full=self.full)
 
     @lazy_property
-    def sprite(self) -> Sprite:
+    def image(self) -> PILImage:
+        return settings.pipeline.get(PILImage, query={"url": self.url})
+
+    @lazy_property
+    def sprite_info(self) -> Sprite:
         sprite = Sprite(w=self._data[ImageData].width,
-                      h=self._data[ImageData].height,
-                      x=self._data[ImageData].x,
-                      y=self._data[ImageData].y,
-                      sprite=self._data[ImageData].sprite,
-                      version=self._data[ImageData].version)
+                        h=self._data[ImageData].height,
+                        x=self._data[ImageData].x,
+                        y=self._data[ImageData].y,
+                        sprite=self._data[ImageData].sprite,
+                        version=self._data[ImageData].version)
         return sprite
