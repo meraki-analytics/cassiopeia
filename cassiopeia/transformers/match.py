@@ -3,8 +3,8 @@ from copy import deepcopy
 
 from datapipelines import DataTransformer, PipelineContext
 
-from ..core.match import MatchData, MatchListData, MatchReferenceData
-from ..dto.match import MatchDto, MatchListDto, MatchReferenceDto
+from ..core.match import MatchData, MatchListData, MatchReferenceData, TimelineData
+from ..dto.match import MatchDto, MatchListDto, MatchReferenceDto, TimelineDto
 
 T = TypeVar("T")
 F = TypeVar("F")
@@ -16,17 +16,22 @@ class MatchTransformer(DataTransformer):
         pass
 
     @transform.register(MatchReferenceDto, MatchReferenceData)
-    def match_reference_dto_to_core(self, value: MatchReferenceDto, context: PipelineContext = None) -> MatchReferenceData:
+    def match_reference_dto_to_data(self, value: MatchReferenceDto, context: PipelineContext = None) -> MatchReferenceData:
         data = deepcopy(value)
         return MatchReferenceData(data)
 
     @transform.register(MatchDto, MatchData)
-    def match_dto_to_core(self, value: MatchDto, context: PipelineContext = None) -> MatchData:
+    def match_dto_to_data(self, value: MatchDto, context: PipelineContext = None) -> MatchData:
         data = deepcopy(value)
         return MatchData(data)
 
     @transform.register(MatchListDto, MatchListData)
-    def matchlist_dto_to_core(self, value: MatchListDto, context: PipelineContext = None) -> MatchListData:
+    def matchlist_dto_to_data(self, value: MatchListDto, context: PipelineContext = None) -> MatchListData:
         data = deepcopy(value)
         data = data["matches"]
-        return MatchListData([self.match_reference_dto_to_core(match) for match in data])
+        return MatchListData([self.match_reference_dto_to_data(match) for match in data])
+
+    @transform.register(TimelineDto, TimelineData)
+    def timeline_dto_to_data(self, value: TimelineDto, context: PipelineContext = None) -> TimelineData:
+        data = deepcopy(value)
+        return TimelineData(data)

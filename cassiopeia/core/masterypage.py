@@ -1,17 +1,13 @@
-import os
 from typing import List, Mapping
-import datetime
-from collections import Counter
-from PIL.Image import Image as PILImage
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable, SearchableList, SearchableDictionary
+from merakicommons.container import searchable, SearchableDictionary
 
-from ..configuration import settings
 from ..data import Region, Platform
-from .common import DataObject, CassiopeiaObject, CassiopeiaGhost
-from ..dto.masterypage import MasteryDto, MasteryPageDto, MasteryPagesDto
+from .common import DataObject, CassiopeiaGhost
+from .summoner import Summoner
+from ..dto.masterypage import MasteryDto, MasteryPageDto
 from .staticdata.mastery import Mastery as StaticdataMastery
 
 
@@ -76,12 +72,8 @@ class MasteryPagesData(list):
 
 
 @searchable({str: ["name", "masteries", "region", "platform", "locale"], int: ["id"], bool: ["current"], StaticdataMastery: ["masteries"], Region: ["region"], Platform: ["platform"]})
-class MasteryPage(CassiopeiaObject):
+class MasteryPage(CassiopeiaGhost):
     _data_types = {MasteryPageData}
-
-    def __load_hook__(self, load_group, dto) -> None:
-        dto = list(dto)
-        super().__load_hook__(load_group, dto)
 
     @lazy_property
     def region(self) -> Region:
@@ -98,7 +90,7 @@ class MasteryPage(CassiopeiaObject):
         return self._data[MasteryPageData].locale
 
     @lazy_property
-    def summoner(self) -> "Summoner":
+    def summoner(self) -> Summoner:
         return Summoner(id=self._data[MasteryPageData].summoner_id)
 
     @CassiopeiaGhost.property(MasteryPageData)

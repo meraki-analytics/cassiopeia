@@ -5,7 +5,7 @@ from merakicommons.cache import lazy_property
 from merakicommons.container import searchable
 
 from ..configuration import settings
-from ..data import Region, Platform, Queue, Tier, Division
+from ..data import Region, Platform, Tier, Division, Queue
 from .common import DataObject, CassiopeiaObject, CassiopeiaGhost
 from ..dto.league import LeagueListDto, LeagueItemDto, MiniSeriesDto
 from .summoner import Summoner
