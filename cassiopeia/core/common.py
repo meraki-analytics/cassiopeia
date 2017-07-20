@@ -168,12 +168,12 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost):
         else:  # Load the specific load group
             if self._Ghost__is_loaded(load_group):
                 raise ValueError("object has already been loaded.")
-            dto = settings.pipeline.get(type=self._load_types[load_group]._dto_type, query=self._data[load_group]._dto)
-            self.__load_hook__(load_group, dto)
+            data = settings.pipeline.get(type=self._load_types[load_group], query=self._data[load_group]._dto)
+            self.__load_hook__(load_group, data)
 
     @property
     def _load_types(self):
         return {t: t for t in self._data_types}
 
-    def __load_hook__(self, load_group, dto):
-            self._data[load_group]._dto.update(dto)
+    def __load_hook__(self, load_group, data):
+        self._data[load_group]._dto.update(data._dto)

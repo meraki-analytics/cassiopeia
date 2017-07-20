@@ -185,22 +185,22 @@ class SummonerSpell(CassiopeiaGhost):
             kwargs["region"] = settings.default_region.value
         super().__init__(*args, **kwargs)
 
-    def __load_hook__(self, load_group, dto) -> None:
-        def find_matching_attribute(iterable, attrname, attrvalue):
-            for item in iterable:
-                if item.get(attrname, None) == attrvalue:
+    def __load_hook__(self, load_group, data) -> None:
+        def find_matching_attribute(datalist, attrname, attrvalue):
+            for item in datalist:
+                if getattr(item, attrname, None) == attrvalue:
                     return item
 
-        # The `dto` is a dict of summoner spell dto instances
+        # The `data` is a dict of summoner spell data instances
         if "name" in self._data[SummonerSpellData]._dto:
             find = "name", self.name
         elif "id" in self._data[SummonerSpellData]._dto:
             find = "id", self.id
         else:
             raise RuntimeError("Expected fields not present after loading.")
-        dto = find_matching_attribute(dto["data"].values(), *find)
+        data = find_matching_attribute(data, *find)
 
-        super().__load_hook__(load_group, dto)
+        super().__load_hook__(load_group, data)
 
     # What do we do about params like this that can exist in both data objects?
     # They will be set on both data objects always, so we can choose either one to return.

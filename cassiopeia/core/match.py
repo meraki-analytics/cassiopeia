@@ -19,9 +19,6 @@ from .staticdata.mastery import Mastery
 from .staticdata.summonerspell import SummonerSpell, SummonerSpellData
 
 
-# TODO Implement timelines
-
-
 ##############
 # Data Types #
 ##############
@@ -29,6 +26,197 @@ from .staticdata.summonerspell import SummonerSpell, SummonerSpellData
 
 class MatchListData(list):
     pass
+
+
+class PositionData(DataObject):
+    _renamed = {}
+
+    @property
+    def x(self) -> int:
+        return self._dto["x"]
+
+    @property
+    def y(self) -> int:
+        return self._dto["y"]
+
+
+class EventData(DataObject):
+    _renamed = {"event_type": "eventType", "tower_type": "towerType", "team_id": "teamId", "ascended_type": "ascendedType", "killer_id": "killerId", "level_up_type": "levelUpType", "point_captured": "pointCaptured", "assisting_participant_ids": "assistingParticipantIds", "ward_type": "wardType", "monster_type": "monsterType", "skill_slot": "skillSlot", "victim_id": "victimId", "after_id": "afterId", "monster_sub_type": "monsterSubType", "lane_type": "laneType", "item_id": "itemId", "participant_id": "participantId", "building_type": "buildingType", "creator_id": "creatorId", "before_id": "beforeId"}
+
+    @property
+    def event_type(self) -> str:
+        return self._dto["eventType"]
+
+    @property
+    def tower_type(self) -> str:
+        return self._dto["towerType"]
+
+    @property
+    def team_id(self) -> int:
+        return self._dto["teamId"]
+
+    @property
+    def ascended_type(self) -> str:
+        return self._dto["ascendedType"]
+
+    @property
+    def killer_id(self) -> int:
+        return self._dto["killerId"]
+
+    @property
+    def level_up_type(self) -> str:
+        return self._dto["levelUpType"]
+
+    @property
+    def point_captured(self) -> str:
+        return self._dto["pointCaptured"]
+
+    @property
+    def assisting_participant_ids(self) -> List[int]:
+        return self._dto["assistingParticipantIds"]
+
+    @property
+    def ward_type(self) -> str:
+        return self._dto["wardType"]
+
+    @property
+    def monster_type(self) -> str:
+        return self._dto["monsterType"]
+
+    @property
+    def type(self) -> List[str]:
+        """Legal values: CHAMPION_KILL, WARD_PLACED, WARD_KILL, BUILDING_KILL, ELITE_MONSTER_KILL, ITEM_PURCHASED, ITEM_SOLD, ITEM_DESTROYED, ITEM_UNDO, SKILL_LEVEL_UP, ASCENDED_EVENT, CAPTURE_POINT, PORO_KING_SUMMON"""
+        return self._dto["type"]
+
+    @property
+    def skill_slot(self) -> int:
+        return self._dto["skillSlot"]
+
+    @property
+    def victim_id(self) -> int:
+        return self._dto["victimId"]
+
+    @property
+    def timestamp(self) -> int:
+        return self._dto["timestamp"]
+
+    @property
+    def after_id(self) -> int:
+        return self._dto["afterId"]
+
+    @property
+    def monster_sub_type(self) -> str:
+        return self._dto["monsterSubType"]
+
+    @property
+    def lane_type(self) -> str:
+        return self._dto["laneType"]
+
+    @property
+    def item_id(self) -> int:
+        return self._dto["itemId"]
+
+    @property
+    def participant_id(self) -> int:
+        return self._dto["participantId"]
+
+    @property
+    def building_type(self) -> str:
+        return self._dto["buildingType"]
+
+    @property
+    def creator_id(self) -> int:
+        return self._dto["creatorId"]
+
+    @property
+    def position(self) -> PositionData:
+        return PositionData(self._dto["position"])
+
+    @property
+    def before_id(self) -> int:
+        return self._dto["beforeId"]
+
+
+class ParticipantFrameData(DataObject):
+    _renamed = {"total_gold": "totalGold", "team_score": "teamScore", "participant_id": "participantId", "current_gold": "currentGold", "minions_killed": "minionsKilled", "dominion_score": "dominionScore", "jungle_minions_killed": "jungleMinionsKilled"}
+
+
+    @property
+    def total_gold(self) -> int:
+        return self._dto["totalGold"]
+
+    @property
+    def team_score(self) -> int:
+        return self._dto["teamScore"]
+
+    @property
+    def participant_id(self) -> int:
+        return self._dto["participantId"]
+
+    @property
+    def level(self) -> int:
+        return self._dto["level"]
+
+    @property
+    def current_gold(self) -> int:
+        return self._dto["currentGold"]
+
+    @property
+    def minions_killed(self) -> int:
+        return self._dto["minionsKilled"]
+
+    @property
+    def dominion_score(self) -> int:
+        return self._dto["dominionScore"]
+
+    @property
+    def position(self) -> PositionData:
+        return PositionData(self._dto["position"])
+
+    @property
+    def xp(self) -> int:
+        return self._dto["xp"]
+
+    @property
+    def jungle_minions_killed(self) -> int:
+        return self._dto["jungleMinionsKilled"]
+
+
+class FrameData(DataObject):
+    _renamed = {"participant_frames": "participantFrames"}
+
+    @property
+    def timestamp(self) -> int:
+        return self._dto["timestamp"]
+
+    @property
+    def participant_frames(self) -> Dict[int, ParticipantFrameData]:
+        return {k: ParticipantFrameData(v) for k, v in self._dto["participantFrames"].items()}
+
+    @property
+    def events(self) -> List[EventData]:
+        return [EventData(event) for event in self._dto["events"]]
+
+
+class TimelineData(DataObject):
+    _dto_type = dto.TimelineDto
+    _renamed = {"id": "matchId"}
+
+    @property
+    def id(self) -> int:
+        return self._dto["matchId"]
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
+
+    @property
+    def frames(self) -> List[FrameData]:
+        return [FrameData(frame) for frame in self._dto["frames"]]
+
+    @property
+    def frame_interval(self) -> int:
+        return self._dto["frameInterval"]
 
 
 class ParticipantTimelineData(DataObject):
@@ -569,7 +757,7 @@ class MatchData(DataObject):
     _dto_type = dto.MatchDto
     _renamed = {"season_id": "seasonId", "queue_id": "queueId", "id": "gameId", "participant_identities": "participantIdentities", "version": "gameVersion", "platform_id": "platformId", "mode": "gameMode", "map_id": "mapId", "type": "gameType", "duration": "gameDuration", "creation": "gameCreation"}
 
-    @lazy_property
+    @property
     def region(self) -> str:
         return self._dto["region"]
 
@@ -629,6 +817,200 @@ class MatchData(DataObject):
 ##############
 # Core Types #
 ##############
+
+
+class Postion(DataObject):
+    _data_types = {PositionData}
+
+    @property
+    def x(self) -> int:
+        return self._data[PositionData].x
+
+    @property
+    def y(self) -> int:
+        return self._data[PositionData].y
+
+
+@searchable({str: ["event_type", "tower_type", "ascended_type", "ward_type", "monster_type", "type", "monster_sub_type", "lane_type", "building_type"]})
+class Event(DataObject):
+    _data_types = {EventData}
+
+    @property
+    def event_type(self) -> str:
+        return self._data[EventData].event_type
+
+    @property
+    def tower_type(self) -> str:
+        return self._data[EventData].tower_type
+
+    @property
+    def team_id(self) -> int:
+        return self._data[EventData].team_id
+
+    @property
+    def ascended_type(self) -> str:
+        return self._data[EventData].ascended_type
+
+    @property
+    def killer_id(self) -> int:
+        return self._data[EventData].killer_id
+
+    @property
+    def level_up_type(self) -> str:
+        return self._data[EventData].level_up_type
+
+    @property
+    def point_captured(self) -> str:
+        return self._data[EventData].point_captured
+
+    @property
+    def assisting_participant_ids(self) -> List[int]:
+        return self._data[EventData].assisting_participant_ids
+
+    @property
+    def ward_type(self) -> str:
+        return self._data[EventData].ward_type
+
+    @property
+    def monster_type(self) -> str:
+        return self._data[EventData].monster_type
+
+    @property
+    def type(self) -> List[str]:
+        """Legal values: CHAMPION_KILL, WARD_PLACED, WARD_KILL, BUILDING_KILL, ELITE_MONSTER_KILL, ITEM_PURCHASED, ITEM_SOLD, ITEM_DESTROYED, ITEM_UNDO, SKILL_LEVEL_UP, ASCENDED_EVENT, CAPTURE_POINT, PORO_KING_SUMMON"""
+        return self._data[EventData].type
+
+    @property
+    def skill_slot(self) -> int:
+        return self._data[EventData].skill_slot
+
+    @property
+    def victim_id(self) -> int:
+        return self._data[EventData].victim_id
+
+    @property
+    def timestamp(self) -> int:
+        return self._data[EventData].timestamp
+
+    @property
+    def after_id(self) -> int:
+        return self._data[EventData].after_id
+
+    @property
+    def monster_sub_type(self) -> str:
+        return self._data[EventData].monster_sub_type
+
+    @property
+    def lane_type(self) -> str:
+        return self._data[EventData].lane_type
+
+    @property
+    def item_id(self) -> int:
+        return self._data[EventData].items_id
+
+    @property
+    def participant_id(self) -> int:
+        return self._data[EventData].participant_id
+
+    @property
+    def building_type(self) -> str:
+        return self._data[EventData].building_type
+
+    @property
+    def creator_id(self) -> int:
+        return self._data[EventData].creator_id
+
+    @property
+    def position(self) -> PositionData:
+        return self._data[EventData].position
+
+    @property
+    def before_id(self) -> int:
+        return self._data[EventData].before_id
+
+
+class ParticipantFrame(CassiopeiaObject):
+    _data_types = {ParticipantFrameData}
+
+    @property
+    def total_gold(self) -> int:
+        return self._data[ParticipantFrameData].total_gold
+
+    @property
+    def team_score(self) -> int:
+        return self._data[ParticipantFrameData].team_score
+
+    @property
+    def participant_id(self) -> int:
+        return self._data[ParticipantFrameData].participant_id
+
+    @property
+    def level(self) -> int:
+        return self._data[ParticipantFrameData].level
+
+    @property
+    def current_gold(self) -> int:
+        return self._data[ParticipantFrameData].current_gold
+
+    @property
+    def minions_killed(self) -> int:
+        return self._data[ParticipantFrameData].minions_killed
+
+    @property
+    def dominion_score(self) -> int:
+        return self._data[ParticipantFrameData].dominion_score
+
+    @property
+    def position(self) -> PositionData:
+        return self._data[ParticipantFrameData].position
+
+    @property
+    def xp(self) -> int:
+        return self._data[ParticipantFrameData].xp
+
+    @property
+    def jungle_minions_killed(self) -> int:
+        return self._data[ParticipantFrameData].jungle_minions_killed
+
+
+@searchable({})
+class Frame(CassiopeiaObject):
+    _data_types = {FrameData}
+
+    @property
+    def timestamp(self) -> int:
+        return self._data[FrameData].timestamp
+
+    @property
+    def participant_frames(self) -> Dict[int, ParticipantFrame]:
+        return SearchableDict({k: ParticipantFrame(frame) for frame in self._data[FrameData].participant_frames.items()})
+
+    @property
+    def events(self) -> List[Event]:
+        return SearchableList([Event(event) for event in self._data[FrameData].events])
+
+
+@searchable({})
+class Timeline(CassiopeiaGhost):
+    _data_types = {TimelineData}
+
+    @property
+    def id(self):
+        return self._data[TimelineData].id
+
+    @property
+    def region(self) -> Region:
+        return Region(self._data[TimelineData].region)
+
+    @CassiopeiaGhost.property(TimelineData)
+    @ghost_load_on(KeyError)
+    def frames(self) -> List[Frame]:
+        return SearchableList([Frame(frame) for frame in self._data[TimelineData].frame])
+
+    @CassiopeiaGhost.property(TimelineData)
+    @ghost_load_on(KeyError)
+    def frame_interval(self) -> int:
+        return self._data[TimelineData].frame_interval
 
 
 class ParticipantTimeline(CassiopeiaObject):
@@ -1191,6 +1573,10 @@ class Match(CassiopeiaGhost):
     @property
     def id(self) -> int:
         return self._data[MatchData].id
+
+    @lazy_property
+    def timeline(self) -> Timeline:
+        return Timeline(id = self.id, region=self.region.value)
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on(KeyError)

@@ -1,7 +1,6 @@
 from .staticdata import Champion, Rune, Mastery, Item, Map, SummonerSpell
 from .summoner import Summoner, Account, ProfileIcon
 from .championmastery import ChampionMastery
-from .datadragon import DataDragonImage
 from .runepage import RunePage
 from .masterypage import MasteryPage
 from .match import Match
