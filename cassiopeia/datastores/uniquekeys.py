@@ -1224,8 +1224,8 @@ def for_many_summoner_dto_query(query: Query) -> Generator[Tuple[str, Union[int,
 
 validate_champion_mastery_query = Query. \
     has("platform").as_(Platform).also. \
-    has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
-    has("champion.id").as_(int).or_("champion.name").as_(str)
+    has("summonerId").as_(int).or_("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
+    has("championId").as_(int).or_("champion.id").as_(int).or_("champion.name").as_(str)
 
 
 validate_many_champion_mastery_query = Query. \
@@ -1239,14 +1239,21 @@ def for_champion_mastery(champion_mastery: ChampionMastery, summoner_identifier:
 
 
 def for_champion_mastery_query(query: Query) -> Tuple[str, Union[int, str], Union[int, str]]:
-    if "summoner.id" in query:
+    if "playerId" in query:
+        summoner_identifier = "playerId"
+    elif "summoner.id" in query:
         summoner_identifier = "summoner.id"
     elif "summoner.account.id" in query:
         summoner_identifier = "summoner.account.id"
     else:
         summoner_identifier = "summoner.name"
 
-    champion_identifier = "champion.id" if "champion.id" in query else "champion.name"
+    if "championId" in query:
+        champion_identifier = "championId"
+    elif "champion.id" in query:
+        champion_identifier = "champion.id"
+    else:
+        champion_identifier = "champion.name"
 
     return query["platform"].value, query[summoner_identifier], query[champion_identifier]
 
@@ -1277,7 +1284,7 @@ def for_many_champion_mastery_query(query: Query) -> Generator[Tuple[str, Union[
 validate_league_summoner_query = Query. \
     has("platform").as_(Platform).also. \
     has("queue").as_(Queue).also. \
-    has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str)
+    has("playerOrTeamId").as_(int).or_("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str)
 
 
 validate_many_league_summoner_query = Query. \
@@ -1291,7 +1298,9 @@ def for_league_summoner(league_summoner: LeagueSummoner, summoner_identifier: st
 
 
 def for_league_summoner_query(query: Query) -> Tuple[str, str, Union[int, str]]:
-    if "summoner.id" in query:
+    if "playerOrTeamId" in query:
+        summoner_identifier = "playerOrTeamId"
+    elif "summoner.id" in query:
         summoner_identifier = "summoner.id"
     elif "summoner.account.id" in query:
         summoner_identifier = "summoner.account.id"
@@ -1327,7 +1336,7 @@ validate_champion_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("included_data").with_default({"all"}).also. \
+    can_have("includedData").as_(set).or_("included_data").with_default({"all"}).also. \
     has("id").as_(int).or_("name").as_(str)
 
 
@@ -1345,7 +1354,8 @@ def for_champion(champion: Champion, identifier: str = "id") -> Tuple[str, str, 
 
 def for_champion_query(query: Query) -> Tuple[str, str, str, int, Union[int, str]]:
     identifier = "id" if "id" in query else "name"
-    return query["platform"].value, query["version"], query["locale"], _hash_included_data(query["included_data"]), query[identifier]
+    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
+    return query["platform"].value, query["version"], query["locale"], included_data_hash, query[identifier]
 
 
 def for_many_champion_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
@@ -1365,7 +1375,7 @@ validate_item_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("included_data").with_default({"all"}).also. \
+    can_have("includedData").as_(set).or_("included_data").with_default({"all"}).also. \
     has("id").as_(int).or_("name").as_(str)
 
 
@@ -1383,7 +1393,8 @@ def for_item(item: Item, identifier: str = "id") -> Tuple[str, str, str, int, Un
 
 def for_item_query(query: Query) -> Tuple[str, str, str, int, Union[int, str]]:
     identifier = "id" if "id" in query else "name"
-    return query["platform"].value, query["version"], query["locale"], _hash_included_data(query["included_data"]), query[identifier]
+    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
+    return query["platform"].value, query["version"], query["locale"], included_data_hash, query[identifier]
 
 
 def for_many_item_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
@@ -1406,7 +1417,7 @@ validate_map_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    has("id").as_(int).or_("name").as_(str)
+    has("mapId").as_(int).or_("id").as_(int).or_("name").as_(str)
 
 
 validate_many_map_query = Query. \
@@ -1421,7 +1432,12 @@ def for_map(map: Map, identifier: str = "id") -> Tuple[str, str, str, Union[int,
 
 
 def for_map_query(query: Query) -> Tuple[str, str, str, Union[int, str]]:
-    identifier = "id" if "id" in query else "name"
+    if "mapId" in query:
+        identifier = "mapId"
+    elif "id" in query:
+        identifier = "id"
+    else:
+        identifier = "name"
     return query["platform"].value, query["version"], query["locale"], query[identifier]
 
 
@@ -1441,7 +1457,7 @@ validate_mastery_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("included_data").with_default({"all"}).also. \
+    can_have("includedData").as_(set).or_("included_data").with_default({"all"}).also. \
     has("id").as_(int).or_("name").as_(str)
 
 
@@ -1459,7 +1475,8 @@ def for_mastery(mastery: Mastery, identifier: str = "id") -> Tuple[str, str, str
 
 def for_mastery_query(query: Query) -> Tuple[str, str, str, int, Union[int, str]]:
     identifier = "id" if "id" in query else "name"
-    return query["platform"].value, query["version"], query["locale"], _hash_included_data(query["included_data"]), query[identifier]
+    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
+    return query["platform"].value, query["version"], query["locale"], included_data_hash, query[identifier]
 
 
 def for_many_mastery_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
@@ -1485,7 +1502,7 @@ validate_rune_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("included_data").with_default({"all"}).also. \
+    can_have("includedData").as_(set).or_("included_data").with_default({"all"}).also. \
     has("id").as_(int).or_("name").as_(str)
 
 
@@ -1503,7 +1520,8 @@ def for_rune(rune: Rune, identifier: str = "id") -> Tuple[str, str, str, int, Un
 
 def for_rune_query(query: Query) -> Tuple[str, str, str, int, Union[int, str]]:
     identifier = "id" if "id" in query else "name"
-    return query["platform"].value, query["version"], query["locale"], _hash_included_data(query["included_data"]), query[identifier]
+    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
+    return query["platform"].value, query["version"], query["locale"], included_data_hash, query[identifier]
 
 
 def for_many_rune_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
@@ -1523,7 +1541,7 @@ validate_summoner_spell_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("included_data").with_default({"all"}).also. \
+    can_have("includedData").as_(set).or_("included_data").with_default({"all"}).also. \
     has("id").as_(int).or_("name").as_(str)
 
 
@@ -1541,7 +1559,8 @@ def for_summoner_spell(summoner_spell: SummonerSpell, identifier: str = "id") ->
 
 def for_summoner_spell_query(query: Query) -> Tuple[str, str, str, int, Union[int, str]]:
     identifier = "id" if "id" in query else "name"
-    return query["platform"].value, query["version"], query["locale"], _hash_included_data(query["included_data"]), query[identifier]
+    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
+    return query["platform"].value, query["version"], query["locale"], included_data_hash, query[identifier]
 
 
 def for_many_summoner_spell_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
@@ -1567,7 +1586,7 @@ def for_many_summoner_spell_query(query: Query) -> Generator[Tuple[str, str, str
 
 validate_mastery_page_query = Query. \
     has("platform").as_(Platform).also. \
-    has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
+    has("summonerId").as_(int).or_("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
     has("id").as_(int)
 
 
@@ -1582,7 +1601,9 @@ def for_mastery_page(mastery_page: MasteryPage, summoner_identifier: str = "id")
 
 
 def for_mastery_page_query(query: Query) -> Tuple[str, Union[int, str], int]:
-    if "summoner.id" in query:
+    if "summonerId" in query:
+        summoner_identifier = "summonerId"
+    elif "summoner.id" in query:
         summoner_identifier = "summoner.id"
     elif "summoner.account.id" in query:
         summoner_identifier = "summoner.account.id"
@@ -1614,7 +1635,7 @@ def for_many_mastery_page_query(query: Query) -> Generator[Tuple[str, Union[int,
 
 validate_match_query = Query. \
     has("platform").as_(Platform).also. \
-    has("id").as_(int)
+    has("gameId").as_(int).or_("id").as_(int)
 
 
 validate_many_match_query = Query. \
@@ -1627,7 +1648,8 @@ def for_match(match: Match) -> Tuple[str, int]:
 
 
 def for_match_query(query: Query) -> Tuple[str, int]:
-    return query["platform"].value, query["id"]
+    identifier = "gameId" if "gameId" in query else "id"
+    return query["platform"].value, query[identifier]
 
 
 def for_many_match_query(query: Query) -> Generator[Tuple[str, int], None, None]:
@@ -1646,7 +1668,7 @@ def for_many_match_query(query: Query) -> Generator[Tuple[str, int], None, None]
 
 validate_rune_page_query = Query. \
     has("platform").as_(Platform).also. \
-    has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
+    has("summonerId").as_(int).or_("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
     has("id").as_(int)
 
 
@@ -1661,7 +1683,9 @@ def for_rune_page(rune_page: RunePage, summoner_identifier: str = "id") -> Tuple
 
 
 def for_rune_page_query(query: Query) -> Tuple[str, Union[int, str], int]:
-    if "summoner.id" in query:
+    if "summonerId" in query:
+        summoner_identifier = "summonerId"
+    elif "summoner.id" in query:
         summoner_identifier = "summoner.id"
     elif "summoner.account.id" in query:
         summoner_identifier = "summoner.account.id"
@@ -1698,7 +1722,7 @@ def for_many_rune_page_query(query: Query) -> Generator[Tuple[str, Union[int, st
 
 validate_summoner_query = Query. \
     has("platform").as_(Platform).also. \
-    has("id").as_(int).or_("account.id").as_(int).or_("name").as_(str)
+    has("id").as_(int).or_("account.id").as_(int).or_("name").as_(str).or_("accountId").as_(int)
 
 
 validate_many_summoner_query = Query. \
@@ -1719,8 +1743,10 @@ def for_summoner_query(query: Query) -> Tuple[str, Union[int, str]]:
         identifier = "id"
     elif "account.id" in query:
         identifier = "account.id"
-    else:
+    elif "name" in query:
         identifier = "name"
+    else:
+        identifier = "accountId"
     return query["platform"].value, query[identifier]
 
 
