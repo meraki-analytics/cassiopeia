@@ -144,7 +144,7 @@ class StaticDataTransformer(DataTransformer):
     @transform.register(LanguagesDto, LanguagesData)
     def languages_dto_to_data(self, value: LanguagesDto, context: PipelineContext = None) -> LanguagesData:
         data = deepcopy(value)
-        return LanguagesData(data)
+        return LanguagesData(data["languages"])
 
     @transform.register(LanguageStringsDto, LanguageStringsData)
     def language_strings_dto_to_data(self, value: LanguageStringsDto, context: PipelineContext = None) -> LanguageStringsData:

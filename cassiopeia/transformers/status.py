@@ -17,7 +17,7 @@ class StatusTransformer(DataTransformer):
         pass
 
     @transform.register(ShardStatusDto, ShardStatusData)
-    def profile_icon_dto_to_data(self, value: ShardStatusDto, context: PipelineContext = None) -> ShardStatusData:
+    def shard_status_dto_to_data(self, value: ShardStatusDto, context: PipelineContext = None) -> ShardStatusData:
         data = deepcopy(value)
         return ShardStatusData(data)
 

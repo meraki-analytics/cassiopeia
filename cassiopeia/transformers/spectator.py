@@ -3,7 +3,7 @@ from copy import deepcopy
 
 from datapipelines import DataTransformer, PipelineContext
 
-from ..core.spectator import CurrentGameInfoData
+from ..core.spectator import CurrentGameInfoData, FeaturedGamesData
 
 from ..dto.spectator import CurrentGameInfoDto, FeaturedGamesDto
 
@@ -17,11 +17,12 @@ class SpectatorTransformer(DataTransformer):
         pass
 
     @transform.register(CurrentGameInfoDto, CurrentGameInfoData)
-    def profile_icon_dto_to_data(self, value: CurrentGameInfoDto, context: PipelineContext = None) -> CurrentGameInfoData:
+    def current_game_dto_to_data(self, value: CurrentGameInfoDto, context: PipelineContext = None) -> CurrentGameInfoData:
         data = deepcopy(value)
         return CurrentGameInfoData(data)
 
-    @transform.register(FeaturedGamesDto, CurrentGameInfoData)
-    def profile_icon_dto_to_data(self, value: FeaturedGamesDto, context: PipelineContext = None) -> CurrentGameInfoData:
+    @transform.register(FeaturedGamesDto, FeaturedGamesData)
+    def featured_games_dto_to_data(self, value: FeaturedGamesDto, context: PipelineContext = None) -> FeaturedGamesData:
         data = deepcopy(value)
-        return CurrentGameInfoData(data)
+        data = data["gameList"]
+        return FeaturedGamesData(CurrentGameInfoData(game) for game in data)

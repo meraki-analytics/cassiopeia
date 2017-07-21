@@ -22,6 +22,10 @@ from .summoner import Summoner
 ##############
 
 
+class FeaturedGamesData(list):
+    pass
+
+
 class RuneData(DataObject):
     _renamed = {"id": "runeId"}
 

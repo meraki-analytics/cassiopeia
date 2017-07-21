@@ -97,8 +97,8 @@ class Cache(DataSource, DataSink):
         self._put(ChampionMastery, item, uniquekeys.for_champion_mastery,
             ("id", "id"),
             ("id", "name"),
-            ("account_id", "id"),
-            ("account_id", "name"),
+            ("account.id", "id"),
+            ("account.id", "name"),
             ("name", "id"),
             ("name", "name"),
             context=context)
@@ -108,8 +108,8 @@ class Cache(DataSource, DataSink):
         self._put_many(ChampionMastery, items, uniquekeys.for_champion_mastery,
             ("id", "id"),
             ("id", "name"),
-            ("account_id", "id"),
-            ("account_id", "name"),
+            ("account.id", "id"),
+            ("account.id", "name"),
             ("name", "id"),
             ("name", "name"),
             context=context)
@@ -130,11 +130,11 @@ class Cache(DataSource, DataSink):
 
     @put.register(LeagueSummoner)
     def put_league_summoner(self, item: LeagueSummoner, context: PipelineContext = None) -> None:
-        self._put(LeagueSummoner, item, uniquekeys.for_league_summoner, ("id",), ("account_id",), ("name",), context=context)
+        self._put(LeagueSummoner, item, uniquekeys.for_league_summoner, ("id",), ("account.id",), ("name",), context=context)
 
     @put_many.register(LeagueSummoner)
     def put_many_league_summoner(self, items: Iterable[LeagueSummoner], context: PipelineContext = None) -> None:
-        self._put_many(LeagueSummoner, items, uniquekeys.for_league_summoner, ("id",), ("account_id",), ("name",), context=context)
+        self._put_many(LeagueSummoner, items, uniquekeys.for_league_summoner, ("id",), ("account.id",), ("name",), context=context)
 
     ###################
     # Static Data API #
@@ -286,11 +286,11 @@ class Cache(DataSource, DataSink):
 
     @put.register(MasteryPage)
     def put_mastery_page(self, item: MasteryPage, context: PipelineContext = None) -> None:
-        self._put(MasteryPage, item, uniquekeys.for_mastery_page, ("id",), ("account_id",), ("name",), context=context)
+        self._put(MasteryPage, item, uniquekeys.for_mastery_page, ("id",), ("account.id",), ("name",), context=context)
 
     @put_many.register(MasteryPage)
     def put_many_mastery_page(self, items: Iterable[MasteryPage], context: PipelineContext = None) -> None:
-        self._put_many(MasteryPage, items, uniquekeys.for_mastery_page, ("id",), ("account_id",), ("name",), context=context)
+        self._put_many(MasteryPage, items, uniquekeys.for_mastery_page, ("id",), ("account.id",), ("name",), context=context)
 
     #############
     # Match API #
@@ -330,11 +330,11 @@ class Cache(DataSource, DataSink):
 
     @put.register(RunePage)
     def put_rune_page(self, item: RunePage, context: PipelineContext = None) -> None:
-        self._put(RunePage, item, uniquekeys.for_rune_page, ("id",), ("account_id",), ("name",), context=context)
+        self._put(RunePage, item, uniquekeys.for_rune_page, ("id",), ("account.id",), ("name",), context=context)
 
     @put_many.register(RunePage)
     def put_many_rune_page(self, items: Iterable[RunePage], context: PipelineContext = None) -> None:
-        self._put_many(RunePage, items, uniquekeys.for_rune_page, ("id",), ("account_id",), ("name",), context=context)
+        self._put_many(RunePage, items, uniquekeys.for_rune_page, ("id",), ("account.id",), ("name",), context=context)
 
     #################
     # Spectator API TODO #
@@ -356,8 +356,8 @@ class Cache(DataSource, DataSink):
 
     @put.register(Summoner)
     def put_summoner(self, item: Summoner, context: PipelineContext = None) -> None:
-        self._put(Summoner, item, uniquekeys.for_summoner, ("id",), ("account_id",), ("name",), context=context)
+        self._put(Summoner, item, uniquekeys.for_summoner, ("id",), ("account.id",), ("name",), context=context)
 
     @put_many.register(Summoner)
     def put_many_summoner(self, items: Iterable[Summoner], context: PipelineContext = None) -> None:
-        self._put_many(Summoner, items, uniquekeys.for_summoner, ("id",), ("account_id",), ("name",), context=context)
+        self._put_many(Summoner, items, uniquekeys.for_summoner, ("id",), ("account.id",), ("name",), context=context)

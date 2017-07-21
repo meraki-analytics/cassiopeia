@@ -1224,13 +1224,13 @@ def for_many_summoner_dto_query(query: Query) -> Generator[Tuple[str, Union[int,
 
 validate_champion_mastery_query = Query. \
     has("platform").as_(Platform).also. \
-    has("summoner.id").as_(int).or_("summoner.account_id").as_(int).or_("summoner.name").as_(str).also. \
+    has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
     has("champion.id").as_(int).or_("champion.name").as_(str)
 
 
 validate_many_champion_mastery_query = Query. \
     has("platform").as_(Platform).also. \
-    has("summoner.id").as_(int).or_("summoner.account_id").as_(int).or_("summoner.name").as_(str).also. \
+    has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
     has("champions.id").as_(Iterable).or_("champions.name").as_(Iterable)
 
 
@@ -1241,8 +1241,8 @@ def for_champion_mastery(champion_mastery: ChampionMastery, summoner_identifier:
 def for_champion_mastery_query(query: Query) -> Tuple[str, Union[int, str], Union[int, str]]:
     if "summoner.id" in query:
         summoner_identifier = "id"
-    elif "summoner.account_id" in query:
-        summoner_identifier = "account_id"
+    elif "summoner.account.id" in query:
+        summoner_identifier = "account.id"
     else:
         summoner_identifier = "name"
 
@@ -1254,8 +1254,8 @@ def for_champion_mastery_query(query: Query) -> Tuple[str, Union[int, str], Unio
 def for_many_champion_mastery_query(query: Query) -> Generator[Tuple[str, Union[int, str], Union[int, str]], None, None]:
     if "summoner.id" in query:
         summoner_identifier = "id"
-    elif "summoner.account_id" in query:
-        summoner_identifier = "account_id"
+    elif "summoner.account.id" in query:
+        summoner_identifier = "account.id"
     else:
         summoner_identifier = "name"
 
@@ -1277,13 +1277,13 @@ def for_many_champion_mastery_query(query: Query) -> Generator[Tuple[str, Union[
 validate_league_summoner_query = Query. \
     has("platform").as_(Platform).also. \
     has("queue").as_(Queue).also. \
-    has("summoner.id").as_(int).or_("summoner.account_id").as_(int).or_("summoner.name").as_(str)
+    has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str)
 
 
 validate_many_league_summoner_query = Query. \
     has("platform").as_(Platform).also. \
     has("queue").as_(Queue).also. \
-    has("summoners.id").as_(Iterable).or_("summoners.account_id").as_(Iterable).or_("summoners.name").as_(Iterable)
+    has("summoners.id").as_(Iterable).or_("summoners.account.id").as_(Iterable).or_("summoners.name").as_(Iterable)
 
 
 def for_league_summoner(league_summoner: LeagueSummoner, summoner_identifier: str = "id") -> Tuple[str, str, Union[int, str]]:
@@ -1293,8 +1293,8 @@ def for_league_summoner(league_summoner: LeagueSummoner, summoner_identifier: st
 def for_league_summoner_query(query: Query) -> Tuple[str, str, Union[int, str]]:
     if "summoner.id" in query:
         summoner_identifier = "id"
-    elif "summoner.account_id" in query:
-        summoner_identifier = "account_id"
+    elif "summoner.account.id" in query:
+        summoner_identifier = "account.id"
     else:
         summoner_identifier = "name"
     return query["platform"].value, query["queue"].value, query[summoner_identifier]
@@ -1303,8 +1303,8 @@ def for_league_summoner_query(query: Query) -> Tuple[str, str, Union[int, str]]:
 def for_many_league_summoner_query(query: Query) -> Generator[Tuple[str, str, Union[int, str]], None, None]:
     if "summoners.id" in query:
         summoner_identifiers, summoner_identifier_type = query["summoners.id"], int
-    elif "summoners.account_id" in query:
-        summoner_identifiers, summoner_identifier_type = query["summoners.account_id"], int
+    elif "summoners.account.id" in query:
+        summoner_identifiers, summoner_identifier_type = query["summoners.account.id"], int
     else:
         summoner_identifiers, summoner_identifier_type = query["summoners.name"], str
 
@@ -1567,13 +1567,13 @@ def for_many_summoner_spell_query(query: Query) -> Generator[Tuple[str, str, str
 
 validate_mastery_page_query = Query. \
     has("platform").as_(Platform).also. \
-    has("summoner.id").as_(int).or_("summoner.account_id").as_(int).or_("summoner.name").as_(str).also. \
+    has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
     has("id").as_(int)
 
 
 validate_many_mastery_page_query = Query. \
     has("platform").as_(Platform).also. \
-    has("summoner.id").as_(int).or_("summoner.account_id").as_(int).or_("summoner.name").as_(str).also. \
+    has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
     has("ids").as_(Iterable)
 
 
@@ -1584,8 +1584,8 @@ def for_mastery_page(mastery_page: MasteryPage, summoner_identifier: str = "id")
 def for_mastery_page_query(query: Query) -> Tuple[str, Union[int, str], int]:
     if "summoner.id" in query:
         summoner_identifier = "id"
-    elif "summoner.account_id" in query:
-        summoner_identifier = "account_id"
+    elif "summoner.account.id" in query:
+        summoner_identifier = "account.id"
     else:
         summoner_identifier = "name"
     return query["platform"].value, query[summoner_identifier], query["id"]
@@ -1594,8 +1594,8 @@ def for_mastery_page_query(query: Query) -> Tuple[str, Union[int, str], int]:
 def for_many_mastery_page_query(query: Query) -> Generator[Tuple[str, Union[int, str], int], None, None]:
     if "summoner.id" in query:
         summoner_identifier = "id"
-    elif "summoner.account_id" in query:
-        summoner_identifier = "account_id"
+    elif "summoner.account.id" in query:
+        summoner_identifier = "account.id"
     else:
         summoner_identifier = "name"
 
@@ -1646,13 +1646,13 @@ def for_many_match_query(query: Query) -> Generator[Tuple[str, int], None, None]
 
 validate_rune_page_query = Query. \
     has("platform").as_(Platform).also. \
-    has("summoner.id").as_(int).or_("summoner.account_id").as_(int).or_("summoner.name").as_(str).also. \
+    has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
     has("id").as_(int)
 
 
 validate_many_rune_page_query = Query. \
     has("platform").as_(Platform).also. \
-    has("summoner.id").as_(int).or_("summoner.account_id").as_(int).or_("summoner.name").as_(str).also. \
+    has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
     has("ids").as_(Iterable)
 
 
@@ -1663,8 +1663,8 @@ def for_rune_page(rune_page: RunePage, summoner_identifier: str = "id") -> Tuple
 def for_rune_page_query(query: Query) -> Tuple[str, Union[int, str], int]:
     if "summoner.id" in query:
         summoner_identifier = "id"
-    elif "summoner.account_id" in query:
-        summoner_identifier = "account_id"
+    elif "summoner.account.id" in query:
+        summoner_identifier = "account.id"
     else:
         summoner_identifier = "name"
     return query["platform"].value, query[summoner_identifier], query["id"]
@@ -1673,8 +1673,8 @@ def for_rune_page_query(query: Query) -> Tuple[str, Union[int, str], int]:
 def for_many_rune_page_query(query: Query) -> Generator[Tuple[str, Union[int, str], int], None, None]:
     if "summoner.id" in query:
         summoner_identifier = "id"
-    elif "summoner.account_id" in query:
-        summoner_identifier = "account_id"
+    elif "summoner.account.id" in query:
+        summoner_identifier = "account.id"
     else:
         summoner_identifier = "name"
 
@@ -1698,12 +1698,12 @@ def for_many_rune_page_query(query: Query) -> Generator[Tuple[str, Union[int, st
 
 validate_summoner_query = Query. \
     has("platform").as_(Platform).also. \
-    has("id").as_(int).or_("account_id").as_(int).or_("name").as_(str)
+    has("id").as_(int).or_("account.id").as_(int).or_("name").as_(str)
 
 
 validate_many_summoner_query = Query. \
     has("platform").as_(Platform).also. \
-    has("ids").as_(Iterable).or_("account_ids").as_(Iterable).or_("names").as_(Iterable)
+    has("ids").as_(Iterable).or_("account.id").as_(Iterable).or_("names").as_(Iterable)
 
 
 def for_summoner(summoner: Summoner, identifier: str = "id") -> Tuple[str, Union[int, str]]:
@@ -1713,8 +1713,8 @@ def for_summoner(summoner: Summoner, identifier: str = "id") -> Tuple[str, Union
 def for_summoner_query(query: Query) -> Tuple[str, Union[int, str]]:
     if "id" in query:
         identifier = "id"
-    elif "account_id" in query:
-        identifier = "account_id"
+    elif "account.id" in query:
+        identifier = "account.id"
     else:
         identifier = "name"
     return query["platform"].value, query[identifier]
@@ -1723,8 +1723,8 @@ def for_summoner_query(query: Query) -> Tuple[str, Union[int, str]]:
 def for_many_summoner_query(query: Query) -> Generator[Tuple[str, Union[int, str]], None, None]:
     if "ids" in query:
         identifiers, identifier_type = query["ids"], int
-    elif "account_ids" in query:
-        identifiers, identifier_type = query["account_ids"], int
+    elif "account.id" in query:
+        identifiers, identifier_type = query["account.id"], int
     else:
         identifiers, identifier_type = query["names"], str
 

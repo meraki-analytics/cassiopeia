@@ -3,6 +3,7 @@ from typing import Mapping, Any, Set
 from enum import Enum
 import logging
 
+from datapipelines import NotFoundError
 from merakicommons.ghost import Ghost
 
 from ..configuration import settings
@@ -45,7 +46,7 @@ class DataObject(object):
                         value = str(value)
                     elif isinstance(value, list) and len(value) > 0 and isinstance(value[0], DataObject):
                         value = [str(v) for v in value]
-                    elif isinstance(value, dict) and len(value) > 0 and isinstance(value.values()[0], DataObject):
+                    elif isinstance(value, dict) and len(value) > 0 and isinstance(next(iter(value.values())), DataObject):
                         value = {key: str(v) for key, v in value.items()}
                     result[key] = value
                 except KeyError:  # A KeyError will be thrown when the properties try to do the dto lookup if the data doesn't exist
@@ -61,14 +62,15 @@ class DataObject(object):
         self._dto[name] = value
 
 
-class CheckCache(type):  # TODO This may need to inherit from GhostMeta. Also, should all CassiopeiaObjects use this, or just CassiopeiaGhosts?
+class CheckCache(type):  # TODO Should all CassiopeiaObjects use this, or just CassiopeiaGhosts?
     def __call__(cls, *args, **kwargs):
-        cache = get_cache()  # TODO Not defined.
+        cache = settings.pipeline._cache
         if cache is not None:
             # Try to find the obj in the cache
-            obj = cache.get(cls, **kwargs)  # TODO These get and put calls will need to be modified once the cache is written
-            if obj is not None:
-                return obj
+            try:
+                return cache.get(cls, query=kwargs)
+            except NotFoundError:
+                pass
 
         # If the obj was not found in the cache (or if there is no cache), create a new instance
         LOGGER.debug("Creating new {} from {}".format(cls.__name__, set(kwargs.keys())))
@@ -76,7 +78,7 @@ class CheckCache(type):  # TODO This may need to inherit from GhostMeta. Also, s
 
         # Store the new obj in the cache
         if cache is not None:
-            cache.put(cls, item=obj, **kwargs)  # TODO These get and put calls will need to be modified once the cache is written
+            cache.put(cls, obj)
 
         return obj
 
@@ -148,11 +150,11 @@ class CassiopeiaObject(object):
                     self._data[type]._update(u)
                     found = True
             if not found:
-                LOGGER.warn("When initializing {}, key {} is not in type(s) {}. Not set.".format(self.__class__.__name__, key, self._data_types))
+                LOGGER.warning("When initializing {}, key {} is not in type(s) {}. Not set.".format(self.__class__.__name__, key, self._data_types))
         return self
 
 
-class CassiopeiaGhost(CassiopeiaObject, Ghost):
+class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=CheckCache):
     def __str__(self) -> str:
         if not self._Ghost__all_loaded:
             self.__load__(load_group=None)
