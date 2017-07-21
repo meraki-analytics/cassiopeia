@@ -1240,11 +1240,11 @@ def for_champion_mastery(champion_mastery: ChampionMastery, summoner_identifier:
 
 def for_champion_mastery_query(query: Query) -> Tuple[str, Union[int, str], Union[int, str]]:
     if "summoner.id" in query:
-        summoner_identifier = "id"
+        summoner_identifier = "summoner.id"
     elif "summoner.account.id" in query:
-        summoner_identifier = "account.id"
+        summoner_identifier = "summoner.account.id"
     else:
-        summoner_identifier = "name"
+        summoner_identifier = "summoner.name"
 
     champion_identifier = "champion.id" if "champion.id" in query else "champion.name"
 
@@ -1253,11 +1253,11 @@ def for_champion_mastery_query(query: Query) -> Tuple[str, Union[int, str], Unio
 
 def for_many_champion_mastery_query(query: Query) -> Generator[Tuple[str, Union[int, str], Union[int, str]], None, None]:
     if "summoner.id" in query:
-        summoner_identifier = "id"
+        summoner_identifier = "summoner.id"
     elif "summoner.account.id" in query:
-        summoner_identifier = "account.id"
+        summoner_identifier = "summoner.account.id"
     else:
-        summoner_identifier = "name"
+        summoner_identifier = "summoner.name"
 
     champion_identifiers, champion_identifier_type = (query["champions.id"], int) if "champions.id" in query else (query["champions.name"], str)
 
@@ -1292,11 +1292,11 @@ def for_league_summoner(league_summoner: LeagueSummoner, summoner_identifier: st
 
 def for_league_summoner_query(query: Query) -> Tuple[str, str, Union[int, str]]:
     if "summoner.id" in query:
-        summoner_identifier = "id"
+        summoner_identifier = "summoner.id"
     elif "summoner.account.id" in query:
-        summoner_identifier = "account.id"
+        summoner_identifier = "summoner.account.id"
     else:
-        summoner_identifier = "name"
+        summoner_identifier = "summoner.name"
     return query["platform"].value, query["queue"].value, query[summoner_identifier]
 
 
@@ -1583,21 +1583,21 @@ def for_mastery_page(mastery_page: MasteryPage, summoner_identifier: str = "id")
 
 def for_mastery_page_query(query: Query) -> Tuple[str, Union[int, str], int]:
     if "summoner.id" in query:
-        summoner_identifier = "id"
+        summoner_identifier = "summoner.id"
     elif "summoner.account.id" in query:
-        summoner_identifier = "account.id"
+        summoner_identifier = "summoner.account.id"
     else:
-        summoner_identifier = "name"
+        summoner_identifier = "summoner.name"
     return query["platform"].value, query[summoner_identifier], query["id"]
 
 
 def for_many_mastery_page_query(query: Query) -> Generator[Tuple[str, Union[int, str], int], None, None]:
     if "summoner.id" in query:
-        summoner_identifier = "id"
+        summoner_identifier = "summoner.id"
     elif "summoner.account.id" in query:
-        summoner_identifier = "account.id"
+        summoner_identifier = "summoner.account.id"
     else:
-        summoner_identifier = "name"
+        summoner_identifier = "summoner.name"
 
     for id in query["ids"]:
         try:
@@ -1662,21 +1662,21 @@ def for_rune_page(rune_page: RunePage, summoner_identifier: str = "id") -> Tuple
 
 def for_rune_page_query(query: Query) -> Tuple[str, Union[int, str], int]:
     if "summoner.id" in query:
-        summoner_identifier = "id"
+        summoner_identifier = "summoner.id"
     elif "summoner.account.id" in query:
-        summoner_identifier = "account.id"
+        summoner_identifier = "summoner.account.id"
     else:
-        summoner_identifier = "name"
+        summoner_identifier = "summoner.name"
     return query["platform"].value, query[summoner_identifier], query["id"]
 
 
 def for_many_rune_page_query(query: Query) -> Generator[Tuple[str, Union[int, str], int], None, None]:
     if "summoner.id" in query:
-        summoner_identifier = "id"
+        summoner_identifier = "summoner.id"
     elif "summoner.account.id" in query:
-        summoner_identifier = "account.id"
+        summoner_identifier = "summoner.account.id"
     else:
-        summoner_identifier = "name"
+        summoner_identifier = "summoner.name"
 
     for id in query["ids"]:
         try:
