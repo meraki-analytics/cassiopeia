@@ -1,6 +1,7 @@
 from abc import abstractmethod, abstractclassmethod
 from typing import Mapping, Any, Set
 from enum import Enum
+import copy
 import logging
 
 from datapipelines import NotFoundError
@@ -63,22 +64,34 @@ class DataObject(object):
 
 
 class CheckCache(type):  # TODO Should all CassiopeiaObjects use this, or just CassiopeiaGhosts?
-    def __call__(cls, *args, **kwargs):
+    def __call__(cls, data: DataObject = None, **kwargs):
         cache = settings.pipeline._cache
         if cache is not None:
             # Try to find the obj in the cache
+            if data is not None:
+                query = copy.deepcopy(data._dto)
+            else:
+                query = {}
+            query.update(kwargs)
+            if "region" not in query and "platform" not in query:
+                query["platform"] = settings.default_platform.value
+                query["region"] = settings.default_region.value
+            if "version" not in query:
+                from .staticdata.version import VersionListData
+                versions = settings.pipeline.get(VersionListData, query={"region": query["region"]})
+                query["version"] = versions[0]
             try:
-                return cache.get(cls, query=kwargs)
+                return cache.get(cls, query=query)
             except NotFoundError:
                 pass
 
         # If the obj was not found in the cache (or if there is no cache), create a new instance
         LOGGER.debug("Creating new {} from {}".format(cls.__name__, set(kwargs.keys())))
-        obj = super().__call__(**kwargs)
+        obj = super().__call__(data=data, **kwargs)
 
-        # Store the new obj in the cache
-        if cache is not None:
-            cache.put(cls, obj)
+        # Store the new obj in the cache. Actually don't since we are creating Ghost objects. Let the datapipeline handle puts.
+        #if cache is not None:
+        #    cache.put(cls, obj)
 
         return obj
 
