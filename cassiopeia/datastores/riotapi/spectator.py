@@ -58,17 +58,17 @@ class SpectatorAPI(RiotAPIService):
     _validate_get_featured_game_query = Query. \
         has("platform").as_(Platform)
 
-    @get.register(CurrentGameInfoDto)
-    def get_featured_game(self, query: Mapping[str, Any], context: PipelineContext = None) -> CurrentGameInfoDto:
+    @get.register(FeaturedGamesDto)
+    def get_featured_game(self, query: Mapping[str, Any], context: PipelineContext = None) -> FeaturedGamesDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         SpectatorAPI._validate_get_featured_game_query(query, context)
 
-        url = "https://{platform}.api.riotgames.com/lol/spectator/v3/featured-games".format(platform=query["platform"].value.lower(), id=query["summonerId"])
+        url = "https://{platform}.api.riotgames.com/lol/spectator/v3/featured-games".format(platform=query["platform"].value.lower())
         try:
             data = self._get(url, {}, self._rate_limiter(query["platform"], "featured-games"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
         data["region"] = query["platform"].region.value
-        return CurrentGameInfoDto(data)
+        return FeaturedGamesDto(data)

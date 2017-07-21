@@ -10,6 +10,7 @@ logging.basicConfig(format='%(asctime)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%
 
 def create_default_pipeline(api_key, verbose=False):
     from datapipelines import DataPipeline
+    from ..datastores.cache import Cache
     from ..datastores.riotapi import RiotAPI
     from ..transformers.staticdata import StaticDataTransformer
     from ..transformers.champion import ChampionTransformer
@@ -22,6 +23,7 @@ def create_default_pipeline(api_key, verbose=False):
     from ..transformers.status import StatusTransformer
 
     services = [
+        #Cache(),  # TODO Add expirations from file
         RiotAPI(api_key=api_key)
     ]
     riotapi_transformers = [
@@ -36,6 +38,14 @@ def create_default_pipeline(api_key, verbose=False):
         StatusTransformer()
     ]
     pipeline = DataPipeline(services, riotapi_transformers)
+
+    # Manually put the cache on the pipeline. TODO Is this the best way?
+    for datastore in services:
+        if isinstance(datastore, Cache):
+            pipeline._cache = datastore
+            break
+    else:
+        pipeline._cache = None
 
     if verbose:
         for service in services:
