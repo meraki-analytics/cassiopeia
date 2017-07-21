@@ -561,6 +561,8 @@ class StaticDataAPI(RiotAPIService):
         data["version"] = query["version"]
         data["locale"] = query["locale"]
         data["includedData"] = query["includedData"]
+        if data["id"] == 3632:  # This item doesn't have a name.
+            data["name"] = ""
         return ItemDto(data)
 
     _validate_get_many_item_query = Query. \

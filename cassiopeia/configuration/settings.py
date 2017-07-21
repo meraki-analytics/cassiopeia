@@ -23,7 +23,7 @@ def create_default_pipeline(api_key, verbose=False):
     from ..transformers.status import StatusTransformer
 
     services = [
-        #Cache(),  # TODO Add expirations from file
+        Cache(),  # TODO Add expirations from file
         RiotAPI(api_key=api_key)
     ]
     riotapi_transformers = [

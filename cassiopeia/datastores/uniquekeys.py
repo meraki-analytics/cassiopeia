@@ -1707,7 +1707,11 @@ validate_many_summoner_query = Query. \
 
 
 def for_summoner(summoner: Summoner, identifier: str = "id") -> Tuple[str, Union[int, str]]:
-    return summoner.platform.value, getattr(summoner, identifier)
+    identifier_parts = identifier.split(".")
+    obj = summoner
+    for part in identifier_parts:
+        obj = getattr(obj, part)
+    return summoner.platform.value, obj
 
 
 def for_summoner_query(query: Query) -> Tuple[str, Union[int, str]]:

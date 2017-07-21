@@ -1,19 +1,14 @@
 import cassiopeia as cass
 from cassiopeia.core import Summoner
+from  cassiopeia import settings
 
-def test_cass():
+def test_items():
     name = "Kalturi"
 
     items = cass.get_items()
     for item in items:
-        try:
-            item.tier
-        except:
-            try:
-                print(item.name)
-            except:
-                pass
+        print(item.name)
 
 
 if __name__ == "__main__":
-    test_cass()
+    test_items()
