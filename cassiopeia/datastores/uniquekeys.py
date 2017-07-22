@@ -17,11 +17,13 @@ from ..dto.summoner import SummonerDto
 
 from ..core.championmastery import ChampionMastery
 from ..core.league import LeagueSummoner
-from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map
+from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Languages, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions
+from ..core.status import ShardStatus
 from ..core.masterypage import MasteryPage
 from ..core.match import Match
 from ..core.runepage import RunePage
 from ..core.summoner import Summoner
+from ..core.spectator import CurrentMatch, FeaturedMatches
 
 #############
 # Utilities #
@@ -33,9 +35,12 @@ def _hash_included_data(included_data: Set[str]) -> int:
 
 
 def _get_default_version(query: Mapping[str, Any], context: PipelineContext) -> str:
-    pipeline = context[PipelineContext.Keys.PIPELINE]
-    versions = pipeline.get(VersionListDto, {"platform": query["platform"]})
-    return versions["versions"][0]
+    try:
+        pipeline = context[PipelineContext.Keys.PIPELINE]
+        versions = pipeline.get(VersionListDto, {"platform": query["platform"]})
+        return versions["versions"][0]
+    except TypeError as error:
+        raise KeyError("`version` must be provided in query") from error
 
 
 def _get_default_locale(query: Mapping[str, Any], context: PipelineContext) -> str:
@@ -1138,11 +1143,11 @@ def for_many_current_game_info_dto_query(query: Query) -> Generator[Tuple[str, i
             raise QueryValidationError from e
 
 
-validate_features_game_dto_query = Query. \
+validate_featured_game_dto_query = Query. \
     has("platform").as_(Platform)
 
 
-validate_many_features_game_dto_query = Query. \
+validate_many_featured_game_dto_query = Query. \
     has("platforms").as_(Iterable)
 
 
@@ -1408,7 +1413,46 @@ def for_many_item_query(query: Query) -> Generator[Tuple[str, str, str, int, Uni
             raise QueryValidationError from e
 
 
-# Language TODO
+# Language
+
+validate_languages_query = Query. \
+    has("platform").as_(Platform)
+
+
+validate_many_languages_query = Query. \
+    has("platforms").as_(Iterable)
+
+
+def for_languages(languages: Languages) -> str:
+    return languages.platform.value
+
+
+def for_languages_query(query: Query) -> str:
+    return query["platform"].value
+
+
+def for_many_languages_query(query: Query) -> Generator[str, None, None]:
+    return query["platform"].value
+
+
+validate_language_strings_query = Query. \
+    has("platform").as_(Platform)
+
+
+validate_many_language_strings_query = Query. \
+    has("platforms").as_(Iterable)
+
+
+def for_language_strings(languages: LanguageStrings) -> str:
+    return languages.platform.value
+
+
+def for_language_strings_query(query: Query) -> str:
+    return query["platform"].value
+
+
+def for_many_language_strings_query(query: Query) -> Generator[str, None, None]:
+    return query["platform"].value
 
 
 # Map
@@ -1490,10 +1534,88 @@ def for_many_mastery_query(query: Query) -> Generator[Tuple[str, str, str, int, 
             raise QueryValidationError from e
 
 
-# Profile Icon TODO
+# Profile Icon
+
+validate_profile_icons_query = Query. \
+    has("platform").as_(Platform).also. \
+    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+    can_have("locale").with_default(_get_default_locale, supplies_type=str)
 
 
-# Realm TODO
+validate_many_profile_icons_query = Query. \
+    has("platforms").as_(Iterable).also. \
+    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+    can_have("locale").with_default(_get_default_locale, supplies_type=str)
+
+
+def for_profile_icons(profile_icon: ProfileIcons) -> Tuple[str, str, str]:
+    return profile_icon["platform"], profile_icon["version"], profile_icon["locale"]
+
+
+def for_profile_icons_query(query: Query) -> Tuple[str, str, str]:
+    return query["platform"].value, query["version"], query["locale"]
+
+
+def for_many_profile_icons_query(query: Query) -> Generator[Tuple[str, str, str], None, None]:
+    for platform in query["platforms"]:
+        try:
+            platform = Platform(platform)
+            yield platform.value, query["version"], query["locale"]
+        except ValueError as e:
+            raise QueryValidationError from e
+
+
+validate_profile_icon_query = Query. \
+    has("platform").as_(Platform).also. \
+    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+    can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
+    has("id").as_(int)
+
+
+validate_many_profile_icon_query = Query. \
+    has("platform").as_(Platform).also. \
+    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+    can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
+    has("ids").as_(Iterable)
+
+
+def for_profile_icon(profile_icon: ProfileIcon) -> Tuple[str, str, str, int]:
+    return profile_icon["platform"], profile_icon["version"], profile_icon["locale"], profile_icon["id"]
+
+
+def for_profile_icon_query(query: Query) -> Tuple[str, str, str, int]:
+    return query["platform"].value, query["version"], query["locale"], query["id"]
+
+
+def for_many_profile_icon_query(query: Query) -> Generator[Tuple[str, str, str, int], None, None]:
+    for id in query["ids"]:
+        try:
+            id = int(id)
+            yield query["platform"].value, query["version"], query["locale"], id
+        except ValueError as e:
+            raise QueryValidationError from e
+
+
+# Realm
+
+validate_realms_query = Query. \
+    has("platform").as_(Platform)
+
+
+validate_many_realms_query = Query. \
+    has("platforms").as_(Iterable)
+
+
+def for_realms(realm: Realms) -> str:
+    return realm["platform"]
+
+
+def for_realms_query(query: Query) -> str:
+    return query["platform"].value
+
+
+def for_many_realms_query(query: Query) -> Generator[str, None, None]:
+    return query["platform"].value
 
 
 # Rune
@@ -1574,9 +1696,60 @@ def for_many_summoner_spell_query(query: Query) -> Generator[Tuple[str, str, str
             raise QueryValidationError from e
 
 
+# Version
+
+validate_versions_query = Query. \
+    has("platform").as_(Platform)
+
+
+validate_many_versions_query = Query. \
+    has("platforms").as_(Iterable)
+
+
+def for_versions(versions: Versions) -> str:
+    return versions["platform"]
+
+
+def for_versions_query(query: Query) -> str:
+    return query["platform"].value
+
+
+def for_many_versions_query(query: Query) -> Generator[str, None, None]:
+    for platform in query["platforms"]:
+        try:
+            platform = Platform(platform)
+            yield platform.value
+        except ValueError as e:
+            raise QueryValidationError from e
+
+
 ##############
-# Status API TODO #
+# Status API #
 ##############
+
+validate_shard_status_query = Query. \
+    has("platform").as_(Platform)
+
+
+validate_many_shard_status_query = Query. \
+    has("platforms").as_(Iterable)
+
+
+def for_shard_status(shard_status: ShardStatus) -> str:
+    return shard_status["platform"]
+
+
+def for_shard_status_query(query: Query) -> str:
+    return query["platform"].value
+
+
+def for_many_shard_status_query(query: Query) -> Generator[str, None, None]:
+    for platform in query["platforms"]:
+        try:
+            platform = Platform(platform)
+            yield platform.value
+        except ValueError as e:
+            raise QueryValidationError from e
 
 
 #################
@@ -1711,8 +1884,59 @@ def for_many_rune_page_query(query: Query) -> Generator[Tuple[str, Union[int, st
 
 
 #################
-# Spectator API TODO #
+# Spectator API #
 #################
+
+validate_current_match_query = Query. \
+    has("platform").as_(Platform).also. \
+    has("gameId").as_(int)
+
+
+validate_many_current_match_query = Query. \
+    has("platform").as_(Platform).also. \
+    has("gameIds").as_(Iterable)
+
+
+def for_current_match(current_match_info: CurrentMatch) -> Tuple[str, int]:
+    return current_match_info["platform"], current_match_info["gameId"]
+
+
+def for_current_match_query(query: Query) -> Tuple[str, int]:
+    return query["platform"].value, query["gameId"]
+
+
+def for_many_current_match_query(query: Query) -> Generator[Tuple[str, int], None, None]:
+    for match_id in query["gameIds"]:
+        try:
+            match_id = int(match_id)
+            yield query["platform"].value, match_id
+        except ValueError as e:
+            raise QueryValidationError from e
+
+
+validate_featured_matches_query = Query. \
+    has("platform").as_(Platform)
+
+
+validate_many_featured_matches_query = Query. \
+    has("platforms").as_(Iterable)
+
+
+def for_featured_matches(featured_matches: FeaturedMatches) -> str:
+    return featured_matches["platform"]
+
+
+def for_featured_matches_query(query: Query) -> str:
+    return query["platform"].value
+
+
+def for_many_featured_matches_query(query: Query) -> Generator[str, None, None]:
+    for platform in query["platforms"]:
+        try:
+            platform = Platform(platform)
+            yield platform.value
+        except ValueError as e:
+            raise QueryValidationError from e
 
 
 ################

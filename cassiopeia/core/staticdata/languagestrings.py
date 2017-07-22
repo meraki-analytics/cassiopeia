@@ -2,7 +2,7 @@ from typing import Dict
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy_property
-from merakicommons.container import searchable
+from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform

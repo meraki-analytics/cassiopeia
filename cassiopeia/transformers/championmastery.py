@@ -3,7 +3,7 @@ from copy import deepcopy
 
 from datapipelines import DataTransformer, PipelineContext
 
-from ..core.championmastery import ChampionMasteryData, ChampionMasteryListData
+from ..core.championmastery import ChampionMasteryData, ChampionMasteryListData, ChampionMastery, ChampionMasteries
 from ..dto.championmastery import ChampionMasteryDto, ChampionMasteryListDto
 
 T = TypeVar("T")
@@ -14,6 +14,8 @@ class ChampionMasteryTransformer(DataTransformer):
     @DataTransformer.dispatch
     def transform(self, target_type: Type[T], value: F, context: PipelineContext = None) -> T:
         pass
+
+    # Data
 
     @transform.register(ChampionMasteryDto, ChampionMasteryData)
     def champion_mastery_dto_to_data(self, value: ChampionMasteryDto, context: PipelineContext = None) -> ChampionMasteryData:
@@ -28,3 +30,13 @@ class ChampionMasteryTransformer(DataTransformer):
             c._update({"region": data["region"]})
         data = data["masteries"]
         return ChampionMasteryListData(data)
+
+    # Core
+
+    @transform.register(ChampionMasteryData, ChampionMastery)
+    def champion_mastery_data_to_core(self, value: ChampionMasteryData, context: PipelineContext = None) -> ChampionMastery:
+        return ChampionMastery(value)
+
+    @transform.register(ChampionMasteryListData, ChampionMasteries)
+    def champion_mastery_list_data_to_core(self, value: ChampionMasteryListData, context: PipelineContext = None) -> ChampionMasteries:
+        return ChampionMasteries([self.champion_mastery_data_to_core(cm) for cm in value])

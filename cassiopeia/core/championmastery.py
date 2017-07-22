@@ -68,6 +68,10 @@ class ChampionMasteryData(DataObject):
 ##############
 
 
+class ChampionMasteries(SearchableList):  # TODO This needs either a summoner or a champion; or it just needs to be deleted and I need to figure out how to deal with it.
+    pass
+
+
 @searchable({str: ["champion", "summoner"], int: ["points", "level"], bool: ["chest_granted"], datetime.datetime: ["last_played"], Champion: ["champion"], Summoner: ["summoner"]})
 class ChampionMastery(CassiopeiaGhost):
     _data_types = {ChampionMasteryData}

@@ -373,6 +373,10 @@ class ItemData(DataObject):
 ##############
 
 
+class Items(SearchableList):
+    pass
+
+
 class ItemStats(CassiopeiaObject):
     _data_types = {ItemStatsData}
 
@@ -532,11 +536,29 @@ class Gold(CassiopeiaObject):
 @searchable({str: ["name", "region", "platform", "locale", "keywords", "maps", "tags", "tier"], int: ["id"], Region: ["region"], Platform: ["platform"], Map: ["maps"]})
 class Item(CassiopeiaGhost):
     _data_types = {ItemData}
+    _load_types = {ItemData: Items}
 
     def __init__(self, *args, **kwargs):
         if "region" not in kwargs and "platform" not in kwargs:
             kwargs["region"] = settings.default_region.value
         super().__init__(*args, **kwargs)
+
+    def __load_hook__(self, load_group, core) -> None:
+        def find_matching_attribute(datalist, attrname, attrvalue):
+            for item in datalist:
+                if getattr(item, attrname, None) == attrvalue:
+                    return item
+
+        # The `core` is a dict of summoner spell core instances
+        if "id" in self._data[ItemData]._dto:
+            find = "id", self.id
+        elif "name" in self._data[ItemData]._dto:
+            find = "name", self.name
+        else:
+            raise RuntimeError("Expected fields not present after loading.")
+        core = find_matching_attribute(core, *find)
+
+        super().__load_hook__(load_group, core)
 
     # What do we do about params like this that can exist in both data objects?
     # They will be set on both data objects always, so we can choose either one to return.

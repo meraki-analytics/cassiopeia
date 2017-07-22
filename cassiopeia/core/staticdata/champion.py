@@ -16,13 +16,13 @@ from ...dto.staticdata import champion as dto
 from .item import Item
 
 
-class ChampionListData(list):
-    _dto_type = dto.ChampionListDto
-
-
 ##############
 # Data Types #
 ##############
+
+
+class ChampionListData(list):
+    _dto_type = dto.ChampionListDto
 
 
 class SpellVarsData(DataObject):
@@ -441,6 +441,10 @@ class ChampionData(DataObject):
 ##############
 
 
+class Champions(SearchableList):
+    pass
+
+
 @searchable({str: ["key"]})
 class SpellVars(CassiopeiaObject):
     _data_types = {SpellVarsData}
@@ -806,30 +810,29 @@ class Info(CassiopeiaObject):
 @searchable({str: ["name", "key", "title", "region", "platform", "locale", "resource", "tags"], int: ["id"], Region: ["region"], Platform: ["platform"], bool: ["free_to_play"], Resource: ["resource"]})
 class Champion(CassiopeiaGhost):
     _data_types = {ChampionData, ChampionStatusData}
-    _load_types = {ChampionData: ChampionListData, ChampionStatusData: ChampionStatusListData}
+    _load_types = {ChampionData: Champions, ChampionStatusData: ChampionStatusListData}  # TODO What should the latter type be? Do we really have to make a ChampionStatuses core type just for loading? If so, does it need to work with the rest of the functionality? I don't think so, and I wouldn't import it into the .core namespace so that users don't know it exists.
 
     def __init__(self, *args, **kwargs):
         if "region" not in kwargs and "platform" not in kwargs:
             kwargs["region"] = settings.default_region.value
         super().__init__(*args, **kwargs)
 
-    def __load_hook__(self, load_group, data) -> None:
+    def __load_hook__(self, load_group, core) -> None:
         def find_matching_attribute(datalist, attrname, attrvalue):
             for item in datalist:
                 if getattr(item, attrname, None) == attrvalue:
                     return item
 
-        # The `data` is a list of champion data instances
+        # The `core` is a list of champion core instances
         if "id" in self._data[ChampionData]._dto or "id" in self._data[ChampionStatusData]._dto:
             find = "id", self.id
         elif "name" in self._data[ChampionData]._dto or "name" in self._data[ChampionStatusData]._dto:
             find = "name", self.name
         if load_group is ChampionData:
-            data = find_matching_attribute(data, *find)
+            core = find_matching_attribute(core, *find)
         else:
-            data = find_matching_attribute(data, *find)
-
-        super().__load_hook__(load_group, data)
+            core = find_matching_attribute(core, *find)
+        super().__load_hook__(load_group, core)
 
     # What do we do about params like this that can exist in both data objects?
     # They will be set on both data objects always, so we can choose either one to return.

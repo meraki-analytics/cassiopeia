@@ -65,6 +65,7 @@ class DataObject(object):
 
 class CheckCache(type):  # TODO Should all CassiopeiaObjects use this, or just CassiopeiaGhosts?
     def __call__(cls, data: DataObject = None, **kwargs):
+        from .staticdata.version import Versions
         cache = settings.pipeline._cache
         if cache is not None:
             # Try to find the obj in the cache
@@ -76,9 +77,8 @@ class CheckCache(type):  # TODO Should all CassiopeiaObjects use this, or just C
             if "region" not in query and "platform" not in query:
                 query["platform"] = settings.default_platform.value
                 query["region"] = settings.default_region.value
-            if "version" not in query:
-                from .staticdata.version import VersionListData
-                versions = settings.pipeline.get(VersionListData, query={"region": query["region"]})
+            if hasattr(cls, "version") and "version" not in query:
+                versions = settings.pipeline.get(Versions, query={"region": query["region"]})
                 query["version"] = versions[0]
             try:
                 return cache.get(cls, query=query)
@@ -132,7 +132,7 @@ class CassiopeiaObject(object):
     @property
     @abstractmethod
     def _data_types(self) -> Set[DataObject]:
-        """The `DataObject`_ type that belongs to this core type."""
+        """The `DataObject`_ types that belongs to this core type."""
         pass
 
     def __call__(self, **kwargs) -> "CassiopeiaObject":
@@ -168,11 +168,6 @@ class CassiopeiaObject(object):
 
 
 class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=CheckCache):
-    def __str__(self) -> str:
-        if not self._Ghost__all_loaded:
-            self.__load__(load_group=None)
-        return super().__str__()
-
     def __load__(self, load_group: DataObject = None) -> None:
         if load_group is None:  # Load all groups
             if self._Ghost__all_loaded:
@@ -183,12 +178,19 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=CheckCache):
         else:  # Load the specific load group
             if self._Ghost__is_loaded(load_group):
                 raise ValueError("object has already been loaded.")
-            data = settings.pipeline.get(type=self._load_types[load_group], query=self._data[load_group]._dto)
-            self.__load_hook__(load_group, data)
+            query = copy.deepcopy(self._data[load_group]._dto)
+            if hasattr(self.__class__, "version") and "version" not in query:
+                from .staticdata import Versions
+                versions = settings.pipeline.get(Versions, query={"region": query["region"]})
+                query["version"] = versions[0]
+            core = settings.pipeline.get(type=self._load_types[load_group], query=query)
+            self.__load_hook__(load_group, core)
 
     @property
     def _load_types(self):
-        return {t: t for t in self._data_types}
+        return {t: self.__class__ for t in self._data_types}
 
-    def __load_hook__(self, load_group, data):
-        self._data[load_group]._dto.update(data._dto)
+    def __load_hook__(self, load_group, core: CassiopeiaObject):
+        if not isinstance(core, CassiopeiaObject):
+            raise TypeError("expected subclass of CassiopeiaObject, got {cls}".format(cls=core.__class__))
+        self._data[load_group]._dto.update(core._data[load_group]._dto)
