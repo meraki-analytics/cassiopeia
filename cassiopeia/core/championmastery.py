@@ -108,10 +108,10 @@ class ChampionMastery(CassiopeiaGhost):
             }
             self.__load_hook__(load_group, dto)
 
-    @lazy_property
+
     def region(self) -> Region:
         """The region for this champion."""
-        return Region(self._data[ChampionData].region)
+        return Region(self._data[ChampionMasteryData].region)
 
     @lazy_property
     def platform(self) -> Platform:

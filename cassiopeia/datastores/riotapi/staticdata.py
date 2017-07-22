@@ -10,6 +10,9 @@ from ...dto.staticdata.item import ItemDto, ItemListDto
 from ...dto.staticdata.summonerspell import SummonerSpellDto, SummonerSpellListDto
 from ...dto.staticdata.version import VersionListDto
 from ...dto.staticdata.map import MapDto, MapListDto
+from ...dto.staticdata.realm import RealmDto
+from ...dto.staticdata.language import LanguagesDto, LanguageStringsDto
+from ...dto.staticdata.profileicon import ProfileIconDataDto
 
 T = TypeVar("T")
 
@@ -558,6 +561,8 @@ class StaticDataAPI(RiotAPIService):
         data["version"] = query["version"]
         data["locale"] = query["locale"]
         data["includedData"] = query["includedData"]
+        if data["id"] == 3632:  # This item doesn't have a name.
+            data["name"] = ""
         return ItemDto(data)
 
     _validate_get_many_item_query = Query. \
@@ -774,5 +779,239 @@ class StaticDataAPI(RiotAPIService):
                 data["locale"] = query["locale"] if "locale" in query else platform.default_locale
                 data["includedData"] = query["includedData"]
                 yield SummonerSpellListDto(data)
+
+        return generator()
+
+    ##########
+    # Realms #
+    ##########
+
+    _validate_get_realms_query = Query. \
+        has("platform").as_(Platform)
+
+    @get.register(RealmDto)
+    def get_realms(self, query: Mapping[str, Any], context: PipelineContext = None) -> RealmDto:
+        if "region" in query and "platform" not in query:
+            query["platform"] = Region(query["region"]).platform.value
+        StaticDataAPI._validate_get_realms_query(query, context)
+
+        url = "https://{platform}.api.riotgames.com/lol/static-data/v3/realms".format(platform=query["platform"].value.lower())
+        try:
+            data = self._get(url, {})
+        except APINotFoundError as error:
+            raise NotFoundError(str(error)) from error
+
+        data["region"] = query["platform"].region.value
+        return RealmDto(data)
+
+    _validate_get_many_realms_query = Query. \
+        has("platforms").as_(Iterable)
+
+    @get_many.register(RealmDto)
+    def get_many_realms(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[RealmDto, None, None]:
+        if "region" in query and "platform" not in query:
+            query["platform"] = Region(query["region"]).platform.value
+        StaticDataAPI._validate_get_many_realms_query(query, context)
+
+        def generator():
+            for platform in query["platforms"]:
+                platform = Platform(platform.upper())
+                url = "https://{platform}.api.riotgames.com/lol/static-data/v3/realms".format(platform=platform.value.lower())
+                try:
+                    data = self._get(url, {})
+                except APINotFoundError as error:
+                    raise NotFoundError(str(error)) from error
+
+                data["region"] = platform.region.value
+                yield RealmDto(data)
+
+        return generator()
+
+    ############
+    # Language #
+    ############
+
+    _validate_get_language_query = Query. \
+        has("platform").as_(Platform)
+
+    @get.register(LanguagesDto)
+    def get_language(self, query: Mapping[str, Any], context: PipelineContext = None) -> LanguagesDto:
+        if "region" in query and "platform" not in query:
+            query["platform"] = Region(query["region"]).platform.value
+        StaticDataAPI._validate_get_language_query(query, context)
+
+        url = "https://{platform}.api.riotgames.com/lol/static-data/v3/languages".format(platform=query["platform"].value.lower())
+        try:
+            data = self._get(url, {})
+        except APINotFoundError as error:
+            raise NotFoundError(str(error)) from error
+
+        data = {"region": query["platform"].region.value, "languages": data}
+        return LanguagesDto(data)
+
+    _validate_get_many_language_query = Query. \
+        has("platforms").as_(Iterable)
+
+    @get_many.register(LanguagesDto)
+    def get_many_language(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[LanguagesDto, None, None]:
+        if "region" in query and "platform" not in query:
+            query["platform"] = Region(query["region"]).platform.value
+        StaticDataAPI._validate_get_many_language_query(query, context)
+
+        def generator():
+            for platform in query["platforms"]:
+                platform = Platform(platform.upper())
+                url = "https://{platform}.api.riotgames.com/lol/static-data/v3/languages".format(platform=platform.value.lower())
+                try:
+                    data = self._get(url, {})
+                except APINotFoundError as error:
+                    raise NotFoundError(str(error)) from error
+
+                data["region"] = platform.region.value
+                yield LanguagesDto(data)
+
+        return generator()
+
+    ####################
+    # Language Strings #
+    ####################
+
+    _validate_get_language_strings_query = Query. \
+        has("platform").as_(Platform).also. \
+        can_have("version").as_(str).also. \
+        can_have("locale").with_default(_get_default_locale, supplies_type=str)
+
+    @get.register(LanguageStringsDto)
+    def get_language_strings(self, query: Mapping[str, Any], context: PipelineContext = None) -> LanguageStringsDto:
+        if "region" in query and "platform" not in query:
+            query["platform"] = Region(query["region"]).platform.value
+        StaticDataAPI._validate_get_language_strings_query(query, context)
+
+        params = {
+            "locale": query["locale"]
+        }
+
+        if "version" in query:
+            params["version"] = query["version"]
+
+        url = "https://{platform}.api.riotgames.com/lol/static-data/v3/language-strings".format(platform=query["platform"].value.lower())
+        try:
+            data = self._get(url, params)
+        except APINotFoundError as error:
+            raise NotFoundError(str(error)) from error
+
+        data["region"] = query["platform"].region.value
+        data["locale"] = query["locale"]
+        return LanguageStringsDto(data)
+
+    _validate_get_many_language_strings_query = Query. \
+        has("platforms").as_(Iterable).also. \
+        can_have("version").as_(str).also. \
+        can_have("locale").as_(str)
+
+    @get_many.register(LanguageStringsDto)
+    def get_many_language_strings(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[LanguageStringsDto, None, None]:
+        if "region" in query and "platform" not in query:
+            query["platform"] = Region(query["region"]).platform.value
+        StaticDataAPI._validate_get_many_language_strings_query(query, context)
+
+        params = {}
+
+        if "version" in query:
+            params["version"] = query["version"]
+
+        if "locale" in query:
+            params["locale"] = query["locale"]
+
+        def generator():
+            for platform in query["platforms"]:
+                platform = Platform(platform.upper())
+                url = "https://{platform}.api.riotgames.com/lol/static-data/v3/language-strings".format(platform=platform.value.lower())
+                try:
+                    data = self._get(url, params)
+                except APINotFoundError as error:
+                    raise NotFoundError(str(error)) from error
+
+                data["region"] = platform.region.value
+                data["locale"] = query["locale"] if "locale" in query else platform.default_locale
+                yield LanguageStringsDto(data)
+
+        return generator()
+
+
+
+
+
+
+
+
+
+
+
+
+
+    #################
+    # Profile Icons #
+    #################
+
+    _validate_get_profile_icon_query = Query. \
+        has("platform").as_(Platform).also. \
+        can_have("version").as_(str).also. \
+        can_have("locale").with_default(_get_default_locale, supplies_type=str)
+
+    @get.register(ProfileIconDataDto)
+    def get_profile_icon(self, query: Mapping[str, Any], context: PipelineContext = None) -> ProfileIconDataDto:
+        if "region" in query and "platform" not in query:
+            query["platform"] = Region(query["region"]).platform.value
+        StaticDataAPI._validate_get_profile_icon_query(query, context)
+
+        params = {
+            "locale": query["locale"]
+        }
+
+        if "version" in query:
+            params["version"] = query["version"]
+
+        url = "https://{platform}.api.riotgames.com/lol/static-data/v3/profile-icons".format(platform=query["platform"].value.lower())
+        try:
+            data = self._get(url, params)
+        except APINotFoundError as error:
+            raise NotFoundError(str(error)) from error
+
+        data["region"] = query["platform"].region.value
+        data["locale"] = query["locale"]
+        return ProfileIconDataDto(data)
+
+    _validate_get_many_profile_icons_query = Query. \
+        has("platforms").as_(Iterable).also. \
+        can_have("version").as_(str).also. \
+        can_have("locale").as_(str)
+
+    @get_many.register(ProfileIconDataDto)
+    def get_many_profile_icon(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[ProfileIconDataDto, None, None]:
+        if "region" in query and "platform" not in query:
+            query["platform"] = Region(query["region"]).platform.value
+        StaticDataAPI._validate_get_many_profile_icons_query(query, context)
+
+        params = {}
+
+        if "version" in query:
+            params["version"] = query["version"]
+
+        if "locale" in query:
+            params["locale"] = query["locale"]
+
+        def generator():
+            for platform in query["platforms"]:
+                platform = Platform(platform.upper())
+                url = "https://{platform}.api.riotgames.com/lol/static-data/v3/profile-icons".format(platform=platform.value.lower())
+                try:
+                    data = self._get(url, params)
+                except APINotFoundError as error:
+                    raise NotFoundError(str(error)) from error
+
+                data["region"] = platform.region.value
+                data["locale"] = query["locale"] if "locale" in query else platform.default_locale
+                yield ProfileIconDataDto(data)
 
         return generator()

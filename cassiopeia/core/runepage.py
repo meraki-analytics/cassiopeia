@@ -1,17 +1,13 @@
-import os
 from typing import List, Mapping
-import datetime
 from collections import Counter
-from PIL.Image import Image as PILImage
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable, SearchableList, SearchableDictionary
+from merakicommons.container import searchable, SearchableDictionary
 
-from ..configuration import settings
 from ..data import Region, Platform
-from .common import DataObject, CassiopeiaObject, CassiopeiaGhost
-from ..dto.runepage import RuneSlotDto, RunePageDto, RunePagesDto
+from .common import DataObject, CassiopeiaGhost
+from ..dto.runepage import RuneSlotDto, RunePageDto
 from .staticdata.rune import Rune as StaticdataRune
 
 
@@ -83,10 +79,6 @@ class RunePagesData(list):
 class RunePage(CassiopeiaGhost):
     _data_types = {RunePageData}
 
-    def __load_hook__(self, load_group, dto) -> None:
-        dto = list(dto)
-        super().__load_hook__(load_group, dto)
-
     @lazy_property
     def region(self) -> Region:
         return Region(self._data[RunePageData].region)
@@ -103,6 +95,7 @@ class RunePage(CassiopeiaGhost):
 
     @lazy_property
     def summoner(self) -> "Summoner":
+        from .summoner import Summoner
         return Summoner(id=self._data[RunePageData].summoner_id)
 
     @CassiopeiaGhost.property(RunePageData)

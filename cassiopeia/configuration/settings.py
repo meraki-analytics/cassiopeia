@@ -1,7 +1,6 @@
 import os
 import logging
 
-
 from ..data import Region, Platform
 from .load import config
 
@@ -11,26 +10,42 @@ logging.basicConfig(format='%(asctime)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%
 
 def create_default_pipeline(api_key, verbose=False):
     from datapipelines import DataPipeline
+    from ..datastores.cache import Cache
     from ..datastores.riotapi import RiotAPI
-    from ..datastores.datadragon import DataDragonService
     from ..transformers.staticdata import StaticDataTransformer
     from ..transformers.champion import ChampionTransformer
     from ..transformers.championmastery import ChampionMasteryTransformer
     from ..transformers.summoner import SummonerTransformer
     from ..transformers.match import MatchTransformer
+    from ..transformers.masteries import MasteriesTransformer
+    from ..transformers.runes import RunesTransformer
+    from ..transformers.spectator import SpectatorTransformer
+    from ..transformers.status import StatusTransformer
 
     services = [
-        RiotAPI(api_key=api_key),
-        DataDragonService()
+        Cache(),  # TODO Add expirations from file
+        RiotAPI(api_key=api_key)
     ]
     riotapi_transformers = [
         StaticDataTransformer(),
         ChampionTransformer(),
         ChampionMasteryTransformer(),
         SummonerTransformer(),
-        MatchTransformer()
+        MatchTransformer(),
+        MasteriesTransformer(),
+        RunesTransformer(),
+        SpectatorTransformer(),
+        StatusTransformer()
     ]
     pipeline = DataPipeline(services, riotapi_transformers)
+
+    # Manually put the cache on the pipeline. TODO Is this the best way?
+    for datastore in services:
+        if isinstance(datastore, Cache):
+            pipeline._cache = datastore
+            break
+    else:
+        pipeline._cache = None
 
     if verbose:
         for service in services:

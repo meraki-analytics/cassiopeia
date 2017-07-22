@@ -1,17 +1,19 @@
-from typing import Type, TypeVar, MutableMapping, Any
+from typing import Type, TypeVar
 from copy import deepcopy
 
 from datapipelines import DataTransformer, PipelineContext
 
-from ..core.staticdata import ChampionData, ChampionListData
-from ..core.staticdata import MasteryData, MasteryListData
-from ..core.staticdata import RuneData, RuneListData
-from ..core.staticdata import ItemData, ItemListData
-from ..core.staticdata import SummonerSpellData, SummonerSpellListData
-from ..core.staticdata import VersionListData
-from ..core.staticdata import MapData, MapListData
-from ..core.runepage import RunePageData, RunePagesData
-from ..core.masterypage import MasteryPageData, MasteryPagesData
+from ..core.staticdata.champion import ChampionData, ChampionListData
+from ..core.staticdata.mastery import MasteryData, MasteryListData
+from ..core.staticdata.rune import RuneData, RuneListData
+from ..core.staticdata.item import ItemData, ItemListData
+from ..core.staticdata.summonerspell import SummonerSpellData, SummonerSpellListData
+from ..core.staticdata.version import VersionListData
+from ..core.staticdata.map import MapData, MapListData
+from ..core.staticdata.realm import RealmData
+from ..core.staticdata.language import LanguagesData
+from ..core.staticdata.languagestrings import LanguageStringsData
+from ..core.staticdata.profileicon import ProfileIconData
 
 from ..dto.staticdata import ChampionDto, ChampionListDto
 from ..dto.staticdata import MasteryDto, MasteryListDto
@@ -20,8 +22,9 @@ from ..dto.staticdata import ItemDto, ItemListDto
 from ..dto.staticdata import SummonerSpellDto, SummonerSpellListDto
 from ..dto.staticdata import VersionListDto
 from ..dto.staticdata import MapDto, MapListDto
-from ..dto.runepage import RunePageDto, RunePagesDto
-from ..dto.masterypage import MasteryPageDto, MasteryPagesDto
+from ..dto.staticdata.realm import RealmDto
+from ..dto.staticdata.language import LanguagesDto, LanguageStringsDto
+from ..dto.staticdata.profileicon import ProfileIconDataDto
 
 T = TypeVar("T")
 F = TypeVar("F")
@@ -43,7 +46,7 @@ class StaticDataTransformer(DataTransformer):
 
         data["data"] = [self.champion_dto_to_data(c) for c in data["data"].values()]
         for c in data["data"]:
-            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"]})
+            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"], "includedData": data["includedData"]})
 
         data = data["data"]
         return ChampionListData(data)
@@ -59,7 +62,7 @@ class StaticDataTransformer(DataTransformer):
 
         data["data"] = [self.mastery_dto_to_data(c) for c in data["data"].values()]
         for c in data["data"]:
-            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"]})
+            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"], "includedData": data["includedData"]})
 
         data = data["data"]
         return MasteryListData(data)
@@ -75,7 +78,7 @@ class StaticDataTransformer(DataTransformer):
 
         data["data"] = [self.rune_dto_to_data(c) for c in data["data"].values()]
         for c in data["data"]:
-            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"]})
+            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"], "includedData": data["includedData"]})
 
         data = data["data"]
         return RuneListData(data)
@@ -91,7 +94,7 @@ class StaticDataTransformer(DataTransformer):
 
         data["data"] = [self.item_dto_to_data(c) for c in data["data"].values()]
         for c in data["data"]:
-            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"]})
+            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"], "includedData": data["includedData"]})
 
         data = data["data"]
         return ItemListData(data)
@@ -107,39 +110,10 @@ class StaticDataTransformer(DataTransformer):
 
         data["data"] = [self.summoner_spell_dto_to_data(c) for c in data["data"].values()]
         for c in data["data"]:
-            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"]})
+            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"], "includedData": data["includedData"]})
 
         data = data["data"]
         return SummonerSpellListData(data)
-
-    @transform.register(MasteryPageDto, MasteryPageData)
-    def mastery_page_dto_to_data(self, value: MasteryPageDto, context: PipelineContext = None) -> MasteryPageData:
-        data = deepcopy(value)
-        return MasteryPageData(data)
-
-    @transform.register(MasteryPagesDto, MasteryPagesData)
-    def mastery_pages_dto_to_data(self, value: MasteryPagesDto, context: PipelineContext = None) -> MasteryPagesData:
-        data = deepcopy(value)
-        for page in data["pages"]:
-            page["region"] = data["region"]
-            page["summonerId"] = data["summonerId"]
-        data = [self.mastery_page_dto_to_data(page) for page in data["pages"]]
-        return MasteryPagesData(data)
-
-
-    @transform.register(RunePageDto, RunePageData)
-    def rune_page_dto_to_data(self, value: RunePageDto, context: PipelineContext = None) -> RunePageData:
-        data = deepcopy(value)
-        return RunePageData(data)
-
-    @transform.register(RunePagesDto, RunePagesData)
-    def rune_pages_dto_to_data(self, value: RunePagesDto, context: PipelineContext = None) -> RunePagesData:
-        data = deepcopy(value)
-        for page in data["pages"]:
-            page["region"] = data["region"]
-            page["summonerId"] = data["summonerId"]
-        data = [self.rune_page_dto_to_data(page) for page in data["pages"]]
-        return RunePagesData(data)
 
     @transform.register(MapDto, MapData)
     def map_dto_to_data(self, value: MapDto, context: PipelineContext = None) -> MapData:
@@ -161,3 +135,23 @@ class StaticDataTransformer(DataTransformer):
     def version_list_dto_to_data(self, value: VersionListDto, context: PipelineContext = None) -> VersionListData:
         data = VersionListData(deepcopy(value["versions"]))
         return data
+
+    @transform.register(RealmDto, RealmData)
+    def realm_dto_to_data(self, value: RealmDto, context: PipelineContext = None) -> RealmData:
+        data = deepcopy(value)
+        return RealmData(data)
+
+    @transform.register(LanguagesDto, LanguagesData)
+    def languages_dto_to_data(self, value: LanguagesDto, context: PipelineContext = None) -> LanguagesData:
+        data = deepcopy(value)
+        return LanguagesData(data["languages"])
+
+    @transform.register(LanguageStringsDto, LanguageStringsData)
+    def language_strings_dto_to_data(self, value: LanguageStringsDto, context: PipelineContext = None) -> LanguageStringsData:
+        data = deepcopy(value)
+        return LanguageStringsData(data)
+
+    @transform.register(ProfileIconDataDto, ProfileIconData)
+    def profile_icon_dto_to_data(self, value: ProfileIconDataDto, context: PipelineContext = None) -> ProfileIconData:
+        data = deepcopy(value)
+        return ProfileIconData(data)

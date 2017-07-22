@@ -1,10 +1,11 @@
 from abc import abstractmethod, abstractclassmethod
-from typing import Mapping, Any, Dict, Set, Generic
+from typing import Mapping, Any, Set
 from enum import Enum
+import copy
 import logging
 
+from datapipelines import NotFoundError
 from merakicommons.ghost import Ghost
-from merakicommons.cache import lazy_property
 
 from ..configuration import settings
 
@@ -46,7 +47,7 @@ class DataObject(object):
                         value = str(value)
                     elif isinstance(value, list) and len(value) > 0 and isinstance(value[0], DataObject):
                         value = [str(v) for v in value]
-                    elif isinstance(value, dict) and len(value) > 0 and isinstance(value.values()[0], DataObject):
+                    elif isinstance(value, dict) and len(value) > 0 and isinstance(next(iter(value.values())), DataObject):
                         value = {key: str(v) for key, v in value.items()}
                     result[key] = value
                 except KeyError:  # A KeyError will be thrown when the properties try to do the dto lookup if the data doesn't exist
@@ -62,22 +63,35 @@ class DataObject(object):
         self._dto[name] = value
 
 
-class CheckCache(type):  # TODO This may need to inherit from GhostMeta. Also, should all CassiopeiaObjects use this, or just CassiopeiaGhosts?
-    def __call__(cls, *args, **kwargs):
-        cache = get_cache()  # TODO Not defined.
+class CheckCache(type):  # TODO Should all CassiopeiaObjects use this, or just CassiopeiaGhosts?
+    def __call__(cls, data: DataObject = None, **kwargs):
+        cache = settings.pipeline._cache
         if cache is not None:
             # Try to find the obj in the cache
-            obj = cache.get(cls, **kwargs)  # TODO These get and put calls will need to be modified once the cache is written
-            if obj is not None:
-                return obj
+            if data is not None:
+                query = copy.deepcopy(data._dto)
+            else:
+                query = {}
+            query.update(kwargs)
+            if "region" not in query and "platform" not in query:
+                query["platform"] = settings.default_platform.value
+                query["region"] = settings.default_region.value
+            if "version" not in query:
+                from .staticdata.version import VersionListData
+                versions = settings.pipeline.get(VersionListData, query={"region": query["region"]})
+                query["version"] = versions[0]
+            try:
+                return cache.get(cls, query=query)
+            except NotFoundError:
+                pass
 
         # If the obj was not found in the cache (or if there is no cache), create a new instance
         LOGGER.debug("Creating new {} from {}".format(cls.__name__, set(kwargs.keys())))
-        obj = super().__call__(**kwargs)
+        obj = super().__call__(data=data, **kwargs)
 
-        # Store the new obj in the cache
-        if cache is not None:
-            cache.put(cls, item=obj, **kwargs)  # TODO These get and put calls will need to be modified once the cache is written
+        # Store the new obj in the cache. Actually don't since we are creating Ghost objects. Let the datapipeline handle puts.
+        #if cache is not None:
+        #    cache.put(cls, obj)
 
         return obj
 
@@ -149,11 +163,11 @@ class CassiopeiaObject(object):
                     self._data[type]._update(u)
                     found = True
             if not found:
-                LOGGER.warn("When initializing {}, key {} is not in type(s) {}. Not set.".format(self.__class__.__name__, key, self._data_types))
+                LOGGER.warning("When initializing {}, key {} is not in type(s) {}. Not set.".format(self.__class__.__name__, key, self._data_types))
         return self
 
 
-class CassiopeiaGhost(CassiopeiaObject, Ghost):
+class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=CheckCache):
     def __str__(self) -> str:
         if not self._Ghost__all_loaded:
             self.__load__(load_group=None)
@@ -169,12 +183,12 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost):
         else:  # Load the specific load group
             if self._Ghost__is_loaded(load_group):
                 raise ValueError("object has already been loaded.")
-            dto = settings.pipeline.get(type=self._load_types[load_group]._dto_type, query=self._data[load_group]._dto)
-            self.__load_hook__(load_group, dto)
+            data = settings.pipeline.get(type=self._load_types[load_group], query=self._data[load_group]._dto)
+            self.__load_hook__(load_group, data)
 
     @property
     def _load_types(self):
         return {t: t for t in self._data_types}
 
-    def __load_hook__(self, load_group, dto):
-            self._data[load_group]._dto.update(dto)
+    def __load_hook__(self, load_group, data):
+        self._data[load_group]._dto.update(data._dto)
