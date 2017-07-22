@@ -231,6 +231,7 @@ class LeagueSummoner(DataObject):
         return self._data[LeagueItemData].league_points
 
 
+ # TODO How to deal with this? I should know after I've figured out all the other list-like objects.
 #class Leagues(DataObject):
 #    _data_types = {LeagueListData}
 #

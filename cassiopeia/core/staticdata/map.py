@@ -3,7 +3,7 @@ from PIL.Image import Image as PILImage
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable
+from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform
@@ -13,13 +13,13 @@ from .version import VersionListData
 from ...dto.staticdata import map as dto
 
 
-class MapListData(list):
-    _dto_type = dto.MapListDto
-
-
 ##############
 # Data Types #
 ##############
+
+
+class MapListData(list):
+    _dto_type = dto.MapListDto
 
 
 class MapData(DataObject):
@@ -60,32 +60,35 @@ class MapData(DataObject):
 ##############
 
 
+class Maps(SearchableList):
+    pass
+
+
 @searchable({str: ["name", "locale"], int: ["id"]})
 class Map(CassiopeiaGhost):
     _data_types = {MapData}
-    _load_types = {MapData: MapListData}
+    _load_types = {MapData: Maps}
 
     def __init__(self, *args, **kwargs):
         if "region" not in kwargs and "platform" not in kwargs:
             kwargs["region"] = settings.default_region.value
         super().__init__(*args, **kwargs)
 
-    def __load_hook__(self, load_group, data) -> None:
+    def __load_hook__(self, load_group, core) -> None:
         def find_matching_attribute(datalist, attrname, attrvalue):
             for item in datalist:
                 if getattr(item, attrname, None) == attrvalue:
                     return item
 
-        # The `data` is a dict of map data instances
+        # The `core` is a dict of map core instances
         if "mapId" in self._data[MapData]._dto:
             find = "mapId", self.id
         elif "mapName" in self._data[MapData]._dto:
             find = "mapName", self.name
         else:
             raise ValueError("unknown `id` and `name`")
-        data = find_matching_attribute(data, *find)
-
-        super().__load_hook__(load_group, data)
+        core = find_matching_attribute(core, *find)
+        super().__load_hook__(load_group, core)
 
     @lazy_property
     def region(self) -> Region:

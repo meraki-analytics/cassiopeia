@@ -2,7 +2,7 @@ from typing import List, Mapping
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable, SearchableDictionary
+from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
 from ..data import Region, Platform
 from .common import DataObject, CassiopeiaGhost
@@ -71,9 +71,14 @@ class MasteryPagesData(list):
 ##############
 
 
+class MasteryPages(SearchableList):  # TODO This needs a summoner id or something so that it can be loaded.
+    pass
+
+
 @searchable({str: ["name", "masteries", "region", "platform", "locale"], int: ["id"], bool: ["current"], StaticdataMastery: ["masteries"], Region: ["region"], Platform: ["platform"]})
 class MasteryPage(CassiopeiaGhost):
     _data_types = {MasteryPageData}
+    _load_types = {MasteryPageData: MasteryPages}
 
     @lazy_property
     def region(self) -> Region:

@@ -1,17 +1,14 @@
-import os
 import datetime
 from typing import List, Tuple, Dict
-from PIL.Image import Image as PILImage
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable, SearchableList, SearchableLazyList
+from merakicommons.container import searchable, SearchableList, SearchableLazyList, SearchableDictionary
 
 from ..configuration import settings
 from ..data import Region, Platform, Tier, Map, GameType, GameMode, Queue, Division, Side, Season
 from .common import DataObject, CassiopeiaObject, CassiopeiaGhost
 from ..dto import match as dto
-from .staticdata.version import VersionListData
 from .summoner import Summoner
 from .staticdata.champion import Champion
 from .staticdata.rune import Rune
@@ -819,6 +816,10 @@ class MatchData(DataObject):
 ##############
 
 
+class MatchHistory(SearchableList):
+    pass
+
+
 class Postion(DataObject):
     _data_types = {PositionData}
 
@@ -832,7 +833,7 @@ class Postion(DataObject):
 
 
 @searchable({str: ["event_type", "tower_type", "ascended_type", "ward_type", "monster_type", "type", "monster_sub_type", "lane_type", "building_type"]})
-class Event(DataObject):
+class Event(CassiopeiaObject):
     _data_types = {EventData}
 
     @property
@@ -983,7 +984,7 @@ class Frame(CassiopeiaObject):
 
     @property
     def participant_frames(self) -> Dict[int, ParticipantFrame]:
-        return SearchableDict({k: ParticipantFrame(frame) for frame in self._data[FrameData].participant_frames.items()})
+        return SearchableDictionary({k: ParticipantFrame(frame) for k, frame in self._data[FrameData].participant_frames.items()})
 
     @property
     def events(self) -> List[Event]:

@@ -3,8 +3,7 @@ from copy import deepcopy
 
 from datapipelines import DataTransformer, PipelineContext
 
-from ..core.masterypage import MasteryPageData, MasteryPagesData
-
+from ..core.masterypage import MasteryPageData, MasteryPagesData, MasteryPage, MasteryPages
 from ..dto.masterypage import MasteryPageDto, MasteryPagesDto
 
 T = TypeVar("T")
@@ -15,6 +14,8 @@ class MasteriesTransformer(DataTransformer):
     @DataTransformer.dispatch
     def transform(self, target_type: Type[T], value: F, context: PipelineContext = None) -> T:
         pass
+
+    # Data
 
     @transform.register(MasteryPageDto, MasteryPageData)
     def mastery_page_dto_to_data(self, value: MasteryPageDto, context: PipelineContext = None) -> MasteryPageData:
@@ -29,3 +30,13 @@ class MasteriesTransformer(DataTransformer):
             page["summonerId"] = data["summonerId"]
         data = [self.mastery_page_dto_to_data(page) for page in data["pages"]]
         return MasteryPagesData(data)
+
+    # Core
+
+    @transform.register(MasteryPageData, MasteryPage)
+    def mastery_page_data_to_core(self, value: MasteryPageData, context: PipelineContext = None) -> MasteryPage:
+        return MasteryPage(value)
+
+    @transform.register(MasteryPagesData, MasteryPages)
+    def mastery_pages_data_to_core(self, value: MasteryPagesData, context: PipelineContext = None) -> MasteryPages:
+        return MasteryPages([self.mastery_page_data_to_core(page) for page in value])

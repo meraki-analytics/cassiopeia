@@ -7,16 +7,12 @@ def test_cass():
     for sspell in sspells:
         #if "Disabled" not in sspell.name:
         if set(sspell.modes) & {GameMode.classic, GameMode.aram, GameMode.poro_king, GameMode.ascension}:
-            print(sspell.name)
-            try:
-                print(sspell.tooltip)
-            except:
-                print("FAILURE")
-                print(sspell._data.values()[0])
+            print("Name:", sspell.name)
+            print("Description:", sspell.description)
             print()
 
     sspell = SummonerSpell(name="Ghost")
-    print(sspell.tooltip)
+    print(sspell.description)
 
 if __name__ == "__main__":
     test_cass()

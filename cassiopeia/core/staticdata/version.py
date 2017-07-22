@@ -1,2 +1,7 @@
 class VersionListData(list):
-    pass
+    @property
+    def region(self):
+        return self._region
+
+
+Versions = VersionListData

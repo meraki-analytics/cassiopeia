@@ -3,7 +3,7 @@ from PIL.Image import Image as PILImage
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable
+from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform, RuneType
@@ -13,16 +13,16 @@ from .version import VersionListData
 from ...dto.staticdata import rune as dto
 
 
+##############
+# Data Types #
+##############
+
+
 class RuneListData(list):
     _dto_type = dto.RuneListDto
     #data    Map[string, RuneDto]
     #version string
     #type    string
-
-
-##############
-# Data Types #
-##############
 
 
 class MetadataData(DataObject):
@@ -360,6 +360,10 @@ class RuneData(DataObject):
 ##############
 
 
+class Runes(SearchableList):
+    pass
+
+
 class RuneStats(CassiopeiaObject):
     _data_types = {RuneStatsData}
 
@@ -627,6 +631,7 @@ class RuneStats(CassiopeiaObject):
 @searchable({str: ["name", "tags", "type", "region", "platform", "locale"], int: ["id"], RuneType: ["type"], Region: ["region"], Platform: ["platform"]})
 class Rune(CassiopeiaGhost):
     _data_types = {RuneData}
+    _load_types = {RuneData: Runes}
 
     def __init__(self, *args, **kwargs):
         if "region" not in kwargs and "platform" not in kwargs:

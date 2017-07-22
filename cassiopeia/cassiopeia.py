@@ -6,7 +6,7 @@ from merakicommons.container import SearchableList
 from .configuration import settings
 from .data import PATCHES, Region
 from .patches import Patch
-from .core import Champion, Summoner, Account, ChampionMastery, Rune, Mastery, Item, RunePage, MasteryPage, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus
+from .core import Champion, Summoner, Account, ChampionMastery, Rune, Mastery, Item, RunePage, MasteryPage, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory
 from .core.staticdata.version import VersionListData
 from .core.staticdata.champion import ChampionListData
 from .core.staticdata.rune import RuneListData
@@ -19,9 +19,9 @@ from .core.staticdata.language import LanguagesData
 from .core.championmastery import ChampionMasteryListData
 from .core.runepage import RunePagesData
 from .core.masterypage import MasteryPagesData
-from .core.match import MatchListData
 from .core.spectator import FeaturedGamesData
 # TODO Add featured games
+# TODO Fix pipeline.gets to pull cores
 
 
 def get_matches(summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
@@ -33,8 +33,7 @@ def get_matches(summoner: Union[Summoner, int, str], region: Union[Region, str] 
         summoner = Summoner(id=summoner)
     elif isinstance(summoner, str):
         summoner = Summoner(name=summoner)
-    matchlist = settings.pipeline.get(MatchListData, query={"accountId": summoner.account.id, "region": region, "platform": region.platform.value})
-    return SearchableList([Match.from_match_reference(ref) for ref in matchlist])
+    return settings.pipeline.get(MatchHistory, query={"accountId": summoner.account.id, "region": region, "platform": region.platform.value})
 
 
 def get_match(id, region: Union[Region, str] = None) -> Match:
@@ -253,7 +252,7 @@ def get_versions(region: Union[Region, str] = None) -> List[str]:
         region = settings.default_region
     elif not isinstance(region, Region):
         region = Region(region)
-    versions = settings.pipeline.get(VersionListData, query={"region": region, "platform": region.platform})
+    versions = settings.pipeline.get(VersionListData, query={"region": region, "platform": region.platform})  # TODO Technically this returns a `VersionListData` rather than the `Versions` core object, even though they are currently the same thing. At some point we should update this.
     return versions
 
 

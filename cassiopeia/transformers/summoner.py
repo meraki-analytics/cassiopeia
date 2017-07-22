@@ -3,7 +3,7 @@ from copy import deepcopy
 
 from datapipelines import DataTransformer, PipelineContext
 
-from ..core.summoner import SummonerData
+from ..core.summoner import SummonerData, Summoner
 from ..dto.summoner import SummonerDto
 
 T = TypeVar("T")
@@ -15,7 +15,15 @@ class SummonerTransformer(DataTransformer):
     def transform(self, target_type: Type[T], value: F, context: PipelineContext = None) -> T:
         pass
 
+    # Data
+
     @transform.register(SummonerDto, SummonerData)
     def summoner_dto_to_data(self, value: SummonerDto, context: PipelineContext = None) -> SummonerData:
         data = deepcopy(value)
         return SummonerData(data)
+
+    # Core
+
+    @transform.register(SummonerData, Summoner)
+    def summoner_data_to_core(self, value: SummonerData, context: PipelineContext = None) -> Summoner:
+        return Summoner(value)

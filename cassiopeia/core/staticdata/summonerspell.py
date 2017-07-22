@@ -13,13 +13,13 @@ from .version import VersionListData
 from ...dto.staticdata import summonerspell as dto
 
 
-class SummonerSpellListData(list):
-    _dto_type = dto.SummonerSpellListDto
-
-
 ##############
 # Data Types #
 ##############
+
+
+class SummonerSpellListData(list):
+    _dto_type = dto.SummonerSpellListDto
 
 
 class SpellVarsData(DataObject):
@@ -145,6 +145,10 @@ class SummonerSpellData(DataObject):
 ##############
 
 
+class SummonerSpells(SearchableList):
+    pass
+
+
 @searchable({str: ["key"]})
 class SpellVars(CassiopeiaObject):
     _data_types = {SpellVarsData}
@@ -178,29 +182,29 @@ class SpellVars(CassiopeiaObject):
 @searchable({str: ["name", "key", "keywords", "resource"], Resource: ["resource"]})
 class SummonerSpell(CassiopeiaGhost):
     _data_types = {SummonerSpellData}
-    _load_types = {SummonerSpellData: SummonerSpellListData}
+    _load_types = {SummonerSpellData: SummonerSpells}
 
     def __init__(self, *args, **kwargs):
         if "region" not in kwargs and "platform" not in kwargs:
             kwargs["region"] = settings.default_region.value
         super().__init__(*args, **kwargs)
 
-    def __load_hook__(self, load_group, data) -> None:
+    def __load_hook__(self, load_group, core) -> None:
         def find_matching_attribute(datalist, attrname, attrvalue):
             for item in datalist:
                 if getattr(item, attrname, None) == attrvalue:
                     return item
 
-        # The `data` is a dict of summoner spell data instances
+        # The `core` is a dict of summoner spell core instances
         if "name" in self._data[SummonerSpellData]._dto:
             find = "name", self.name
         elif "id" in self._data[SummonerSpellData]._dto:
             find = "id", self.id
         else:
             raise RuntimeError("Expected fields not present after loading.")
-        data = find_matching_attribute(data, *find)
+        core = find_matching_attribute(core, *find)
 
-        super().__load_hook__(load_group, data)
+        super().__load_hook__(load_group, core)
 
     # What do we do about params like this that can exist in both data objects?
     # They will be set on both data objects always, so we can choose either one to return.
