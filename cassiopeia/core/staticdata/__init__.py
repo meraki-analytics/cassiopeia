@@ -1,5 +1,5 @@
 # Core types
-from .champion import Champion
+from .champion import Champion, Champions
 from .mastery import Mastery
 from .rune import Rune
 from .item import Item

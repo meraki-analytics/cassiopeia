@@ -1,13 +1,15 @@
 from abc import abstractmethod, abstractclassmethod
-from typing import Mapping, Any, Set
+from typing import Mapping, Any, Set, Dict
 from enum import Enum
+import functools
 import copy
 import logging
 
-from datapipelines import NotFoundError
+from datapipelines import NotFoundError, UnsupportedError
 from merakicommons.ghost import Ghost
 
 from ..configuration import settings
+from ..data import Region, Platform
 
 try:
     import ujson as json
@@ -18,9 +20,45 @@ except ImportError:
 LOGGER = logging.getLogger("core")
 
 
+def provide_default_region(method):
+    @functools.wraps(method)
+    def default_region_wrapper(self=None, **kwargs):
+        region = kwargs.pop("region", None)
+        platform = kwargs.pop("platform", None)
+        if region is None:
+            if platform is None:
+                region = settings.default_region
+            else:
+                if isinstance(platform, Platform):
+                    region = platform.region
+                else:
+                    region = Platform(platform).region
+        else:
+            if not isinstance(region, Region):
+                region = Region(region)
+        kwargs["region"] = region.value
+        if self:
+                return method(self, **kwargs)
+        else:
+            return method(**kwargs)
+    return default_region_wrapper
+
+
+def get_latest_version(region):
+    from .staticdata.version import Versions
+    versions = settings.pipeline.get(Versions, query={"region": region})
+    return versions[0]
+
 class DataObject(object):
-    def __init__(self, dto):
+    def __init__(self, **kwargs):
+        self._dto = {}
+        self._update(kwargs)
+
+    @classmethod
+    def from_dto(cls, dto):
+        self = cls()
         self._dto = dto
+        return self
 
     @property
     @abstractclassmethod
@@ -37,90 +75,102 @@ class DataObject(object):
                 yield key
 
     def __str__(self):
-        result = {}
-        for key in dir(self):  # `vars` won't recursively look in the obj for things like properties, see https://stackoverflow.com/questions/980249/difference-between-dir-and-vars-keys-in-python
-            if not key.startswith("_"):
-                # Don't just fail to print if the API didn't return a value.
-                try:
-                    value = getattr(self, key)
-                    if isinstance(value, DataObject):
-                        value = str(value)
-                    elif isinstance(value, list) and len(value) > 0 and isinstance(value[0], DataObject):
-                        value = [str(v) for v in value]
-                    elif isinstance(value, dict) and len(value) > 0 and isinstance(next(iter(value.values())), DataObject):
-                        value = {key: str(v) for key, v in value.items()}
-                    result[key] = value
-                except KeyError:  # A KeyError will be thrown when the properties try to do the dto lookup if the data doesn't exist
-                    pass
-        return str(result).replace("\\'", "'")
+        return str(self._dto)
+        #result = {}
+        #for key in dir(self):  # `vars` won't recursively look in the obj for things like properties, see htt#ps://stackoverflow.com/questions/980249/difference-between-dir-and-vars-keys-in-python
+        #    if not key.startswith("_") and key is not "from_dto":
+        #        # Don't just fail to print if the API didn't return a value.
+        #        try:
+        #            value = getattr(self, key)
+        #            if isinstance(value, DataObject):
+        #                value = str(value)
+        #            elif isinstance(value, list) and len(value) > 0 and isinstance(value[0], DataObject):
+        #                value = [str(v) for v in value]
+        #            elif isinstance(value, dict) and len(value) > 0 and isinstance(next(iter(value.values())), DataObject):
+        #                value = {key: str(v) for key, v in value.items()}
+        #            result[key] = value
+        #        except KeyError:  # A KeyError will be thrown when the properties try to do the dto lookup if the data doesn't exist
+        #            pass
+        #return str(result).replace("\\'", "'")
 
     def _update(self, data: Mapping[str, Any]) -> None:
         for key, value in data.items():
             self._set(key, value)
 
-    def _set(self, item, value):
-        name = self._renamed.get(item, item)
-        self._dto[name] = value
+    def _set(self, key, value):
+        key = self._renamed.get(key, key)
+        self._dto[key] = value
 
 
 class CheckCache(type):  # TODO Should all CassiopeiaObjects use this, or just CassiopeiaGhosts?
     def __call__(cls, data: DataObject = None, **kwargs):
-        from .staticdata.version import Versions
+        try:
+            region = data.region
+        except (AttributeError, KeyError):
+            try:
+                region = kwargs["region"]
+            except KeyError:
+                try:
+                    platform = kwargs["platform"]
+                    if isinstance(platform, Platform):
+                        region = platform.region.value
+                    else:
+                        region = Platform(platform).region.value
+                except KeyError:
+                    region = settings.default_region
+
         cache = settings.pipeline._cache
         if cache is not None:
             # Try to find the obj in the cache
-            if data is not None:
-                query = copy.deepcopy(data._dto)
-            else:
-                query = {}
-            query.update(kwargs)
-            if "region" not in query and "platform" not in query:
-                query["platform"] = settings.default_platform.value
-                query["region"] = settings.default_region.value
+            from ..datastores.uniquekeys import construct_query
+            assert not data or not kwargs  # Only one or the other should be provided.
+            if data:
+                query = construct_query(cls, data)
+            else:  # have kwargs
+                query = construct_query(cls, **kwargs)
+            if "region" not in query:
+                query["region"] = region
             if hasattr(cls, "version") and "version" not in query:
-                versions = settings.pipeline.get(Versions, query={"region": query["region"]})
-                query["version"] = versions[0]
+                try:
+                    query["version"] = data.version
+                except (AttributeError, KeyError):
+                    query["version"] = get_latest_version(query["region"])
             try:
+                assert "data" not in query
                 return cache.get(cls, query=query)
-            except NotFoundError:
+            except (NotFoundError, UnsupportedError):
                 pass
 
         # If the obj was not found in the cache (or if there is no cache), create a new instance
         LOGGER.debug("Creating new {} from {}".format(cls.__name__, set(kwargs.keys())))
-        obj = super().__call__(data=data, **kwargs)
-
-        # Store the new obj in the cache. Actually don't since we are creating Ghost objects. Let the datapipeline handle puts.
-        #if cache is not None:
-        #    cache.put(cls, obj)
-
-        return obj
+        return super().__call__(**kwargs)
 
 
-class CassiopeiaObject(object):
-    _retyped = {}
+class CassiopeiaObject(object, metaclass=CheckCache):
+    _renamed = {}
 
-    def __init__(self, data: DataObject = None, **kwargs):
+    def __init__(self, **kwargs):
         # Note: Dto names are not allowed to be passed in.
-        self._data = {type: type({}) for type in self._data_types}
+        self._data = {type: type() for type in self._data_types}
+        self(**kwargs)
 
-        if data is not None:
-            if data.__class__ not in self._data_types:
-                raise TypeError("Wrong data type '{}' passed to '{}'".format(data.__class__.__name__, self.__class__.__name__))
-            self._data[data.__class__] = data
-            # Without the below for-loops, if a Champion is instantiated with a StaticData data with `id`
-            # in it, and then `.free_to_play` is called on that object, the query won't have an `id`.
-            # Also the Enums wouldn't be deconstructed.
-            # This code is ~ duplicated from __call__.
-            other_types = self._data_types - {data.__class__}
+    @classmethod
+    def from_data(cls, data: DataObject):
+        assert data is not None
+        self = cls(data)
+        self._data = {type: type() for type in self._data_types}
+        if data.__class__ not in self._data_types:
+            raise TypeError("Wrong data type '{}' passed to '{}.from_data'".format(data.__class__.__name__, self.__class__.__name__))
+        self._data[data.__class__] = data
+        # Without the below for-loops, if a Champion is instantiated with a StaticData data with `id`
+        # in it, and then `.free_to_play` is called on that object, the query won't have an `id`.
+        other_types = self._data_types - {data.__class__}
+        for type in other_types:
             for key in data:
                 value = getattr(data, key)
-                if isinstance(value, Enum):
-                    value = value.name
-                    self._data[data.__class__]._set(key, value)
-                for type in other_types:
-                    if key in dir(type):
-                        self._data[type]._set(key, value)
-        self(**kwargs)
+                if key in dir(type):
+                    self._data[type]._set(key, value)
+        return self
 
     def __str__(self) -> str:
         # This is a bit strange because we'll print a list of dict-like objects rather than one joined dict, but we've decided it's appropritate.
@@ -131,7 +181,7 @@ class CassiopeiaObject(object):
 
     @property
     @abstractmethod
-    def _data_types(self) -> Set[DataObject]:
+    def _data_types(self) -> Set[type]:
         """The `DataObject`_ types that belongs to this core type."""
         pass
 
@@ -144,18 +194,8 @@ class CassiopeiaObject(object):
                 champion(champData={"tags"}).tags  # only pulls the tag data
         """
         # Update underlying data and deconstruct any Enums the user passed in.
-        # Note that this code is duplicated in __init__ as well.
+        found = False
         for key, value in kwargs.items():
-            try:
-                types_key, rightkey = self._retyped[key][value.__class__]
-                _ = kwargs.pop(key)
-                key = rightkey
-                if types_key is not None:
-                    value = getattr(value, types_key)
-                kwargs[rightkey] = value
-            except KeyError:
-                pass
-            found = False
             for type in self._data_types:
                 # Don't allow dto names to be passed in.
                 if key in dir(type):
@@ -163,11 +203,11 @@ class CassiopeiaObject(object):
                     self._data[type]._update(u)
                     found = True
             if not found:
-                LOGGER.warning("When initializing {}, key {} is not in type(s) {}. Not set.".format(self.__class__.__name__, key, self._data_types))
+                LOGGER.warning("When initializing {}, key `{}` is not in type(s) {}. Not set.".format(self.__class__.__name__, key, self._data_types))
         return self
 
 
-class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=CheckCache):
+class CassiopeiaGhost(CassiopeiaObject, Ghost):
     def __load__(self, load_group: DataObject = None) -> None:
         if load_group is None:  # Load all groups
             if self._Ghost__all_loaded:
@@ -183,14 +223,21 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=CheckCache):
                 from .staticdata import Versions
                 versions = settings.pipeline.get(Versions, query={"region": query["region"]})
                 query["version"] = versions[0]
-            core = settings.pipeline.get(type=self._load_types[load_group], query=query)
-            self.__load_hook__(load_group, core)
+
+            from ..datastores.uniquekeys import construct_query
+            query = self.__get_query__()
+            data = settings.pipeline.get(type=self._load_types[load_group], query=query)
+            self.__load_hook__(load_group, data)
 
     @property
     def _load_types(self):
-        return {t: self.__class__ for t in self._data_types}
+        return {t: t for t in self._data_types}
 
-    def __load_hook__(self, load_group, core: CassiopeiaObject):
-        if not isinstance(core, CassiopeiaObject):
-            raise TypeError("expected subclass of CassiopeiaObject, got {cls}".format(cls=core.__class__))
-        self._data[load_group]._dto.update(core._data[load_group]._dto)
+    @abstractmethod
+    def __get_query__(self):
+        pass
+
+    def __load_hook__(self, load_group, data: DataObject):
+        if not isinstance(data, DataObject):
+            raise TypeError("expected subclass of DataObject, got {cls}".format(cls=data.__class__))
+        self._data[load_group] = data
