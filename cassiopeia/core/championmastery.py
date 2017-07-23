@@ -1,4 +1,5 @@
 import datetime
+from typing import Union
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
@@ -6,7 +7,7 @@ from merakicommons.container import searchable, SearchableList
 
 from ..configuration import settings
 from ..data import Region, Platform
-from .common import DataObject, CassiopeiaObject, CassiopeiaGhost
+from .common import DataObject, CassiopeiaObject, CassiopeiaGhost, provide_default_region
 from ..dto.championmastery import ChampionMasteryDto
 from .staticdata.champion import Champion
 from .summoner import Summoner
@@ -75,43 +76,49 @@ class ChampionMasteries(SearchableList):  # TODO This needs either a summoner or
 @searchable({str: ["champion", "summoner"], int: ["points", "level"], bool: ["chest_granted"], datetime.datetime: ["last_played"], Champion: ["champion"], Summoner: ["summoner"]})
 class ChampionMastery(CassiopeiaGhost):
     _data_types = {ChampionMasteryData}
-    _retyped = {
-      "summoner": {
-        Summoner: ("id", "summoner_id"),
-        int: (None, "summoner_id")
-      },
-      "champion": {
-        Champion: ("id", "champion_id"),
-        int: (None, "champion_id")
-      },
-      "region": {
-        Region: ("value", "region")
-      },
-      "platform": {
-        Platform: ("value", "platform")
-      }
-    }
 
-    def __init__(self, *args, **kwargs):
-        if "region" not in kwargs and "platform" not in kwargs:
-            kwargs["region"] = settings.default_region.value
-        super().__init__(*args, **kwargs)
+    @provide_default_region
+    def __init__(self, *, summoner: Union[Summoner, int, str] = None, champion: Union[Champion, int, str] = None, region: Union[Region, str] = None):
+        kwargs = {"region": region}
+        if summoner is not None:
+            if isinstance(summoner, Summoner):
+                self.__class__.summoner.fget._lazy_set(self, summoner)
+            elif isinstance(summoner, str):
+                summoner = Summoner(name=summoner)
+                self.__class__.summoner.fget._lazy_set(self, summoner)
+            else:  # int
+                kwargs["summoner_id"] = summoner
+
+        if champion is not None:
+            if isinstance(champion, Champion):
+                self.__class__.champion.fget._lazy_set(self, champion)
+            elif isinstance(champion, str):
+                champion = Champion(name=champion)
+                self.__class__.champion.fget._lazy_set(self, champion)
+            else:  # int
+                kwargs["champion_id"] = champion
+
+        super().__init__(**kwargs)
+
+    def __get_query__(self):
+        return {"platform": self.platform.value, "summoner.id": self.summoner.id, "champion.id": self.champion.id}
 
     def __load__(self, load_group: DataObject = None) -> None:
         from datapipelines import NotFoundError
         try:
-            super().__load__(load_group)
+            return super().__load__(load_group)
         except NotFoundError:
+            from ..transformers.championmastery import ChampionMasteryTransformer
             dto = {
                 "championLevel": 0,
                 "chestGranted": False,
                 "championPoints": 0,
-                "championPointsUntilNextLevel": None,  # TODO what is this value?
+                "championPointsUntilNextLevel": 1800,
                 "championPointsSinceLastLevel": 0,
                 "lastPlayTime": None
             }
-            self.__load_hook__(load_group, dto)
-
+            data = ChampionMasteryTransformer.champion_mastery_dto_to_data(dto)
+            self.__load_hook__(load_group, data)
 
     def region(self) -> Region:
         """The region for this champion."""

@@ -1601,7 +1601,7 @@ class Match(CassiopeiaGhost):
             """A helper function for creating a participant from participant, participant identity, and player data."""
             for pidentity in participant_identities:
                 if pidentity.id == participant_data.id:
-                    participant = Participant(data=ParticipantData({}), match=self)
+                    participant = Participant.from_data(ParticipantData.from_dto({}), match=self)
                     participant._data[ParticipantData] = participant_data
                     participant._data[PlayerData] = pidentity.player
                     return participant

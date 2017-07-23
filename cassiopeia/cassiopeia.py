@@ -6,7 +6,7 @@ from merakicommons.container import SearchableList
 from .configuration import settings
 from .data import PATCHES, Region
 from .patches import Patch
-from .core import Champion, Summoner, Account, ChampionMastery, Rune, Mastery, Item, RunePage, MasteryPage, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory
+from .core import Champion, Summoner, Account, ChampionMastery, Rune, Mastery, Item, RunePage, MasteryPage, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions
 from .core.staticdata.version import VersionListData
 from .core.staticdata.champion import ChampionListData
 from .core.staticdata.rune import RuneListData
@@ -76,7 +76,7 @@ def get_champion_masteries(summoner: Union[Summoner, int, str], region: Union[Re
         summoner = Summoner(name=summoner)
     cms = settings.pipeline.get(ChampionMasteryListData, query={"playerId": summoner.id, "region": region, "platform": region.platform.value})
     for i, cm in enumerate(cms):
-        cms[i] = ChampionMastery(data=cm)
+        cms[i] = ChampionMastery.from_data(cm)
     return SearchableList(cms)
 
 
@@ -96,7 +96,7 @@ def get_champion_mastery(summoner: Union[Summoner, int, str], champion: Union[Ch
     return ChampionMastery(champion=champion, summoner=summoner, region=region)
 
 
-def get_summoner(name: Union[str, int] = None, region: Union[Region, str] = None, *, id: int = None, account_id: int = None) -> Summoner:
+def get_summoner(name: Union[str, int] = None, region: Union[Region, str] = None, *, id: int = None, account: Union[Account, int] = None) -> Summoner:
     if region is None:
         region = settings.default_region
     elif not isinstance(region, Region):
@@ -108,7 +108,7 @@ def get_summoner(name: Union[str, int] = None, region: Union[Region, str] = None
             raise NameError("specify `id=...` or `account_id=...`")
     elif id:
         return Summoner(id=id, region=region)
-    elif account_id:
+    elif account:
         return Summoner(account=Account(id=id), region=region)
 
 
@@ -124,10 +124,11 @@ def get_champions(region: Union[Region, str] = None) -> List[Champion]:
         region = settings.default_region
     elif not isinstance(region, Region):
         region = Region(region)
-    champions = settings.pipeline.get(ChampionListData, query={"region": region, "platform": region.platform.value, "tags": {"all"}})
-    for i, champion in enumerate(champions):
-        champions[i] = Champion(data=champion)
-    return SearchableList(champions)
+    return Champions(region=region)
+    #champions = settings.pipeline.get(ChampionListData, query={"region": region, "platform": region.platform.value, "tags": {"all"}})
+    #for i, champion in enumerate(champions):
+    #    champions[i] = Champion.from_data(champion)
+    #return SearchableList(champions)
 
 
 def get_masteries(region: Union[Region, str] = None) -> List[Mastery]:
@@ -137,7 +138,7 @@ def get_masteries(region: Union[Region, str] = None) -> List[Mastery]:
         region = Region(region)
     masteries = settings.pipeline.get(MasteryListData, query={"region": region, "platform": region.platform.value, "tags": {"all"}})
     for i, mastery in enumerate(masteries):
-        masteries[i] = Mastery(data=mastery)
+        masteries[i] = Mastery.from_data(mastery)
     return SearchableList(masteries)
 
 
@@ -148,7 +149,7 @@ def get_runes(region: Union[Region, str] = None) -> List[Rune]:
         region = Region(region)
     runes = settings.pipeline.get(RuneListData, query={"region": region, "platform": region.platform.value, "tags": {"all"}})
     for i, rune in enumerate(runes):
-        runes[i] = Rune(data=rune)
+        runes[i] = Rune.from_data(rune)
     return SearchableList(runes)
 
 
@@ -159,7 +160,7 @@ def get_summoner_spells(region: Union[Region, str] = None) -> List[SummonerSpell
         region = Region(region)
     summoner_spells = settings.pipeline.get(SummonerSpellListData, query={"region": region, "platform": region.platform.value, "tags": {"all"}})
     for i, summoner_spell in enumerate(summoner_spells):
-        summoner_spells[i] = SummonerSpell(data=summoner_spell)
+        summoner_spells[i] = SummonerSpell.from_data(summoner_spell)
     return SearchableList(summoner_spells)
 
 
@@ -170,7 +171,7 @@ def get_items(region: Union[Region, str] = None) -> List[Item]:
         region = Region(region)
     items = settings.pipeline.get(ItemListData, query={"region": region, "platform": region.platform.value, "tags": {"all"}})
     for i, item in enumerate(items):
-        items[i] = Item(data=item)
+        items[i] = Item.from_data(item)
     return SearchableList(items)
 
 
@@ -181,7 +182,7 @@ def get_mastery_pages(summoner: Summoner, region: Union[Region, str] = None) -> 
         region = Region(region)
     mastery_pages = settings.pipeline.get(MasteryPagesData, query={"summonerId": summoner.id, "region": region, "platform": region.platform.value})
     for i, page in enumerate(mastery_pages):
-        mastery_pages[i] = MasteryPage(data=page)
+        mastery_pages[i] = MasteryPage.from_data(page)
     return SearchableList(mastery_pages)
 
 
@@ -192,7 +193,7 @@ def get_rune_pages(summoner: Summoner, region: Union[Region, str] = None) -> Lis
         region = Region(region)
     rune_pages = settings.pipeline.get(RunePagesData, query={"summonerId": summoner.id, "region": region, "platform": region.platform.value})
     for i, page in enumerate(rune_pages):
-        rune_pages[i] = RunePage(data=page)
+        rune_pages[i] = RunePage.from_data(page)
     return SearchableList(rune_pages)
 
 

@@ -1,4 +1,4 @@
-from .staticdata import Champion, Rune, Mastery, Item, Map, SummonerSpell, Realms, ProfileIcon, ProfileIcons, LanguageStrings, Languages, Versions
+from .staticdata import Champion, Champions, Rune, Mastery, Item, Map, SummonerSpell, Realms, ProfileIcon, ProfileIcons, LanguageStrings, Languages, Versions
 from .summoner import Summoner, Account
 from .championmastery import ChampionMastery
 from .runepage import RunePage
