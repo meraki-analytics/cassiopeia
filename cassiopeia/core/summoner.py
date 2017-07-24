@@ -3,6 +3,7 @@ import datetime
 from typing import Union
 from PIL.Image import Image as PILImage
 
+from datapipelines import NotFoundError
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList
@@ -150,6 +151,16 @@ class Summoner(CassiopeiaGhost):
             except KeyError:
                 query["name"] = self._data[SummonerData].name
         return query
+
+    @property
+    def exists(self):
+        try:
+            if not self._Ghost__all_loaded:
+                self.__load__()
+            self.revision_date  # Make sure we can access this attribute
+            return True
+        except (AttributeError, NotFoundError):
+            return False
 
     @lazy_property
     def region(self) -> Region:
