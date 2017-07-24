@@ -1,5 +1,5 @@
 from abc import abstractmethod, abstractclassmethod
-from typing import Mapping, Any, Set, Dict
+from typing import Mapping, Any, Set, Dict, Union
 from enum import Enum
 import functools
 import copy
@@ -7,9 +7,11 @@ import logging
 
 from datapipelines import NotFoundError, UnsupportedError
 from merakicommons.ghost import Ghost
+from merakicommons.container import SearchableList, SearchError
 
 from ..configuration import settings
 from ..data import Region, Platform
+from ..dto.common import DtoObject
 
 try:
     import ujson as json
@@ -22,7 +24,7 @@ LOGGER = logging.getLogger("core")
 
 def provide_default_region(method):
     @functools.wraps(method)
-    def default_region_wrapper(self=None, **kwargs):
+    def default_region_wrapper(self=None, *args, **kwargs):
         region = kwargs.pop("region", None)
         platform = kwargs.pop("platform", None)
         if region is None:
@@ -38,16 +40,15 @@ def provide_default_region(method):
                 region = Region(region)
         kwargs["region"] = region.value
         if self:
-                return method(self, **kwargs)
+                return method(self, *args, **kwargs)
         else:
-            return method(**kwargs)
+            return method(*args, **kwargs)
     return default_region_wrapper
 
 
 def get_latest_version(region):
     from .staticdata.version import Versions
-    versions = settings.pipeline.get(Versions, query={"region": region})
-    return versions[0]
+    return Versions(region=region)[0]
 
 class DataObject(object):
     def __init__(self, **kwargs):
@@ -102,51 +103,41 @@ class DataObject(object):
         self._dto[key] = value
 
 
-class CheckCache(type):  # TODO Should all CassiopeiaObjects use this, or just CassiopeiaGhosts?
-    def __call__(cls, data: DataObject = None, **kwargs):
-        try:
-            region = data.region
-        except (AttributeError, KeyError):
-            try:
-                region = kwargs["region"]
-            except KeyError:
-                try:
-                    platform = kwargs["platform"]
-                    if isinstance(platform, Platform):
-                        region = platform.region.value
-                    else:
-                        region = Platform(platform).region.value
-                except KeyError:
-                    region = settings.default_region
+class DataObjectList(list, DataObject):
+    def __str__(self):
+        return list.__str__(self)
 
+    def __init__(self, *args, **kwargs):
+        list.__init__(self, *args)
+        DataObject.__init__(self, **kwargs)
+        self._dto
+
+    def from_data(cls, dto: Union[list, DtoObject]):
+        self = DataObject.from_dto(dto)
+        SearchableList.__init__(self, dto)
+
+
+class CheckCache(type):
+    @provide_default_region
+    def __call__(cls, *args, **kwargs):
         cache = settings.pipeline._cache
         if cache is not None:
             # Try to find the obj in the cache
             from ..datastores.uniquekeys import construct_query
-            assert not data or not kwargs  # Only one or the other should be provided.
-            if data:
-                query = construct_query(cls, data)
-            else:  # have kwargs
-                query = construct_query(cls, **kwargs)
-            if "region" not in query:
-                query["region"] = region
+            query = construct_query(cls, **kwargs)
             if hasattr(cls, "version") and "version" not in query:
-                try:
-                    query["version"] = data.version
-                except (AttributeError, KeyError):
-                    query["version"] = get_latest_version(query["region"])
+                query["version"] = get_latest_version(query["region"])
             try:
-                assert "data" not in query
                 return cache.get(cls, query=query)
             except (NotFoundError, UnsupportedError):
                 pass
 
         # If the obj was not found in the cache (or if there is no cache), create a new instance
         LOGGER.debug("Creating new {} from {}".format(cls.__name__, set(kwargs.keys())))
-        return super().__call__(**kwargs)
+        return super().__call__(*args, **kwargs)
 
 
-class CassiopeiaObject(object, metaclass=CheckCache):
+class CassiopeiaObject(object):
     _renamed = {}
 
     def __init__(self, **kwargs):
@@ -157,19 +148,19 @@ class CassiopeiaObject(object, metaclass=CheckCache):
     @classmethod
     def from_data(cls, data: DataObject):
         assert data is not None
-        self = cls(data)
-        self._data = {type: type() for type in self._data_types}
+        self = type.__call__(cls)  # Manually skip the CheckCache (well, all metaclasss' __call__s) for ghost objects if they are created via this constructor. Maybe CassiopeiaGhost should overload this method instead? I didn't because I'd have to copy-paste all the below code and I want it all in one spot for now.
+        self._data = {_type: _type() for _type in self._data_types}
         if data.__class__ not in self._data_types:
             raise TypeError("Wrong data type '{}' passed to '{}.from_data'".format(data.__class__.__name__, self.__class__.__name__))
         self._data[data.__class__] = data
         # Without the below for-loops, if a Champion is instantiated with a StaticData data with `id`
         # in it, and then `.free_to_play` is called on that object, the query won't have an `id`.
         other_types = self._data_types - {data.__class__}
-        for type in other_types:
+        for _type in other_types:
             for key in data:
                 value = getattr(data, key)
-                if key in dir(type):
-                    self._data[type]._set(key, value)
+                if key in dir(_type):
+                    self._data[_type]._set(key, value)
         return self
 
     def __str__(self) -> str:
@@ -207,7 +198,7 @@ class CassiopeiaObject(object, metaclass=CheckCache):
         return self
 
 
-class CassiopeiaGhost(CassiopeiaObject, Ghost):
+class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=CheckCache):
     def __load__(self, load_group: DataObject = None) -> None:
         if load_group is None:  # Load all groups
             if self._Ghost__all_loaded:
@@ -221,8 +212,7 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost):
             query = copy.deepcopy(self._data[load_group]._dto)
             if hasattr(self.__class__, "version") and "version" not in query:
                 from .staticdata import Versions
-                versions = settings.pipeline.get(Versions, query={"region": query["region"]})
-                query["version"] = versions[0]
+                query["version"] = get_latest_version(region=query["region"])
 
             from ..datastores.uniquekeys import construct_query
             query = self.__get_query__()
@@ -241,3 +231,37 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost):
         if not isinstance(data, DataObject):
             raise TypeError("expected subclass of DataObject, got {cls}".format(cls=data.__class__))
         self._data[load_group] = data
+
+
+class CassiopeiaGhostList(SearchableList, CassiopeiaGhost):
+    def __hash__(self):
+        return id(self)
+
+    @property
+    def _Ghost__load_groups(self) -> Set[DataObject]:
+        return self._data_types
+
+    def __init__(self, *args, **kwargs):
+        SearchableList.__init__(self, *args)
+        CassiopeiaGhost.__init__(self, **kwargs)
+
+    @classmethod
+    def from_data(cls, data: Union[list, DataObject]):
+        raise NotImplemented
+        #self = CassiopeiaGhost.from_data(data)
+        #from ..transformers.staticdata import StaticDataTransformer
+        #SearchableList.__init__(self, [StaticDataTransformer.champion_data_to_core(None, c) for c in data])
+        #return self
+
+    def __iter__(self):
+        if not self._Ghost__all_loaded:
+            self.__load__()
+        return super().__iter__()
+
+    def __getitem__(self, item):
+        try:
+            return super().__getitem__(item)
+        except (IndexError, SearchError):
+            if not self._Ghost__all_loaded:
+                self.__load__()
+            return super().__getitem__(item)

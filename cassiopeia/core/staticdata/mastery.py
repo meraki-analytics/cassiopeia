@@ -6,9 +6,8 @@ from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform, MasteryTree
-from ..common import DataObject, CassiopeiaGhost
+from ..common import DataObject, CassiopeiaGhost, get_latest_version
 from .common import Sprite, Image
-from .version import VersionListData
 from ...dto.staticdata import mastery as dto
 
 
@@ -107,8 +106,7 @@ class Mastery(CassiopeiaGhost):
         try:
             return self._data[MasteryData].version
         except AttributeError:
-            versions = settings.pipeline.get(VersionListData, query={"region": self.region, "platform": self.region.platform})
-            version = versions[-1]
+            version = get_latest_version(region=self.region)
             self(version=version)
             return self._data[MasteryData].version
 

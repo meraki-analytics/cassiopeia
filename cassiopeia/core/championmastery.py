@@ -7,7 +7,7 @@ from merakicommons.container import searchable, SearchableList
 
 from ..configuration import settings
 from ..data import Region, Platform
-from .common import DataObject, CassiopeiaObject, CassiopeiaGhost, provide_default_region
+from .common import DataObject, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, provide_default_region
 from ..dto.championmastery import ChampionMasteryDto
 from .staticdata.champion import Champion
 from .summoner import Summoner
@@ -19,8 +19,13 @@ from ..dto import championmastery as dto
 ##############
 
 
-class ChampionMasteryListData(list):
+class ChampionMasteryListData(DataObjectList):
     _dto_type = dto.ChampionMasteryListDto
+    _renamed = {}
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
 
 
 class ChampionMasteryData(DataObject):
@@ -69,8 +74,40 @@ class ChampionMasteryData(DataObject):
 ##############
 
 
-class ChampionMasteries(SearchableList):  # TODO This needs either a summoner or a champion; or it just needs to be deleted and I need to figure out how to deal with it.
-    pass
+class ChampionMasteries(CassiopeiaGhostList):
+    _data_types = {ChampionMasteryListData}
+
+    def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
+        SearchableList.__init__(self, *args)
+        CassiopeiaGhost.__init__(self, region=region)
+        if isinstance(summoner, str):
+            summoner = Summoner(name=summoner)
+        elif isinstance(summoner, int):
+            summoner = Summoner(id=summoner)
+        self.__summoner = summoner
+
+    def __get_query__(self) -> dict:
+        return {"region": self.region, "summoner.id": self.summoner.id}
+
+    def __load_hook__(self, load_group, data: DataObject):
+        self.clear()
+        from ..transformers.championmastery import ChampionMasteryTransformer
+        SearchableList.__init__(self, [ChampionMasteryTransformer.champion_mastery_data_to_core(None, cm) for cm in data])
+        super().__load_hook__(load_group, data)
+
+    @lazy_property
+    def region(self) -> Region:
+        """The region for this champion."""
+        return Region(self._data[ChampionMasteryListData].region)
+
+    @lazy_property
+    def platform(self) -> Platform:
+        """The platform for this champion."""
+        return self.region.platform
+
+    @property
+    def summoner(self):
+        return self.__summoner
 
 
 @searchable({str: ["champion", "summoner"], int: ["points", "level"], bool: ["chest_granted"], datetime.datetime: ["last_played"], Champion: ["champion"], Summoner: ["summoner"]})
@@ -120,6 +157,7 @@ class ChampionMastery(CassiopeiaGhost):
             data = ChampionMasteryTransformer.champion_mastery_dto_to_data(dto)
             self.__load_hook__(load_group, data)
 
+    @property
     def region(self) -> Region:
         """The region for this champion."""
         return Region(self._data[ChampionMasteryData].region)

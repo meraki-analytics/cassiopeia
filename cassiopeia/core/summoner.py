@@ -9,9 +9,8 @@ from merakicommons.container import searchable, SearchableList
 
 from ..configuration import settings
 from ..data import Region, Platform
-from .common import DataObject, CassiopeiaObject, CassiopeiaGhost, provide_default_region
+from .common import DataObject, CassiopeiaObject, CassiopeiaGhost, provide_default_region, get_latest_version
 from ..dto.summoner import SummonerDto
-from .staticdata.version import VersionListData
 
 try:
     import ujson as json
@@ -68,9 +67,9 @@ class SummonerData(DataObject):
         return self._dto["summonerLevel"]
 
     @property
-    def profile_icon(self) -> ProfileIconData:
+    def profile_icon_id(self) -> int:
         """ID of the summoner icon associated with the summoner."""
-        return ProfileIconData(profileIconId=self._dto["profileIconId"])
+        return self._dto["profileIconId"]
 
     @property
     def revision_date(self) -> datetime.date:
@@ -107,8 +106,8 @@ class ProfileIcon(CassiopeiaObject):
 
     @property
     def url(self) -> str:
-        versions = settings.pipeline.get(VersionListData, query={"platform": settings.default_platform})
-        return "http://ddragon.leagueoflegends.com/cdn/{version}/img/profileicon/{id}.png".format(version=versions[0], id=self.id)
+        version = get_latest_version(region=self.region)
+        return "http://ddragon.leagueoflegends.com/cdn/{version}/img/profileicon/{id}.png".format(version=version, id=self.id)
 
     @property
     def image(self) -> PILImage:
@@ -186,7 +185,7 @@ class Summoner(CassiopeiaGhost):
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on(KeyError)
     def profile_icon(self) -> ProfileIcon:
-        return ProfileIcon.from_data(self._data[SummonerData].profile_icon)
+        return ProfileIcon(id=self._data[SummonerData].profile_icon_id)
 
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on(KeyError)
@@ -202,37 +201,29 @@ class Summoner(CassiopeiaGhost):
 
     @property
     def champion_masteries(self):
-        from .championmastery import ChampionMastery, ChampionMasteryListData
-        cms = settings.pipeline.get(ChampionMasteryListData, query={"playerId": self.id, "region": self.region, "platform": self.platform.value})
-        for i, cm in enumerate(cms):
-            cms[i] = ChampionMastery.from_data(cm)
-        return SearchableList(cms)
+        from .championmastery import ChampionMasteries
+        return ChampionMasteries(summoner=self, region=self.region)
 
     @property
     def mastery_pages(self):
-        from .masterypage import MasteryPagesData, MasteryPage
-        mastery_pages = settings.pipeline.get(MasteryPagesData, query={"summonerId": self.id, "region": self.region.value, "platform": self.platform.value})
-        for i, page in enumerate(mastery_pages):
-            mastery_pages[i] = MasteryPage.from_data(page)
-        return SearchableList(mastery_pages)
+        from .masterypage import MasteryPages
+        return MasteryPages(summoner=self, region=self.region)
 
     @property
     def rune_pages(self):
-        from .runepage import RunePagesData, RunePage
-        rune_pages = settings.pipeline.get(RunePagesData, query={"summonerId": self.id, "region": self.region.value, "platform": self.platform.value})
-        for i, page in enumerate(rune_pages):
-            rune_pages[i] = RunePage.from_data(page)
-        return SearchableList(rune_pages)
+        from .runepage import RunePages
+        return RunePages(summoner=self, region=self.region)
 
     @property
     def matches(self):
-        from .match import Match, MatchListData
-        matchlist = settings.pipeline.get(MatchListData, query={"accountId": self.account.id, "region": self.region, "platform": self.platform.value})
-        return SearchableList([Match.from_match_reference(ref, current_account_id=self.account.id, region=self.region.value) for ref in matchlist])
+        from .match import MatchHistory
+        return MatchHistory(summoner=self, region=self.region)
+
+    def current_match(self):
+        from .spectator import CurrentMatch
+        return CurrentMatch(summoner=self, region=self.region)
 
     #def league(self):
     #    raise NotImplemented
     #def league_entry(self):
-    #    raise NotImplemented
-    #def current_game(self):
     #    raise NotImplemented

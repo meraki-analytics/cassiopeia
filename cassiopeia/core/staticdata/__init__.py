@@ -1,10 +1,10 @@
 # Core types
 from .champion import Champion, Champions
-from .mastery import Mastery
-from .rune import Rune
-from .item import Item
-from .summonerspell import SummonerSpell
-from .map import Map
+from .mastery import Mastery, Masteries
+from .rune import Rune, Runes
+from .item import Item, Items
+from .summonerspell import SummonerSpell, SummonerSpells
+from .map import Map, Maps
 from .profileicon import ProfileIcon, ProfileIcons
 from .languagestrings import LanguageStrings
 from .language import Languages

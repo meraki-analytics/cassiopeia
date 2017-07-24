@@ -85,7 +85,7 @@ class ChampionMasteryAPI(RiotAPIService):
 
     _validate_get_champion_mastery_list_query = Query. \
         has("platform").as_(Platform).also. \
-        has("summonerId").as_(int)
+        has("summoner.id").as_(int)
 
     @get.register(ChampionMasteryListDto)
     def get_champion_mastery_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> ChampionMasteryListDto:
@@ -93,7 +93,7 @@ class ChampionMasteryAPI(RiotAPIService):
             query["platform"] = Region(query["region"]).platform.value
         ChampionMasteryAPI._validate_get_champion_mastery_list_query(query, context)
 
-        url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/champion-masteries/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summonerId"])
+        url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/champion-masteries/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
         try:
             data = self._get(url, {}, self._rate_limiter(query["platform"], "champion-masteries/by-summoner/summonerId"))
         except APINotFoundError as error:
@@ -101,13 +101,13 @@ class ChampionMasteryAPI(RiotAPIService):
 
         return ChampionMasteryListDto({
             "masteries": data,
-            "summonerId": query["summonerId"],
+            "summonerId": query["summoner.id"],
             "region": query["platform"].region.value
         })
 
     _validate_get_many_champion_mastery_list_query = Query. \
         has("platform").as_(Platform).also. \
-        has("summonerIds").as_(Iterable)
+        has("summoner.ids").as_(Iterable)
 
     @get_many.register(ChampionMasteryListDto)
     def get_many_champion_mastery_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[ChampionMasteryListDto, None, None]:
@@ -116,7 +116,7 @@ class ChampionMasteryAPI(RiotAPIService):
         ChampionMasteryAPI._validate_get_many_champion_mastery_list_query(query, context)
 
         def generator():
-            for summoner_id in query["summonerIds"]:
+            for summoner_id in query["summoner.ids"]:
                 url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/champion-masteries/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=summoner_id)
                 try:
                     data = self._get(url, {}, self._rate_limiter(query["platform"], "champion-masteries/by-summoner/summonerId"))
@@ -133,7 +133,7 @@ class ChampionMasteryAPI(RiotAPIService):
 
     _validate_get_champion_mastery_score_query = Query. \
         has("platform").as_(Platform).also. \
-        has("summonerId").as_(int)
+        has("summoner.id").as_(int)
 
     @get.register(ChampionMasteryScoreDto)
     def get_champion_mastery_score(self, query: Mapping[str, Any], context: PipelineContext = None) -> ChampionMasteryScoreDto:
@@ -141,7 +141,7 @@ class ChampionMasteryAPI(RiotAPIService):
             query["platform"] = Region(query["region"]).platform.value
         ChampionMasteryAPI._validate_get_champion_mastery_score_query(query, context)
 
-        url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/scores/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summonerId"])
+        url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/scores/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
         try:
             data = self._get(url, {}, self._rate_limiter(query["platform"], "scores/by-summoner/summonerId"))
         except APINotFoundError as error:
@@ -149,13 +149,13 @@ class ChampionMasteryAPI(RiotAPIService):
 
         return ChampionMasteryScoreDto({
             "region": query["platform"].region.value,
-            "summonerId": query["summonerId"],
+            "summonerId": query["summoner.id"],
             "score": data
         })
 
     _validate_get_many_champion_mastery_score = Query. \
         has("platform").as_(Platform).also. \
-        has("summonerIds").as_(Iterable)
+        has("summoner.ids").as_(Iterable)
 
     @get_many.register(ChampionMasteryScoreDto)
     def get_many_champion_mastery_score(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[ChampionMasteryScoreDto, None, None]:
@@ -164,7 +164,7 @@ class ChampionMasteryAPI(RiotAPIService):
         ChampionMasteryAPI._validate_get_many_champion_mastery_score(query, context)
 
         def generator():
-            for summoner_id in query["summonerIds"]:
+            for summoner_id in query["summoner.ids"]:
                 url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/scores/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=summoner_id)
                 try:
                     data = self._get(url, {}, self._rate_limiter(query["platform"], "scores/by-summoner/summonerId"))

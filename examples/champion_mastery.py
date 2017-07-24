@@ -8,7 +8,7 @@ def print_champion_mastery():
 
     me = Summoner(name="Kalturi", id=21359666)
     karma = Champion(name="Karma", id=43)
-    cm = ChampionMastery(champion=karma, summoner=me)
+    #cm = ChampionMastery(champion=karma, summoner=me)
     cm = cass.get_champion_mastery(champion=karma, summoner=me)
     print('Champion ID:', cm.champion.id)
     print('Mastery points:', cm.points)

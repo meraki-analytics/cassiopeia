@@ -7,9 +7,8 @@ from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform
-from ..common import DataObject, CassiopeiaGhost
+from ..common import DataObject, CassiopeiaGhost, get_latest_version
 from .common import Sprite, Image, ImageData
-from .version import VersionListData
 from ...dto.staticdata import map as dto
 
 
@@ -106,8 +105,7 @@ class Map(CassiopeiaGhost):
         try:
             return self._data[MapData].version
         except AttributeError:
-            versions = settings.pipeline.get(VersionListData, query={"region": self.region, "platform": self.region.platform})
-            version = versions[-1]
+            version = get_latest_version(region=region)
             self(version=version)
             return self._data[MapData].version
 

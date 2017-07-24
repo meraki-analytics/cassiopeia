@@ -7,9 +7,8 @@ from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform, RuneType
-from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost
+from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, get_latest_version
 from .common import Sprite, Image
-from .version import VersionListData
 from ...dto.staticdata import rune as dto
 
 
@@ -654,8 +653,7 @@ class Rune(CassiopeiaGhost):
         try:
             return self._data[RuneData].version
         except AttributeError:
-            versions = settings.pipeline.get(VersionListData, query={"region": self.region, "platform": self.region.platform})
-            version = versions[-1]
+            version = get_latest_version(region=self.region)
             self(version=version)
             return self._data[RuneData].version
 
