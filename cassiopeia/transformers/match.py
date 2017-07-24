@@ -15,17 +15,17 @@ class MatchTransformer(DataTransformer):
     def transform(self, target_type: Type[T], value: F, context: PipelineContext = None) -> T:
         pass
 
-    # Data
+    # Dto to Data
 
     @transform.register(MatchDto, MatchData)
     def match_dto_to_data(self, value: MatchDto, context: PipelineContext = None) -> MatchData:
         data = deepcopy(value)
-        return MatchData(data)
+        return MatchData.from_dto(data)
 
     @transform.register(MatchReferenceDto, MatchReferenceData)
     def match_reference_dto_to_data(self, value: MatchReferenceDto, context: PipelineContext = None) -> MatchReferenceData:
         data = deepcopy(value)
-        return MatchReferenceData(data)
+        return MatchReferenceData.from_dto(data)
 
     @transform.register(MatchListDto, MatchListData)
     def matchlist_dto_to_data(self, value: MatchListDto, context: PipelineContext = None) -> MatchListData:
@@ -36,13 +36,13 @@ class MatchTransformer(DataTransformer):
     @transform.register(TimelineDto, TimelineData)
     def timeline_dto_to_data(self, value: TimelineDto, context: PipelineContext = None) -> TimelineData:
         data = deepcopy(value)
-        return TimelineData(data)
+        return TimelineData.from_dto(data)
 
-    # Core
+    # Data to Core
 
     @transform.register(MatchData, Match)
     def match_data_to_core(self, value: Match, context: PipelineContext = None) -> Match:
-        return Match(value)
+        return Match.from_data(value)
 
     @transform.register(MatchListData, MatchHistory)
     def matchlist_data_to_core(self, value: MatchListData, context: PipelineContext = None) -> MatchHistory:
@@ -50,4 +50,6 @@ class MatchTransformer(DataTransformer):
 
     @transform.register(TimelineData, Timeline)
     def timeline_data_to_core(self, value: TimelineData, context: PipelineContext = None) -> Timeline:
-        return Timeline(value)
+        return Timeline.from_data(value)
+
+    # Core to Dto TODO

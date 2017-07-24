@@ -7,19 +7,35 @@ from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform, Map
-from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost
+from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
 from .common import Sprite, Image
-from .version import VersionListData
 from ...dto.staticdata import item as dto
-
-
-class ItemListData(list):
-    _dto_type = dto.ItemListDto
 
 
 ##############
 # Data Types #
 ##############
+
+
+class ItemListData(DataObjectList):
+    _dto_type = dto.ItemListDto
+    _renamed = {"included_data": "includedData"}
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
+
+    @property
+    def version(self) -> str:
+        return self._dto["version"]
+
+    @property
+    def locale(self) -> str:
+        return self._dto["locale"]
+
+    @property
+    def included_data(self) -> Set[str]:
+        return self._dto["includedData"]
 
 
 class ItemTreeData(DataObject):
@@ -373,8 +389,44 @@ class ItemData(DataObject):
 ##############
 
 
-class Items(SearchableList):
-    pass
+class Items(CassiopeiaGhostList):
+    _data_types = {ItemListData}
+
+    def __get_query__(self):
+        return {"region": self.region, "version": self.version}
+
+    def __load_hook__(self, load_group, data: DataObject):
+        self.clear()
+        from ...transformers.staticdata import StaticDataTransformer
+        SearchableList.__init__(self, [StaticDataTransformer.item_data_to_core(None, i) for i in data])
+        super().__load_hook__(load_group, data)
+
+    @lazy_property
+    def region(self) -> Region:
+        return Region(self._data[ItemListData].region)
+
+    @lazy_property
+    def platform(self) -> Platform:
+        return self.region.platform
+
+    @property
+    def version(self) -> str:
+        try:
+            return self._data[ItemListData].version
+        except KeyError:
+            version = get_latest_version(region=self.region)
+            self(version=version)
+            return self._data[ItemListData].version
+
+    @property
+    def locale(self) -> str:
+        """The locale for this champion."""
+        return self._data[ItemListData].locale
+
+    @property
+    def included_data(self) -> Set[str]:
+        """A set of tags to return additonal information for this champion when it's loaded."""
+        return self._data[ItemListData].included_data
 
 
 class ItemStats(CassiopeiaObject):
@@ -578,8 +630,7 @@ class Item(CassiopeiaGhost):
         try:
             return self._data[ItemData].version
         except AttributeError:
-            versions = settings.pipeline.get(VersionListData, query={"region": self.region, "platform": self.region.platform})
-            version = versions[-1]
+            version = get_latest_version(region=self.region)
             self(version=version)
             return self._data[ItemData].version
 

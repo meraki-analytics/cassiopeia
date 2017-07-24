@@ -8,8 +8,7 @@ from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform
-from ..common import DataObject, CassiopeiaGhost
-from .version import VersionListData
+from ..common import DataObject, CassiopeiaGhost, get_latest_version
 
 
 try:
@@ -92,8 +91,7 @@ class ProfileIcon(CassiopeiaGhost):
         try:
             return self._data[ProfileIconData].version
         except AttributeError:
-            versions = settings.pipeline.get(VersionListData, query={"region": self.region, "platform": self.region.platform})
-            version = versions[-1]
+            version = get_latest_version(region=self.region)
             self(version=version)
             return self._data[ProfileIconData].version
 
@@ -123,8 +121,8 @@ class ProfileIcon(CassiopeiaGhost):
     @CassiopeiaGhost.property(ProfileIconData)
     @ghost_load_on(KeyError)
     def url(self) -> str:
-        versions = settings.pipeline.get(VersionListData, query={"platform": settings.default_platform})
-        return "http://ddragon.leagueoflegends.com/cdn/{version}/img/profileicon/{id}.png".format(version=versions[0], id=self.id)
+        version = get_latest_version(region=self.region)
+        return "http://ddragon.leagueoflegends.com/cdn/{version}/img/profileicon/{id}.png".format(version=version, id=self.id)
 
     @CassiopeiaGhost.property(ProfileIconData)
     @ghost_load_on(KeyError)

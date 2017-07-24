@@ -15,12 +15,12 @@ class SpectatorTransformer(DataTransformer):
     def transform(self, target_type: Type[T], value: F, context: PipelineContext = None) -> T:
         pass
 
-    # Data
+    # Dto to Data
 
     @transform.register(CurrentGameInfoDto, CurrentGameInfoData)
     def current_game_dto_to_data(self, value: CurrentGameInfoDto, context: PipelineContext = None) -> CurrentGameInfoData:
         data = deepcopy(value)
-        return CurrentGameInfoData(data)
+        return CurrentGameInfoData.from_dto(data)
 
     @transform.register(FeaturedGamesDto, FeaturedGamesData)
     def featured_games_dto_to_data(self, value: FeaturedGamesDto, context: PipelineContext = None) -> FeaturedGamesData:
@@ -28,12 +28,14 @@ class SpectatorTransformer(DataTransformer):
         data = data["gameList"]
         return FeaturedGamesData(CurrentGameInfoData(game) for game in data)
 
-    # Core
+    # Data to Core
 
     @transform.register(CurrentGameInfoData, CurrentMatch)
     def current_game_data_to_core(self, value: CurrentGameInfoData, context: PipelineContext = None) -> CurrentMatch:
-        return CurrentMatch(value)
+        return CurrentMatch.from_data(value)
 
     @transform.register(FeaturedGamesData, FeaturedMatches)
     def featured_games_data_to_core(self, value: FeaturedGamesData, context: PipelineContext = None) -> FeaturedMatches:
         return FeaturedMatches(CurrentMatch(game) for game in value)
+
+    # Core to Dto TODO

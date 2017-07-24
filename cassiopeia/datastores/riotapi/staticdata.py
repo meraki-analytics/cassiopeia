@@ -603,6 +603,8 @@ class StaticDataAPI(RiotAPIService):
                 item["version"] = data["version"]
                 item["locale"] = query["locale"]
                 item["includedData"] = query["includedData"]
+                if item["id"] == 3632:  # This item doesn't have a name.
+                    item["name"] = ""
                 yield ItemDto(item)
 
         return generator()
@@ -636,6 +638,9 @@ class StaticDataAPI(RiotAPIService):
         data["region"] = query["platform"].region.value
         data["locale"] = query["locale"]
         data["includedData"] = query["includedData"]
+        for item in data["data"].values():
+            if item["id"] == 3632:  # This item doesn't have a name.
+                item["name"] = ""
         return ItemListDto(data)
 
     _validate_get_many_item_list_query = Query. \
@@ -672,6 +677,9 @@ class StaticDataAPI(RiotAPIService):
                 data["region"] = platform.region.value
                 data["locale"] = query["locale"] if "locale" in query else platform.default_locale
                 data["includedData"] = query["includedData"]
+                for item in data["data"].values():
+                    if item["id"] == 3632:  # This item doesn't have a name.
+                        item["name"] = ""
                 yield ItemListDto(data)
 
         return generator()
@@ -937,18 +945,6 @@ class StaticDataAPI(RiotAPIService):
                 yield LanguageStringsDto(data)
 
         return generator()
-
-
-
-
-
-
-
-
-
-
-
-
 
     #################
     # Profile Icons #

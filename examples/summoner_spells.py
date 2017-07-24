@@ -2,7 +2,7 @@ import cassiopeia as cass
 from cassiopeia import SummonerSpell
 from cassiopeia.data import GameMode
 
-def test_cass():
+def get_summoner_spells():
     sspells = cass.get_summoner_spells()
     for sspell in sspells:
         #if "Disabled" not in sspell.name:
@@ -15,4 +15,4 @@ def test_cass():
     print(sspell.description)
 
 if __name__ == "__main__":
-    test_cass()
+    get_summoner_spells()

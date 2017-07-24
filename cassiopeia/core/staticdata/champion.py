@@ -9,10 +9,8 @@ from ...configuration import settings
 from ...data import Resource, Region, Platform, Map, GameMode
 from ..champion import ChampionData as ChampionStatusData
 from ..champion import ChampionListData as ChampionStatusListData
-from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, provide_default_region
+from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, provide_default_region, get_latest_version
 from .common import ImageData, SpriteData, Image, Sprite
-from .version import VersionListData
-from ...dto.common import DtoObject
 from ...dto.staticdata import champion as dto
 from .item import Item
 
@@ -22,17 +20,9 @@ from .item import Item
 ##############
 
 
-class ChampionListData(list, DataObject):
+class ChampionListData(DataObjectList):
     _dto_type = dto.ChampionListDto
     _renamed = {"included_data": "includedData"}
-
-    def __init__(self, *args, **kwargs):
-        list.__init__(self, *args)
-        DataObject.__init__(self, **kwargs)
-
-    def from_data(cls, dto: Union[list, DtoObject]):
-        self = DataObject.from_dto(dto)
-        SearchableList.__init__(self, dto)
 
     @property
     def region(self) -> str:
@@ -468,23 +458,8 @@ class ChampionData(DataObject):
 ##############
 
 
-class Champions(SearchableList, CassiopeiaGhost):
+class Champions(CassiopeiaGhostList):
     _data_types = {ChampionListData}
-    _Ghost__load_groups = {ChampionListData}
-
-    def __hash__(self):
-        return id(self)
-
-    def __init__(self, *args, **kwargs):
-        SearchableList.__init__(self, *args)
-        CassiopeiaGhost.__init__(self, **kwargs)
-
-    @classmethod
-    def from_data(cls, data: Union[SearchableList, DataObject]):
-        self = CassiopeiaGhost.from_data(data)
-        from ...transformers.staticdata import StaticDataTransformer
-        SearchableList.__init__(self, [StaticDataTransformer.champion_data_to_core(None, c) for c in data])
-        return self
 
     def __get_query__(self):
         return {"region": self.region}
@@ -494,11 +469,6 @@ class Champions(SearchableList, CassiopeiaGhost):
         from ...transformers.staticdata import StaticDataTransformer
         SearchableList.__init__(self, [StaticDataTransformer.champion_data_to_core(None, c) for c in data])
         super().__load_hook__(load_group, data)
-
-    def __getitem__(self, item):
-        if not self._Ghost__all_loaded:
-            self.__load__()
-        return super().__getitem__(item)
 
     @lazy_property
     def region(self) -> Region:
@@ -516,8 +486,7 @@ class Champions(SearchableList, CassiopeiaGhost):
         try:
             return self._data[ChampionListData].version
         except AttributeError:
-            versions = settings.pipeline.get(VersionListData, query={"region": self.region, "platform": self.region.platform})
-            version = versions[-1]
+            version = get_latest_version(region=self.region)
             self(version=version)
             return self._data[ChampionListData].version
 
@@ -960,8 +929,7 @@ class Champion(CassiopeiaGhost):
         try:
             return self._data[ChampionData].version
         except AttributeError:
-            versions = settings.pipeline.get(VersionListData, query={"region": self.region, "platform": self.region.platform})
-            version = versions[-1]
+            version = get_latest_version(region=self.region)
             self(version=version)
             return self._data[ChampionData].version
 

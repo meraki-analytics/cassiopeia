@@ -6,12 +6,11 @@ from merakicommons.cache import Cache as CommonsCache
 from . import uniquekeys
 from ..core.championmastery import ChampionMastery
 from ..core.league import LeagueSummoner
-from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Realms, ProfileIcon, Languages, LanguageStrings
+from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Realms, ProfileIcon, Languages, LanguageStrings, Versions, SummonerSpells, Items
 from ..core.masterypage import MasteryPage
 from ..core.match import Match
 from ..core.runepage import RunePage
 from ..core.summoner import Summoner
-from ..core.staticdata.version import Versions
 from ..core.status import ShardStatus
 from ..core.spectator import CurrentMatch, FeaturedMatches
 
@@ -66,9 +65,13 @@ class Cache(DataSource, DataSink):
         except KeyError:
             expire_seconds = -1.0
 
-        for key_function_args in key_function_arg_lists:
-            key = key_function(item, *key_function_args)
+        if not key_function_arg_lists:
+            key = key_function(item)
             self._cache.put(key, item, expire_seconds)
+        else:
+            for key_function_args in key_function_arg_lists:
+                key = key_function(item, *key_function_args)
+                self._cache.put(key, item, expire_seconds)
         # TODO: Put EXPIRATION into context once cache expiration works
 
     def _put_many(self, type: Type[T], items: Iterable[T], key_function: Callable[[T], Any], *key_function_arg_lists: tuple, context: PipelineContext = None) -> None:
@@ -182,6 +185,24 @@ class Cache(DataSource, DataSink):
     @put_many.register(Item)
     def put_many_item(self, items: Iterable[Item], context: PipelineContext = None) -> None:
         self._put_many(Item, items, uniquekeys.for_item, ("id",), ("name",), context=context)
+
+    @get.register(Items)
+    @validate_query(uniquekeys.validate_items_query, uniquekeys.convert_region_to_platform)
+    def get_items(self, query: Mapping[str, Any], context: PipelineContext = None) -> Items:
+        return self._get(query, uniquekeys.for_items_query, context)
+
+    @get_many.register(Items)
+    @validate_query(uniquekeys.validate_many_items_query, uniquekeys.convert_region_to_platform)
+    def get_many_items(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[Items, None, None]:
+        return self._get_many(query, uniquekeys.for_many_items_query, context)
+
+    @put.register(Items)
+    def put_items(self, item: Items, context: PipelineContext = None) -> None:
+        self._put(Items, item, uniquekeys.for_items, ("platform",), context=context)
+
+    @put_many.register(Items)
+    def put_many_items(self, items: Iterable[Items], context: PipelineContext = None) -> None:
+        self._put_many(Items, items, uniquekeys.for_items, ("platform",), context=context)
 
     # Language
 
@@ -345,20 +366,20 @@ class Cache(DataSource, DataSink):
 
     @get.register(Versions)
     @validate_query(uniquekeys.validate_versions_query, uniquekeys.convert_region_to_platform)
-    def get_version_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> Versions:
+    def get_versions(self, query: Mapping[str, Any], context: PipelineContext = None) -> Versions:
         return self._get(query, uniquekeys.for_versions_query, context)
 
     @get_many.register(Versions)
     @validate_query(uniquekeys.validate_many_versions_query, uniquekeys.convert_region_to_platform)
-    def get_many_version_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[Versions, None, None]:
+    def get_many_versions(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[Versions, None, None]:
         return self._get_many(query, uniquekeys.for_many_versions_query, context)
 
     @put.register(Versions)
-    def put_version_list(self, item: Versions, context: PipelineContext = None) -> None:
+    def put_versions(self, item: Versions, context: PipelineContext = None) -> None:
         self._put(Versions, item, uniquekeys.for_versions, context=context)
 
     @put_many.register(Versions)
-    def put_many_version_list(self, items: Iterable[Versions], context: PipelineContext = None) -> None:
+    def put_many_versions(self, items: Iterable[Versions], context: PipelineContext = None) -> None:
         self._put_many(Versions, items, uniquekeys.for_versions, context=context)
 
     ##############
