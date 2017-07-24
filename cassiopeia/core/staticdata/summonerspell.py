@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Set
 
 from PIL.Image import Image as PILImage
 from merakicommons.ghost import ghost_load_on
@@ -7,19 +7,35 @@ from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Resource, Region, Platform, GameMode
-from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost
+from ..common import DataObject, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
 from .common import Image, ImageData
-from .version import VersionListData
 from ...dto.staticdata import summonerspell as dto
-
-
-class SummonerSpellListData(list):
-    _dto_type = dto.SummonerSpellListDto
 
 
 ##############
 # Data Types #
 ##############
+
+
+class SummonerSpellListData(DataObjectList):
+    _dto_type = dto.SummonerSpellListDto
+    _renamed = {"included_data": "includedData"}
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
+
+    @property
+    def version(self) -> str:
+        return self._dto["version"]
+
+    @property
+    def locale(self) -> str:
+        return self._dto["locale"]
+
+    @property
+    def included_data(self) -> Set[str]:
+        return self._dto["includedData"]
 
 
 class SpellVarsData(DataObject):
@@ -145,6 +161,46 @@ class SummonerSpellData(DataObject):
 ##############
 
 
+class SummonerSpells(CassiopeiaGhostList):
+    _data_types = {SummonerSpellListData}
+
+    def __get_query__(self):
+        return {"region": self.region}
+
+    def __load_hook__(self, load_group, data: DataObject):
+        self.clear()
+        from ...transformers.staticdata import StaticDataTransformer
+        SearchableList.__init__(self, [StaticDataTransformer.summoner_spell_data_to_core(None, ss) for ss in data])
+        super().__load_hook__(load_group, data)
+
+    @lazy_property
+    def region(self) -> Region:
+        return Region(self._data[SummonerSpellListData].region)
+
+    @lazy_property
+    def platform(self) -> Platform:
+        return self.region.platform
+
+    @property
+    def version(self) -> str:
+        try:
+            return self._data[SummonerSpellListData].version
+        except AttributeError:
+            version = get_latest_version(region=self.region)
+            self(version=version)
+            return self._data[SummonerSpellListData].version
+
+    @property
+    def locale(self) -> str:
+        """The locale for this champion."""
+        return self._data[SummonerSpellListData].locale
+
+    @property
+    def included_data(self) -> Set[str]:
+        """A set of tags to return additonal information for this champion when it's loaded."""
+        return self._data[SummonerSpellListData].included_data
+
+
 @searchable({str: ["key"]})
 class SpellVars(CassiopeiaObject):
     _data_types = {SpellVarsData}
@@ -178,29 +234,29 @@ class SpellVars(CassiopeiaObject):
 @searchable({str: ["name", "key", "keywords", "resource"], Resource: ["resource"]})
 class SummonerSpell(CassiopeiaGhost):
     _data_types = {SummonerSpellData}
-    _load_types = {SummonerSpellData: SummonerSpellListData}
+    _load_types = {SummonerSpellData: SummonerSpells}
 
     def __init__(self, *args, **kwargs):
         if "region" not in kwargs and "platform" not in kwargs:
             kwargs["region"] = settings.default_region.value
         super().__init__(*args, **kwargs)
 
-    def __load_hook__(self, load_group, data) -> None:
+    def __load_hook__(self, load_group, core) -> None:
         def find_matching_attribute(datalist, attrname, attrvalue):
             for item in datalist:
                 if getattr(item, attrname, None) == attrvalue:
                     return item
 
-        # The `data` is a dict of summoner spell data instances
+        # The `core` is a dict of summoner spell core instances
         if "name" in self._data[SummonerSpellData]._dto:
             find = "name", self.name
         elif "id" in self._data[SummonerSpellData]._dto:
             find = "id", self.id
         else:
             raise RuntimeError("Expected fields not present after loading.")
-        data = find_matching_attribute(data, *find)
+        core = find_matching_attribute(core, *find)
 
-        super().__load_hook__(load_group, data)
+        super().__load_hook__(load_group, core)
 
     # What do we do about params like this that can exist in both data objects?
     # They will be set on both data objects always, so we can choose either one to return.
@@ -220,8 +276,7 @@ class SummonerSpell(CassiopeiaGhost):
         try:
             return self._data[SummonerSpellData].version
         except AttributeError:
-            versions = settings.pipeline.get(VersionListData, query={"region": self.region, "platform": self.region.platform})
-            version = versions[-1]
+            version = get_latest_version(region=self.region)
             self(version=version)
             return self._data[SummonerSpellData].version
 

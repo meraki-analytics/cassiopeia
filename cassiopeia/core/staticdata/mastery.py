@@ -2,13 +2,12 @@ from PIL.Image import Image as PILImage
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable
+from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform, MasteryTree
-from ..common import DataObject, CassiopeiaGhost
+from ..common import DataObject, CassiopeiaGhost, get_latest_version
 from .common import Sprite, Image
-from .version import VersionListData
 from ...dto.staticdata import mastery as dto
 
 
@@ -77,9 +76,14 @@ class MasteryData(DataObject):
 ##############
 
 
+class Masteries(SearchableList):
+    pass
+
+
 @searchable({str: ["name", "key", "region", "platform", "locale", "tree"], int: ["id"], MasteryTree: ["tree"], Region: ["region"], Platform: ["platform"]})
 class Mastery(CassiopeiaGhost):
     _data_types = {MasteryData}
+    _load_types = {MasteryData: Masteries}
 
     def __init__(self, *args, **kwargs):
         if "region" not in kwargs and "platform" not in kwargs:
@@ -102,8 +106,7 @@ class Mastery(CassiopeiaGhost):
         try:
             return self._data[MasteryData].version
         except AttributeError:
-            versions = settings.pipeline.get(VersionListData, query={"region": self.region, "platform": self.region.platform})
-            version = versions[-1]
+            version = get_latest_version(region=self.region)
             self(version=version)
             return self._data[MasteryData].version
 

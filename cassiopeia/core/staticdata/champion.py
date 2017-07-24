@@ -9,20 +9,37 @@ from ...configuration import settings
 from ...data import Resource, Region, Platform, Map, GameMode
 from ..champion import ChampionData as ChampionStatusData
 from ..champion import ChampionListData as ChampionStatusListData
-from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost
+from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, provide_default_region, get_latest_version
 from .common import ImageData, SpriteData, Image, Sprite
-from .version import VersionListData
 from ...dto.staticdata import champion as dto
 from .item import Item
-
-
-class ChampionListData(list):
-    _dto_type = dto.ChampionListDto
 
 
 ##############
 # Data Types #
 ##############
+
+
+class ChampionListData(DataObjectList):
+    _dto_type = dto.ChampionListDto
+    _renamed = {"included_data": "includedData"}
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
+
+    @property
+    def version(self) -> str:
+        return self._dto["version"]
+
+    @property
+    def locale(self) -> str:
+        return self._dto["locale"]
+
+    @property
+    def included_data(self) -> Set[str]:
+        """A set of tags to return additonal information for this champion when it's loaded."""
+        return self._dto["includedData"]
 
 
 class SpellVarsData(DataObject):
@@ -67,11 +84,11 @@ class ChampionSpellData(DataObject):
 
     @property
     def level_up_tips(self) -> LevelTipData:
-        return LevelTipData(self._dto["leveltip"])
+        return LevelTipData.from_dto(self._dto["leveltip"])
 
     @property
     def variables(self) -> List[SpellVarsData]:
-        return [SpellVarsData(v) for v in self._dto["vars"]]
+        return [SpellVarsData.from_dto(v) for v in self._dto["vars"]]
 
     @property
     def resource(self) -> str:
@@ -79,7 +96,7 @@ class ChampionSpellData(DataObject):
 
     @property
     def image(self) -> ImageData:
-        return ImageData(self._dto["image"])
+        return ImageData.from_dto(self._dto["image"])
 
     @property
     def sanitized_description(self) -> str:
@@ -123,7 +140,7 @@ class ChampionSpellData(DataObject):
 
     @property
     def alternative_images(self) -> List[ImageData]:
-        return [ImageData(alt) for alt in self._dto["altimages"]]
+        return [ImageData.from_dto(alt) for alt in self._dto["altimages"]]
 
     @property
     def name(self) -> str:
@@ -147,7 +164,7 @@ class BlockData(DataObject):
 
     @property
     def items(self) -> list:
-        return [BlockItemData(item) for item in self._dto["items"]]
+        return [BlockItemData.from_dto(item) for item in self._dto["items"]]
 
     @property
     def rec_math(self) -> bool:
@@ -167,7 +184,7 @@ class RecommendedData(DataObject):
 
     @property
     def item_sets(self) -> List[BlockData]:
-        return [BlockData(item_set) for item_set in self._dto["blocks"]]
+        return [BlockData.from_dto(item_set) for item_set in self._dto["blocks"]]
 
     @property
     def champion(self) -> str:
@@ -195,7 +212,7 @@ class PassiveData(DataObject):
 
     @property
     def image(self) -> ImageData:
-        return ImageData(self._dto["image"])
+        return ImageData.from_dto(self._dto["image"])
 
     @property
     def sanitized_description(self) -> str:
@@ -409,36 +426,79 @@ class ChampionData(DataObject):
 
     @property
     def recommended_item_sets(self) -> List[RecommendedData]:
-        return [RecommendedData(item) for item in self._dto["recommended"]]
+        return [RecommendedData.from_dto(item) for item in self._dto["recommended"]]
 
     @property
     def info(self) -> InfoData:
-        return InfoData(self._dto["info"])
+        return InfoData.from_dto(self._dto["info"])
 
     @property
     def stats(self) -> StatsData:
-        return StatsData(self._dto["stats"])
+        return StatsData.from_dto(self._dto["stats"])
 
     @property
     def image(self) -> ImageData:
-        return ImageData(self._dto["image"])
+        return ImageData.from_dto(self._dto["image"])
 
     @property
     def skins(self) -> List[SkinData]:
-        return [SkinData(skin) for skin in self._dto["skins"]]
+        return [SkinData.from_dto(skin) for skin in self._dto["skins"]]
 
     @property
     def passive(self) -> PassiveData:
-        return PassiveData(self._dto["passive"])
+        return PassiveData.from_dto(self._dto["passive"])
 
     @property
     def spells(self) -> List[ChampionSpellData]:
-        return [ChampionSpellData(spell) for spell in self._dto["spells"]]
+        return [ChampionSpellData.from_dto(spell) for spell in self._dto["spells"]]
 
 
 ##############
 # Core Types #
 ##############
+
+
+class Champions(CassiopeiaGhostList):
+    _data_types = {ChampionListData}
+
+    def __get_query__(self):
+        return {"region": self.region}
+
+    def __load_hook__(self, load_group, data: DataObject):
+        self.clear()
+        from ...transformers.staticdata import StaticDataTransformer
+        SearchableList.__init__(self, [StaticDataTransformer.champion_data_to_core(None, c) for c in data])
+        super().__load_hook__(load_group, data)
+
+    @lazy_property
+    def region(self) -> Region:
+        """The region for this champion."""
+        return Region(self._data[ChampionListData].region)
+
+    @lazy_property
+    def platform(self) -> Platform:
+        """The platform for this champion."""
+        return self.region.platform
+
+    @property
+    def version(self) -> str:
+        """The version for this champion."""
+        try:
+            return self._data[ChampionListData].version
+        except AttributeError:
+            version = get_latest_version(region=self.region)
+            self(version=version)
+            return self._data[ChampionListData].version
+
+    @property
+    def locale(self) -> str:
+        """The locale for this champion."""
+        return self._data[ChampionListData].locale
+
+    @property
+    def included_data(self) -> Set[str]:
+        """A set of tags to return additonal information for this champion when it's loaded."""
+        return self._data[ChampionListData].included_data
 
 
 @searchable({str: ["key"]})
@@ -488,7 +548,7 @@ class ChampionSpell(CassiopeiaObject):
     @lazy_property
     def variables(self) -> List[SpellVars]:
         """Contains spell data."""
-        return SearchableList(SpellVars(v) for v in self._data[ChampionSpellData].variables)
+        return SearchableList(SpellVars.from_data(v) for v in self._data[ChampionSpellData].variables)
 
     @property
     def resource(self) -> Resource:
@@ -650,9 +710,9 @@ class Passive(CassiopeiaObject):
 class Skin(CassiopeiaObject):
     _data_types = {SkinData}
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         self.__champion_key = kwargs.pop("champion_key")
-        super().__init__(*args, **kwargs)
+        super().__init__(**kwargs)
 
     @property
     def champion_key(self) -> str:
@@ -808,10 +868,31 @@ class Champion(CassiopeiaGhost):
     _data_types = {ChampionData, ChampionStatusData}
     _load_types = {ChampionData: ChampionListData, ChampionStatusData: ChampionStatusListData}
 
-    def __init__(self, *args, **kwargs):
-        if "region" not in kwargs and "platform" not in kwargs:
-            kwargs["region"] = settings.default_region.value
-        super().__init__(*args, **kwargs)
+    @provide_default_region
+    def __init__(self, *, id: int = None, name: str = None, key: str = None, region: Union[Region, str]):
+        kwargs = {"region": region}
+        if id:
+            kwargs["id"] = id
+        if key:
+            kwargs["key"] = key
+        if name:
+            kwargs["name"] = name
+        super().__init__(**kwargs)
+
+    def __get_query__(self):
+        query = {"region": self.region}
+        try:
+            query["id"] = self._data[ChampionData].id
+        except KeyError:
+            try:
+                query["name"] = self._data[ChampionData].name
+            except KeyError:
+                try:
+                    query["id"] = self._data[ChampionStatusData].id
+                except KeyError:
+                    query["name"] = self._data[ChampionStatusData].name
+        assert "id" in query or "name" in query
+        return query
 
     def __load_hook__(self, load_group, data) -> None:
         def find_matching_attribute(datalist, attrname, attrvalue):
@@ -828,7 +909,6 @@ class Champion(CassiopeiaGhost):
             data = find_matching_attribute(data, *find)
         else:
             data = find_matching_attribute(data, *find)
-
         super().__load_hook__(load_group, data)
 
     # What do we do about params like this that can exist in both data objects?
@@ -849,8 +929,7 @@ class Champion(CassiopeiaGhost):
         try:
             return self._data[ChampionData].version
         except AttributeError:
-            versions = settings.pipeline.get(VersionListData, query={"region": self.region, "platform": self.region.platform})
-            version = versions[-1]
+            version = get_latest_version(region=self.region)
             self(version=version)
             return self._data[ChampionData].version
 
@@ -959,7 +1038,7 @@ class Champion(CassiopeiaGhost):
     @lazy
     def info(self) -> Info:
         """Info about this champion."""
-        return Info(self._data[ChampionData].info)
+        return Info.from_data(self._data[ChampionData].info)
 
     @CassiopeiaGhost.property(ChampionData)
     @ghost_load_on(KeyError)
@@ -973,7 +1052,7 @@ class Champion(CassiopeiaGhost):
     @lazy
     def stats(self) -> Stats:
         """The champion's stats."""
-        return Stats(self._data[ChampionData].stats)
+        return Stats.from_data(self._data[ChampionData].stats)
 
     @CassiopeiaGhost.property(ChampionData)
     @ghost_load_on(KeyError)
@@ -987,21 +1066,26 @@ class Champion(CassiopeiaGhost):
     @lazy
     def skins(self) -> List[Skin]:
         """This champion's skins."""
-        return SearchableList(Skin(skin, champion_key=self.key) for skin in self._data[ChampionData].skins)
+        skins = []
+        for skin in self._data[ChampionData].skins:
+            skins.append(Skin.from_data((skin)))
+            skins[-1]._Skin__champion_key = self.key
+        return SearchableList(skins)
 
     @CassiopeiaGhost.property(ChampionData)
     @ghost_load_on(KeyError)
     @lazy
     def passive(self) -> Passive:
         """This champion's passive."""
-        return Passive(self._data[ChampionData].passive)
+        return Passive.from_data(self._data[ChampionData].passive)
 
     @CassiopeiaGhost.property(ChampionData)
     @ghost_load_on(KeyError)
     @lazy
     def spells(self) -> List[ChampionSpell]:
         """This champion's spells."""
-        return SearchableList(ChampionSpell(spell) for spell in self._data[ChampionData].spells)
+        print("HERE", [spell._dto.keys() for spell in self._data[ChampionData].spells])
+        return SearchableList(ChampionSpell.from_data(spell) for spell in self._data[ChampionData].spells)
 
     @lazy_property
     def image(self) -> PILImage:

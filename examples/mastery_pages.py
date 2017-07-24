@@ -1,7 +1,7 @@
 import cassiopeia as cass
 from cassiopeia.core import Summoner
 
-def test_cass():
+def get_cass():
     name = "Kalturi"
 
     me = Summoner(name=name, id=21359666)
@@ -18,4 +18,4 @@ def test_cass():
 
 
 if __name__ == "__main__":
-    test_cass()
+    get_cass()

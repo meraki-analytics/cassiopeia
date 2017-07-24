@@ -3,7 +3,7 @@ from copy import deepcopy
 
 from datapipelines import DataTransformer, PipelineContext
 
-from ..core.runepage import RunePageData, RunePagesData
+from ..core.runepage import RunePageData, RunePagesData, RunePage, RunePages
 
 from ..dto.runepage import RunePageDto, RunePagesDto
 
@@ -16,10 +16,12 @@ class RunesTransformer(DataTransformer):
     def transform(self, target_type: Type[T], value: F, context: PipelineContext = None) -> T:
         pass
 
+    # Dto to Data
+
     @transform.register(RunePageDto, RunePageData)
     def rune_page_dto_to_data(self, value: RunePageDto, context: PipelineContext = None) -> RunePageData:
         data = deepcopy(value)
-        return RunePageData(data)
+        return RunePageData.from_dto(data)
 
     @transform.register(RunePagesDto, RunePagesData)
     def rune_pages_dto_to_data(self, value: RunePagesDto, context: PipelineContext = None) -> RunePagesData:
@@ -29,3 +31,16 @@ class RunesTransformer(DataTransformer):
             page["summonerId"] = data["summonerId"]
         data = [self.rune_page_dto_to_data(page) for page in data["pages"]]
         return RunePagesData(data)
+
+    # Data to Core
+
+    @transform.register(RunePageData, RunePage)
+    def rune_page_data_to_core(self, value: RunePageData, context: PipelineContext = None) -> RunePage:
+        data = deepcopy(value)
+        return RunePage.from_data(data)
+
+    @transform.register(RunePagesData, RunePages)
+    def rune_pages_data_to_core(self, value: RunePagesData, context: PipelineContext = None) -> RunePages:
+        return RunePages([self.rune_page_data_to_core(page) for page in value])
+
+    # Core to Dto TODO

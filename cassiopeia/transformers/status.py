@@ -3,8 +3,7 @@ from copy import deepcopy
 
 from datapipelines import DataTransformer, PipelineContext
 
-from ..core.status import ShardStatusData
-
+from ..core.status import ShardStatusData, ShardStatus
 from ..dto.status import ShardStatusDto
 
 T = TypeVar("T")
@@ -16,8 +15,15 @@ class StatusTransformer(DataTransformer):
     def transform(self, target_type: Type[T], value: F, context: PipelineContext = None) -> T:
         pass
 
+    # Dto to Data
+
     @transform.register(ShardStatusDto, ShardStatusData)
     def shard_status_dto_to_data(self, value: ShardStatusDto, context: PipelineContext = None) -> ShardStatusData:
         data = deepcopy(value)
-        return ShardStatusData(data)
+        return ShardStatusData.from_dto(data)
 
+    # Data to Core
+
+    @transform.register(ShardStatusData, ShardStatus)
+    def shard_status_data_to_core(self, value: ShardStatusData, context: PipelineContext = None) -> ShardStatus:
+        return ShardStatus(value)

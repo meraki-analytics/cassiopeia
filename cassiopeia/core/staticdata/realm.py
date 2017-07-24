@@ -6,8 +6,7 @@ from merakicommons.container import searchable
 
 from ...configuration import settings
 from ...data import Region, Platform
-from ..common import DataObject, CassiopeiaGhost
-from .version import VersionListData
+from ..common import DataObject, CassiopeiaGhost, get_latest_version
 from ...dto.staticdata import realm as dto
 
 
@@ -101,9 +100,7 @@ class Realms(CassiopeiaGhost):
         try:
             return self._data[RealmData].version
         except AttributeError:
-            versions = settings.pipeline.get(VersionListData, query={"region": self.region, "platform": self.region.platform})
-            version = versions[-1]
-            self(version=version)
+            version = get_latest_version(region=self.region)
             return self._data[RealmData].version
 
     @CassiopeiaGhost.property(RealmData)

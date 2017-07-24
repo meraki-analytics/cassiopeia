@@ -3,7 +3,7 @@ from collections import Counter
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable, SearchableDictionary
+from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
 from ..data import Region, Platform
 from .common import DataObject, CassiopeiaGhost
@@ -75,9 +75,14 @@ class RunePagesData(list):
 ##############
 
 
+class RunePages(SearchableList):  # TODO This needs a summoner id or something so that it can be loaded.
+    pass
+
+
 @searchable({str: ["name", "runes", "region", "platform", "locale"], int: ["id"], bool: ["current"], StaticdataRune: ["runes"], Region: ["region"], Platform: ["platform"]})
 class RunePage(CassiopeiaGhost):
     _data_types = {RunePageData}
+    _load_types = {RunePageData: RunePages}
 
     @lazy_property
     def region(self) -> Region:

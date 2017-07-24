@@ -186,6 +186,10 @@ class CurrentGameInfoData(DataObject):
 ##############
 
 
+class FeaturedMatches(list):
+    pass
+
+
 @searchable({})
 class Participant(CassiopeiaObject):
     _data_types = {CurrentGameParticipantData}

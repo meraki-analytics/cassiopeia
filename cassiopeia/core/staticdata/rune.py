@@ -3,14 +3,18 @@ from PIL.Image import Image as PILImage
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable
+from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform, RuneType
-from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost
+from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, get_latest_version
 from .common import Sprite, Image
-from .version import VersionListData
 from ...dto.staticdata import rune as dto
+
+
+##############
+# Data Types #
+##############
 
 
 class RuneListData(list):
@@ -18,11 +22,6 @@ class RuneListData(list):
     #data    Map[string, RuneDto]
     #version string
     #type    string
-
-
-##############
-# Data Types #
-##############
 
 
 class MetadataData(DataObject):
@@ -360,6 +359,10 @@ class RuneData(DataObject):
 ##############
 
 
+class Runes(SearchableList):
+    pass
+
+
 class RuneStats(CassiopeiaObject):
     _data_types = {RuneStatsData}
 
@@ -627,6 +630,7 @@ class RuneStats(CassiopeiaObject):
 @searchable({str: ["name", "tags", "type", "region", "platform", "locale"], int: ["id"], RuneType: ["type"], Region: ["region"], Platform: ["platform"]})
 class Rune(CassiopeiaGhost):
     _data_types = {RuneData}
+    _load_types = {RuneData: Runes}
 
     def __init__(self, *args, **kwargs):
         if "region" not in kwargs and "platform" not in kwargs:
@@ -649,8 +653,7 @@ class Rune(CassiopeiaGhost):
         try:
             return self._data[RuneData].version
         except AttributeError:
-            versions = settings.pipeline.get(VersionListData, query={"region": self.region, "platform": self.region.platform})
-            version = versions[-1]
+            version = get_latest_version(region=self.region)
             self(version=version)
             return self._data[RuneData].version
 

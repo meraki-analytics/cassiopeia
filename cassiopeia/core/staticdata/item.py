@@ -7,19 +7,35 @@ from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform, Map
-from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost
+from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
 from .common import Sprite, Image
-from .version import VersionListData
 from ...dto.staticdata import item as dto
-
-
-class ItemListData(list):
-    _dto_type = dto.ItemListDto
 
 
 ##############
 # Data Types #
 ##############
+
+
+class ItemListData(DataObjectList):
+    _dto_type = dto.ItemListDto
+    _renamed = {"included_data": "includedData"}
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
+
+    @property
+    def version(self) -> str:
+        return self._dto["version"]
+
+    @property
+    def locale(self) -> str:
+        return self._dto["locale"]
+
+    @property
+    def included_data(self) -> Set[str]:
+        return self._dto["includedData"]
 
 
 class ItemTreeData(DataObject):
@@ -373,6 +389,46 @@ class ItemData(DataObject):
 ##############
 
 
+class Items(CassiopeiaGhostList):
+    _data_types = {ItemListData}
+
+    def __get_query__(self):
+        return {"region": self.region, "version": self.version}
+
+    def __load_hook__(self, load_group, data: DataObject):
+        self.clear()
+        from ...transformers.staticdata import StaticDataTransformer
+        SearchableList.__init__(self, [StaticDataTransformer.item_data_to_core(None, i) for i in data])
+        super().__load_hook__(load_group, data)
+
+    @lazy_property
+    def region(self) -> Region:
+        return Region(self._data[ItemListData].region)
+
+    @lazy_property
+    def platform(self) -> Platform:
+        return self.region.platform
+
+    @property
+    def version(self) -> str:
+        try:
+            return self._data[ItemListData].version
+        except KeyError:
+            version = get_latest_version(region=self.region)
+            self(version=version)
+            return self._data[ItemListData].version
+
+    @property
+    def locale(self) -> str:
+        """The locale for this champion."""
+        return self._data[ItemListData].locale
+
+    @property
+    def included_data(self) -> Set[str]:
+        """A set of tags to return additonal information for this champion when it's loaded."""
+        return self._data[ItemListData].included_data
+
+
 class ItemStats(CassiopeiaObject):
     _data_types = {ItemStatsData}
 
@@ -532,11 +588,29 @@ class Gold(CassiopeiaObject):
 @searchable({str: ["name", "region", "platform", "locale", "keywords", "maps", "tags", "tier"], int: ["id"], Region: ["region"], Platform: ["platform"], Map: ["maps"]})
 class Item(CassiopeiaGhost):
     _data_types = {ItemData}
+    _load_types = {ItemData: Items}
 
     def __init__(self, *args, **kwargs):
         if "region" not in kwargs and "platform" not in kwargs:
             kwargs["region"] = settings.default_region.value
         super().__init__(*args, **kwargs)
+
+    def __load_hook__(self, load_group, core) -> None:
+        def find_matching_attribute(datalist, attrname, attrvalue):
+            for item in datalist:
+                if getattr(item, attrname, None) == attrvalue:
+                    return item
+
+        # The `core` is a dict of summoner spell core instances
+        if "id" in self._data[ItemData]._dto:
+            find = "id", self.id
+        elif "name" in self._data[ItemData]._dto:
+            find = "name", self.name
+        else:
+            raise RuntimeError("Expected fields not present after loading.")
+        core = find_matching_attribute(core, *find)
+
+        super().__load_hook__(load_group, core)
 
     # What do we do about params like this that can exist in both data objects?
     # They will be set on both data objects always, so we can choose either one to return.
@@ -556,8 +630,7 @@ class Item(CassiopeiaGhost):
         try:
             return self._data[ItemData].version
         except AttributeError:
-            versions = settings.pipeline.get(VersionListData, query={"region": self.region, "platform": self.region.platform})
-            version = versions[-1]
+            version = get_latest_version(region=self.region)
             self(version=version)
             return self._data[ItemData].version
 

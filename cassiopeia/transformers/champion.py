@@ -15,10 +15,12 @@ class ChampionTransformer(DataTransformer):
     def transform(self, target_type: Type[T], value: F, context: PipelineContext = None) -> T:
         pass
 
+    # Dto to Data
+
     @transform.register(ChampionDto, ChampionData)
     def champion_dto_to_data(self, value: ChampionDto, context: PipelineContext = None) -> ChampionData:
         data = deepcopy(value)
-        return ChampionData(data)
+        return ChampionData.from_dto(data)
 
     @transform.register(ChampionListDto, ChampionListData)
     def champion_list_dto_to_data(self, value: ChampionListDto, context: PipelineContext = None) -> ChampionListData:
