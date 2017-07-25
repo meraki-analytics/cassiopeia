@@ -6,7 +6,7 @@ from merakicommons.cache import Cache as CommonsCache
 from . import uniquekeys
 from ..core.championmastery import ChampionMastery
 from ..core.league import LeagueSummoner
-from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Realms, ProfileIcon, Languages, LanguageStrings, Versions, SummonerSpells, Items
+from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Realms, ProfileIcon, Languages, LanguageStrings, Versions, SummonerSpells, Items, Champions
 from ..core.masterypage import MasteryPage
 from ..core.match import Match
 from ..core.runepage import RunePage
@@ -166,6 +166,28 @@ class Cache(DataSource, DataSink):
     def put_many_champion(self, items: Iterable[Champion], context: PipelineContext = None) -> None:
         self._put_many(Champion, items, uniquekeys.for_champion, ("id",), ("name",), context=context)
 
+    @get.register(Champions)
+    @validate_query(uniquekeys.validate_champions_query, uniquekeys.convert_region_to_platform)
+    def get_champions(self, query: Mapping[str, Any], context: PipelineContext = None) -> Champions:
+        return self._get(query, uniquekeys.for_champions_query, context)
+
+    @get_many.register(Champions)
+    @validate_query(uniquekeys.validate_many_champions_query, uniquekeys.convert_region_to_platform)
+    def get_many_champions(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[Champions, None, None]:
+        return self._get_many(query, uniquekeys.for_many_champions_query, context)
+
+    @put.register(Champions)
+    def put_champions(self, champions: Champions, context: PipelineContext = None) -> None:
+        self._put(Champions, champions, uniquekeys.for_champions, ("platform",), context=context)
+        for champion in champions:
+            self._put(Champion, champion, uniquekeys.for_champion, ("id",), ("name",), context=context)
+
+    @put_many.register(Champions)
+    def put_many_champions(self, champions: Iterable[Champions], context: PipelineContext = None) -> None:
+        self._put_many(Champions, champions, uniquekeys.for_champions, ("platform",), context=context)
+        for champion in champions:
+            self._put(Champion, champion, uniquekeys.for_champion, ("id",), ("name",), context=context)
+
     # Item
 
     @get.register(Item)
@@ -199,13 +221,13 @@ class Cache(DataSource, DataSink):
     @put.register(Items)
     def put_items(self, items: Items, context: PipelineContext = None) -> None:
         self._put(Items, items, uniquekeys.for_items, ("platform",), context=context)
-        for item in items:  # TODO Get this working
+        for item in items:
             self._put(Item, item, uniquekeys.for_item, ("id",), ("name",), context=context)
 
     @put_many.register(Items)
     def put_many_items(self, items: Iterable[Items], context: PipelineContext = None) -> None:
         self._put_many(Items, items, uniquekeys.for_items, ("platform",), context=context)
-        for item in items:  # TODO Get this working
+        for item in items:
             self._put(Item, item, uniquekeys.for_item, ("id",), ("name",), context=context)
 
     # Language
