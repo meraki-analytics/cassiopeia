@@ -239,11 +239,13 @@ class CassiopeiaGhostList(SearchableList, CassiopeiaGhost):
 
     @property
     def _Ghost__load_groups(self) -> Set[DataObject]:
+        # Since @Ghost.property isn't set, the object doesn't have any load groups. Define them as equivalent to _data_types.
         return self._data_types
 
     def __init__(self, *args, **kwargs):
         SearchableList.__init__(self, *args)
         CassiopeiaGhost.__init__(self, **kwargs)
+        self.__triggered_load = False
 
     @classmethod
     def from_data(cls, data: Union[list, DataObject]):
@@ -253,8 +255,25 @@ class CassiopeiaGhostList(SearchableList, CassiopeiaGhost):
         #SearchableList.__init__(self, [StaticDataTransformer.champion_data_to_core(None, c) for c in data])
         #return self
 
+    def __load_hook__(self, load_group, data: DataObject):
+        super().__load_hook__(load_group=load_group, data=data)
+        # Since @Ghost.property isn't set, the ghost's __property won't set itself as loaded because it never gets called.
+        # Therefore we manually set it as loaded here.
+        self._Ghost__set_loaded(load_group)
+
     def __iter__(self):
-        if not self._Ghost__all_loaded:
+        if not self._Ghost__all_loaded and not self.__triggered_load:
+            # TODO Discuss the below line with Rob.
+            # This seems like a weird hack, but it also seems required. The issue is that within the Cache I call a .put
+            #  on all the items in this object after putting this object itself in the cache.
+            #  To do that, I iterate over this object, calling this __iter__ method, which triggers a __load__ (two
+            #  lines down). That load triggers a transformer (Core to Dto; idk what that's called but it's irrelevant
+            #  because there are situations where it should be called, e.g. with a database). So the load triggers a
+            #  transformer, which has a for loop, which triggers this __iter__.
+            #  The process is therefore:  __iter__ -> __load__ -> transformer -> __iter__ ...
+            #  and we have a recursion depth error. To circumvent it, I added this __triggered_load boolean. It fixes
+            #  that issue and everything works as-expected.
+            self.__triggered_load = True
             self.__load__()
         return super().__iter__()
 
