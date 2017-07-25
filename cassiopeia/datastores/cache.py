@@ -197,12 +197,16 @@ class Cache(DataSource, DataSink):
         return self._get_many(query, uniquekeys.for_many_items_query, context)
 
     @put.register(Items)
-    def put_items(self, item: Items, context: PipelineContext = None) -> None:
-        self._put(Items, item, uniquekeys.for_items, ("platform",), context=context)
+    def put_items(self, items: Items, context: PipelineContext = None) -> None:
+        self._put(Items, items, uniquekeys.for_items, ("platform",), context=context)
+        for item in items:  # TODO Get this working
+            self._put(Item, item, uniquekeys.for_item, ("id",), ("name",), context=context)
 
     @put_many.register(Items)
     def put_many_items(self, items: Iterable[Items], context: PipelineContext = None) -> None:
         self._put_many(Items, items, uniquekeys.for_items, ("platform",), context=context)
+        for item in items:  # TODO Get this working
+            self._put(Item, item, uniquekeys.for_item, ("id",), ("name",), context=context)
 
     # Language
 
@@ -367,12 +371,12 @@ class Cache(DataSource, DataSink):
     @get.register(Versions)
     @validate_query(uniquekeys.validate_versions_query, uniquekeys.convert_region_to_platform)
     def get_versions(self, query: Mapping[str, Any], context: PipelineContext = None) -> Versions:
-        return self._get(query, uniquekeys.for_versions_query, context)
+        return self._get(query, uniquekeys.for_versions_query, context=context)
 
     @get_many.register(Versions)
     @validate_query(uniquekeys.validate_many_versions_query, uniquekeys.convert_region_to_platform)
     def get_many_versions(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[Versions, None, None]:
-        return self._get_many(query, uniquekeys.for_many_versions_query, context)
+        return self._get_many(query, uniquekeys.for_many_versions_query, context=context)
 
     @put.register(Versions)
     def put_versions(self, item: Versions, context: PipelineContext = None) -> None:

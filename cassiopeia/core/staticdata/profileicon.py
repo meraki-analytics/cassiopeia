@@ -110,7 +110,8 @@ class ProfileIcon(CassiopeiaGhost):
         if _profile_icon_names is None:
             module_directory = os.path.dirname(os.path.realpath(__file__))
             module_directory, _ = os.path.split(module_directory)  # Go up one directory
-            filename = os.path.join(module_directory, 'profile_icon_names.json')
+            module_directory, _ = os.path.split(module_directory)  # Go up another directory
+            filename = os.path.join(module_directory, "profile_icon_names.json")
             _profile_icon_names = json.load(open(filename))
             _profile_icon_names = {int(key): value for key, value in _profile_icon_names.items()}
         try:

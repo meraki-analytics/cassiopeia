@@ -329,7 +329,8 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(Items, ItemListDto)
     def item_list_core_to_dto(self, value: Items, context: PipelineContext = None) -> ItemListDto:
-        return ItemListDto({"region": value.region, "version": value.version, "data": [self.item_core_to_dto(r) for r in value]})
+        return ItemListDto({"region": value.region, "version": value.version, "locale": value.locale, "includedData": value.included_data,
+                            "data": {i.id: self.item_core_to_dto(i) for i in value}})
 
     # Summoner Spell
 
