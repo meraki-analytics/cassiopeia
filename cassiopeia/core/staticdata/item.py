@@ -1,4 +1,4 @@
-from typing import List, Set, Mapping
+from typing import List, Set, Mapping, Union
 from PIL.Image import Image as PILImage
 
 from merakicommons.ghost import ghost_load_on
@@ -7,7 +7,7 @@ from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform, Map
-from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
+from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version, provide_default_region
 from .common import Sprite, Image
 from ...dto.staticdata import item as dto
 
@@ -320,11 +320,11 @@ class ItemData(DataObject):
 
     @property
     def stats(self) -> ItemStatsData:
-        return ItemStatsData(self._dto["stats"])
+        return ItemStatsData.from_dto(self._dto["stats"])
 
     @property
-    def keywords(self) -> List[str]:  # TODO Convert from str to List[str]
-        return self._dto["colloq"]
+    def keywords(self) -> List[str]:
+        return self._dto["colloq"].split(";")
 
     @property
     def maps(self) -> List[Map]:  # TODO Convert from Dict to List
@@ -337,7 +337,7 @@ class ItemData(DataObject):
 
     @property
     def image(self) -> ImageData:
-        return ImageData(self._dto["image"])
+        return ImageData.from_dto(self._dto["image"])
 
     @property
     def description(self) -> str:
@@ -393,7 +393,12 @@ class Items(CassiopeiaGhostList):
     _data_types = {ItemListData}
 
     def __get_query__(self):
-        return {"region": self.region, "version": self.version}
+        query = {"platform": self.platform, "version": self.version}
+        try:
+            query["locale"] = self.locale
+        except KeyError:
+            pass
+        return query
 
     def __load_hook__(self, load_group, data: DataObject):
         self.clear()
@@ -590,10 +595,12 @@ class Item(CassiopeiaGhost):
     _data_types = {ItemData}
     _load_types = {ItemData: Items}
 
-    def __init__(self, *args, **kwargs):
-        if "region" not in kwargs and "platform" not in kwargs:
-            kwargs["region"] = settings.default_region.value
-        super().__init__(*args, **kwargs)
+    @provide_default_region
+    def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None):
+        super().__init__(id=id, name=name, region=region)
+
+    def __get_query__(self):
+        return {"id": self.id, "platform": self.platform, "version": self.version, "locale": self.locale}
 
     def __load_hook__(self, load_group, core) -> None:
         def find_matching_attribute(datalist, attrname, attrvalue):

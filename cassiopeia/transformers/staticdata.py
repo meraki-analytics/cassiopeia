@@ -55,7 +55,7 @@ class StaticDataTransformer(DataTransformer):
             c._update({"region": data["region"], "locale": data["locale"], "version": data["version"], "includedData": data["includedData"]})
 
         data = data["data"]
-        return ChampionListData(data, region=value["region"])
+        return ChampionListData(data, region=value["region"], version=value["version"], locale=value["locale"], included_data=value["includedData"])
 
     # Mastery
 
@@ -197,9 +197,9 @@ class StaticDataTransformer(DataTransformer):
     def champion_data_to_core(self, value: ChampionData, context: PipelineContext = None) -> Champion:
         return Champion.from_data(value)
 
-    @transform.register(ChampionListData, ChampionListData)
+    @transform.register(ChampionListData, Champions)
     def champion_list_data_to_core(self, value: ChampionListData, context: PipelineContext = None) -> Champions:
-        return Champions([self.champion_data_to_core(c) for c in value], region=value.region)
+        return Champions([self.champion_data_to_core(c) for c in value], region=value.region, version=value.version, locale=value.locale, included_data=value.included_data)
 
     # Mastery
 
@@ -299,7 +299,8 @@ class StaticDataTransformer(DataTransformer):
     @transform.register(Champions, ChampionListDto)
     def champion_list_core_to_dto(self, value: Champions, context: PipelineContext = None) -> ChampionListDto:
         # I didn't put in `keys`, `type`, or `format` keys/values that come from the API.
-        return ChampionListDto({"region": value.region, "version": value.version, "data": [self.champion_core_to_dto(c) for c in value]})
+        return ChampionListDto({"region": value.region, "version": value.version, "locale": value.locale, "includedData": value.included_data,
+                            "data": {c.id: self.champion_core_to_dto(c) for c in value}})
 
     # Mastery
 
@@ -309,7 +310,7 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(Masteries, MasteryListDto)
     def mastery_list_core_to_dto(self, value: Masteries, context: PipelineContext = None) -> MasteryListDto:
-        return MasteryListDto({"region": value.region, "version": value.version, "data": [self.mastery_core_to_dto(m) for m in value]})
+        return MasteryListDto({"region": value.region, "version": value.version, "data": {m.id: self.mastery_core_to_dto(m) for m in value}})
 
     # Rune
 
@@ -319,7 +320,7 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(Runes, RuneListDto)
     def rune_list_core_to_dto(self, value: Runes, context: PipelineContext = None) -> RuneListDto:
-        return RuneListDto({"region": value.region, "version": value.version, "data": [self.rune_core_to_dto(r) for r in value]})
+        return RuneListDto({"region": value.region, "version": value.version, "data": {r.id: self.rune_core_to_dto(r) for r in value}})
 
     # Item
 
@@ -329,7 +330,8 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(Items, ItemListDto)
     def item_list_core_to_dto(self, value: Items, context: PipelineContext = None) -> ItemListDto:
-        return ItemListDto({"region": value.region, "version": value.version, "data": [self.item_core_to_dto(r) for r in value]})
+        return ItemListDto({"region": value.region, "version": value.version, "locale": value.locale, "includedData": value.included_data,
+                            "data": {i.id: self.item_core_to_dto(i) for i in value}})
 
     # Summoner Spell
 

@@ -3,6 +3,7 @@ import datetime
 from typing import Union
 from PIL.Image import Image as PILImage
 
+from datapipelines import NotFoundError
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList
@@ -10,6 +11,7 @@ from merakicommons.container import searchable, SearchableList
 from ..configuration import settings
 from ..data import Region, Platform
 from .common import DataObject, CassiopeiaObject, CassiopeiaGhost, provide_default_region, get_latest_version
+from .staticdata import ProfileIcon
 from ..dto.summoner import SummonerDto
 
 try:
@@ -82,38 +84,6 @@ class SummonerData(DataObject):
 ##############
 
 
-@searchable({int: ["id"], str: ["name", "url"], PILImage: ["image"]})
-class ProfileIcon(CassiopeiaObject):
-    _data_types = {ProfileIconData}
-
-    @property
-    def id(self) -> int:
-        return self._data[ProfileIconData].id
-
-    @property
-    def name(self) -> Union[str, None]:
-        global _profile_icon_names
-        if _profile_icon_names is None:
-            module_directory = os.path.dirname(os.path.realpath(__file__))
-            module_directory, _ = os.path.split(module_directory)  # Go up one directory
-            filename = os.path.join(module_directory, 'profile_icon_names.json')
-            _profile_icon_names = json.load(open(filename))
-            _profile_icon_names = {int(key): value for key, value in _profile_icon_names.items()}
-        try:
-            return _profile_icon_names[self._data[ProfileIconData].id]
-        except KeyError:
-            return None
-
-    @property
-    def url(self) -> str:
-        version = get_latest_version(region=self.region)
-        return "http://ddragon.leagueoflegends.com/cdn/{version}/img/profileicon/{id}.png".format(version=version, id=self.id)
-
-    @property
-    def image(self) -> PILImage:
-        return settings.pipeline.get(PILImage, query={"url": self.url})
-
-
 @searchable({int: ["id"]})
 class Account(CassiopeiaObject):
     _data_types = {AccountData}
@@ -150,6 +120,16 @@ class Summoner(CassiopeiaGhost):
             except KeyError:
                 query["name"] = self._data[SummonerData].name
         return query
+
+    @property
+    def exists(self):
+        try:
+            if not self._Ghost__all_loaded:
+                self.__load__()
+            self.revision_date  # Make sure we can access this attribute
+            return True
+        except (AttributeError, NotFoundError):
+            return False
 
     @lazy_property
     def region(self) -> Region:
