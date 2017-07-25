@@ -214,7 +214,6 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=CheckCache):
                 from .staticdata import Versions
                 query["version"] = get_latest_version(region=query["region"])
 
-            from ..datastores.uniquekeys import construct_query
             query = self.__get_query__()
             data = settings.pipeline.get(type=self._load_types[load_group], query=query)
             self.__load_hook__(load_group, data)

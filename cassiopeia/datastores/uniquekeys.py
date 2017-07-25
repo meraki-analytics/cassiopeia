@@ -18,7 +18,7 @@ from ..dto.summoner import SummonerDto
 from ..core.common import DataObject, provide_default_region
 from ..core.championmastery import ChampionMastery
 from ..core.league import LeagueSummoner
-from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Languages, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions, Items
+from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Languages, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions, Items, Champions
 from ..core.status import ShardStatus
 from ..core.masterypage import MasteryPage
 from ..core.match import Match
@@ -33,6 +33,12 @@ from ..core.summoner import Account, SummonerData
 # Utilities #
 #############
 
+
+def _rgetattr(obj, key):
+    """Recursive getattr for handling dots in keys."""
+    for k in key.split("."):
+        obj = getattr(obj, k)
+    return obj
 
 def _hash_included_data(included_data: Set[str]) -> int:
     return hash(tuple(included_data))
@@ -70,9 +76,9 @@ def convert_region_to_platform(query: MutableMapping[str, Any]) -> None:
         query["platforms"] = _region_to_platform_generator(query["regions"])
 
 
-#############################
-# Construct Query Functions #
-#############################
+#########################################
+# Construct Query From kwargs Functions #
+#########################################
 
 
 def construct_query(cls, **kwargs) -> dict:
@@ -80,14 +86,8 @@ def construct_query(cls, **kwargs) -> dict:
         return construct_champion_mastery_query(**kwargs)
     if cls is Summoner:
         return construct_summoner_query(**kwargs)
-
     else:
         return kwargs
-        #raise TypeError("no query constructor for class {}".format(cls))
-
-
-def construct_champion_query_from_data(data: ChampionData) -> dict:
-    return {"region": data.region, "id": data.id}
 
 
 @provide_default_region
@@ -1310,7 +1310,7 @@ validate_many_champion_mastery_query = Query. \
 
 
 def for_champion_mastery(champion_mastery: ChampionMastery, summoner_identifier: str = "id", champion_identifier: str = "id") -> Tuple[str, Union[int, str], Union[int, str]]:
-    return champion_mastery.platform.value, getattr(champion_mastery.summoner, summoner_identifier), getattr(champion_mastery.champion, champion_identifier)
+    return champion_mastery.platform.value, _rgetattr(champion_mastery.summoner, summoner_identifier), _rgetattr(champion_mastery.champion, champion_identifier)
 
 
 def for_champion_mastery_query(query: Query) -> Tuple[str, Union[int, str], Union[int, str]]:
@@ -1369,7 +1369,7 @@ validate_many_league_summoner_query = Query. \
 
 
 def for_league_summoner(league_summoner: LeagueSummoner, summoner_identifier: str = "id") -> Tuple[str, str, Union[int, str]]:
-    return league_summoner.platform.value, league_summoner.queue.value, getattr(league_summoner.summoner, summoner_identifier)
+    return league_summoner.platform.value, league_summoner.queue.value, _rgetattr(league_summoner.summoner, summoner_identifier)
 
 
 def for_league_summoner_query(query: Query) -> Tuple[str, str, Union[int, str]]:
@@ -1424,7 +1424,7 @@ validate_many_champion_query = Query. \
 
 
 def for_champion(champion: Champion, identifier: str = "id") -> Tuple[str, str, str, int, Union[int, str]]:
-    return champion.platform.value, champion.version, champion.locale, _hash_included_data(champion.included_data), getattr(champion, identifier)
+    return champion.platform.value, champion.version, champion.locale, _hash_included_data(champion.included_data), _rgetattr(champion, identifier)
 
 
 def for_champion_query(query: Query) -> Tuple[str, str, str, int, Union[int, str]]:
@@ -1440,6 +1440,38 @@ def for_many_champion_query(query: Query) -> Generator[Tuple[str, str, str, int,
         try:
             identifier = identifier_type(identifier)
             yield query["platform"].value, query["version"], query["locale"], included_data_hash, identifier
+        except ValueError as e:
+            raise QueryValidationError from e
+
+
+validate_champions_query = Query. \
+    has("platform").as_(Platform).also. \
+    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+    can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
+    can_have("includedData").as_(set).or_("included_data").with_default({"all"})
+
+
+validate_many_champions_query = Query. \
+    has("platforms").as_(Platform).also. \
+    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+    can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
+    can_have("included_data").with_default({"all"})
+
+
+def for_champions(champions: Champions, identifier: str = None) -> Tuple[str, str, str, int]:
+    return champions.platform.value, champions.version, champions.locale, _hash_included_data(champions.included_data)
+
+
+def for_champions_query(query: Query) -> Tuple[str, str, str, int]:
+    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
+    return query["platform"].value, query["version"], query["locale"], included_data_hash
+
+
+def for_many_champions_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
+    included_data_hash = _hash_included_data(query["included_data"])
+    for platform in query["platforms"]:
+        try:
+            yield platform.value, query["version"], query["locale"], included_data_hash
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -1463,7 +1495,7 @@ validate_many_item_query = Query. \
 
 
 def for_item(item: Item, identifier: str = "id") -> Tuple[str, str, str, int, Union[int, str]]:
-    return item.platform.value, item.version, item.locale, _hash_included_data(item.included_data), getattr(item, identifier)
+    return item.platform.value, item.version, item.locale, _hash_included_data(item.included_data), _rgetattr(item, identifier)
 
 
 def for_item_query(query: Query) -> Tuple[str, str, str, int, Union[int, str]]:
@@ -1496,7 +1528,7 @@ validate_many_items_query = Query. \
     can_have("included_data").with_default({"all"})
 
 
-def for_items(items: Items, identifer: str = "platform") -> Tuple[str, str, str, int]:
+def for_items(items: Items, identifier: str = "platform") -> Tuple[str, str, str, int]:
     return items.platform.value, items.version, items.locale, _hash_included_data(items.included_data)
 
 
@@ -1573,7 +1605,7 @@ validate_many_map_query = Query. \
 
 
 def for_map(map: Map, identifier: str = "id") -> Tuple[str, str, str, Union[int, str]]:
-    return map.platform.value, map.version, map.locale, getattr(map, identifier)
+    return map.platform.value, map.version, map.locale, _rgetattr(map, identifier)
 
 
 def for_map_query(query: Query) -> Tuple[str, str, str, Union[int, str]]:
@@ -1615,7 +1647,7 @@ validate_many_mastery_query = Query. \
 
 
 def for_mastery(mastery: Mastery, identifier: str = "id") -> Tuple[str, str, str, int, Union[int, str]]:
-    return mastery.platform.value, mastery.version, mastery.locale, _hash_included_data(mastery.included_data), getattr(mastery, identifier)
+    return mastery.platform.value, mastery.version, mastery.locale, _hash_included_data(mastery.included_data), _rgetattr(mastery, identifier)
 
 
 def for_mastery_query(query: Query) -> Tuple[str, str, str, int, Union[int, str]]:
@@ -1738,7 +1770,7 @@ validate_many_rune_query = Query. \
 
 
 def for_rune(rune: Rune, identifier: str = "id") -> Tuple[str, str, str, int, Union[int, str]]:
-    return rune.platform.value, rune.version, rune.locale, _hash_included_data(rune.included_data), getattr(rune, identifier)
+    return rune.platform.value, rune.version, rune.locale, _hash_included_data(rune.included_data), _rgetattr(rune, identifier)
 
 
 def for_rune_query(query: Query) -> Tuple[str, str, str, int, Union[int, str]]:
@@ -1777,7 +1809,7 @@ validate_many_summoner_spell_query = Query. \
 
 
 def for_summoner_spell(summoner_spell: SummonerSpell, identifier: str = "id") -> Tuple[str, str, str, int, Union[int, str]]:
-    return summoner_spell.platform.value, summoner_spell.version, summoner_spell.locale, _hash_included_data(summoner_spell.included_data), getattr(summoner_spell, identifier)
+    return summoner_spell.platform.value, summoner_spell.version, summoner_spell.locale, _hash_included_data(summoner_spell.included_data), _rgetattr(summoner_spell, identifier)
 
 
 def for_summoner_spell_query(query: Query) -> Tuple[str, str, str, int, Union[int, str]]:
@@ -1871,7 +1903,7 @@ validate_many_mastery_page_query = Query. \
 
 
 def for_mastery_page(mastery_page: MasteryPage, summoner_identifier: str = "id") -> Tuple[str, Union[int, str], int]:
-    return mastery_page.platform.value, getattr(mastery_page.summoner, summoner_identifier), mastery_page.id
+    return mastery_page.platform.value, _rgetattr(mastery_page.summoner, summoner_identifier), mastery_page.id
 
 
 def for_mastery_page_query(query: Query) -> Tuple[str, Union[int, str], int]:
@@ -1953,7 +1985,7 @@ validate_many_rune_page_query = Query. \
 
 
 def for_rune_page(rune_page: RunePage, summoner_identifier: str = "id") -> Tuple[str, int, int]:
-    return rune_page.platform.value, getattr(rune_page.summoner, summoner_identifier), rune_page.id
+    return rune_page.platform.value, _rgetattr(rune_page.summoner, summoner_identifier), rune_page.id
 
 
 def for_rune_page_query(query: Query) -> Tuple[str, Union[int, str], int]:
@@ -2056,11 +2088,7 @@ validate_many_summoner_query = Query. \
 
 
 def for_summoner(summoner: Summoner, identifier: str = "id") -> Tuple[str, Union[int, str]]:
-    identifier_parts = identifier.split(".")
-    obj = summoner
-    for part in identifier_parts:
-        obj = getattr(obj, part)
-    return summoner.platform.value, obj
+    return summoner.platform.value, _rgetattr(summoner, identifier)
 
 
 def for_summoner_query(query: Query) -> Tuple[str, Union[int, str]]:

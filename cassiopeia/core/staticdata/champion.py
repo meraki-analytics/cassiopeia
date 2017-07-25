@@ -462,7 +462,12 @@ class Champions(CassiopeiaGhostList):
     _data_types = {ChampionListData}
 
     def __get_query__(self):
-        return {"region": self.region}
+        query = {"platform": self.platform, "version": self.version}
+        try:
+            query["locale"] = self.locale
+        except KeyError:
+            pass
+        return query
 
     def __load_hook__(self, load_group, data: DataObject):
         self.clear()
@@ -880,7 +885,7 @@ class Champion(CassiopeiaGhost):
         super().__init__(**kwargs)
 
     def __get_query__(self):
-        query = {"region": self.region}
+        query = {"region": self.region, "version": self.version}
         try:
             query["id"] = self._data[ChampionData].id
         except KeyError:
@@ -928,7 +933,7 @@ class Champion(CassiopeiaGhost):
         """The version for this champion."""
         try:
             return self._data[ChampionData].version
-        except AttributeError:
+        except KeyError:
             version = get_latest_version(region=self.region)
             self(version=version)
             return self._data[ChampionData].version
