@@ -29,16 +29,25 @@ class MasteriesTransformer(DataTransformer):
             page["region"] = data["region"]
             page["summonerId"] = data["summonerId"]
         data = [self.mastery_page_dto_to_data(page) for page in data["pages"]]
-        return MasteryPagesData(data)
+        return MasteryPagesData(data, summoner_id=value["summonerId"])
 
     # Data to Core
 
     @transform.register(MasteryPageData, MasteryPage)
     def mastery_page_data_to_core(self, value: MasteryPageData, context: PipelineContext = None) -> MasteryPage:
-        return MasteryPage.from_data(value)
+        data = deepcopy(value)
+        return MasteryPage.from_data(data)
 
     @transform.register(MasteryPagesData, MasteryPages)
     def mastery_pages_data_to_core(self, value: MasteryPagesData, context: PipelineContext = None) -> MasteryPages:
-        return MasteryPages([self.mastery_page_data_to_core(page) for page in value])
+        return MasteryPages([self.mastery_page_data_to_core(page) for page in value], summoner_id=value.summoner.id)
 
-    # Core to Dto TODO
+    # Core to Dto
+
+    @transform.register(MasteryPage, MasteryPageDto)
+    def mastery_page_core_to_dto(self, value: MasteryPage, context: PipelineContext = None) -> MasteryPageDto:
+        return value._data[MasteryPageData]._dto
+
+    @transform.register(MasteryPages, MasteryPagesDto)
+    def mastery_pages_core_to_dto(self, value: MasteryPages, context: PipelineContext = None) -> MasteryPagesDto:
+        return MasteryPagesDto([self.mastery_page_core_to_dto(page) for page in value], summonerId=value.summoner.id)

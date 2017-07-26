@@ -15,10 +15,10 @@ from ..dto.runepage import RunePagesDto, RunePageDto
 from ..dto.spectator import CurrentGameInfoDto, FeaturedGamesDto
 from ..dto.summoner import SummonerDto
 
-from ..core.common import DataObject, provide_default_region
+from ..core.common import provide_default_region
 from ..core.championmastery import ChampionMastery
 from ..core.league import LeagueSummoner
-from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Languages, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions, Items, Champions
+from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Languages, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions, Items, Champions, Maps, SummonerSpells
 from ..core.status import ShardStatus
 from ..core.masterypage import MasteryPage
 from ..core.match import Match
@@ -1626,6 +1626,31 @@ def for_many_map_query(query: Query) -> Generator[Tuple[str, str, str, Union[int
             yield query["platform"].value, query["version"], query["locale"], identifier
         except ValueError as e:
             raise QueryValidationError from e
+
+
+validate_maps_query = Query. \
+    has("platform").as_(Platform).also. \
+    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+    can_have("locale").with_default(_get_default_locale, supplies_type=str)
+
+
+validate_many_maps_query = Query. \
+    has("platforms").as_(Iterable).also. \
+    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+    can_have("locale").with_default(_get_default_locale, supplies_type=str)
+
+
+def for_maps(maps: Maps, identifier: str = "id") -> Tuple[str, str, str]:
+    return maps.platform.value, maps.version, maps.locale
+
+
+def for_maps_query(query: Query) -> Tuple[str, str, str]:
+    return query["platform"].value, query["version"], query["locale"]
+
+
+def for_many_maps_query(query: Query) -> Generator[Tuple[str, str, str], None, None]:
+    for platform in query["platforms"]:
+        yield platform.value, query["version"], query["locale"]
 
 
 # Mastery
