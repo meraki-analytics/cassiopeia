@@ -73,7 +73,7 @@ class StaticDataTransformer(DataTransformer):
             c._update({"region": data["region"], "locale": data["locale"], "version": data["version"], "includedData": data["includedData"]})
 
         data = data["data"]
-        return MasteryListData(data, region=value["region"])
+        return MasteryListData(data, region=value["region"], version=value["version"], locale=value["locale"], included_data=value["includedData"])
 
     # Rune
 
@@ -91,7 +91,7 @@ class StaticDataTransformer(DataTransformer):
             c._update({"region": data["region"], "locale": data["locale"], "version": data["version"], "includedData": data["includedData"]})
 
         data = data["data"]
-        return RuneListData(data, region=value["region"])
+        return RuneListData(data, region=value["region"], version=value["version"], locale=value["locale"], included_data=value["includedData"])
 
     # Item
 
@@ -109,7 +109,7 @@ class StaticDataTransformer(DataTransformer):
             c._update({"region": data["region"], "locale": data["locale"], "version": data["version"], "includedData": data["includedData"]})
 
         data = data["data"]
-        return ItemListData(data, region=value["region"], version=value["version"], locale=value["locale"], included_data=value["includedData"])  # TODO Make sure everything (else) that returns a version passes it up like I do here.
+        return ItemListData(data, region=value["region"], version=value["version"], locale=value["locale"], included_data=value["includedData"])
 
     # Summoner Spell
 
@@ -127,7 +127,7 @@ class StaticDataTransformer(DataTransformer):
             c._update({"region": data["region"], "locale": data["locale"], "version": data["version"], "includedData": data["includedData"]})
 
         data = data["data"]
-        return SummonerSpellListData(data, region=value["region"])
+        return SummonerSpellListData(data, region=value["region"], version=value["version"], locale=value["locale"], included_data=value["includedData"])
 
     # Map
 
@@ -145,7 +145,7 @@ class StaticDataTransformer(DataTransformer):
             c._update({"region": data["region"], "locale": data["locale"], "version": data["version"]})
 
         data = data["data"]
-        return MapListData(data, region=value["region"])
+        return MapListData(data, region=value["region"], version=value["version"], locale=value["locale"])
 
     # Version
 
@@ -159,21 +159,21 @@ class StaticDataTransformer(DataTransformer):
     @transform.register(RealmDto, RealmData)
     def realm_dto_to_data(self, value: RealmDto, context: PipelineContext = None) -> RealmData:
         data = deepcopy(value)
-        return RealmData.from_dto(data)
+        return RealmData(data, region=value["region"])
 
     # Languages
 
     @transform.register(LanguagesDto, LanguagesData)
     def languages_dto_to_data(self, value: LanguagesDto, context: PipelineContext = None) -> LanguagesData:
         data = deepcopy(value)
-        return LanguagesData(data["languages"])
+        return LanguagesData(data["languages"], region=value["region"])
 
     # Language Strings
 
     @transform.register(LanguageStringsDto, LanguageStringsData)
     def language_strings_dto_to_data(self, value: LanguageStringsDto, context: PipelineContext = None) -> LanguageStringsData:
         data = deepcopy(value)
-        return LanguageStringsData.from_dto(data)
+        return LanguageStringsData(data, region=value["region"], version=value["version"], locale=value["locale"])
 
     # Profile Icons
 
@@ -185,7 +185,7 @@ class StaticDataTransformer(DataTransformer):
     @transform.register(ProfileIconListDto, ProfileIconListData)
     def profile_icon_dto_to_data(self, value: ProfileIconListDto, context: PipelineContext = None) -> ProfileIconListData:
         data = deepcopy(value)
-        return ProfileIconListData([self.profile_icon_dto_to_data(p) for p in data["data"]], region=value["region"])
+        return ProfileIconListData([self.profile_icon_dto_to_data(p) for p in data["data"]], region=value["region"], version=value["version"], locale=value["locale"])
 
     ################
     # Data to Core #
@@ -209,7 +209,7 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(MasteryListData, Masteries)
     def mastery_list_data_to_core(self, value: MasteryListData, context: PipelineContext = None) -> Masteries:
-        return Masteries([self.mastery_data_to_core(m) for m in value], region=value.region)
+        return Masteries([self.mastery_data_to_core(m) for m in value], region=value.region, version=value.version, locale=value.locale, included_data=value.included_data)
 
     # Rune
 
@@ -219,7 +219,7 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(RuneListData, Runes)
     def rune_list_data_to_core(self, value: RuneListData, context: PipelineContext = None) -> Runes:
-        return Runes([self.rune_data_to_core(r) for r in value], region=value.region)
+        return Runes([self.rune_data_to_core(r) for r in value], region=value.region, version=value.version, locale=value.locale, included_data=value.included_data)
 
     # Item
 
@@ -239,7 +239,7 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(SummonerSpellListData, SummonerSpells)
     def summoner_spell_list_data_to_core(self, value: SummonerSpellListData, context: PipelineContext = None) -> SummonerSpells:
-        return SummonerSpells([self.summoner_spell_data_to_core(s) for s in value])
+        return SummonerSpells([self.summoner_spell_data_to_core(s) for s in value], region=value.region, version=value.version, locale=value.locale, included_data=value.included_data)
 
     # Map
 
@@ -249,7 +249,7 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(MapListData, Maps)
     def map_list_data_to_core(self, value: MapListData, context: PipelineContext = None) -> Maps:
-        return Maps([self.map_data_to_core(m) for m in value])
+        return Maps([self.map_data_to_core(m) for m in value], region=value.region, version=value.version, locale=value.locale)
 
     # Version
 
@@ -262,19 +262,19 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(RealmData, Realms)
     def realm_data_to_core(self, value: RealmData, context: PipelineContext = None) -> Realms:
-        return Realms.from_data(value)
+        return Realms(value, region=value.region)
 
     # Languages
 
     @transform.register(LanguagesData, Languages)
     def languages_data_to_core(self, value: LanguagesData, context: PipelineContext = None) -> Languages:
-        return Languages(value)
+        return Languages(value, region=value.region)
 
     # Language Strings
 
     @transform.register(LanguageStringsData, LanguageStrings)
     def language_strings_data_to_core(self, value: LanguageStringsData, context: PipelineContext = None) -> LanguageStrings:
-        return LanguageStrings(value)
+        return LanguageStrings(value, region=value.region, version=value.version, locale=value.locale)
 
     # Profile Icon
 
@@ -284,7 +284,7 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(ProfileIconListData, ProfileIcons)
     def profile_icon_data_to_core(self, value: ProfileIconListData, context: PipelineContext = None) -> ProfileIcons:
-        return ProfileIcons(value)
+        return ProfileIcons(value, region=value.region, version=value.version, locale=value.locale)
 
     ###############
     # Core To Dto #
@@ -300,7 +300,7 @@ class StaticDataTransformer(DataTransformer):
     def champion_list_core_to_dto(self, value: Champions, context: PipelineContext = None) -> ChampionListDto:
         # I didn't put in `keys`, `type`, or `format` keys/values that come from the API.
         return ChampionListDto({"region": value.region, "version": value.version, "locale": value.locale, "includedData": value.included_data,
-                            "data": {c.id: self.champion_core_to_dto(c) for c in value}})
+                                "data": {c.id: self.champion_core_to_dto(c) for c in value}})
 
     # Mastery
 
@@ -310,7 +310,8 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(Masteries, MasteryListDto)
     def mastery_list_core_to_dto(self, value: Masteries, context: PipelineContext = None) -> MasteryListDto:
-        return MasteryListDto({"region": value.region, "version": value.version, "data": {m.id: self.mastery_core_to_dto(m) for m in value}})
+        return MasteryListDto({"region": value.region, "version": value.version, "locale": value.locale, "includedData": value.included_data,
+                            "data": {m.id: self.mastery_core_to_dto(m) for m in value}})
 
     # Rune
 
@@ -320,7 +321,8 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(Runes, RuneListDto)
     def rune_list_core_to_dto(self, value: Runes, context: PipelineContext = None) -> RuneListDto:
-        return RuneListDto({"region": value.region, "version": value.version, "data": {r.id: self.rune_core_to_dto(r) for r in value}})
+        return RuneListDto({"region": value.region, "version": value.version, "locale": value.locale, "includedData": value.included_data,
+                            "data": {r.id: self.rune_core_to_dto(r) for r in value}})
 
     # Item
 
@@ -341,7 +343,8 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(SummonerSpells, SummonerSpellListDto)
     def summoner_spell_list_core_to_dto(self, value: SummonerSpells, context: PipelineContext = None) -> SummonerSpellListDto:
-        return SummonerSpellListDto({"region": value.region, "version": value.version, "data": [self.summoner_spell_core_to_dto(s) for s in value]})
+        return SummonerSpellListDto({"region": value.region, "version": value.version, "locale": value.locale, "includedData": value.included_data,
+                            "data": {s.key: self.summoner_spell_core_to_dto(s) for s in value}})
 
     # Map
 
@@ -351,7 +354,7 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(Maps, MapListDto)
     def map_list_core_to_dto(self, value: Maps, context: PipelineContext = None) -> MapListDto:
-        return MapListDto({"region": value.region, "version": value.version, "data": [self.map_core_to_dto(m) for m in value]})
+        return MapListDto({"region": value.region, "version": value.version, "locale": value.locale, "data": {m.id: self.map_core_to_dto(m) for m in value}})
 
     # Version
 
@@ -387,4 +390,4 @@ class StaticDataTransformer(DataTransformer):
     @transform.register(ProfileIcons, ProfileIconListDto)
     def profile_icon_core_to_dto(self, value: ProfileIcons, context: PipelineContext = None) -> ProfileIconListDto:
         # I left out `type`.
-        return ProfileIconListDto({"region": value.region, "version": value.version, "data": [self.profile_icon_core_to_dto(m) for m in value]})
+        return ProfileIconListDto({"region": value.region, "version": value.version, "locale": value.locale, "data": [self.profile_icon_core_to_dto(m) for m in value]})

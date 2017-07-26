@@ -29,7 +29,7 @@ class ChampionMasteryTransformer(DataTransformer):
         for c in data["masteries"]:
             c._update({"region": data["region"]})
         data = data["masteries"]
-        return ChampionMasteryListData(data)
+        return ChampionMasteryListData(data, region=value["region"], summoner_id=value["summonerId"])
 
     # Data to Core
 
@@ -39,7 +39,7 @@ class ChampionMasteryTransformer(DataTransformer):
 
     @transform.register(ChampionMasteryListData, ChampionMasteries)
     def champion_mastery_list_data_to_core(self, value: ChampionMasteryListData, context: PipelineContext = None) -> ChampionMasteries:
-        return ChampionMasteries([self.champion_mastery_data_to_core(cm) for cm in value])
+        return ChampionMasteries([self.champion_mastery_data_to_core(cm) for cm in value], region=value.region, summoner=value.summoner_id)
 
     # Core to Dto
 
@@ -49,4 +49,4 @@ class ChampionMasteryTransformer(DataTransformer):
 
     @transform.register(ChampionMasteries, ChampionMasteryListDto)
     def champion_mastery_list_core_to_dto(self, value: ChampionMasteries, context: PipelineContext = None) -> ChampionMasteryListDto:
-        return ChampionMasteryListDto([self.champion_mastery_core_to_dto(cm) for cm in value])
+        return ChampionMasteryListDto({"masteries": [self.champion_mastery_core_to_dto(cm) for cm in value], "summonerId": self.summoner.id, "region": self.region})
