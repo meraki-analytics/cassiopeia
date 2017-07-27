@@ -234,29 +234,32 @@ class SpellVars(CassiopeiaObject):
 @searchable({str: ["name", "key", "keywords", "resource"], Resource: ["resource"]})
 class SummonerSpell(CassiopeiaGhost):
     _data_types = {SummonerSpellData}
-    _load_types = {SummonerSpellData: SummonerSpells}
+    _load_types = {SummonerSpellData: SummonerSpellListData}
 
     def __init__(self, *args, **kwargs):
         if "region" not in kwargs and "platform" not in kwargs:
             kwargs["region"] = settings.default_region.value
         super().__init__(*args, **kwargs)
 
-    def __load_hook__(self, load_group, core) -> None:
+    def __get_query__(self):
+        return {"region": self.region}
+
+    def __load_hook__(self, load_group, data) -> None:
         def find_matching_attribute(datalist, attrname, attrvalue):
             for item in datalist:
                 if getattr(item, attrname, None) == attrvalue:
                     return item
 
-        # The `core` is a dict of summoner spell core instances
+        # The `data` is a dict of summoner spell data instances
         if "name" in self._data[SummonerSpellData]._dto:
             find = "name", self.name
         elif "id" in self._data[SummonerSpellData]._dto:
             find = "id", self.id
         else:
             raise RuntimeError("Expected fields not present after loading.")
-        core = find_matching_attribute(core, *find)
+        data = find_matching_attribute(data, *find)
 
-        super().__load_hook__(load_group, core)
+        super().__load_hook__(load_group, data)
 
     # What do we do about params like this that can exist in both data objects?
     # They will be set on both data objects always, so we can choose either one to return.

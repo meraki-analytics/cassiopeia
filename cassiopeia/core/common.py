@@ -209,12 +209,10 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=CheckCache):
         else:  # Load the specific load group
             if self._Ghost__is_loaded(load_group):
                 raise ValueError("object has already been loaded.")
-            query = copy.deepcopy(self._data[load_group]._dto)
+            query = self.__get_query__()
             if hasattr(self.__class__, "version") and "version" not in query:
                 from .staticdata import Versions
                 query["version"] = get_latest_version(region=query["region"])
-
-            query = self.__get_query__()
             data = settings.pipeline.get(type=self._load_types[load_group], query=query)
             self.__load_hook__(load_group, data)
 

@@ -6,14 +6,28 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
 from ..data import Region, Platform
-from .common import DataObject, CassiopeiaGhost
-from ..dto.runepage import RuneSlotDto, RunePageDto
+from .common import DataObject, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList
+from .summoner import Summoner
+from ..dto.runepage import RuneSlotDto, RunePageDto, RunePagesDto
 from .staticdata.rune import Rune as StaticdataRune
 
 
 ##############
 # Data Types #
 ##############
+
+
+class RunePagesData(DataObjectList):
+    _dto_type = RunePagesDto
+    _renamed = {"summoner_id": "summonerId"}
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
+
+    @property
+    def summoner_id(self) -> str:
+        return self._dto["summonerId"]
 
 
 class RuneSlotData(DataObject):
@@ -66,17 +80,36 @@ class RunePageData(DataObject):
         return self._dto["id"]
 
 
-class RunePagesData(list):
-    pass
-
-
 ##############
 # Core Types #
 ##############
 
 
-class RunePages(SearchableList):  # TODO This needs a summoner id or something so that it can be loaded.
-    pass
+class RunePages(CassiopeiaGhostList):
+    _data_types = {RunePagesData}
+
+    def __get_query__(self):
+        query = {"platform": self.platform, "summoner.id": self.summoner.id}
+        return query
+
+    def __load_hook__(self, load_group, data: DataObject):
+        self.clear()
+        from ..transformers.masteries import MasteriesTransformer
+        SearchableList.__init__(self, [MasteriesTransformer.mastery_page_data_to_core(None, i) for i in data])
+        super().__load_hook__(load_group, data)
+
+    @lazy_property
+    def region(self) -> Region:
+        return Region(self._data[RunePagesData].region)
+
+    @lazy_property
+    def platform(self) -> Platform:
+        return self.region.platform
+
+    @property
+    def summoner(self) -> Summoner:
+        return Summoner(id=self._data[RunePagesData].summoner_id)
+
 
 
 @searchable({str: ["name", "runes", "region", "platform", "locale"], int: ["id"], bool: ["current"], StaticdataRune: ["runes"], Region: ["region"], Platform: ["platform"]})
