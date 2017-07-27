@@ -87,7 +87,7 @@ class MasteryPages(CassiopeiaGhostList):
         query = {"platform": self.platform, "summoner.id": self.summoner.id}
         return query
 
-    def __load_hook__(self, load_group, data: DataObject):
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
         self.clear()
         from ..transformers.masteries import MasteriesTransformer
         SearchableList.__init__(self, [MasteriesTransformer.mastery_page_data_to_core(None, i) for i in data])

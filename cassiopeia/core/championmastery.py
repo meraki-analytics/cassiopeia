@@ -7,7 +7,7 @@ from merakicommons.container import searchable, SearchableList
 
 from ..configuration import settings
 from ..data import Region, Platform
-from .common import DataObject, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, provide_default_region
+from .common import DataObject, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList
 from ..dto.championmastery import ChampionMasteryDto
 from .staticdata.champion import Champion
 from .summoner import Summoner
@@ -89,7 +89,7 @@ class ChampionMasteries(CassiopeiaGhostList):
     def __get_query__(self) -> dict:
         return {"region": self.region, "summoner.id": self.summoner.id}
 
-    def __load_hook__(self, load_group, data: DataObject):
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
         self.clear()
         from ..transformers.championmastery import ChampionMasteryTransformer
         SearchableList.__init__(self, [ChampionMasteryTransformer.champion_mastery_data_to_core(None, cm) for cm in data])
@@ -114,7 +114,6 @@ class ChampionMasteries(CassiopeiaGhostList):
 class ChampionMastery(CassiopeiaGhost):
     _data_types = {ChampionMasteryData}
 
-    @provide_default_region
     def __init__(self, *, summoner: Union[Summoner, int, str] = None, champion: Union[Champion, int, str] = None, region: Union[Region, str] = None):
         kwargs = {"region": region}
         if summoner is not None:
@@ -138,7 +137,7 @@ class ChampionMastery(CassiopeiaGhost):
         super().__init__(**kwargs)
 
     def __get_query__(self):
-        return {"platform": self.platform.value, "summoner.id": self.summoner.id, "champion.id": self.champion.id}
+        return {"region": self.region, "platform": self.platform.value, "summoner.id": self.summoner.id, "champion.id": self.champion.id}
 
     def __load__(self, load_group: DataObject = None) -> None:
         from datapipelines import NotFoundError

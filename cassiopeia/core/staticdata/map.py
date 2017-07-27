@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 from PIL.Image import Image as PILImage
 
 from merakicommons.ghost import ghost_load_on
@@ -75,15 +75,22 @@ class MapData(DataObject):
 class Maps(CassiopeiaGhostList):
     _data_types = {MapListData}
 
-    def __get_query__(self):
-        query = {"platform": self.platform, "version": self.version}
-        try:
-            query["locale"] = self.locale
-        except KeyError:
-            pass
-        return query
+    def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
+        if locale is None:
+            locale = region.default_locale
+        kwargs = {"region": region, "locale": locale}
+        if version is not None:
+            kwargs["version"] = version
+        super().__init__(*args, **kwargs)
 
-    def __load_hook__(self, load_group, data: DataObject):
+    def __get_query__(self):
+        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale}
+
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
         self.clear()
         from ...transformers.staticdata import StaticDataTransformer
         SearchableList.__init__(self, [StaticDataTransformer.map_data_to_core(None, i) for i in data])
@@ -115,23 +122,44 @@ class Maps(CassiopeiaGhostList):
 @searchable({str: ["name", "locale"], int: ["id"]})
 class Map(CassiopeiaGhost):
     _data_types = {MapData}
-    _load_types = {MapData: Maps}
+    _load_types = {MapData: MapListData}
 
-    def __load_hook__(self, load_group, core) -> None:
+    def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
+        if locale is None:
+            locale = region.default_locale
+        kwargs = {"region": region, "locale": locale}
+        if version is not None:
+            kwargs["version"] = version
+        if id:
+            kwargs["id"] = id
+        if name:
+            kwargs["name"] = name
+        super().__init__(**kwargs)
+
+    def __get_query__(self):
+        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale}
+
+    def __load_hook__(self, load_group, data) -> None:
         def find_matching_attribute(datalist, attrname, attrvalue):
             for item in datalist:
                 if getattr(item, attrname, None) == attrvalue:
                     return item
+            else:
+                raise ValueError("could not find matching {}={} in {}".format(attrname, attrvalue, datalist))
 
-        # The `core` is a dict of map core instances
+        # The `data` is a dict of map data instances
         if "mapId" in self._data[MapData]._dto:
-            find = "mapId", self.id
+            find = "id", self.id
         elif "mapName" in self._data[MapData]._dto:
-            find = "mapName", self.name
+            find = "name", self.name
         else:
             raise ValueError("unknown `id` and `name`")
-        core = find_matching_attribute(core, *find)
-        super().__load_hook__(load_group, core)
+        data = find_matching_attribute(data, *find)
+        super().__load_hook__(load_group, data)
 
     @lazy_property
     def region(self) -> Region:

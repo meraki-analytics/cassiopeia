@@ -1,6 +1,9 @@
+from typing import Union
+
 from merakicommons.container import SearchableList
 from merakicommons.cache import lazy_property
 
+from ...configuration import settings
 from ...data import Region, Platform
 from ...dto.staticdata.version import VersionListDto
 from ..common import DataObject, DataObjectList, CassiopeiaGhostList
@@ -18,10 +21,18 @@ class VersionListData(DataObjectList):
 class Versions(CassiopeiaGhostList):
     _data_types = {VersionListData}
 
-    def __get_query__(self):
-        return {"platform": self.platform}
+    def __init__(self, *args, region: Union[Region, str] = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
+        kwargs = {"region": region}
+        super().__init__(*args, **kwargs)
 
-    def __load_hook__(self, load_group, data: DataObject):
+    def __get_query__(self):
+        return {"region": self.region, "platform": self.platform}
+
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
         self.clear()
         SearchableList.__init__(self, [v for v in data])
         super().__load_hook__(load_group, data)

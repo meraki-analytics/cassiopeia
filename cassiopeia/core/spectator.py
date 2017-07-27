@@ -198,7 +198,7 @@ class FeaturedMatches(CassiopeiaGhostList):
         query = {"platform": self.platform}
         return query
 
-    def __load_hook__(self, load_group, data: DataObject):
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
         self.clear()
         from ..transformers.spectator import SpectatorTransformer
         SearchableList.__init__(self, [SpectatorTransformer.current_game_data_to_core(None, i) for i in data])

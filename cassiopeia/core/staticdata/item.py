@@ -7,7 +7,7 @@ from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform, Map
-from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version, provide_default_region
+from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
 from .common import Sprite, Image
 from ...dto.staticdata import item as dto
 
@@ -392,15 +392,24 @@ class ItemData(DataObject):
 class Items(CassiopeiaGhostList):
     _data_types = {ItemListData}
 
-    def __get_query__(self):
-        query = {"platform": self.platform, "version": self.version}
-        try:
-            query["locale"] = self.locale
-        except KeyError:
-            pass
-        return query
+    def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
+        if included_data is None:
+            included_data = {"all"}
+        if locale is None:
+            locale = region.default_locale
+        kwargs = {"region": region, "included_data": included_data, "locale": locale}
+        if version:
+            kwargs["version"] = version
+        super().__init__(*args, **kwargs)
 
-    def __load_hook__(self, load_group, data: DataObject):
+    def __get_query__(self):
+        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
+
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
         self.clear()
         from ...transformers.staticdata import StaticDataTransformer
         SearchableList.__init__(self, [StaticDataTransformer.item_data_to_core(None, i) for i in data])
@@ -595,29 +604,43 @@ class Item(CassiopeiaGhost):
     _data_types = {ItemData}
     _load_types = {ItemData: Items}
 
-    @provide_default_region
-    def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None):
-        super().__init__(id=id, name=name, region=region)
+    def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
+        if included_data is None:
+            included_data = {"all"}
+        if locale is None:
+            locale = region.default_locale
+        kwargs = {"region": region, "included_data": included_data, "locale": locale}
+        if id:
+            kwargs["id"] = id
+        if name:
+            kwargs["name"] = name
+        if version:
+            kwargs["version"] = version
+        super().__init__(**kwargs)
 
     def __get_query__(self):
-        return {"id": self.id, "platform": self.platform, "version": self.version, "locale": self.locale}
+        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
 
-    def __load_hook__(self, load_group, core) -> None:
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
         def find_matching_attribute(datalist, attrname, attrvalue):
             for item in datalist:
                 if getattr(item, attrname, None) == attrvalue:
                     return item
 
-        # The `core` is a dict of summoner spell core instances
+        # The `data` is a dict of summoner spell data instances
         if "id" in self._data[ItemData]._dto:
             find = "id", self.id
         elif "name" in self._data[ItemData]._dto:
             find = "name", self.name
         else:
             raise RuntimeError("Expected fields not present after loading.")
-        core = find_matching_attribute(core, *find)
+        data = find_matching_attribute(data, *find)
 
-        super().__load_hook__(load_group, core)
+        super().__load_hook__(load_group, data)
 
     # What do we do about params like this that can exist in both data objects?
     # They will be set on both data objects always, so we can choose either one to return.
@@ -636,7 +659,7 @@ class Item(CassiopeiaGhost):
         """The version for this champion."""
         try:
             return self._data[ItemData].version
-        except AttributeError:
+        except KeyError:
             version = get_latest_version(region=self.region)
             self(version=version)
             return self._data[ItemData].version
