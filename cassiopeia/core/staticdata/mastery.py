@@ -1,3 +1,4 @@
+from typing import Set
 from PIL.Image import Image as PILImage
 
 from merakicommons.ghost import ghost_load_on
@@ -6,18 +7,35 @@ from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform, MasteryTree
-from ..common import DataObject, CassiopeiaGhost, get_latest_version
+from ..common import DataObject, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
 from .common import Sprite, Image
 from ...dto.staticdata import mastery as dto
-
-
-class MasteryListData(list):
-    _dto_type = dto.MasteryListDto
 
 
 ##############
 # Data Types #
 ##############
+
+
+class MasteryListData(DataObjectList):
+    _dto_type = dto.MasteryListDto
+    _renamed = {"included_data": "includedData"}
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
+
+    @property
+    def version(self) -> str:
+        return self._dto["version"]
+
+    @property
+    def locale(self) -> str:
+        return self._dto["locale"]
+
+    @property
+    def included_data(self) -> Set[str]:
+        return self._dto["includedData"]
 
 
 class MasteryData(DataObject):
@@ -76,8 +94,49 @@ class MasteryData(DataObject):
 ##############
 
 
-class Masteries(SearchableList):
-    pass
+class Masteries(CassiopeiaGhostList):
+    _data_types = {MasteryListData}
+
+    def __get_query__(self):
+        query = {"platform": self.platform, "version": self.version}
+        try:
+            query["locale"] = self.locale
+        except KeyError:
+            pass
+        return query
+
+    def __load_hook__(self, load_group, data: DataObject):
+        self.clear()
+        from ...transformers.staticdata import StaticDataTransformer
+        SearchableList.__init__(self, [StaticDataTransformer.mastery_data_to_core(None, i) for i in data])
+        super().__load_hook__(load_group, data)
+
+    @lazy_property
+    def region(self) -> Region:
+        return Region(self._data[MasteryListData].region)
+
+    @lazy_property
+    def platform(self) -> Platform:
+        return self.region.platform
+
+    @property
+    def version(self) -> str:
+        try:
+            return self._data[MasteryListData].version
+        except KeyError:
+            version = get_latest_version(region=self.region)
+            self(version=version)
+            return self._data[MasteryListData].version
+
+    @property
+    def locale(self) -> str:
+        """The locale for this champion."""
+        return self._data[MasteryListData].locale
+
+    @property
+    def included_data(self) -> Set[str]:
+        """A set of tags to return additonal information for this champion when it's loaded."""
+        return self._data[MasteryListData].included_data
 
 
 @searchable({str: ["name", "key", "region", "platform", "locale", "tree"], int: ["id"], MasteryTree: ["tree"], Region: ["region"], Platform: ["platform"]})

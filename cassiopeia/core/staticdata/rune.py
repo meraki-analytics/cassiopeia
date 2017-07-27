@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Set
 from PIL.Image import Image as PILImage
 
 from merakicommons.ghost import ghost_load_on
@@ -7,7 +7,7 @@ from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform, RuneType
-from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, get_latest_version
+from ..common import DataObject, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
 from .common import Sprite, Image
 from ...dto.staticdata import rune as dto
 
@@ -17,11 +17,25 @@ from ...dto.staticdata import rune as dto
 ##############
 
 
-class RuneListData(list):
+class RuneListData(DataObjectList):
     _dto_type = dto.RuneListDto
-    #data    Map[string, RuneDto]
-    #version string
-    #type    string
+    _renamed = {"included_data": "includedData"}
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
+
+    @property
+    def version(self) -> str:
+        return self._dto["version"]
+
+    @property
+    def locale(self) -> str:
+        return self._dto["locale"]
+
+    @property
+    def included_data(self) -> Set[str]:
+        return self._dto["includedData"]
 
 
 class MetadataData(DataObject):
@@ -359,8 +373,49 @@ class RuneData(DataObject):
 ##############
 
 
-class Runes(SearchableList):
-    pass
+class Runes(CassiopeiaGhostList):
+    _data_types = {RuneListData}
+
+    def __get_query__(self):
+        query = {"platform": self.platform, "version": self.version}
+        try:
+            query["locale"] = self.locale
+        except KeyError:
+            pass
+        return query
+
+    def __load_hook__(self, load_group, data: DataObject):
+        self.clear()
+        from ...transformers.staticdata import StaticDataTransformer
+        SearchableList.__init__(self, [StaticDataTransformer.rune_data_to_core(None, i) for i in data])
+        super().__load_hook__(load_group, data)
+
+    @lazy_property
+    def region(self) -> Region:
+        return Region(self._data[RuneListData].region)
+
+    @lazy_property
+    def platform(self) -> Platform:
+        return self.region.platform
+
+    @property
+    def version(self) -> str:
+        try:
+            return self._data[RuneListData].version
+        except KeyError:
+            version = get_latest_version(region=self.region)
+            self(version=version)
+            return self._data[RuneListData].version
+
+    @property
+    def locale(self) -> str:
+        """The locale for this champion."""
+        return self._data[RuneListData].locale
+
+    @property
+    def included_data(self) -> Set[str]:
+        """A set of tags to return additonal information for this champion when it's loaded."""
+        return self._data[RuneListData].included_data
 
 
 class RuneStats(CassiopeiaObject):

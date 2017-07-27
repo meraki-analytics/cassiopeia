@@ -7,7 +7,7 @@ from merakicommons.container import searchable, SearchableList, SearchableDictio
 
 from ..configuration import settings
 from ..data import Region, Platform, GameMode, GameType, Queue, Map
-from .common import DataObject, CassiopeiaObject, CassiopeiaGhost
+from .common import DataObject, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList
 from ..dto import spectator as dto
 from .staticdata.profileicon import ProfileIcon
 from .staticdata.champion import Champion, ChampionData
@@ -22,8 +22,13 @@ from .summoner import Summoner
 ##############
 
 
-class FeaturedGamesData(list):
-    pass
+class FeaturedGamesData(DataObjectList):
+    _dto_type = dto.FeaturedGamesDto
+    _renamed = {}
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
 
 
 class RuneData(DataObject):
@@ -186,8 +191,26 @@ class CurrentGameInfoData(DataObject):
 ##############
 
 
-class FeaturedMatches(list):
-    pass
+class FeaturedMatches(CassiopeiaGhostList):
+    _data_types = {FeaturedGamesData}
+
+    def __get_query__(self):
+        query = {"platform": self.platform}
+        return query
+
+    def __load_hook__(self, load_group, data: DataObject):
+        self.clear()
+        from ..transformers.spectator import SpectatorTransformer
+        SearchableList.__init__(self, [SpectatorTransformer.current_game_data_to_core(None, i) for i in data])
+        super().__load_hook__(load_group, data)
+
+    @lazy_property
+    def region(self) -> Region:
+        return Region(self._data[FeaturedGamesData].region)
+
+    @lazy_property
+    def platform(self) -> Platform:
+        return self.region.platform
 
 
 @searchable({})

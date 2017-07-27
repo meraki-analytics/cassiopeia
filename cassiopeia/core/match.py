@@ -1,5 +1,5 @@
 import datetime
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Set
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
@@ -7,7 +7,7 @@ from merakicommons.container import searchable, SearchableList, SearchableLazyLi
 
 from ..configuration import settings
 from ..data import Region, Platform, Tier, Map, GameType, GameMode, Queue, Division, Side, Season
-from .common import DataObject, CassiopeiaObject, CassiopeiaGhost
+from .common import DataObject, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList
 from ..dto import match as dto
 from .summoner import Summoner
 from .staticdata.champion import Champion
@@ -21,8 +21,45 @@ from .staticdata.summonerspell import SummonerSpell, SummonerSpellData
 ##############
 
 
-class MatchListData(list):
-    pass
+class MatchListData(DataObjectList):
+    _dto_type = dto.MatchListDto
+    _renamed = {"account_id": "accountId", "seasons": "season", "champion_ids": "champion", "queues": "queue", "being_index": "beginIndex", "end_index": "endIndex", "begin_time": "beginTime", "end_time": "endTime"}
+
+    @property
+    def account_id(self) -> str:
+        return self._dto["accountId"]
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
+
+    @property
+    def queues(self) -> Set[int]:
+        return self._dto["queue"]
+
+    @property
+    def seasons(self) -> Set[int]:
+        return self._dto["season"]
+
+    @property
+    def champion_ids(self) -> Set[int]:
+        return self._dto["champion"]
+
+    @property
+    def begin_index(self) -> int:
+        return self._dto["beginIndex"]
+
+    @property
+    def end_index(self) -> int:
+        return self._dto["endIndex"]
+
+    @property
+    def begin_time(self) -> int:
+        return self._dto["beginTime"]
+
+    @property
+    def end_time(self) -> int:
+        return self._dto["endTime"]
 
 
 class PositionData(DataObject):
@@ -127,7 +164,7 @@ class EventData(DataObject):
 
     @property
     def position(self) -> PositionData:
-        return PositionData(self._dto["position"])
+        return PositionData.from_dto(self._dto["position"])
 
     @property
     def before_id(self) -> int:
@@ -168,7 +205,7 @@ class ParticipantFrameData(DataObject):
 
     @property
     def position(self) -> PositionData:
-        return PositionData(self._dto["position"])
+        return PositionData.from_dto(self._dto["position"])
 
     @property
     def xp(self) -> int:
@@ -188,11 +225,11 @@ class FrameData(DataObject):
 
     @property
     def participant_frames(self) -> Dict[int, ParticipantFrameData]:
-        return {k: ParticipantFrameData(v) for k, v in self._dto["participantFrames"].items()}
+        return {k: ParticipantFrameData.from_dto(v) for k, v in self._dto["participantFrames"].items()}
 
     @property
     def events(self) -> List[EventData]:
-        return [EventData(event) for event in self._dto["events"]]
+        return [EventData.from_dto(event) for event in self._dto["events"]]
 
 
 class TimelineData(DataObject):
@@ -209,7 +246,7 @@ class TimelineData(DataObject):
 
     @property
     def frames(self) -> List[FrameData]:
-        return [FrameData(frame) for frame in self._dto["frames"]]
+        return [FrameData.from_dto(frame) for frame in self._dto["frames"]]
 
     @property
     def frame_interval(self) -> int:
@@ -557,7 +594,7 @@ class ParticipantData(DataObject):
 
     @property
     def stats(self) -> ParticipantStatsData:
-        return ParticipantStatsData(self._dto["stats"])
+        return ParticipantStatsData.from_dto(self._dto["stats"])
 
     @property
     def id(self) -> int:
@@ -573,7 +610,7 @@ class ParticipantData(DataObject):
 
     @property
     def timeline(self) -> ParticipantTimelineData:
-        return ParticipantTimelineData(self._dto["timeline"])
+        return ParticipantTimelineData.from_dto(self._dto["timeline"])
 
     @property
     def side(self) -> int:
@@ -581,11 +618,11 @@ class ParticipantData(DataObject):
 
     @property
     def summoner_spell_d(self) -> SummonerSpellData:
-        return SummonerSpellData({"id": self._dto["spell1Id"]})
+        return SummonerSpellData(id=self._dto["spell1Id"])
 
     @property
     def summoner_spell_f(self) -> SummonerSpellData:
-        return SummonerSpellData({"id": self._dto["spell2Id"]})
+        return SummonerSpellData(id=self._dto["spell2Id"])
 
     @property
     def rank_last_season(self) -> Tuple[str, int]:
@@ -622,7 +659,7 @@ class PlayerData(DataObject):
     @property
     def profile_icon(self) -> "ProfileIconData":
         from .summoner import ProfileIconData
-        return ProfileIconData({"id": self._dto["profileIcon"]})
+        return ProfileIconData(id=self._dto["profileIcon"])
 
     @property
     def current_account_id(self) -> int:
@@ -638,7 +675,7 @@ class ParticipantIdentityData(DataObject):
 
     @property
     def player(self) -> PlayerData:
-        return PlayerData(self._dto["player"])
+        return PlayerData.from_dto(self._dto["player"])
 
     @property
     def id(self) -> int:
@@ -675,7 +712,7 @@ class TeamData(DataObject):
     @property
     def bans(self) -> List["ChampionData"]:
         from .staticdata.champion import ChampionData
-        return [ChampionData({"id": ban["championId"]}) for ban in self._dto["bans"]]
+        return [ChampionData(id=ban["championId"]) for ban in self._dto["bans"]]
 
     @property
     def baron_kills(self) -> int:
@@ -772,15 +809,15 @@ class MatchData(DataObject):
 
     @property
     def participants(self) -> List[ParticipantData]:
-        return [ParticipantData(p) for p in self._dto["participants"]]
+        return [ParticipantData.from_dto(p) for p in self._dto["participants"]]
 
     @property
     def participant_identities(self) -> List[ParticipantIdentityData]:
-        return [ParticipantIdentityData(p) for p in self._dto["participantIdentities"]]
+        return [ParticipantIdentityData.from_dto(p) for p in self._dto["participantIdentities"]]
 
     @property
     def teams(self) -> List[TeamData]:
-        return [TeamData(t) for t in self._dto["teams"]]
+        return [TeamData.from_dto(t) for t in self._dto["teams"]]
 
     @property
     def version(self) -> str:
@@ -816,11 +853,61 @@ class MatchData(DataObject):
 ##############
 
 
-class MatchHistory(SearchableList):
-    pass
+class MatchHistory(CassiopeiaGhostList):
+    _data_types = {MatchListData}
+
+    def __get_query__(self):
+        query = {"platform": self.platform, "summoner.account.id": self.summoner.account.id}
+        return query
+
+    def __load_hook__(self, load_group, data: DataObject):
+        self.clear()
+        from ..transformers.match import MatchTransformer
+        SearchableList.__init__(self, [MatchTransformer.match_data_to_core(None, i) for i in data])
+        super().__load_hook__(load_group, data)
+
+    @property
+    def summoner(self) -> Summoner:
+        return Summoner(id=self._data[MatchListData].summoner_id)
+
+    @lazy_property
+    def region(self) -> Region:
+        return Region(self._data[MatchListData].region)
+
+    @lazy_property
+    def platform(self) -> Platform:
+        return self.region.platform
+
+    @lazy_property
+    def queues(self) -> Set[Queue]:
+        return {Queue(q) for q in self._data[MatchListData].queues}
+
+    @lazy_property
+    def seasons(self) -> Set[Season]:
+        return {Season(s) for s in self._data[MatchListData].seasons}
+
+    @lazy_property
+    def champions(self) -> Set[Champion]:
+        return {Champion(id=cid) for cid in self._data[MatchListData].champion_ids}
+
+    @property
+    def begin_index(self) -> int:
+        return self._data[MatchListData].begin_index
+
+    @property
+    def end_index(self) -> int:
+        return self._data[MatchListData].end_index
+
+    @property
+    def begin_time(self) -> datetime.datetime:
+        return datetime.datetime.fromtimestamp(self._data[MatchListData].begin_time / 1000)
+
+    @property
+    def end_time(self) -> datetime.datetime:
+        return datetime.datetime.fromtimestamp(self._data[MatchListData].end_time / 1000)
 
 
-class Postion(DataObject):
+class Postion(CassiopeiaObject):
     _data_types = {PositionData}
 
     @property
@@ -984,7 +1071,7 @@ class Frame(CassiopeiaObject):
 
     @property
     def participant_frames(self) -> Dict[int, ParticipantFrame]:
-        return SearchableDictionary({k: ParticipantFrame(frame) for k, frame in self._data[FrameData].participant_frames.items()})
+        return SearchableDictionary({k: ParticipantFrame.from_data(frame) for k, frame in self._data[FrameData].participant_frames.items()})
 
     @property
     def events(self) -> List[Event]:
@@ -1360,7 +1447,7 @@ class Participant(CassiopeiaObject):
 
     @lazy_property
     def stats(self) -> ParticipantStats:
-        return ParticipantStats(self._data[ParticipantData].stats)
+        return ParticipantStats.from_data(self._data[ParticipantData].stats)
 
     @property
     def id(self) -> int:
@@ -1376,7 +1463,7 @@ class Participant(CassiopeiaObject):
 
     @lazy_property
     def timeline(self) -> ParticipantTimeline:
-        return ParticipantTimeline(self._data[ParticipantData].timeline)
+        return ParticipantTimeline.from_data(self._data[ParticipantData].timeline)
 
     @lazy_property
     def side(self) -> Side:

@@ -5,15 +5,28 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
 from ..data import Region, Platform
-from .common import DataObject, CassiopeiaGhost
+from .common import DataObject, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList
 from .summoner import Summoner
-from ..dto.masterypage import MasteryDto, MasteryPageDto
+from ..dto.masterypage import MasteryDto, MasteryPageDto, MasteryPagesDto
 from .staticdata.mastery import Mastery as StaticdataMastery
 
 
 ##############
 # Data Types #
 ##############
+
+
+class MasteryPagesData(DataObjectList):
+    _dto_type = MasteryPagesDto
+    _renamed = {"summoner_id": "summonerId"}
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
+
+    @property
+    def summoner_id(self) -> str:
+        return self._dto["summonerId"]
 
 
 class MasteryData(DataObject):
@@ -49,7 +62,7 @@ class MasteryPageData(DataObject):
     @property
     def masteries(self) -> List[MasteryData]:
         """Collection of masteries associated with the mastery page."""
-        return [MasteryData(mastery) for mastery in self._dto["masteries"]]
+        return [MasteryData.from_dto(mastery) for mastery in self._dto["masteries"]]
 
     @property
     def name(self) -> str:
@@ -62,17 +75,35 @@ class MasteryPageData(DataObject):
         return self._dto["id"]
 
 
-class MasteryPagesData(list):
-    pass
-
-
 ##############
 # Core Types #
 ##############
 
 
-class MasteryPages(SearchableList):  # TODO This needs a summoner id or something so that it can be loaded.
-    pass
+class MasteryPages(CassiopeiaGhostList):
+    _data_types = {MasteryPagesData}
+
+    def __get_query__(self):
+        query = {"platform": self.platform, "summoner.id": self.summoner.id}
+        return query
+
+    def __load_hook__(self, load_group, data: DataObject):
+        self.clear()
+        from ..transformers.masteries import MasteriesTransformer
+        SearchableList.__init__(self, [MasteriesTransformer.mastery_page_data_to_core(None, i) for i in data])
+        super().__load_hook__(load_group, data)
+
+    @lazy_property
+    def region(self) -> Region:
+        return Region(self._data[MasteryPagesData].region)
+
+    @lazy_property
+    def platform(self) -> Platform:
+        return self.region.platform
+
+    @property
+    def summoner(self) -> Summoner:
+        return Summoner(id=self._data[MasteryPagesData].summoner_id)
 
 
 @searchable({str: ["name", "masteries", "region", "platform", "locale"], int: ["id"], bool: ["current"], StaticdataMastery: ["masteries"], Region: ["region"], Platform: ["platform"]})
