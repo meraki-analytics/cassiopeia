@@ -9,7 +9,7 @@ from ...configuration import settings
 from ...data import Resource, Region, Platform, Map, GameMode
 from ..champion import ChampionData as ChampionStatusData
 from ..champion import ChampionListData as ChampionStatusListData
-from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, provide_default_region, get_latest_version
+from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
 from .common import ImageData, SpriteData, Image, Sprite
 from ...dto.staticdata import champion as dto
 from .item import Item
@@ -461,15 +461,24 @@ class ChampionData(DataObject):
 class Champions(CassiopeiaGhostList):
     _data_types = {ChampionListData}
 
-    def __get_query__(self):
-        query = {"platform": self.platform, "version": self.version}
-        try:
-            query["locale"] = self.locale
-        except KeyError:
-            pass
-        return query
+    def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
+        if included_data is None:
+            included_data = {"all"}
+        if locale is None:
+            locale = region.default_locale
+        kwargs = {"region": region, "included_data": included_data, "locale": locale}
+        if version:
+            kwargs["version"] = version
+        super().__init__(*args, **kwargs)
 
-    def __load_hook__(self, load_group, data: DataObject):
+    def __get_query__(self):
+        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
+
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
         self.clear()
         from ...transformers.staticdata import StaticDataTransformer
         SearchableList.__init__(self, [StaticDataTransformer.champion_data_to_core(None, c) for c in data])
@@ -490,7 +499,7 @@ class Champions(CassiopeiaGhostList):
         """The version for this champion."""
         try:
             return self._data[ChampionListData].version
-        except AttributeError:
+        except KeyError:
             version = get_latest_version(region=self.region)
             self(version=version)
             return self._data[ChampionListData].version
@@ -873,33 +882,30 @@ class Champion(CassiopeiaGhost):
     _data_types = {ChampionData, ChampionStatusData}
     _load_types = {ChampionData: ChampionListData, ChampionStatusData: ChampionStatusListData}
 
-    @provide_default_region
-    def __init__(self, *, id: int = None, name: str = None, key: str = None, region: Union[Region, str]):
-        kwargs = {"region": region}
+    def __init__(self, *, id: int = None, name: str = None, key: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
+        if included_data is None:
+            included_data = {"all"}
+        if locale is None:
+            locale = region.default_locale
+        kwargs = {"region": region, "included_data": included_data, "locale": locale}
         if id:
             kwargs["id"] = id
         if key:
             kwargs["key"] = key
         if name:
             kwargs["name"] = name
+        if version:
+            kwargs["version"] = version
         super().__init__(**kwargs)
 
     def __get_query__(self):
-        query = {"region": self.region, "version": self.version}
-        try:
-            query["id"] = self._data[ChampionData].id
-        except KeyError:
-            try:
-                query["name"] = self._data[ChampionData].name
-            except KeyError:
-                try:
-                    query["id"] = self._data[ChampionStatusData].id
-                except KeyError:
-                    query["name"] = self._data[ChampionStatusData].name
-        assert "id" in query or "name" in query
-        return query
+        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
 
-    def __load_hook__(self, load_group, data) -> None:
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
         def find_matching_attribute(datalist, attrname, attrvalue):
             for item in datalist:
                 if getattr(item, attrname, None) == attrvalue:
@@ -1089,7 +1095,6 @@ class Champion(CassiopeiaGhost):
     @lazy
     def spells(self) -> List[ChampionSpell]:
         """This champion's spells."""
-        print("HERE", [spell._dto.keys() for spell in self._data[ChampionData].spells])
         return SearchableList(ChampionSpell.from_data(spell) for spell in self._data[ChampionData].spells)
 
     @lazy_property

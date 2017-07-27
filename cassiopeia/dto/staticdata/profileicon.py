@@ -9,5 +9,5 @@ class ProfileIconDetailsDto(DtoObject):
     pass
 
 
-class ProfileIconListDto(list):
+class ProfileIconListDto(DtoObject):
     pass

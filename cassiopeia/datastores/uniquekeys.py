@@ -1894,7 +1894,7 @@ validate_many_shard_status_query = Query. \
 
 
 def for_shard_status(shard_status: ShardStatus) -> str:
-    return shard_status["platform"]
+    return shard_status.platform.value
 
 
 def for_shard_status_query(query: Query) -> str:

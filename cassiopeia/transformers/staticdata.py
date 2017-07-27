@@ -159,7 +159,7 @@ class StaticDataTransformer(DataTransformer):
     @transform.register(RealmDto, RealmData)
     def realm_dto_to_data(self, value: RealmDto, context: PipelineContext = None) -> RealmData:
         data = deepcopy(value)
-        return RealmData(data, region=value["region"])
+        return RealmData(**data, region=value["region"])
 
     # Languages
 
@@ -173,7 +173,7 @@ class StaticDataTransformer(DataTransformer):
     @transform.register(LanguageStringsDto, LanguageStringsData)
     def language_strings_dto_to_data(self, value: LanguageStringsDto, context: PipelineContext = None) -> LanguageStringsData:
         data = deepcopy(value)
-        return LanguageStringsData(data, region=value["region"], version=value["version"], locale=value["locale"])
+        return LanguageStringsData(strings=data, region=value["region"], version=value["version"], locale=value["locale"])
 
     # Profile Icons
 
@@ -262,7 +262,9 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(RealmData, Realms)
     def realm_data_to_core(self, value: RealmData, context: PipelineContext = None) -> Realms:
-        return Realms(value, region=value.region)
+        realms = Realms.from_data(value)
+        realms(region=value.region)
+        return realms
 
     # Languages
 
@@ -274,7 +276,7 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(LanguageStringsData, LanguageStrings)
     def language_strings_data_to_core(self, value: LanguageStringsData, context: PipelineContext = None) -> LanguageStrings:
-        return LanguageStrings(value, region=value.region, version=value.version, locale=value.locale)
+        return LanguageStrings(strings=value.strings, region=value.region, version=value.version, locale=value.locale)
 
     # Profile Icon
 
@@ -376,8 +378,8 @@ class StaticDataTransformer(DataTransformer):
 
     # Language Strings
 
-    @transform.register(Languages, LanguageStringsDto)
-    def language_strings_core_to_dto(self, value: LanguageStringsData, context: PipelineContext = None) -> LanguageStringsDto:
+    @transform.register(LanguageStrings, LanguageStringsDto)
+    def language_strings_core_to_dto(self, value: LanguageStrings, context: PipelineContext = None) -> LanguageStringsDto:
         # I left out `type`.
         return LanguageStringsDto({"region": value.region, "version": value.version, "locale": value.locale, **value[LanguageStringsData]._dto})
 

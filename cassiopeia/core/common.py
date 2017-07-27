@@ -224,7 +224,7 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=CheckCache):
     def __get_query__(self):
         pass
 
-    def __load_hook__(self, load_group, data: DataObject):
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
         if not isinstance(data, DataObject):
             raise TypeError("expected subclass of DataObject, got {cls}".format(cls=data.__class__))
         self._data[load_group] = data
@@ -252,7 +252,7 @@ class CassiopeiaGhostList(SearchableList, CassiopeiaGhost):
         #SearchableList.__init__(self, [StaticDataTransformer.champion_data_to_core(None, c) for c in data])
         #return self
 
-    def __load_hook__(self, load_group, data: DataObject):
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
         super().__load_hook__(load_group=load_group, data=data)
         # Since @Ghost.property isn't set, the ghost's __property won't set itself as loaded because it never gets called.
         # Therefore we manually set it as loaded here.

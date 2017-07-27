@@ -1,16 +1,14 @@
-import os
 import datetime
 from typing import Union
-from PIL.Image import Image as PILImage
 
 from datapipelines import NotFoundError
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable, SearchableList
+from merakicommons.container import searchable
 
 from ..configuration import settings
 from ..data import Region, Platform
-from .common import DataObject, CassiopeiaObject, CassiopeiaGhost, provide_default_region, get_latest_version
+from .common import DataObject, CassiopeiaObject, CassiopeiaGhost
 from .staticdata import ProfileIcon
 from ..dto.summoner import SummonerDto
 
@@ -97,8 +95,11 @@ class Account(CassiopeiaObject):
 class Summoner(CassiopeiaGhost):
     _data_types = {SummonerData}
 
-    @provide_default_region
-    def __init__(self, *, id: int = None, account: Union[Account, int] = None, name: str = None, region: Union[Region, str]):
+    def __init__(self, *, id: int = None, account: Union[Account, int] = None, name: str = None, region: Union[Region, str] = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
         kwargs = {"region": region}
         if id:
             kwargs["id"] = id
@@ -111,7 +112,7 @@ class Summoner(CassiopeiaGhost):
         super().__init__(**kwargs)
 
     def __get_query__(self):
-        query = {"region": self.region}
+        query = {"region": self.region, "platform": self.platform}
         try:
             query["id"] = self._data[SummonerData].id
         except KeyError:

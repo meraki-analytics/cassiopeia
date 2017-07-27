@@ -1,6 +1,5 @@
 from typing import List, Union, Set
 
-from PIL.Image import Image as PILImage
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList
@@ -76,12 +75,23 @@ class LevelTipData(DataObject):
 
 class SummonerSpellData(DataObject):
     _dto_type = dto.SummonerSpellDto
-    _renamed = {"level_up_tips": "leveltip", "variables": "vars", "sanitized_description": "sanitizedDescription", "sanitized_tooltip": "sanitizedTooltip",
-                "max_rank": "maxrank", "cooldowns": "cooldown", "costs": "cost", "alternative_images": "altimages", "effects": "effect", "resource": "costType"}
+    _renamed = {"level_up_tips": "leveltip", "variables": "vars", "sanitized_description": "sanitizedDescription", "sanitized_tooltip": "sanitizedTooltip", "max_rank": "maxrank", "cooldowns": "cooldown", "costs": "cost", "alternative_images": "altimages", "effects": "effect", "resource": "costType", "included_data": "includedData"}
 
     @property
     def region(self) -> str:
         return self._dto["region"]
+
+    @property
+    def version(self) -> str:
+        return self._dto["version"]
+
+    @property
+    def locale(self) -> str:
+        return self._dto["locale"]
+
+    @property
+    def included_data(self) -> str:
+        return self._dto["includedData"]
 
     @property
     def modes(self) -> List[str]:
@@ -89,7 +99,7 @@ class SummonerSpellData(DataObject):
 
     @property
     def level_up_tips(self) -> LevelTipData:
-        return LevelTipData(self._dto["leveltip"])
+        return LevelTipData.from_dto(self._dto["leveltip"])
 
     @property
     def variables(self) -> List[SpellVarsData]:
@@ -101,7 +111,7 @@ class SummonerSpellData(DataObject):
 
     @property
     def image(self) -> ImageData:
-        return ImageData(self._dto["image"])
+        return ImageData.from_dto(self._dto["image"])
 
     @property
     def sanitized_description(self) -> str:
@@ -145,7 +155,7 @@ class SummonerSpellData(DataObject):
 
     @property
     def alternative_images(self) -> List[ImageData]:
-        return [ImageData(alt) for alt in self._dto["altimages"]]
+        return [ImageData.from_dto(alt) for alt in self._dto["altimages"]]
 
     @property
     def id(self) -> int:
@@ -164,10 +174,24 @@ class SummonerSpellData(DataObject):
 class SummonerSpells(CassiopeiaGhostList):
     _data_types = {SummonerSpellListData}
 
-    def __get_query__(self):
-        return {"region": self.region}
+    def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
+        if included_data is None:
+            included_data = {"all"}
+        if locale is None:
+            locale = region.default_locale
+        kwargs = {"region": region, "included_data": included_data, "locale": locale}
+        if version:
+            kwargs["version"] = version
+        super().__init__(*args, **kwargs)
 
-    def __load_hook__(self, load_group, data: DataObject):
+    def __get_query__(self):
+        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
+
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
         self.clear()
         from ...transformers.staticdata import StaticDataTransformer
         SearchableList.__init__(self, [StaticDataTransformer.summoner_spell_data_to_core(None, ss) for ss in data])
@@ -185,7 +209,7 @@ class SummonerSpells(CassiopeiaGhostList):
     def version(self) -> str:
         try:
             return self._data[SummonerSpellListData].version
-        except AttributeError:
+        except KeyError:
             version = get_latest_version(region=self.region)
             self(version=version)
             return self._data[SummonerSpellListData].version
@@ -236,15 +260,28 @@ class SummonerSpell(CassiopeiaGhost):
     _data_types = {SummonerSpellData}
     _load_types = {SummonerSpellData: SummonerSpellListData}
 
-    def __init__(self, *args, **kwargs):
-        if "region" not in kwargs and "platform" not in kwargs:
-            kwargs["region"] = settings.default_region.value
-        super().__init__(*args, **kwargs)
+    def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
+        if included_data is None:
+            included_data = {"all"}
+        if locale is None:
+            locale = region.default_locale
+        kwargs = {"region": region, "included_data": included_data, "locale": locale}
+        if id:
+            kwargs["id"] = id
+        if name:
+            kwargs["name"] = name
+        if version:
+            kwargs["version"] = version
+        super().__init__(**kwargs)
 
     def __get_query__(self):
-        return {"region": self.region}
+        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
 
-    def __load_hook__(self, load_group, data) -> None:
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
         def find_matching_attribute(datalist, attrname, attrvalue):
             for item in datalist:
                 if getattr(item, attrname, None) == attrvalue:
@@ -278,7 +315,7 @@ class SummonerSpell(CassiopeiaGhost):
         """The version for this summoner spell."""
         try:
             return self._data[SummonerSpellData].version
-        except AttributeError:
+        except KeyError:
             version = get_latest_version(region=self.region)
             self(version=version)
             return self._data[SummonerSpellData].version
@@ -287,6 +324,11 @@ class SummonerSpell(CassiopeiaGhost):
     def locale(self) -> str:
         """The locale for this summoner spell."""
         return self._data[SummonerSpellData].locale
+
+    @property
+    def included_data(self) -> str:
+        """The data to included in the query for this summoner spell."""
+        return self._data[SummonerSpellData].included_data
 
     @CassiopeiaGhost.property(SummonerSpellData)
     @ghost_load_on(KeyError)

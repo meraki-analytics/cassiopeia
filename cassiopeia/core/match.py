@@ -860,7 +860,7 @@ class MatchHistory(CassiopeiaGhostList):
         query = {"platform": self.platform, "summoner.account.id": self.summoner.account.id}
         return query
 
-    def __load_hook__(self, load_group, data: DataObject):
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
         self.clear()
         from ..transformers.match import MatchTransformer
         SearchableList.__init__(self, [MatchTransformer.match_data_to_core(None, i) for i in data])
