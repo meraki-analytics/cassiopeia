@@ -112,7 +112,7 @@ class DataObjectList(list, DataObject):
         DataObject.__init__(self, **kwargs)
         self._dto
 
-    def from_data(cls, dto: Union[list, DtoObject]):
+    def from_dto(cls, dto: Union[list, DtoObject]):
         self = DataObject.from_dto(dto)
         SearchableList.__init__(self, dto)
 

@@ -26,14 +26,6 @@ _profile_icon_names = None
 ##############
 
 
-class ProfileIconData(DataObject):
-    _renamed = {"id": "profileIconId"}
-
-    @property
-    def id(self) -> int:
-        return self._dto["profileIconId"]
-
-
 class AccountData(DataObject):
     _renamed = {"id": "accountId"}
 
@@ -44,15 +36,15 @@ class AccountData(DataObject):
 
 class SummonerData(DataObject):
     _dto_type = SummonerDto
-    _renamed = {"profile_icon": "profileIconId", "level": "summonerLevel", "revision_date": "revisionDate", "account": "accountId"}
+    _renamed = {"profile_icon": "profileIconId", "level": "summonerLevel", "revision_date": "revisionDate", "account_id": "accountId"}
 
     @property
     def region(self) -> str:
         return self._dto["region"]
 
     @property
-    def account(self) -> AccountData:
-        return AccountData(id=self._dto["accountId"])
+    def account_id(self) -> int:  # TODO This should return an AccoutData but there is a bug somewhere. See the match example.
+        return self._dto["accountId"]
 
     @property
     def id(self) -> int:
@@ -108,7 +100,7 @@ class Summoner(CassiopeiaGhost):
         if account and isinstance(account, Account):
             self.__class__.account.fget._lazy_set(self, account)
         elif account:
-            kwargs["account"] = account
+            kwargs["account_id"] = account
         super().__init__(**kwargs)
 
     def __get_query__(self):
@@ -116,10 +108,16 @@ class Summoner(CassiopeiaGhost):
         try:
             query["id"] = self._data[SummonerData].id
         except KeyError:
-            try:
-                query["account.id"] = self._data[SummonerData].account.id
-            except KeyError:
-                query["name"] = self._data[SummonerData].name
+            pass
+        try:
+            query["account.id"] = self._data[SummonerData].account_id
+        except KeyError:
+            pass
+        try:
+            query["name"] = self._data[SummonerData].name
+        except KeyError:
+            pass
+        assert "id" in query or "name" in query or "account.id" in query
         return query
 
     @property
@@ -146,7 +144,7 @@ class Summoner(CassiopeiaGhost):
     @ghost_load_on(KeyError)
     @lazy
     def account(self) -> Account:
-        return Account.from_data(self._data[SummonerData].account)
+        return Account(id=self._data[SummonerData].account_id)
 
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on(KeyError)
@@ -196,7 +194,7 @@ class Summoner(CassiopeiaGhost):
         return RunePages(summoner=self, region=self.region)
 
     @property
-    def matches(self):
+    def match_history(self):
         from .match import MatchHistory
         return MatchHistory(summoner=self, region=self.region)
 
