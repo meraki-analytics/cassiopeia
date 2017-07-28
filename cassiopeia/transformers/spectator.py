@@ -26,17 +26,25 @@ class SpectatorTransformer(DataTransformer):
     def featured_games_dto_to_data(self, value: FeaturedGamesDto, context: PipelineContext = None) -> FeaturedGamesData:
         data = deepcopy(value)
         data = data["gameList"]
-        return FeaturedGamesData([CurrentGameInfoData(game) for game in data], region=value["region"], client_refresh_interval=value["clientRefreshInterval"])
+        return FeaturedGamesData([CurrentGameInfoData.from_dto(game) for game in data], region=value["region"], client_refresh_interval=value["clientRefreshInterval"])
 
     # Data to Core
 
     @transform.register(CurrentGameInfoData, CurrentMatch)
     def current_game_data_to_core(self, value: CurrentGameInfoData, context: PipelineContext = None) -> CurrentMatch:
-        return CurrentMatch.from_data(value)
+        from ..core.summoner import Summoner
+        summoner = Summoner(name=value.teams[0].participants[0].summoner_name)
+        return CurrentMatch.from_data(value, summoner=summoner)
 
     @transform.register(FeaturedGamesData, FeaturedMatches)
     def featured_games_data_to_core(self, value: FeaturedGamesData, context: PipelineContext = None) -> FeaturedMatches:
-        return FeaturedMatches([CurrentMatch(game) for game in value], region=value.region, client_refresh_interval=value.client_refresh_interval)
+        from ..core.summoner import Summoner
+        matches = []
+        for match in value:
+            summoner = Summoner(name=match.teams[0].participants[0].summoner_name)
+            match = CurrentMatch.from_data(match, summoner=summoner)
+            matches.append(match)
+        return FeaturedMatches(matches, region=value.region, client_refresh_interval=value.client_refresh_interval)
 
     # Core to Dto
 
@@ -46,4 +54,4 @@ class SpectatorTransformer(DataTransformer):
 
     @transform.register(FeaturedMatches, FeaturedMatches)
     def featured_games_core_to_dto(self, value: FeaturedGamesData, context: PipelineContext = None) -> FeaturedGamesDto:
-        return FeaturedGamesDto({"clientRefreshInterval": value.client_refresh_interval, "gameList": [self.current_game_core_to_dto(game) for game in value]})
+        return FeaturedGamesDto({"clientRefreshInterval": value.client_refresh_interval, "gameList": [self.current_game_core_to_dto(game) for game in value], "region": value.region})
