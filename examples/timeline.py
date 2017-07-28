@@ -5,8 +5,8 @@ from cassiopeia.core import Summoner
 def print_newest_match(name: str, account: int, id: int, region: str):
     summoner = Summoner(name=name, account=account, id=id, region=region)
 
-    matches = summoner.matches
-    match = matches[0]
+    match_history = summoner.match_history
+    match = match_history[0]
     print('Match ID:', match.id)
 
     print(match.timeline.frame_interval)
