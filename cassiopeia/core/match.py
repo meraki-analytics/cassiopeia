@@ -1113,6 +1113,17 @@ class Frame(CassiopeiaObject):
 class Timeline(CassiopeiaGhost):
     _data_types = {TimelineData}
 
+    def __init__(self, *, id: int = None, region: Union[Region, str] = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
+        kwargs = {"region": region, "id": id}
+        super().__init__(**kwargs)
+
+    def __get_query__(self):
+        return {"region": self.region, "platform": self.platform, "matchId": self.id}
+
     @property
     def id(self):
         return self._data[TimelineData].id
@@ -1120,6 +1131,10 @@ class Timeline(CassiopeiaGhost):
     @property
     def region(self) -> Region:
         return Region(self._data[TimelineData].region)
+
+    @property
+    def platform(self) -> Platform:
+        return self.region.platform
 
     @CassiopeiaGhost.property(TimelineData)
     @ghost_load_on(KeyError)
