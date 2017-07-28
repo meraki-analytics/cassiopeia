@@ -198,6 +198,7 @@ class Summoner(CassiopeiaGhost):
         from .match import MatchHistory
         return MatchHistory(summoner=self, region=self.region)
 
+    @property
     def current_match(self):
         from .spectator import CurrentMatch
         return CurrentMatch(summoner=self, region=self.region)

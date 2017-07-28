@@ -86,6 +86,8 @@ def construct_query(cls, **kwargs) -> dict:
         return construct_champion_mastery_query(**kwargs)
     if cls is Summoner:
         return construct_summoner_query(**kwargs)
+    if cls is CurrentMatch:
+        return construct_current_match_query(**kwargs)
     else:
         return kwargs
 
@@ -107,32 +109,43 @@ def construct_summoner_query(*, id: int = None, account: Union[Account, int] = N
 @provide_default_region
 def construct_champion_mastery_query(*, summoner: Union[Summoner, int, str], champion: Union[Champion, int, str], region: Union[Region, str]) -> dict:
     query = {"region": region}
-    if summoner is not None:
-        if isinstance(summoner, Summoner):
-            summoner_data = summoner._data[SummonerData]
+    if isinstance(summoner, Summoner):
+        summoner_data = summoner._data[SummonerData]
+        try:
+            query["summoner.id"] = summoner_data.id
+        except KeyError:
             try:
-                query["summoner.id"] = summoner_data.id
+                query["summoner.account.id"] = summoner_data.account_id
             except KeyError:
-                try:
-                    query["summoner.account.id"] = summoner_data.account.id
-                except KeyError:
-                    query["summoner.name"] = summoner_data.name
-        elif isinstance(summoner, str):
-            query["summoner.name"] = summoner
-        else:  # int
-            query["summoner.id"] = summoner
+                query["summoner.name"] = summoner_data.name
+    elif isinstance(summoner, str):
+        query["summoner.name"] = summoner
+    else:  # int
+        query["summoner.id"] = summoner
 
-    if champion is not None:
-        if isinstance(champion, Champion):
-            champion_data = champion._data[ChampionData]
-            try:
-                query["champion.id"] = champion_data.id
-            except KeyError:
-                query["champion.name"] = champion_data.name
-        elif isinstance(champion, str):
-            query["champion.name"] = champion
-        else:  # int
-            query["champion.id"] = champion
+    if isinstance(champion, Champion):
+        champion_data = champion._data[ChampionData]
+        try:
+            query["champion.id"] = champion_data.id
+        except KeyError:
+            query["champion.name"] = champion_data.name
+    elif isinstance(champion, str):
+        query["champion.name"] = champion
+    else:  # int
+        query["champion.id"] = champion
+    return query
+
+
+@provide_default_region
+def construct_current_match_query(*, summoner: Union[Summoner, int, str], region: Union[Region, str]) -> dict:
+    query = {"region": region}
+    if isinstance(summoner, Summoner):
+        query["summoner.id"] = summoner.id
+    elif isinstance(summoner, int):  # int
+        query["summoner.id"] = summoner
+    elif isinstance(summoner, str):
+        query["summoner.id"] = Summoner(name=summoner).id
+    assert "summoner.id" in query
     return query
 
 
@@ -2047,27 +2060,27 @@ def for_many_rune_page_query(query: Query) -> Generator[Tuple[str, Union[int, st
 
 validate_current_match_query = Query. \
     has("platform").as_(Platform).also. \
-    has("gameId").as_(int)
+    has("summoner.id").as_(int)
 
 
 validate_many_current_match_query = Query. \
     has("platform").as_(Platform).also. \
-    has("gameIds").as_(Iterable)
+    has("summoner.ids").as_(Iterable)
 
 
 def for_current_match(current_match_info: CurrentMatch) -> Tuple[str, int]:
-    return current_match_info["platform"], current_match_info["gameId"]
+    return current_match_info.platform, current_match_info._CurrentMatch__summoner.id
 
 
 def for_current_match_query(query: Query) -> Tuple[str, int]:
-    return query["platform"].value, query["gameId"]
+    return query["platform"].value, query["summoner.id"]
 
 
 def for_many_current_match_query(query: Query) -> Generator[Tuple[str, int], None, None]:
-    for match_id in query["gameIds"]:
+    for summoner_id in query["summoner.ids"]:
         try:
-            match_id = int(match_id)
-            yield query["platform"].value, match_id
+            summoner_id = int(summoner_id)
+            yield query["platform"].value, summoner_id
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -2081,7 +2094,7 @@ validate_many_featured_matches_query = Query. \
 
 
 def for_featured_matches(featured_matches: FeaturedMatches) -> str:
-    return featured_matches["platform"]
+    return featured_matches.platform
 
 
 def for_featured_matches_query(query: Query) -> str:

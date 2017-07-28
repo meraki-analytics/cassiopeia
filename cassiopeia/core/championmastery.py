@@ -115,7 +115,12 @@ class ChampionMastery(CassiopeiaGhost):
     _data_types = {ChampionMasteryData}
 
     def __init__(self, *, summoner: Union[Summoner, int, str] = None, champion: Union[Champion, int, str] = None, region: Union[Region, str] = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
         kwargs = {"region": region}
+
         if summoner is not None:
             if isinstance(summoner, Summoner):
                 self.__class__.summoner.fget._lazy_set(self, summoner)
