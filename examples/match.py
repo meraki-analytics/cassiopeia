@@ -3,18 +3,20 @@ from cassiopeia.core import Summoner
 
 
 def print_newest_match(name: str, account: int, id: int, region: str):
+
+    # Notice how this function never makes a call to the summoner endpoint because we provide all the needed data!
+
     summoner = Summoner(name=name, account=account, id=id, region=region)
 
     # matches = cass.get_matches(summoner)
-    matches = summoner.matches
-    match = matches[0]
+    match_history = summoner.match_history
+    match = match_history[0]  # TODO This is triggering two match history loads for some reason...
     print('Match ID:', match.id)
 
     p = match.participants[name]
     print("\nSince the match was created from a matchref, we only know one participant:")
     #print(p.summoner.name, 'playing', p.champion.name)
     print(p.id, p.summoner.region, p.summoner.account.id, p.summoner.name, p.summoner.id, p.champion.id)
-    # TODO: The above print statement makes a call to the summoner endpoint for the provided summoner. However, it shouldn't because all the data for that summoner was provided. This won't be an issue when the cache is in place, but it means we are losing data during a transaction. Can/should that be fixed?
 
     print("\nNow pull the full match data by iterating over all the participants:")
     for p in match.participants:

@@ -1,5 +1,5 @@
 import datetime
-from typing import List, Tuple, Dict, Set
+from typing import List, Tuple, Dict, Set, Union
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
@@ -590,7 +590,7 @@ class ParticipantStatsData(DataObject):
 
 
 class ParticipantData(DataObject):
-    _renamed = {"id": "participantId", "side": "teamId", "summoner_spell_d": "spell1Id", "summoner_spell_f": "spell2Id", "champion_id": "championId", "rank_last_season":"highestAchievedSeasonTier"}
+    _renamed = {"id": "participantId", "side": "teamId", "summoner_spell_d_id": "spell1Id", "summoner_spell_f_id": "spell2Id", "champion_id": "championId", "rank_last_season":"highestAchievedSeasonTier"}
 
     @property
     def stats(self) -> ParticipantStatsData:
@@ -601,11 +601,11 @@ class ParticipantData(DataObject):
         return self._dto["participantId"]
 
     @property
-    def runes(self) -> List["RuneData"]:
+    def runes(self) -> List[int]:
         return self._dto["runes"]
 
     @property
-    def masteries(self) -> List["MasteryData"]:
+    def masteries(self) -> List[int]:
         return self._dto["masteries"]
 
     @property
@@ -617,12 +617,12 @@ class ParticipantData(DataObject):
         return self._dto["teamId"]
 
     @property
-    def summoner_spell_d(self) -> SummonerSpellData:
-        return SummonerSpellData(id=self._dto["spell1Id"])
+    def summoner_spell_d_id(self) -> int:
+        return self._dto["spell1Id"]
 
     @property
-    def summoner_spell_f(self) -> SummonerSpellData:
-        return SummonerSpellData(id=self._dto["spell2Id"])
+    def summoner_spell_f_id(self) -> int:
+        return self._dto["spell2Id"]
 
     @property
     def rank_last_season(self) -> Tuple[str, int]:
@@ -634,7 +634,7 @@ class ParticipantData(DataObject):
 
 
 class PlayerData(DataObject):
-    _renamed = {"current_platform_id": "currentPlatformId", "summoner_name": "summonerName", "summoner_id": "summonerId", "match_history_uri": "matchHistoryUri", "platform_id": "platformId", "current_account_id": "currentAccountId", "profile_icon": "profileIcon", "account_id": "accountId"}
+    _renamed = {"current_platform_id": "currentPlatformId", "summoner_name": "summonerName", "summoner_id": "summonerId", "match_history_uri": "matchHistoryUri", "platform_id": "platformId", "current_account_id": "currentAccountId", "profile_icon_id": "profileIcon", "account_id": "accountId"}
 
     @property
     def current_platform_id(self) -> int:
@@ -657,9 +657,8 @@ class PlayerData(DataObject):
         return self._dto["platformId"]
 
     @property
-    def profile_icon(self) -> "ProfileIconData":
-        from .summoner import ProfileIconData
-        return ProfileIconData(id=self._dto["profileIcon"])
+    def profile_icon_id(self) -> int:
+        return self._dto["profileIcon"]
 
     @property
     def current_account_id(self) -> int:
@@ -710,9 +709,8 @@ class TeamData(DataObject):
         return self._dto["firstBlood"]
 
     @property
-    def bans(self) -> List["ChampionData"]:
-        from .staticdata.champion import ChampionData
-        return [ChampionData(id=ban["championId"]) for ban in self._dto["bans"]]
+    def bans(self) -> List[int]:
+        return [ban["championId"] for ban in self._dto["bans"]]
 
     @property
     def baron_kills(self) -> int:
@@ -752,7 +750,15 @@ class TeamData(DataObject):
 
 
 class MatchReferenceData(DataObject):
-    _renamed = {"season_id": "season", "queue_id": "queue", "id": "gameId", "platform_id": "platformId", "champion_id": "champion", "creation": "timestamp"}
+    _renamed = {"account_id": "accountId", "season_id": "season", "queue_id": "queue", "id": "gameId", "platform_id": "platformId", "champion_id": "champion", "creation": "timestamp"}
+
+    @property
+    def region(self) -> int:
+        return self._dto["region"]
+
+    @property
+    def account_id(self) -> int:
+        return self._dto["accountId"]
 
     @property
     def id(self) -> int:
@@ -856,19 +862,44 @@ class MatchData(DataObject):
 class MatchHistory(CassiopeiaGhostList):
     _data_types = {MatchListData}
 
+    def __init__(self, *args, summoner: Union[Summoner, str, int] = None, account_id: int = None, region: Union[Region, str]):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
+        kwargs = {"region": region}
+        if account_id is not None and summoner is not None:
+            summoner = Summoner(account=account_id, region=region)
+        elif isinstance(summoner, int):
+            summoner = Summoner(id=summoner, region=region)
+        elif isinstance(summoner, str):
+            summoner = Summoner(name=summoner, region=region)
+        assert isinstance(summoner, Summoner)
+        self.__class__.summoner.fget._lazy_set(self, summoner)
+        super().__init__(*args, **kwargs)
+
     def __get_query__(self):
-        query = {"platform": self.platform, "summoner.account.id": self.summoner.account.id}
+        query = {"platform": self.platform, "account.id": self.summoner.account.id}
         return query
 
     def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
         self.clear()
         from ..transformers.match import MatchTransformer
-        SearchableList.__init__(self, [MatchTransformer.match_data_to_core(None, i) for i in data])
+        SearchableList.__init__(self, [MatchTransformer.match_reference_data_to_core(None, i) for i in data])
+        # We have a summoner object (probably) already created, and if one was passed in then this is pretty crucial to do:
+        # Put the summoner object that this match history was instantiated with into the participant[0] so that searchable
+        # list syntax on e.g. the name will work without loading the summoner.
+        # For example:
+        #    summoner = Summoner(name=name, account=account, id=id, region=region)
+        #    match = summoner.match_history[0]
+        #    p = match.participants[name]  # This will work without loading the summoner because the name was prvided
+        for match in self:
+            match.participants[0].__class__.summoner.fget._lazy_set(match.participants[0], self.summoner)
         super().__load_hook__(load_group, data)
 
-    @property
+    @lazy_property
     def summoner(self) -> Summoner:
-        return Summoner(id=self._data[MatchListData].summoner_id)
+        return Summoner(account=self._data[MatchListData].account_id)
 
     @lazy_property
     def region(self) -> Region:
@@ -1441,9 +1472,11 @@ class ParticipantStats(CassiopeiaObject):
 class Participant(CassiopeiaObject):
     _data_types = {ParticipantData, PlayerData}
 
-    def __init__(self, data: DataObject = None, match: "Match" = None, **kwargs):
+    @classmethod
+    def from_data(cls, data: DataObject, match: "Match"):
+        self = super().from_data(data)
         self.__match = match
-        super().__init__(data, **kwargs)
+        return self
 
     @lazy_property
     def stats(self) -> ParticipantStats:
@@ -1455,6 +1488,7 @@ class Participant(CassiopeiaObject):
 
     @lazy_property
     def runes(self) -> List["Rune"]:
+        print(self._data[ParticipantData])
         return self._data[ParticipantData].runes
 
     @lazy_property
@@ -1480,11 +1514,11 @@ class Participant(CassiopeiaObject):
 
     @lazy_property
     def summoner_spell_d(self) -> SummonerSpell:
-        return SummonerSpell(self._data[ParticipantData].summoner_spell_d)
+        return SummonerSpell(id=self._data[ParticipantData].summoner_spell_d_id)
 
     @lazy_property
     def summoner_spell_f(self) -> SummonerSpell:
-        return SummonerSpell(self._data[ParticipantData].summoner_spell_f)
+        return SummonerSpell(id=self._data[ParticipantData].summoner_spell_f_id)
 
     @lazy_property
     def rank_last_season(self) -> Tuple[Tier, Division]:
@@ -1500,24 +1534,25 @@ class Participant(CassiopeiaObject):
     #   See: https://discussion.developer.riotgames.com/questions/1713/is-there-any-scenario-where-accountid-should-be-us.html
     @lazy_property
     def summoner(self) -> "Summoner":
-        data = {}
+        kwargs = {}
         try:
-            data["id"] = self._data[PlayerData].summoner_id
+            kwargs["id"] = self._data[PlayerData].summoner_id
         except KeyError:
             pass
         try:
-            data["name"] = self._data[PlayerData].summoner_name
+            kwargs["name"] = self._data[PlayerData].summoner_name
         except KeyError:
             pass
         from .summoner import Summoner, ProfileIcon
-        account = self._data[PlayerData].current_account_id
-        data["account"] = account
-        data["region"] = Platform(self._data[PlayerData].current_platform_id).region
-        try:
-            data["profile_icon"] = ProfileIcon(self._data[PlayerData].profile_icon)
-        except KeyError:
-            pass
-        return Summoner(**data)
+        account = self._data[PlayerData].account_id
+        kwargs["account"] = account
+        kwargs["region"] = Platform(self._data[PlayerData].current_platform_id).region
+        # TODO Add profile icon
+        #try:
+        #    kwargs["profile_icon"] = ProfileIcon(id=self._data[PlayerData].profile_icon_id)
+        #except KeyError:
+        #    pass
+        return Summoner(**kwargs)
 
     @property
     def team(self) -> "Team":
@@ -1531,9 +1566,11 @@ class Participant(CassiopeiaObject):
 class Team(CassiopeiaObject):
     _data_types = {TeamData}
 
-    def __init__(self, data: DataObject, participants: List[Participant], **kwargs):
+    @classmethod
+    def from_data(cls, data: DataObject, participants: List[Participant]):
+        self = super().from_data(data)
         self.__participants = participants
-        super().__init__(data, **kwargs)
+        return self
 
     @property
     def first_dragon(self) -> bool:
@@ -1561,7 +1598,7 @@ class Team(CassiopeiaObject):
 
     @property
     def bans(self) -> List["Champion"]:
-        return [Champion(champion) for champion in self._data[TeamData].bans]
+        return [Champion(id=champion_id) for champion_id in self._data[TeamData].bans]
 
     @property
     def baron_kills(self) -> int:
@@ -1607,55 +1644,38 @@ class Team(CassiopeiaObject):
 @searchable({str: ["participants", "region", "platform", "season", "queue", "mode", "map", "type"], Region: ["region"], Platform: ["platform"], Season: ["season"], Queue: ["queue"], GameMode: ["mode"], Map: ["map"], GameType: ["type"]})
 class Match(CassiopeiaGhost):
     _data_types = {MatchData}
-    _retyped = {
-        "region": {
-            Region: ("value", "region")
-        },
-        "platform": {
-            Platform: ("value", "platform")
-        },
-        "season": {
-            Season: ("value", "season")
-        },
-        "queue": {
-            Queue: ("value", "queue")
-        },
-        "mode": {
-            GameMode: ("value", "mode")
-        },
-        "map": {
-            Map: ("value", "map")
-        },
-        "type": {
-            GameType: ("value", "type")
-        }
-    }
-    # TODO We may need _retyped to accept methods so that it can convert duration and creation.
 
-    def __init__(self, *args, **kwargs):
-        if "region" not in kwargs and "platform" not in kwargs:
-            kwargs["region"] = settings.default_region.value
-        super().__init__(*args, **kwargs)
+    def __init__(self, *, id: int = None, region: Union[Region, str] = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
+        kwargs = {"region": region, "id": id}
+        super().__init__(**kwargs)
         self.__participants = []  # For lazy-loading the participants in a special way
 
+    def __get_query__(self):
+        return {"region": self.region, "platform": self.platform, "gameId": self.id}
+
     @classmethod
-    def from_match_reference(cls, ref, **kwargs):
+    def from_match_reference(cls, ref):
         # TODO Somehow put in ref.lane, ref.role, and ref.champion_id
         participant = {"participantId": 0, "championId": ref.champion_id}
-        player = {"participantId": 0, "currentAccountId": kwargs["current_account_id"], "currentPlatformId": ref.platform_id}
-        instance = cls(id=ref.id, season_id=ref.season_id, queue_id=ref.queue_id, platform_id=ref.platform_id, creation=ref.creation)
+        player = {"participantId": 0, "accountId": ref.account_id, "currentPlatformId": ref.platform_id}
+        instance = cls(id=ref.id, region=ref.region)
+        instance(season_id=ref.season_id, queue_id=ref.queue_id, creation=ref.creation)
         instance._data[MatchData]._dto["participants"] = [participant]
         instance._data[MatchData]._dto["participantIdentities"] = [{"participantId": 0, "player": player}]
         return instance
 
     @lazy_property
     def region(self) -> Region:
-        """The region for this champion."""
+        """The region for this match."""
         return Region(self._data[MatchData].region)
 
-    @lazy_property
+    @property
     def platform(self) -> Platform:
-        """The platform for this champion."""
+        """The platform for this match."""
         return self.region.platform
 
     @property
@@ -1727,7 +1747,7 @@ class Match(CassiopeiaGhost):
     @ghost_load_on(KeyError)
     @lazy
     def teams(self) -> List[Team]:
-        return [Team(t, participants=[p for p in self.participants if p.side.value == self._data[MatchData].teams[i].side]) for i, t in enumerate(self._data[MatchData].teams)]
+        return [Team.from_data(t, participants=[p for p in self.participants if p.side.value == self._data[MatchData].teams[i].side]) for i, t in enumerate(self._data[MatchData].teams)]
 
     @property
     def red_team(self) -> Team:
@@ -1747,12 +1767,6 @@ class Match(CassiopeiaGhost):
     @ghost_load_on(KeyError)
     def version(self) -> str:
         return self._data[MatchData].version
-
-    @CassiopeiaGhost.property(MatchData)
-    @ghost_load_on(KeyError)
-    @lazy
-    def platform(self) -> Platform:
-        return Platform(self._data[MatchData].platform_id)
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on(KeyError)
