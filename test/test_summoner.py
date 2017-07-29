@@ -15,4 +15,4 @@ def test_equal_result_with_summoner_id():
     from_name = cassiopeia.get_summoner(name=SUMMONER_NAME)
     from_id = cassiopeia.get_summoner(id=from_name.id)
 
-    assert from_name.__dict__ == from_id.__dict__
+    assert from_name.id == from_id.id
