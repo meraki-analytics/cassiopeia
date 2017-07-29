@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 from PIL.Image import Image as PILImage
 
 from merakicommons.ghost import ghost_load_on
@@ -7,7 +7,7 @@ from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform
-from ..common import DataObject, CassiopeiaGhost, get_latest_version
+from ..common import DataObject, CassiopeiaGhost, DataObjectList, CassiopeiaGhostList, get_latest_version
 from .common import Sprite, Image, ImageData
 from ...dto.staticdata import map as dto
 
@@ -17,8 +17,21 @@ from ...dto.staticdata import map as dto
 ##############
 
 
-class MapListData(list):
+class MapListData(DataObjectList):
     _dto_type = dto.MapListDto
+    _renamed = {}
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
+
+    @property
+    def version(self) -> str:
+        return self._dto["version"]
+
+    @property
+    def locale(self) -> str:
+        return self._dto["locale"]
 
 
 class MapData(DataObject):
@@ -43,7 +56,7 @@ class MapData(DataObject):
 
     @property
     def image(self) -> ImageData:
-        return ImageData(self._dto["image"])
+        return ImageData.from_dto(self._dto["image"])
 
     @property
     def name(self) -> str:
@@ -59,35 +72,94 @@ class MapData(DataObject):
 ##############
 
 
-class Maps(SearchableList):
-    pass
+class Maps(CassiopeiaGhostList):
+    _data_types = {MapListData}
+
+    def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
+        if locale is None:
+            locale = region.default_locale
+        kwargs = {"region": region, "locale": locale}
+        if version is not None:
+            kwargs["version"] = version
+        super().__init__(*args, **kwargs)
+
+    def __get_query__(self):
+        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale}
+
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+        self.clear()
+        from ...transformers.staticdata import StaticDataTransformer
+        SearchableList.__init__(self, [StaticDataTransformer.map_data_to_core(None, i) for i in data])
+        super().__load_hook__(load_group, data)
+
+    @lazy_property
+    def region(self) -> Region:
+        return Region(self._data[MapListData].region)
+
+    @lazy_property
+    def platform(self) -> Platform:
+        return self.region.platform
+
+    @property
+    def version(self) -> str:
+        try:
+            return self._data[MapListData].version
+        except KeyError:
+            version = get_latest_version(region=self.region)
+            self(version=version)
+            return self._data[MapListData].version
+
+    @property
+    def locale(self) -> str:
+        """The locale for this champion."""
+        return self._data[MapListData].locale
 
 
 @searchable({str: ["name", "locale"], int: ["id"]})
 class Map(CassiopeiaGhost):
     _data_types = {MapData}
-    _load_types = {MapData: Maps}
+    _load_types = {MapData: MapListData}
 
-    def __init__(self, *args, **kwargs):
-        if "region" not in kwargs and "platform" not in kwargs:
-            kwargs["region"] = settings.default_region.value
-        super().__init__(*args, **kwargs)
+    def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
+        if locale is None:
+            locale = region.default_locale
+        kwargs = {"region": region, "locale": locale}
+        if version is not None:
+            kwargs["version"] = version
+        if id:
+            kwargs["id"] = id
+        if name:
+            kwargs["name"] = name
+        super().__init__(**kwargs)
 
-    def __load_hook__(self, load_group, core) -> None:
+    def __get_query__(self):
+        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale}
+
+    def __load_hook__(self, load_group, data) -> None:
         def find_matching_attribute(datalist, attrname, attrvalue):
             for item in datalist:
                 if getattr(item, attrname, None) == attrvalue:
                     return item
+            else:
+                raise ValueError("could not find matching {}={} in {}".format(attrname, attrvalue, datalist))
 
-        # The `core` is a dict of map core instances
+        # The `data` is a dict of map data instances
         if "mapId" in self._data[MapData]._dto:
-            find = "mapId", self.id
+            find = "id", self.id
         elif "mapName" in self._data[MapData]._dto:
-            find = "mapName", self.name
+            find = "name", self.name
         else:
             raise ValueError("unknown `id` and `name`")
-        core = find_matching_attribute(core, *find)
-        super().__load_hook__(load_group, core)
+        data = find_matching_attribute(data, *find)
+        super().__load_hook__(load_group, data)
 
     @lazy_property
     def region(self) -> Region:
@@ -104,8 +176,8 @@ class Map(CassiopeiaGhost):
         """The version for this map."""
         try:
             return self._data[MapData].version
-        except AttributeError:
-            version = get_latest_version(region=region)
+        except KeyError:
+            version = get_latest_version(region=self.region)
             self(version=version)
             return self._data[MapData].version
 

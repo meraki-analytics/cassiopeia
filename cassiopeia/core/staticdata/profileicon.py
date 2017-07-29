@@ -8,7 +8,8 @@ from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform
-from ..common import DataObject, CassiopeiaGhost, get_latest_version
+from ...dto.staticdata.profileicon import ProfileIconDataDto, ProfileIconListDto
+from ..common import DataObject, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
 
 
 try:
@@ -24,11 +25,25 @@ _profile_icon_names = None
 ##############
 
 
-class ProfileIconListData(list):
-    pass
+class ProfileIconListData(DataObjectList):
+    _dto_type = ProfileIconListDto
+    _renamed = {}
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
+
+    @property
+    def version(self) -> str:
+        return self._dto["version"]
+
+    @property
+    def locale(self) -> str:
+        return self._dto["locale"]
 
 
 class ProfileIconData(DataObject):
+    _dto_type = ProfileIconDataDto
     _renamed = {"id": "profileIconId"}
 
     @property
@@ -53,27 +68,86 @@ class ProfileIconData(DataObject):
 ##############
 
 
-class ProfileIcons(SearchableList):
-    pass
+class ProfileIcons(CassiopeiaGhostList):
+    _data_types = {ProfileIconData}
+
+    def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None):
+        if region is None:
+            region = settings.default_region
+        kwargs = {"region": region}
+        if version is not None:
+            kwargs["version"] = version
+        if locale is not None:
+            kwargs["locale"] = locale
+        super().__init__(*args, **kwargs)
+
+    def __get_query__(self):
+        query = {"region": self.region, "platform": self.platform, "version": self.version}
+        try:
+            query["locale"] = self.locale
+        except KeyError:
+            pass
+        return query
+
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+        self.clear()
+        from ...transformers.staticdata import StaticDataTransformer
+        SearchableList.__init__(self, [StaticDataTransformer.profile_icons_data_to_core(None, i) for i in data])
+        super().__load_hook__(load_group, data)
+
+    @lazy_property
+    def region(self) -> Region:
+        return Region(self._data[ProfileIconData].region)
+
+    @lazy_property
+    def platform(self) -> Platform:
+        return self.region.platform
+
+    @property
+    def version(self) -> str:
+        try:
+            return self._data[ProfileIconData].version
+        except KeyError:
+            version = get_latest_version(region=self.region)
+            self(version=version)
+            return self._data[ProfileIconData].version
+
+    @property
+    def locale(self) -> str:
+        """The locale for this champion."""
+        return self._data[ProfileIconData].locale
 
 
 @searchable({int: ["id"], str: ["name", "url"], PILImage: ["image"]})
 class ProfileIcon(CassiopeiaGhost):
     _data_types = {ProfileIconData}
-    _load_types = {ProfileIconData: ProfileIcons}
+    _load_types = {ProfileIconData: ProfileIconListData}
 
-    def __init__(self, *args, **kwargs):
-        if "region" not in kwargs and "platform" not in kwargs:
-            kwargs["region"] = settings.default_region.value
-        super().__init__(*args, **kwargs)
+    def __init__(self, *, id: int, region: Union[Region, str] = None, version: str = None, locale: str = None):
+        if region is None:
+            region = settings.default_region
+        kwargs = {"id": id, "region": region}
+        if version is not None:
+            kwargs["version"] = version
+        if locale is not None:
+            kwargs["locale"] = locale
+        super().__init__(**kwargs)
 
-    def __load_hook__(self, load_group, core) -> None:
+    def __get_query__(self):
+        query = {"region": self.region, "platform": self.platform, "version": self.version}
+        try:
+            query["locale"] = self.locale
+        except KeyError:
+            pass
+        return query
+
+    def __load_hook__(self, load_group, data) -> None:
         def find_matching_attribute(datalist, attrname, attrvalue):
             for item in datalist:
                 if getattr(item, attrname, None) == attrvalue:
                     return item
-        core = find_matching_attribute(core, "id", self.id)
-        super().__load_hook__(load_group, core)
+        data = find_matching_attribute(data, "id", self.id)
+        super().__load_hook__(load_group, data)
 
     @lazy_property
     def region(self) -> Region:
@@ -90,7 +164,7 @@ class ProfileIcon(CassiopeiaGhost):
         """The version for this profile icon."""
         try:
             return self._data[ProfileIconData].version
-        except AttributeError:
+        except KeyError:
             version = get_latest_version(region=self.region)
             self(version=version)
             return self._data[ProfileIconData].version

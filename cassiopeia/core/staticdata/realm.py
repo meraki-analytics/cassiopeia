@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Union
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy_property
@@ -18,6 +18,10 @@ from ...dto.staticdata import realm as dto
 class RealmData(DataObject):
     _dto_type = dto.RealmDto
     _renamed = {"legacy_mode": "lg", "latest_data_dragon": "dd", "language": "l", "latest_versions": "n", "max_profile_icon_id": "profileiconmax", "store": "store", "version": "v", "cdn": "cdn", "css_version": "css"}
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
 
     @property
     def legacy_mode(self) -> str:
@@ -74,10 +78,16 @@ class RealmData(DataObject):
 class Realms(CassiopeiaGhost):
     _data_types = {RealmData}
 
-    def __init__(self, *args, **kwargs):
-        if "region" not in kwargs and "platform" not in kwargs:
-            kwargs["region"] = settings.default_region.value
-        super().__init__(*args, **kwargs)
+    def __init__(self, region: Union[Region, str] = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
+        kwargs = {"region": region}
+        super().__init__(**kwargs)
+
+    def __get_query__(self):
+        return {"region": self.region, "platform": self.platform}
 
     @lazy_property
     def region(self) -> Region:
@@ -99,7 +109,7 @@ class Realms(CassiopeiaGhost):
         """The version for this map."""
         try:
             return self._data[RealmData].version
-        except AttributeError:
+        except KeyError:
             version = get_latest_version(region=self.region)
             return self._data[RealmData].version
 

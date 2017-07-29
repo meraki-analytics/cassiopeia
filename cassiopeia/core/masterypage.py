@@ -1,19 +1,28 @@
-from typing import List, Mapping
+from typing import List, Mapping, Union
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
 from ..data import Region, Platform
-from .common import DataObject, CassiopeiaGhost
+from .common import DataObject, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList
 from .summoner import Summoner
-from ..dto.masterypage import MasteryDto, MasteryPageDto
+from ..dto.masterypage import MasteryDto, MasteryPageDto, MasteryPagesDto
 from .staticdata.mastery import Mastery as StaticdataMastery
 
 
 ##############
 # Data Types #
 ##############
+
+
+class MasteryPagesData(DataObjectList):
+    _dto_type = MasteryPagesDto
+    _renamed = {}
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
 
 
 class MasteryData(DataObject):
@@ -49,7 +58,7 @@ class MasteryPageData(DataObject):
     @property
     def masteries(self) -> List[MasteryData]:
         """Collection of masteries associated with the mastery page."""
-        return [MasteryData(mastery) for mastery in self._dto["masteries"]]
+        return [MasteryData.from_dto(mastery) for mastery in self._dto["masteries"]]
 
     @property
     def name(self) -> str:
@@ -62,17 +71,38 @@ class MasteryPageData(DataObject):
         return self._dto["id"]
 
 
-class MasteryPagesData(list):
-    pass
-
-
 ##############
 # Core Types #
 ##############
 
 
-class MasteryPages(SearchableList):  # TODO This needs a summoner id or something so that it can be loaded.
-    pass
+class MasteryPages(CassiopeiaGhostList):
+    _data_types = {MasteryPagesData}
+
+    def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
+        super().__init__(*args, region=region)
+        if isinstance(summoner, str):
+            summoner = Summoner(name=summoner)
+        elif isinstance(summoner, int):
+            summoner = Summoner(id=summoner)
+        self.__summoner = summoner
+
+    def __get_query__(self):
+        return {"summoner.id": self.__summoner.id, "region": self.region, "platform": self.platform}
+
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+        self.clear()
+        from ..transformers.masteries import MasteriesTransformer
+        SearchableList.__init__(self, [MasteriesTransformer.mastery_page_data_to_core(None, i) for i in data])
+        super().__load_hook__(load_group, data)
+
+    @lazy_property
+    def region(self) -> Region:
+        return Region(self._data[MasteryPagesData].region)
+
+    @lazy_property
+    def platform(self) -> Platform:
+        return self.region.platform
 
 
 @searchable({str: ["name", "masteries", "region", "platform", "locale"], int: ["id"], bool: ["current"], StaticdataMastery: ["masteries"], Region: ["region"], Platform: ["platform"]})

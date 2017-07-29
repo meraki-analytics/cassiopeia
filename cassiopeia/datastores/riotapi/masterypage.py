@@ -18,7 +18,7 @@ class MasteryPageAPI(RiotAPIService):
         pass
 
     _validate_get_mastery_pages_query = Query. \
-        has("summonerId").as_(int).also. \
+        has("summoner.id").as_(int).also. \
         has("platform").as_(Platform)
 
     @get.register(MasteryPagesDto)
@@ -27,7 +27,7 @@ class MasteryPageAPI(RiotAPIService):
             query["platform"] = Region(query["region"]).platform.value
         MasteryPageAPI._validate_get_mastery_pages_query(query, context)
 
-        url = "https://{platform}.api.riotgames.com/lol/platform/v3/masteries/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summonerId"])
+        url = "https://{platform}.api.riotgames.com/lol/platform/v3/masteries/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
         try:
             data = self._get(url, {}, self._rate_limiter(query["platform"], "masteries/by-summoner/summonerId"))
         except APINotFoundError as error:
@@ -37,7 +37,7 @@ class MasteryPageAPI(RiotAPIService):
         return MasteryPagesDto(data)
 
     _validate_get_many_mastery_pages_query = Query. \
-        has("summonerIds").as_(Iterable).also. \
+        has("summoner.ids").as_(Iterable).also. \
         has("platform").as_(Platform)
 
     @get_many.register(MasteryPagesDto)
@@ -47,7 +47,7 @@ class MasteryPageAPI(RiotAPIService):
         MasteryPageAPI._validate_get_many_mastery_pages_query(query, context)
 
         def generator():
-            for id in query["summonerIds"]:
+            for id in query["summoner.ids"]:
                 url = "https://{platform}.api.riotgames.com/lol/platform/v3/masteries/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=id)
                 try:
                     data = self._get(url, {}, self._rate_limiter(query["platform"], "masteries/by-summoner/summonerId"))

@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Union
 import datetime
 
 from merakicommons.ghost import ghost_load_on
@@ -7,7 +7,7 @@ from merakicommons.container import searchable, SearchableList, SearchableDictio
 
 from ..configuration import settings
 from ..data import Region, Platform, GameMode, GameType, Queue, Map
-from .common import DataObject, CassiopeiaObject, CassiopeiaGhost
+from .common import DataObject, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList
 from ..dto import spectator as dto
 from .staticdata.profileicon import ProfileIcon
 from .staticdata.champion import Champion, ChampionData
@@ -22,8 +22,17 @@ from .summoner import Summoner
 ##############
 
 
-class FeaturedGamesData(list):
-    pass
+class FeaturedGamesData(DataObjectList):
+    _dto_type = dto.FeaturedGamesDto
+    _renamed = {"client_refresh_interval": "clientRefreshInterval"}
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
+
+    @property
+    def client_refresh_interval(self) -> str:
+        return self._dto["clientRefreshInterval"]
 
 
 class RuneData(DataObject):
@@ -73,7 +82,7 @@ class CurrentGameParticipantData(DataObject):
         return self._dto["summonerId"]
 
     @property
-    def summoner_name(self) -> int:
+    def summoner_name(self) -> str:
         """The summoner name of this participant"""
         return self._dto["summonerName"]
 
@@ -113,11 +122,11 @@ class TeamData(DataObject):
 
     @property
     def participants(self) -> List[CurrentGameParticipantData]:
-        return [CurrentGameParticipantData(p) for p in self._dto["participants"]]
+        return [CurrentGameParticipantData.from_dto(p) for p in self._dto["participants"]]
 
     @property
-    def bans(self) -> Dict[int, ChampionData]:
-        return {b["pickTurn"]: ChampionData({"id": b["championId"]}) for b in self._dto["bans"]}
+    def bans(self) -> Dict[int, int]:
+        return {b["pickTurn"]: b["championId"] for b in self._dto["bans"]}
 
 
 class CurrentGameInfoData(DataObject):
@@ -133,10 +142,6 @@ class CurrentGameInfoData(DataObject):
         return self._dto["region"]
 
     @property
-    def platform(self) -> int:
-        return self._dto["platformId"]
-
-    @property
     def teams(self) -> List[TeamData]:
         blue_team = {"participants": [], "bans": []}
         red_team = {"participants": [], "bans": []}
@@ -150,7 +155,7 @@ class CurrentGameInfoData(DataObject):
                 blue_team["bans"].append(b)
             elif b["teamId"] == 200:
                 red_team["bans"].append(b)
-        return [TeamData(blue_team), TeamData(red_team)]
+        return [TeamData.from_dto(blue_team), TeamData.from_dto(red_team)]
 
     @property
     def mode(self) -> str:
@@ -186,8 +191,30 @@ class CurrentGameInfoData(DataObject):
 ##############
 
 
-class FeaturedMatches(list):
-    pass
+class FeaturedMatches(CassiopeiaGhostList):
+    _data_types = {FeaturedGamesData}
+
+    def __get_query__(self):
+        query = {"platform": self.platform}
+        return query
+
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+        self.clear()
+        from ..transformers.spectator import SpectatorTransformer
+        SearchableList.__init__(self, [SpectatorTransformer.current_game_data_to_core(None, i) for i in data])
+        super().__load_hook__(load_group, data)
+
+    @lazy_property
+    def region(self) -> Region:
+        return Region(self._data[FeaturedGamesData].region)
+
+    @lazy_property
+    def platform(self) -> Platform:
+        return self.region.platform
+
+    @property
+    def client_refresh_interval(self) -> int:
+        return self._data[FeaturedGamesData].client_refresh_interval
 
 
 @searchable({})
@@ -238,17 +265,41 @@ class Team(CassiopeiaObject):
 
     @lazy_property
     def bans(self) -> Dict[int, Champion]:
-        return {pick: Champion(champ) for pick, champ in self._data[TeamData].bans.items()}
+        return {pick: Champion(id=champion_id) for pick, champion_id in self._data[TeamData].bans.items()}
 
 
 @searchable({})
 class CurrentMatch(CassiopeiaGhost):
     _data_types = {CurrentGameInfoData}
 
-    def __init__(self, *args, **kwargs):
-        if "region" not in kwargs and "platform" not in kwargs:
-            kwargs["region"] = settings.default_region.value
-        super().__init__(*args, **kwargs)
+    def __init__(self, *, summoner: Union[Summoner, int, str] = None, region: Union[Region, str] = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
+        kwargs = {"region": region, "id": id}
+
+        if summoner is not None:
+            if isinstance(summoner, str):
+                summoner = Summoner(name=summoner)
+            elif isinstance(summoner, int):
+                summoner = Summoner(id=summoner)
+            self.__summoner = summoner
+        super().__init__(**kwargs)
+
+    @classmethod
+    def from_data(cls, data: DataObject, summoner: Union[Summoner, int, str]):
+        self = super().from_data(data)
+        if isinstance(summoner, str):
+            summoner = Summoner(name=summoner)
+        elif isinstance(summoner, int):
+            summoner = Summoner(id=summoner)
+        self.__summoner = summoner
+        return self
+
+
+    def __get_query__(self):
+        return {"region": self.region, "platform": self.platform, "summoner.id": self.__summoner.id}
 
     @lazy_property
     def region(self) -> Region:

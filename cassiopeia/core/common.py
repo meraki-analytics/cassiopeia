@@ -112,7 +112,7 @@ class DataObjectList(list, DataObject):
         DataObject.__init__(self, **kwargs)
         self._dto
 
-    def from_data(cls, dto: Union[list, DtoObject]):
+    def from_dto(cls, dto: Union[list, DtoObject]):
         self = DataObject.from_dto(dto)
         SearchableList.__init__(self, dto)
 
@@ -209,12 +209,10 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=CheckCache):
         else:  # Load the specific load group
             if self._Ghost__is_loaded(load_group):
                 raise ValueError("object has already been loaded.")
-            query = copy.deepcopy(self._data[load_group]._dto)
+            query = self.__get_query__()
             if hasattr(self.__class__, "version") and "version" not in query:
                 from .staticdata import Versions
                 query["version"] = get_latest_version(region=query["region"])
-
-            query = self.__get_query__()
             data = settings.pipeline.get(type=self._load_types[load_group], query=query)
             self.__load_hook__(load_group, data)
 
@@ -226,7 +224,7 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=CheckCache):
     def __get_query__(self):
         pass
 
-    def __load_hook__(self, load_group, data: DataObject):
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
         if not isinstance(data, DataObject):
             raise TypeError("expected subclass of DataObject, got {cls}".format(cls=data.__class__))
         self._data[load_group] = data
@@ -254,7 +252,7 @@ class CassiopeiaGhostList(SearchableList, CassiopeiaGhost):
         #SearchableList.__init__(self, [StaticDataTransformer.champion_data_to_core(None, c) for c in data])
         #return self
 
-    def __load_hook__(self, load_group, data: DataObject):
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
         super().__load_hook__(load_group=load_group, data=data)
         # Since @Ghost.property isn't set, the ghost's __property won't set itself as loaded because it never gets called.
         # Therefore we manually set it as loaded here.

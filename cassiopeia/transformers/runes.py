@@ -30,7 +30,7 @@ class RunesTransformer(DataTransformer):
             page["region"] = data["region"]
             page["summonerId"] = data["summonerId"]
         data = [self.rune_page_dto_to_data(page) for page in data["pages"]]
-        return RunePagesData(data)
+        return RunePagesData(data, summoner_id=value["summonerId"])
 
     # Data to Core
 
@@ -41,6 +41,14 @@ class RunesTransformer(DataTransformer):
 
     @transform.register(RunePagesData, RunePages)
     def rune_pages_data_to_core(self, value: RunePagesData, context: PipelineContext = None) -> RunePages:
-        return RunePages([self.rune_page_data_to_core(page) for page in value])
+        return RunePages([self.rune_page_data_to_core(page) for page in value], summoner_id=value.summoner.id)
 
-    # Core to Dto TODO
+    # Core to Dto
+
+    @transform.register(RunePage, RunePageDto)
+    def rune_page_core_to_dto(self, value: RunePage, context: PipelineContext = None) -> RunePageDto:
+        return value._data[RunePageData]._dto
+
+    @transform.register(RunePages, RunePagesDto)
+    def rune_pages_core_to_dto(self, value: RunePages, context: PipelineContext = None) -> RunePagesDto:
+        return RunePagesDto([self.rune_page_core_to_dto(page) for page in value], summonerId=value.summoner.id)

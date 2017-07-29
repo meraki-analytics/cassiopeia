@@ -1,3 +1,4 @@
+from typing import Set, Union
 from PIL.Image import Image as PILImage
 
 from merakicommons.ghost import ghost_load_on
@@ -6,13 +7,9 @@ from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform, MasteryTree
-from ..common import DataObject, CassiopeiaGhost, get_latest_version
+from ..common import DataObject, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
 from .common import Sprite, Image
 from ...dto.staticdata import mastery as dto
-
-
-class MasteryListData(list):
-    _dto_type = dto.MasteryListDto
 
 
 ##############
@@ -20,9 +17,9 @@ class MasteryListData(list):
 ##############
 
 
-class MasteryData(DataObject):
-    _dto_type = dto.MasteryDto
-    _renamed = {"prerequisite": "prereq", "tree": "masteryTree", "image_data": "image", "points": "ranks", "sanitized_description": "sanitizedDescription"}
+class MasteryListData(DataObjectList):
+    _dto_type = dto.MasteryListDto
+    _renamed = {"included_data": "includedData"}
 
     @property
     def region(self) -> str:
@@ -35,6 +32,31 @@ class MasteryData(DataObject):
     @property
     def locale(self) -> str:
         return self._dto["locale"]
+
+    @property
+    def included_data(self) -> Set[str]:
+        return self._dto["includedData"]
+
+
+class MasteryData(DataObject):
+    _dto_type = dto.MasteryDto
+    _renamed = {"prerequisite": "prereq", "tree": "masteryTree", "image_data": "image", "points": "ranks", "sanitized_description": "sanitizedDescription", "included_data": "includedData"}
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
+
+    @property
+    def version(self) -> str:
+        return self._dto["version"]
+
+    @property
+    def locale(self) -> str:
+        return self._dto["locale"]
+
+    @property
+    def included_data(self) -> Set[str]:
+        return self._dto["includedData"]
 
     @property
     def prerequisite(self) -> id:
@@ -76,19 +98,102 @@ class MasteryData(DataObject):
 ##############
 
 
-class Masteries(SearchableList):
-    pass
+class Masteries(CassiopeiaGhostList):
+    _data_types = {MasteryListData}
+
+    def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
+        if included_data is None:
+            included_data = {"all"}
+        if locale is None:
+            locale = region.default_locale
+        kwargs = {"region": region, "included_data": included_data, "locale": locale}
+        if version:
+            kwargs["version"] = version
+        super().__init__(*args, **kwargs)
+
+    def __get_query__(self):
+        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
+
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+        self.clear()
+        from ...transformers.staticdata import StaticDataTransformer
+        SearchableList.__init__(self, [StaticDataTransformer.mastery_data_to_core(None, i) for i in data])
+        super().__load_hook__(load_group, data)
+
+    @lazy_property
+    def region(self) -> Region:
+        return Region(self._data[MasteryListData].region)
+
+    @lazy_property
+    def platform(self) -> Platform:
+        return self.region.platform
+
+    @property
+    def version(self) -> str:
+        try:
+            return self._data[MasteryListData].version
+        except KeyError:
+            version = get_latest_version(region=self.region)
+            self(version=version)
+            return self._data[MasteryListData].version
+
+    @property
+    def locale(self) -> str:
+        """The locale for this champion."""
+        return self._data[MasteryListData].locale
+
+    @property
+    def included_data(self) -> Set[str]:
+        """A set of tags to return additonal information for this champion when it's loaded."""
+        return self._data[MasteryListData].included_data
 
 
 @searchable({str: ["name", "key", "region", "platform", "locale", "tree"], int: ["id"], MasteryTree: ["tree"], Region: ["region"], Platform: ["platform"]})
 class Mastery(CassiopeiaGhost):
     _data_types = {MasteryData}
-    _load_types = {MasteryData: Masteries}
+    _load_types = {MasteryData: MasteryListData}
 
-    def __init__(self, *args, **kwargs):
-        if "region" not in kwargs and "platform" not in kwargs:
-            kwargs["region"] = settings.default_region.value
-        super().__init__(*args, **kwargs)
+    def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
+        if included_data is None:
+            included_data = {"all"}
+        if locale is None:
+            locale = region.default_locale
+        kwargs = {"region": region, "included_data": included_data, "locale": locale}
+        if id:
+            kwargs["id"] = id
+        if name:
+            kwargs["name"] = name
+        if version:
+            kwargs["version"] = version
+        super().__init__(**kwargs)
+
+    def __get_query__(self):
+        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
+
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+        def find_matching_attribute(datalist, attrname, attrvalue):
+            for item in datalist:
+                if getattr(item, attrname, None) == attrvalue:
+                    return item
+
+        # The `data` is a dict of summoner spell data instances
+        if "id" in self._data[MasteryData]._dto:
+            find = "id", self.id
+        elif "name" in self._data[MasteryData]._dto:
+            find = "name", self.name
+        else:
+            raise RuntimeError("Expected fields not present after loading.")
+        data = find_matching_attribute(data, *find)
+
+        super().__load_hook__(load_group, data)
 
     @lazy_property
     def region(self) -> Region:
@@ -105,7 +210,7 @@ class Mastery(CassiopeiaGhost):
         """The version for this mastery."""
         try:
             return self._data[MasteryData].version
-        except AttributeError:
+        except KeyError:
             version = get_latest_version(region=self.region)
             self(version=version)
             return self._data[MasteryData].version
@@ -115,11 +220,16 @@ class Mastery(CassiopeiaGhost):
         """The locale for this mastery."""
         return self._data[MasteryData].locale
 
+    @property
+    def included_data(self) -> Set[str]:
+        """A set of tags to return additonal information for this mastery when it's loaded."""
+        return self._data[MasteryData].included_data
+
     @CassiopeiaGhost.property(MasteryData)
     @ghost_load_on(KeyError)
     def prerequisite(self) -> "Mastery":
         """The prerequisite masteries."""
-        return Mastery(self._data[MasteryData].prerequisite)
+        return Mastery(id=self._data[MasteryData].prerequisite)
 
     @CassiopeiaGhost.property(MasteryData)
     @ghost_load_on(KeyError)

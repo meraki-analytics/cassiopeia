@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Union
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy_property
@@ -28,6 +28,10 @@ class LanguageStringsData(DataObject):
         return self._dto["version"]
 
     @property
+    def locale(self) -> str:
+        return self._dto["locale"]
+
+    @property
     def type(self) -> str:
         return self._dto["type"]
 
@@ -45,10 +49,22 @@ class LanguageStringsData(DataObject):
 class LanguageStrings(CassiopeiaGhost):
     _data_types = {LanguageStringsData}
 
-    def __init__(self, *args, **kwargs):
-        if "region" not in kwargs and "platform" not in kwargs:
-            kwargs["region"] = settings.default_region.value
-        super().__init__(*args, **kwargs)
+    def __init__(self, *, strings: Dict[str, str] = None, region: Union[Region, str] = None, version: str = None, locale: str = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
+        if locale is None:
+            locale = region.default_locale
+        kwargs = {"region": region, "locale": locale}
+        if version is not None:
+            kwargs["version"] = version
+        if strings is not None:
+            kwargs["strings"] = strings
+        super().__init__(**kwargs)
+
+    def __get_query__(self):
+        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale}
 
     @lazy_property
     def region(self) -> Region:
@@ -65,10 +81,14 @@ class LanguageStrings(CassiopeiaGhost):
         """The version for this map."""
         try:
             return self._data[LanguageStringsData].version
-        except AttributeError:
+        except KeyError:
             version = get_latest_version(region=self.region)
             self(version=version)
             return self._data[LanguageStringsData].version
+
+    @lazy_property
+    def locale(self) -> str:
+        return self._data[LanguageStringsData].locale
 
     @CassiopeiaGhost.property(LanguageStringsData)
     @ghost_load_on(KeyError)

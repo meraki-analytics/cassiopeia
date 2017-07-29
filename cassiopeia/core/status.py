@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy
@@ -232,10 +232,16 @@ class Service(CassiopeiaObject):
 class ShardStatus(CassiopeiaGhost):
     _data_types = {ShardStatusData}
 
-    def __init__(self, *args, **kwargs):
-        if "region" not in kwargs and "platform" not in kwargs:
-            kwargs["region"] = settings.default_region.value
-        super().__init__(*args, **kwargs)
+    def __init__(self, region: Union[Region, str] = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
+        kwargs = {"region": region}
+        super().__init__(**kwargs)
+
+    def __get_query__(self):
+        return {"region": self.region, "platform": self.platform}
 
     @CassiopeiaGhost.property(ShardStatusData)
     @ghost_load_on(KeyError)

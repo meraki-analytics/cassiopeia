@@ -1,4 +1,4 @@
-from typing import List, Mapping
+from typing import List, Mapping, Union
 from collections import Counter
 
 from merakicommons.ghost import ghost_load_on
@@ -6,14 +6,24 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
 from ..data import Region, Platform
-from .common import DataObject, CassiopeiaGhost
-from ..dto.runepage import RuneSlotDto, RunePageDto
+from .common import DataObject, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList
+from .summoner import Summoner
+from ..dto.runepage import RuneSlotDto, RunePageDto, RunePagesDto
 from .staticdata.rune import Rune as StaticdataRune
 
 
 ##############
 # Data Types #
 ##############
+
+
+class RunePagesData(DataObjectList):
+    _dto_type = RunePagesDto
+    _renamed = {}
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
 
 
 class RuneSlotData(DataObject):
@@ -53,7 +63,7 @@ class RunePageData(DataObject):
     @property
     def runes(self) -> List[RuneSlotData]:
         """Collection of rune slots associated with the rune page."""
-        return [RuneSlotData(slot) for slot in self._dto["slots"]]
+        return [RuneSlotData.from_dto(slot) for slot in self._dto["slots"]]
 
     @property
     def name(self) -> str:
@@ -66,17 +76,39 @@ class RunePageData(DataObject):
         return self._dto["id"]
 
 
-class RunePagesData(list):
-    pass
-
-
 ##############
 # Core Types #
 ##############
 
 
-class RunePages(SearchableList):  # TODO This needs a summoner id or something so that it can be loaded.
-    pass
+class RunePages(CassiopeiaGhostList):
+    _data_types = {RunePagesData}
+
+    def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
+        super().__init__(*args, region=region)
+        if isinstance(summoner, str):
+            summoner = Summoner(name=summoner)
+        elif isinstance(summoner, int):
+            summoner = Summoner(id=summoner)
+        self.__summoner = summoner
+
+    def __get_query__(self):
+        return {"summoner.id": self.__summoner.id, "region": self.region, "platform": self.platform}
+
+    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+        self.clear()
+        from ..transformers.runes import RunesTransformer
+        SearchableList.__init__(self, [RunesTransformer.rune_page_data_to_core(None, i) for i in data])
+        super().__load_hook__(load_group, data)
+
+    @lazy_property
+    def region(self) -> Region:
+        return Region(self._data[RunePagesData].region)
+
+    @lazy_property
+    def platform(self) -> Platform:
+        return self.region.platform
+
 
 
 @searchable({str: ["name", "runes", "region", "platform", "locale"], int: ["id"], bool: ["current"], StaticdataRune: ["runes"], Region: ["region"], Platform: ["platform"]})

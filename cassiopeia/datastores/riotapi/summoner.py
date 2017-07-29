@@ -32,7 +32,7 @@ class SummonerAPI(RiotAPIService):
         if "id" in query:
             url = "https://{platform}.api.riotgames.com/lol/summoner/v3/summoners/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["id"])
             endpoint = "summoners/summonerId"
-        elif "accountId" in query:
+        elif "account.id" in query:
             url = "https://{platform}.api.riotgames.com/lol/summoner/v3/summoners/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=query["account.id"])
             endpoint = "summoners/by-account/accountId"
         elif "name" in query:

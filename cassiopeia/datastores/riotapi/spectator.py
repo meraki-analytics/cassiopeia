@@ -34,7 +34,7 @@ class SpectatorAPI(RiotAPIService):
 
     _validate_get_current_game_query = Query. \
         has("platform").as_(Platform).also. \
-        has("summonerId").as_(int)
+        has("summoner.id").as_(int)
 
     @get.register(CurrentGameInfoDto)
     def get_current_game(self, query: Mapping[str, Any], context: PipelineContext = None) -> CurrentGameInfoDto:
@@ -42,7 +42,7 @@ class SpectatorAPI(RiotAPIService):
             query["platform"] = Region(query["region"]).platform.value
         SpectatorAPI._validate_get_current_game_query(query, context)
 
-        url = "https://{platform}.api.riotgames.com/lol/spectator/v3/active-games/by-summoner/{id}".format(platform=query["platform"].value.lower(), id=query["summonerId"])
+        url = "https://{platform}.api.riotgames.com/lol/spectator/v3/active-games/by-summoner/{id}".format(platform=query["platform"].value.lower(), id=query["summoner.id"])
         try:
             data = self._get(url, {}, self._rate_limiter(query["platform"], "spectator/active-games/by-summoner"))
         except APINotFoundError as error:
@@ -59,7 +59,7 @@ class SpectatorAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get.register(FeaturedGamesDto)
-    def get_featured_game(self, query: Mapping[str, Any], context: PipelineContext = None) -> FeaturedGamesDto:
+    def get_featured_games(self, query: Mapping[str, Any], context: PipelineContext = None) -> FeaturedGamesDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         SpectatorAPI._validate_get_featured_game_query(query, context)
@@ -71,4 +71,6 @@ class SpectatorAPI(RiotAPIService):
             raise NotFoundError(str(error)) from error
 
         data["region"] = query["platform"].region.value
+        for game in data["gameList"]:
+            game["region"] = data["region"]
         return FeaturedGamesDto(data)
