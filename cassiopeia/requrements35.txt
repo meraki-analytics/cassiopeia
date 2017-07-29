@@ -1,0 +1,7 @@
+flake8
+pytest
+pytest-xdist
+merakicommons
+datapipelines
+pycurl
+Pillow
