@@ -31,7 +31,7 @@ A default region can be set in the settings, and any object that requires a regi
 Ghost Loading
 """""""""""""
 
-A *ghost object* is an object that can be instantiated without all of its data. It is therefore a shadow of itself, or a *ghost*. Ghost objects know how to load the rest of their data using what they were given at init. This is what allows you to write `kalturi = Summoner(name="Kalturi")` followed by `kalturi.level`. The latter makes a call to the data pipeline (discussed below) to pull the rest of the data for `kalturi` by using `kalturi.name`.
+A *ghost object* is an object that can be instantiated without all of its data. It is therefore a shadow of itself, or a *ghost*. Ghost objects know how to load the rest of their data using what they were given at init. This is what allows you to write ``kalturi = Summoner(name="Kalturi")`` followed by ``kalturi.level``. The latter makes a call to the data pipeline (discussed below) to pull the rest of the data for ``kalturi`` by using ``kalturi.name``.
 
 All top-level objects in Cass are ghost objects and therefore know how to load their own data.
 
