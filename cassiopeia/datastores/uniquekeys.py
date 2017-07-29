@@ -18,7 +18,7 @@ from ..dto.summoner import SummonerDto
 from ..core.common import provide_default_region
 from ..core.championmastery import ChampionMastery
 from ..core.league import LeagueSummoner
-from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Languages, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions, Items, Champions, Maps, SummonerSpells
+from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Languages, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions, Items, Champions, Maps, SummonerSpells, Masteries, Runes
 from ..core.status import ShardStatus
 from ..core.masterypage import MasteryPage
 from ..core.match import Match
@@ -566,7 +566,6 @@ def for_many_languages_dto_query(query: Query) -> Generator[str, None, None]:
 
 
 # Map
-
 
 validate_map_dto_query = Query. \
     has("platform").as_(Platform).also. \
@@ -1705,6 +1704,38 @@ def for_many_mastery_query(query: Query) -> Generator[Tuple[str, str, str, int, 
             raise QueryValidationError from e
 
 
+validate_masteries_query = Query. \
+    has("platform").as_(Platform).also. \
+    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+    can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
+    can_have("includedData").as_(set).or_("included_data").with_default({"all"})
+
+
+validate_many_masteries_query = Query. \
+    has("platforms").as_(Iterable).also. \
+    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+    can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
+    can_have("included_data").with_default({"all"})
+
+
+def for_masteries(masteries: Masteries, identifier: str = "platform") -> Tuple[str, str, str, int]:
+    return masteries.platform.value, masteries.version, masteries.locale, _hash_included_data(masteries.included_data)
+
+
+def for_masteries_query(query: Query) -> Tuple[str, str, str, int]:
+    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
+    return query["platform"].value, query["version"], query["locale"], included_data_hash
+
+
+def for_many_masteries_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
+    included_data_hash = _hash_included_data(query["included_data"])
+    for platform in query["platforms"]:
+        try:
+            yield platform.value, query["version"], query["locale"], included_data_hash
+        except ValueError as e:
+            raise QueryValidationError from e
+
+
 # Profile Icon
 
 validate_profile_icons_query = Query. \
@@ -1828,6 +1859,38 @@ def for_many_rune_query(query: Query) -> Generator[Tuple[str, str, str, int, Uni
             raise QueryValidationError from e
 
 
+validate_runes_query = Query. \
+    has("platform").as_(Platform).also. \
+    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+    can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
+    can_have("includedData").as_(set).or_("included_data").with_default({"all"})
+
+
+validate_many_runes_query = Query. \
+    has("platforms").as_(Iterable).also. \
+    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+    can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
+    can_have("included_data").with_default({"all"})
+
+
+def for_runes(runes: Runes, identifier: str = "platform") -> Tuple[str, str, str, int]:
+    return runes.platform.value, runes.version, runes.locale, _hash_included_data(runes.included_data)
+
+
+def for_runes_query(query: Query) -> Tuple[str, str, str, int]:
+    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
+    return query["platform"].value, query["version"], query["locale"], included_data_hash
+
+
+def for_many_runes_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
+    included_data_hash = _hash_included_data(query["included_data"])
+    for platform in query["platforms"]:
+        try:
+            yield platform.value, query["version"], query["locale"], included_data_hash
+        except ValueError as e:
+            raise QueryValidationError from e
+
+
 # Summoner Spell
 
 validate_summoner_spell_query = Query. \
@@ -1863,6 +1926,38 @@ def for_many_summoner_spell_query(query: Query) -> Generator[Tuple[str, str, str
         try:
             identifier = identifier_type(identifier)
             yield query["platform"].value, query["version"], query["locale"], included_data_hash, identifier
+        except ValueError as e:
+            raise QueryValidationError from e
+
+
+validate_summoner_spells_query = Query. \
+    has("platform").as_(Platform).also. \
+    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+    can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
+    can_have("includedData").as_(set).or_("included_data").with_default({"all"})
+
+
+validate_many_summoner_spells_query = Query. \
+    has("platforms").as_(Iterable).also. \
+    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+    can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
+    can_have("included_data").with_default({"all"})
+
+
+def for_summoner_spells(summoner_spells: SummonerSpells, identifier: str = "platform") -> Tuple[str, str, str, int]:
+    return summoner_spells.platform.value, summoner_spells.version, summoner_spells.locale, _hash_included_data(summoner_spells.included_data)
+
+
+def for_summoner_spells_query(query: Query) -> Tuple[str, str, str, int]:
+    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
+    return query["platform"].value, query["version"], query["locale"], included_data_hash
+
+
+def for_many_summoner_spells_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
+    included_data_hash = _hash_included_data(query["included_data"])
+    for platform in query["platforms"]:
+        try:
+            yield platform.value, query["version"], query["locale"], included_data_hash
         except ValueError as e:
             raise QueryValidationError from e
 

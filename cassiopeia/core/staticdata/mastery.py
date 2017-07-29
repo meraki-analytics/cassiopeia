@@ -40,7 +40,7 @@ class MasteryListData(DataObjectList):
 
 class MasteryData(DataObject):
     _dto_type = dto.MasteryDto
-    _renamed = {"prerequisite": "prereq", "tree": "masteryTree", "image_data": "image", "points": "ranks", "sanitized_description": "sanitizedDescription"}
+    _renamed = {"prerequisite": "prereq", "tree": "masteryTree", "image_data": "image", "points": "ranks", "sanitized_description": "sanitizedDescription", "included_data": "includedData"}
 
     @property
     def region(self) -> str:
@@ -53,6 +53,10 @@ class MasteryData(DataObject):
     @property
     def locale(self) -> str:
         return self._dto["locale"]
+
+    @property
+    def included_data(self) -> Set[str]:
+        return self._dto["includedData"]
 
     @property
     def prerequisite(self) -> id:
@@ -216,11 +220,16 @@ class Mastery(CassiopeiaGhost):
         """The locale for this mastery."""
         return self._data[MasteryData].locale
 
+    @property
+    def included_data(self) -> Set[str]:
+        """A set of tags to return additonal information for this mastery when it's loaded."""
+        return self._data[MasteryData].included_data
+
     @CassiopeiaGhost.property(MasteryData)
     @ghost_load_on(KeyError)
     def prerequisite(self) -> "Mastery":
         """The prerequisite masteries."""
-        return Mastery(self._data[MasteryData].prerequisite)
+        return Mastery(id=self._data[MasteryData].prerequisite)
 
     @CassiopeiaGhost.property(MasteryData)
     @ghost_load_on(KeyError)
