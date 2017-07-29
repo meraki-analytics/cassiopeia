@@ -6,9 +6,6 @@ How Cass Works
 There are a few major parts that make Cass work, with minor parts that go along with them. These are discussed below.
 
 
-Major Parts
------------
-
 .. _interfaces:
 
 Two Interfaces
