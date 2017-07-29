@@ -5,8 +5,11 @@ import configparser
 
 config = configparser.ConfigParser()
 head, tail = os.path.split(__file__)
-if len(sys.argv) > 1:
-    filename = sys.argv[1]
+if len(sys.argv) > 1 and any(fn.endswith(".ini") for fn in sys.argv):
+    for fn in sys.argv:
+        if fn.endswith(".ini"):
+            filename = fn
+            break
 else:
     filename = os.path.join(head, "default.ini")
 
