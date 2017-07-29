@@ -26,4 +26,4 @@ def test_champion_and_champions_return_same_data():
     champ = champions[0]
     from_get_champion = cassiopeia.get_champion(champ.name)
 
-    assert champ == from_get_champion
+    assert champ.__dict__ == from_get_champion.__dict__
