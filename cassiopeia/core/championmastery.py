@@ -78,8 +78,7 @@ class ChampionMasteries(CassiopeiaGhostList):
     _data_types = {ChampionMasteryListData}
 
     def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
-        SearchableList.__init__(self, *args)
-        CassiopeiaGhost.__init__(self, region=region)
+        super().__init__(*args, region=region)
         if isinstance(summoner, str):
             summoner = Summoner(name=summoner)
         elif isinstance(summoner, int):

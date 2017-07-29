@@ -18,7 +18,7 @@ class RunePageAPI(RiotAPIService):
         pass
 
     _validate_get_rune_pages_query = Query. \
-        has("summonerId").as_(int).also. \
+        has("summoner.id").as_(int).also. \
         has("platform").as_(Platform)
 
     @get.register(RunePagesDto)
@@ -27,7 +27,7 @@ class RunePageAPI(RiotAPIService):
             query["platform"] = Region(query["region"]).platform.value
         RunePageAPI._validate_get_rune_pages_query(query, context)
 
-        url = "https://{platform}.api.riotgames.com/lol/platform/v3/runes/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summonerId"])
+        url = "https://{platform}.api.riotgames.com/lol/platform/v3/runes/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
         try:
             data = self._get(url, {}, self._rate_limiter(query["platform"], "runes/by-summoner/summonerId"))
         except APINotFoundError as error:
@@ -37,7 +37,7 @@ class RunePageAPI(RiotAPIService):
         return RunePagesDto(data)
 
     _validate_get_many_rune_pages_query = Query. \
-        has("summonerIds").as_(Iterable).also. \
+        has("summoner.ids").as_(Iterable).also. \
         has("platform").as_(Platform)
 
     @get_many.register(RunePagesDto)
@@ -47,7 +47,7 @@ class RunePageAPI(RiotAPIService):
         RunePageAPI._validate_get_many_rune_pages_query(query, context)
 
         def generator():
-            for id in query["summonerIds"]:
+            for id in query["summoner.ids"]:
                 url = "https://{platform}.api.riotgames.com/lol/platform/v3/runes/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=id)
                 try:
                     data = self._get(url, {}, self._rate_limiter(query["platform"], "runes/by-summoner/summonerId"))

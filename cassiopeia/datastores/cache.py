@@ -6,7 +6,7 @@ from merakicommons.cache import Cache as CommonsCache
 from . import uniquekeys
 from ..core.championmastery import ChampionMastery
 from ..core.league import LeagueSummoner
-from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Realms, ProfileIcon, Languages, LanguageStrings, Versions, SummonerSpells, Items, Champions
+from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Realms, ProfileIcon, Languages, LanguageStrings, Versions, SummonerSpells, Items, Champions, Masteries, Runes, Maps, ProfileIcons
 from ..core.masterypage import MasteryPage
 from ..core.match import Match
 from ..core.runepage import RunePage
@@ -288,6 +288,29 @@ class Cache(DataSource, DataSink):
     def put_many_map(self, items: Iterable[Map], context: PipelineContext = None) -> None:
         self._put_many(Map, items, uniquekeys.for_map, ("id",), ("name",), context=context)
 
+    @get.register(Maps)
+    @validate_query(uniquekeys.validate_maps_query, uniquekeys.convert_region_to_platform)
+    def get_maps(self, query: Mapping[str, Any], context: PipelineContext = None) -> Maps:
+        return self._get(Maps, query, uniquekeys.for_maps_query, context)
+
+    @get_many.register(Maps)
+    @validate_query(uniquekeys.validate_many_maps_query, uniquekeys.convert_region_to_platform)
+    def get_many_maps(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[Maps, None, None]:
+        return self._get_many(Maps, query, uniquekeys.for_many_maps_query, context)
+
+    @put.register(Maps)
+    def put_maps(self, item: Maps, context: PipelineContext = None) -> None:
+        self._put(Maps, item, uniquekeys.for_maps, ("id",), ("name",), context=context)
+        for map in item:
+            self._put(Map, map, uniquekeys.for_map, ("id",), ("name",), context=context)
+
+    @put_many.register(Maps)
+    def put_many_maps(self, items: Iterable[Maps], context: PipelineContext = None) -> None:
+        self._put_many(Maps, items, uniquekeys.for_maps, ("id",), ("name",), context=context)
+        for map in items:
+            self._put(Map, map, uniquekeys.for_map, ("id",), ("name",), context=context)
+
+
     # Mastery
 
     @get.register(Mastery)
@@ -308,6 +331,29 @@ class Cache(DataSource, DataSink):
     def put_many_mastery(self, items: Iterable[Mastery], context: PipelineContext = None) -> None:
         self._put_many(Mastery, items, uniquekeys.for_mastery, ("id",), ("name",), context=context)
 
+    @get.register(Masteries)
+    @validate_query(uniquekeys.validate_masteries_query, uniquekeys.convert_region_to_platform)
+    def get_masteries(self, query: Mapping[str, Any], context: PipelineContext = None) -> Masteries:
+        return self._get(Masteries, query, uniquekeys.for_masteries_query, context)
+
+    @get_many.register(Masteries)
+    @validate_query(uniquekeys.validate_many_masteries_query, uniquekeys.convert_region_to_platform)
+    def get_many_masteries(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[Masteries, None, None]:
+        return self._get_many(Masteries, query, uniquekeys.for_many_masteries_query, context)
+
+    @put.register(Masteries)
+    def put_masteries(self, item: Masteries, context: PipelineContext = None) -> None:
+        self._put(Masteries, item, uniquekeys.for_masteries, ("id",), ("name",), context=context)
+        for mastery in item:
+            self._put(Mastery, mastery, uniquekeys.for_mastery, ("id",), ("name",), context=context)
+
+    @put_many.register(Masteries)
+    def put_many_masteries(self, items: Iterable[Masteries], context: PipelineContext = None) -> None:
+        self._put_many(Masteries, items, uniquekeys.for_masteries, ("id",), ("name",), context=context)
+        for mastery in items:
+            self._put(Mastery, mastery, uniquekeys.for_mastery, ("id",), ("name",), context=context)
+
+
     # Profile Icon
 
     @get.register(ProfileIcon)
@@ -327,6 +373,29 @@ class Cache(DataSource, DataSink):
     @put_many.register(ProfileIcon)
     def put_many_profile_icon(self, items: Iterable[ProfileIcon], context: PipelineContext = None) -> None:
         self._put_many(ProfileIcon, items, uniquekeys.for_profile_icon, ("id",), ("name",), context=context)
+
+    @get.register(ProfileIcons)
+    @validate_query(uniquekeys.validate_profile_icons_query, uniquekeys.convert_region_to_platform)
+    def get_profile_icons(self, query: Mapping[str, Any], context: PipelineContext = None) -> ProfileIcons:
+        return self._get(ProfileIcons, query, uniquekeys.for_profile_icons_query, context)
+
+    @get_many.register(ProfileIcons)
+    @validate_query(uniquekeys.validate_many_profile_icons_query, uniquekeys.convert_region_to_platform)
+    def get_many_profile_icons(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[ProfileIcons, None, None]:
+        return self._get_many(ProfileIcons, query, uniquekeys.for_many_profile_icons_query, context)
+
+    @put.register(ProfileIcons)
+    def put_profile_icons(self, item: ProfileIcons, context: PipelineContext = None) -> None:
+        self._put(ProfileIcons, item, uniquekeys.for_profile_icons, ("id",), ("name",), context=context)
+        for profile_icon in item:
+            self._put(ProfileIcon, profile_icon, uniquekeys.for_profile_icon, ("id",), ("name",), context=context)
+
+    @put_many.register(ProfileIcons)
+    def put_many_profile_icons(self, items: Iterable[ProfileIcons], context: PipelineContext = None) -> None:
+        self._put_many(ProfileIcons, items, uniquekeys.for_profile_icons, ("id",), ("name",), context=context)
+        for profile_icon in items:
+            self._put(ProfileIcon, profile_icon, uniquekeys.for_profile_icon, ("id",), ("name",), context=context)
+
 
     # Realm
 
@@ -368,6 +437,29 @@ class Cache(DataSource, DataSink):
     def put_many_rune(self, items: Iterable[Rune], context: PipelineContext = None) -> None:
         self._put_many(Rune, items, uniquekeys.for_rune, ("id",), ("name",), context=context)
 
+    @get.register(Runes)
+    @validate_query(uniquekeys.validate_runes_query, uniquekeys.convert_region_to_platform)
+    def get_runes(self, query: Mapping[str, Any], context: PipelineContext = None) -> Runes:
+        return self._get(Runes, query, uniquekeys.for_runes_query, context)
+
+    @get_many.register(Runes)
+    @validate_query(uniquekeys.validate_many_runes_query, uniquekeys.convert_region_to_platform)
+    def get_many_runes(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[Runes, None, None]:
+        return self._get_many(Runes, query, uniquekeys.for_many_runes_query, context)
+
+    @put.register(Runes)
+    def put_runes(self, item: Runes, context: PipelineContext = None) -> None:
+        self._put(Runes, item, uniquekeys.for_runes, ("id",), ("name",), context=context)
+        for rune in item:
+            self._put(Mastery, rune, uniquekeys.for_rune, ("id",), ("name",), context=context)
+
+    @put_many.register(Runes)
+    def put_many_runes(self, items: Iterable[Runes], context: PipelineContext = None) -> None:
+        self._put_many(Runes, items, uniquekeys.for_runes, ("id",), ("name",), context=context)
+        for rune in items:
+            self._put(Mastery, rune, uniquekeys.for_rune, ("id",), ("name",), context=context)
+
+
     # Summoner Spell
 
     @get.register(SummonerSpell)
@@ -387,6 +479,29 @@ class Cache(DataSource, DataSink):
     @put_many.register(SummonerSpell)
     def put_many_summoner_spell(self, items: Iterable[SummonerSpell], context: PipelineContext = None) -> None:
         self._put_many(SummonerSpell, items, uniquekeys.for_summoner_spell, ("id",), ("name",), context=context)
+
+    @get.register(SummonerSpells)
+    @validate_query(uniquekeys.validate_summoner_spells_query, uniquekeys.convert_region_to_platform)
+    def get_summoner_spells(self, query: Mapping[str, Any], context: PipelineContext = None) -> SummonerSpells:
+        return self._get(SummonerSpells, query, uniquekeys.for_summoner_spells_query, context)
+
+    @get_many.register(SummonerSpells)
+    @validate_query(uniquekeys.validate_many_summoner_spells_query, uniquekeys.convert_region_to_platform)
+    def get_many_summoner_spells(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[SummonerSpells, None, None]:
+        return self._get_many(SummonerSpells, query, uniquekeys.for_many_summoner_spells_query, context)
+
+    @put.register(SummonerSpells)
+    def put_summoner_spells(self, item: SummonerSpells, context: PipelineContext = None) -> None:
+        self._put(SummonerSpells, item, uniquekeys.for_summoner_spells, ("id",), ("name",), context=context)
+        for summoner_spell in item:
+            self._put(Mastery, summoner_spell, uniquekeys.for_summoner_spell, ("id",), ("name",), context=context)
+
+    @put_many.register(SummonerSpells)
+    def put_many_summoner_spells(self, items: Iterable[SummonerSpells], context: PipelineContext = None) -> None:
+        self._put_many(SummonerSpells, items, uniquekeys.for_summoner_spells, ("id",), ("name",), context=context)
+        for summoner_spell in items:
+            self._put(Mastery, summoner_spell, uniquekeys.for_summoner_spell, ("id",), ("name",), context=context)
+
 
     # Versions
 

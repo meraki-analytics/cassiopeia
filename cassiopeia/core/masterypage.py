@@ -1,4 +1,4 @@
-from typing import List, Mapping
+from typing import List, Mapping, Union
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
@@ -18,15 +18,11 @@ from .staticdata.mastery import Mastery as StaticdataMastery
 
 class MasteryPagesData(DataObjectList):
     _dto_type = MasteryPagesDto
-    _renamed = {"summoner_id": "summonerId"}
+    _renamed = {}
 
     @property
     def region(self) -> str:
         return self._dto["region"]
-
-    @property
-    def summoner_id(self) -> str:
-        return self._dto["summonerId"]
 
 
 class MasteryData(DataObject):
@@ -83,9 +79,16 @@ class MasteryPageData(DataObject):
 class MasteryPages(CassiopeiaGhostList):
     _data_types = {MasteryPagesData}
 
+    def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
+        super().__init__(*args, region=region)
+        if isinstance(summoner, str):
+            summoner = Summoner(name=summoner)
+        elif isinstance(summoner, int):
+            summoner = Summoner(id=summoner)
+        self.__summoner = summoner
+
     def __get_query__(self):
-        query = {"platform": self.platform, "summoner.id": self.summoner.id}
-        return query
+        return {"summoner.id": self.__summoner.id, "region": self.region, "platform": self.platform}
 
     def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
         self.clear()
@@ -100,10 +103,6 @@ class MasteryPages(CassiopeiaGhostList):
     @lazy_property
     def platform(self) -> Platform:
         return self.region.platform
-
-    @property
-    def summoner(self) -> Summoner:
-        return Summoner(id=self._data[MasteryPagesData].summoner_id)
 
 
 @searchable({str: ["name", "masteries", "region", "platform", "locale"], int: ["id"], bool: ["current"], StaticdataMastery: ["masteries"], Region: ["region"], Platform: ["platform"]})

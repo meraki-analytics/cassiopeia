@@ -321,7 +321,7 @@ class RuneStatsData(DataObject):
 
 class RuneData(DataObject):
     _dto_type = dto.RuneDto
-    _renamed = {"metadata": "rune", "sanitized_description": "sanitizedDescription"}
+    _renamed = {"metadata": "rune", "sanitized_description": "sanitizedDescription", "included_data": "includedData"}
 
     @property
     def region(self) -> str:
@@ -334,6 +334,10 @@ class RuneData(DataObject):
     @property
     def locale(self) -> str:
         return self._dto["locale"]
+
+    @property
+    def included_data(self) -> Set[str]:
+        return self._dto["includedData"]
 
     @property
     def metadata(self) -> MetadataData:
@@ -758,6 +762,11 @@ class Rune(CassiopeiaGhost):
     def locale(self) -> str:
         """The locale for this rune."""
         return self._data[RuneData].locale
+
+    @lazy_property
+    def included_data(self) -> Set[str]:
+        """The region for this rune."""
+        return self._data[RuneData].included_data
 
     @CassiopeiaGhost.property(RuneData)
     @ghost_load_on(KeyError)
