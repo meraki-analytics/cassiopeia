@@ -59,4 +59,5 @@ def test_mastery_returns_correct_data():
 
     from_single_call = cassiopeia.get_champion_mastery(SUMMONER_NAME, on_champ.champion)
 
-    assert on_champ.points == from_single_call.points
+    assert on_champ._data[cassiopeia.core.championmastery.ChampionMasteryData]._dto == from_single_call._data[cassiopeia.core.championmastery.ChampionMasteryData]._dto
+
