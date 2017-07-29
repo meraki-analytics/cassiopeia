@@ -1,0 +1,5 @@
+flake8
+pytest
+merakicommons
+datapipelines
+Pillow
