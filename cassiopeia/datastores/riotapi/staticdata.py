@@ -563,6 +563,14 @@ class StaticDataAPI(RiotAPIService):
         data["includedData"] = query["includedData"]
         if data["id"] == 3632:  # This item doesn't have a name.
             data["name"] = ""
+        if "tags" not in data:
+            data["tags"] = []
+        if "depth" not in data:
+            data["depth"] = 1
+        if "colloq" not in data:
+            data["colloq"] = ""
+        if "plaintext" not in data:
+            data["plaintext"] = ""
         return ItemDto(data)
 
     _validate_get_many_item_query = Query. \
@@ -605,6 +613,14 @@ class StaticDataAPI(RiotAPIService):
                 item["includedData"] = query["includedData"]
                 if item["id"] == 3632:  # This item doesn't have a name.
                     item["name"] = ""
+                if "tags" not in item:
+                    item["tags"] = []
+                if "depth" not in item:
+                    item["depth"] = 1
+                if "colloq" not in item:
+                    item["colloq"] = ""
+                if "plaintext" not in item:
+                    item["plaintext"] = ""
                 yield ItemDto(item)
 
         return generator()
@@ -641,6 +657,14 @@ class StaticDataAPI(RiotAPIService):
         for item in data["data"].values():
             if item["id"] == 3632:  # This item doesn't have a name.
                 item["name"] = ""
+            if "tags" not in item:
+                item["tags"] = []
+            if "depth" not in item:
+                item["depth"] = 1
+            if "colloq" not in item:
+                item["colloq"] = ""
+            if "plaintext" not in item:
+                item["plaintext"] = ""
         return ItemListDto(data)
 
     _validate_get_many_item_list_query = Query. \
@@ -680,6 +704,14 @@ class StaticDataAPI(RiotAPIService):
                 for item in data["data"].values():
                     if item["id"] == 3632:  # This item doesn't have a name.
                         item["name"] = ""
+                    if "tags" not in item:
+                        item["tags"] = []
+                    if "depth" not in item:
+                        item["depth"] = 1
+                    if "colloq" not in item:
+                        item["colloq"] = ""
+                    if "plaintext" not in item:
+                        item["plaintext"] = ""
                 yield ItemListDto(data)
 
         return generator()

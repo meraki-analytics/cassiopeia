@@ -95,13 +95,13 @@ def construct_query(cls, **kwargs) -> dict:
 @provide_default_region
 def construct_summoner_query(*, id: int = None, account: Union[Account, int] = None, name: str = None, region: Union[Region, str]) -> dict:
     query = {"region": region}
-    if id:
+    if id is not None:
         query["id"] = id
-    if name:
+    if name is not None:
         query["name"] = name
     if account and isinstance(account, Account):
         query["account.id"] = account.id
-    elif account:
+    elif account is not None:
         query["account.id"] = account
     return query
 

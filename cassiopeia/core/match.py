@@ -1,3 +1,4 @@
+import functools
 import datetime
 from typing import List, Tuple, Dict, Set, Union
 
@@ -13,7 +14,8 @@ from .summoner import Summoner
 from .staticdata.champion import Champion
 from .staticdata.rune import Rune
 from .staticdata.mastery import Mastery
-from .staticdata.summonerspell import SummonerSpell, SummonerSpellData
+from .staticdata.summonerspell import SummonerSpell
+from .staticdata.item import Item
 
 
 ##############
@@ -1092,7 +1094,6 @@ class ParticipantFrame(CassiopeiaObject):
         return self._data[ParticipantFrameData].jungle_minions_killed
 
 
-@searchable({})
 class Frame(CassiopeiaObject):
     _data_types = {FrameData}
 
@@ -1109,7 +1110,6 @@ class Frame(CassiopeiaObject):
         return SearchableList([Event(event) for event in self._data[FrameData].events])
 
 
-@searchable({})
 class Timeline(CassiopeiaGhost):
     _data_types = {TimelineData}
 
@@ -1150,6 +1150,7 @@ class Timeline(CassiopeiaGhost):
 class ParticipantTimeline(CassiopeiaObject):
     _data_types = {ParticipantTimelineData}
 
+    # TODO Add lane and role enums and make things searchable by them
     @property
     def lane(self) -> str:
         return self._data[ParticipantTimelineData].lane
@@ -1191,6 +1192,7 @@ class ParticipantTimeline(CassiopeiaObject):
         return self._data[ParticipantTimelineData].damage_taken_diff_per_min_deltas
 
 
+@searchable({str: ["items"], Item: ["items"]})
 class ParticipantStats(CassiopeiaObject):
     _data_types = {ParticipantStatsData}
 
@@ -1251,10 +1253,6 @@ class ParticipantStats(CassiopeiaObject):
         return self._data[ParticipantStatsData].largest_killing_spree
 
     @property
-    def item1(self) -> int:
-        return self._data[ParticipantStatsData].item1
-
-    @property
     def quadra_kills(self) -> int:
         return self._data[ParticipantStatsData].quadra_kills
 
@@ -1283,16 +1281,16 @@ class ParticipantStats(CassiopeiaObject):
         return self._data[ParticipantStatsData].first_tower_kill
 
     @property
-    def item2(self) -> int:
-        return self._data[ParticipantStatsData].item2
-
-    @property
-    def item3(self) -> int:
-        return self._data[ParticipantStatsData].item3
-
-    @property
-    def item0(self) -> int:
-        return self._data[ParticipantStatsData].item0
+    def items(self) -> List[Item]:
+        ids = [self._data[ParticipantStatsData].item0,
+               self._data[ParticipantStatsData].item1,
+               self._data[ParticipantStatsData].item2,
+               self._data[ParticipantStatsData].item3,
+               self._data[ParticipantStatsData].item4,
+               self._data[ParticipantStatsData].item5,
+               self._data[ParticipantStatsData].item6
+        ]
+        return SearchableList([Item(id=id) for id in ids if id])
 
     @property
     def first_blood_assist(self) -> bool:
@@ -1305,18 +1303,6 @@ class ParticipantStats(CassiopeiaObject):
     @property
     def wards_placed(self) -> int:
         return self._data[ParticipantStatsData].wards_placed
-
-    @property
-    def item4(self) -> int:
-        return self._data[ParticipantStatsData].item4
-
-    @property
-    def item5(self) -> int:
-        return self._data[ParticipantStatsData].item5
-
-    @property
-    def item6(self) -> int:
-        return self._data[ParticipantStatsData].item6
 
     @property
     def turret_kills(self) -> int:
@@ -1483,7 +1469,24 @@ class ParticipantStats(CassiopeiaObject):
         return self._data[ParticipantStatsData].physical_damage_taken
 
 
-@searchable({str: ["summoner", "champion", "runes", "masteries", "side", "summoner_spell_d", "summoner_spell_f"], Summoner: ["summoner"], Champion: ["champion"], Side: ["side"], Rune: ["runes"], Mastery: ["masteries"], SummonerSpell: ["summoner_spell_d", "summoner_spell_f"]})
+def load_match_on_keyerror(method):
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        try:
+            return method(self, *args, **kwargs)
+        except KeyError:  # teamId
+            # The match has only partially loaded this participant and it doesn't have all it's data, so load the full match
+            self._Participant__match.__load__(MatchData)
+            self._Participant__match._Ghost__set_loaded(MatchData)
+            for participant in self._Participant__match.participants:
+                if participant.summoner.name == self.summoner.name:
+                    self._data[ParticipantData] = participant._data[ParticipantData]
+                    return method(self, *args, **kwargs)
+        return method(self, *args, **kwargs)
+    return wrapper
+
+
+@searchable({str: ["summoner", "champion", "stats", "runes", "masteries", "side", "summoner_spell_d", "summoner_spell_f"], Summoner: ["summoner"], Champion: ["champion"], Side: ["side"], Rune: ["runes"], Mastery: ["masteries"], SummonerSpell: ["summoner_spell_d", "summoner_spell_f"]})
 class Participant(CassiopeiaObject):
     _data_types = {ParticipantData, PlayerData}
 
@@ -1494,6 +1497,7 @@ class Participant(CassiopeiaObject):
         return self
 
     @lazy_property
+    @load_match_on_keyerror
     def stats(self) -> ParticipantStats:
         return ParticipantStats.from_data(self._data[ParticipantData].stats)
 
@@ -1502,44 +1506,42 @@ class Participant(CassiopeiaObject):
         return self._data[ParticipantData].id
 
     @lazy_property
+    @load_match_on_keyerror
     def runes(self) -> List["Rune"]:
-        print(self._data[ParticipantData])
         return self._data[ParticipantData].runes
 
     @lazy_property
+    @load_match_on_keyerror
     def masteries(self) -> List["Mastery"]:
         return self._data[ParticipantData].masteries
 
     @lazy_property
+    @load_match_on_keyerror
     def timeline(self) -> ParticipantTimeline:
         return ParticipantTimeline.from_data(self._data[ParticipantData].timeline)
 
     @lazy_property
+    @load_match_on_keyerror
     def side(self) -> Side:
-        try:
-            return Side(self._data[ParticipantData].side)
-        except KeyError:  # teamId
-            # The match has only partially loaded this participant and it doesn't have all it's data, so load the full match
-            self.__match.__load__(MatchData)
-            self.__match._Ghost__set_loaded(MatchData)
-            for participant in self.__match.participants:
-                if participant.summoner.name == self.summoner.name:
-                    self._data[ParticipantData] = participant._data[ParticipantData]
-                    return Side(self._data[ParticipantData].side)
+        return Side(self._data[ParticipantData].side)
 
     @lazy_property
+    @load_match_on_keyerror
     def summoner_spell_d(self) -> SummonerSpell:
         return SummonerSpell(id=self._data[ParticipantData].summoner_spell_d_id)
 
     @lazy_property
+    @load_match_on_keyerror
     def summoner_spell_f(self) -> SummonerSpell:
         return SummonerSpell(id=self._data[ParticipantData].summoner_spell_f_id)
 
     @lazy_property
+    @load_match_on_keyerror
     def rank_last_season(self) -> Tuple[Tier, Division]:
         return Tier(self._data[ParticipantData].rank_last_season[0]), Division(self._data[ParticipantData].rank_last_season[1])
 
     @lazy_property
+    @load_match_on_keyerror
     def champion(self) -> "Champion":
         from .staticdata.champion import Champion
         return Champion(id=self._data[ParticipantData].champion_id)
@@ -1559,8 +1561,7 @@ class Participant(CassiopeiaObject):
         except KeyError:
             pass
         from .summoner import Summoner, ProfileIcon
-        account = self._data[PlayerData].account_id
-        kwargs["account"] = account
+        kwargs["account"] = self._data[PlayerData].account_id
         kwargs["region"] = Platform(self._data[PlayerData].current_platform_id).region
         # TODO Add profile icon
         #try:
@@ -1656,7 +1657,7 @@ class Team(CassiopeiaObject):
         return self.__participants
 
 
-@searchable({str: ["participants", "region", "platform", "season", "queue", "mode", "map", "type"], Region: ["region"], Platform: ["platform"], Season: ["season"], Queue: ["queue"], GameMode: ["mode"], Map: ["map"], GameType: ["type"]})
+@searchable({str: ["participants", "region", "platform", "season", "queue", "mode", "map", "type"], Region: ["region"], Platform: ["platform"], Season: ["season"], Queue: ["queue"], GameMode: ["mode"], Map: ["map"], GameType: ["type"], Item: ["participants"], Champion: ["participants"]})
 class Match(CassiopeiaGhost):
     _data_types = {MatchData}
 
@@ -1705,13 +1706,13 @@ class Match(CassiopeiaGhost):
     @ghost_load_on(KeyError)
     @lazy
     def season(self) -> Season:
-        return Season(self._data[MatchData].season_id)
+        return Season.from_id(self._data[MatchData].season_id)
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on(KeyError)
     @lazy
     def queue(self) -> Queue:
-        return Queue(self._data[MatchData].queue_id)
+        return Queue.from_id(self._data[MatchData].queue_id)
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on(KeyError)

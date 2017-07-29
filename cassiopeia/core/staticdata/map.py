@@ -134,9 +134,9 @@ class Map(CassiopeiaGhost):
         kwargs = {"region": region, "locale": locale}
         if version is not None:
             kwargs["version"] = version
-        if id:
+        if id is not None:
             kwargs["id"] = id
-        if name:
+        if name is not None:
             kwargs["name"] = name
         super().__init__(**kwargs)
 

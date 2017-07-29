@@ -93,13 +93,13 @@ class Summoner(CassiopeiaGhost):
         if not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region}
-        if id:
+        if id is not None:
             kwargs["id"] = id
-        if name:
+        if name is not None:
             kwargs["name"] = name
         if account and isinstance(account, Account):
             self.__class__.account.fget._lazy_set(self, account)
-        elif account:
+        elif account is not None:
             kwargs["account_id"] = account
         super().__init__(**kwargs)
 

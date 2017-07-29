@@ -272,7 +272,7 @@ class GoldData(DataObject):
 
 class ItemData(DataObject):
     _dto_type = dto.ItemDto
-    _renamed = {"hide": "hideFromAll", "in_store": "inStore", "builds_into": "into", "builds_from": "from", "keywords": "colloq", "champion": "requiredChampion", "consume_on_full": "consumeOnFull", "sanitized_description": "sanitizedDescription", "tier": "depth", "max_stacks": "stacks"}
+    _renamed = {"hide": "hideFromAll", "in_store": "inStore", "builds_into": "into", "builds_from": "from", "keywords": "colloq", "champion": "requiredChampion", "consume_on_full": "consumeOnFull", "sanitized_description": "sanitizedDescription", "tier": "depth", "max_stacks": "stacks", "included_data": "includedData"}
 
     @property
     def region(self) -> str:
@@ -323,8 +323,8 @@ class ItemData(DataObject):
         return ItemStatsData.from_dto(self._dto["stats"])
 
     @property
-    def keywords(self) -> List[str]:
-        return self._dto["colloq"].split(";")
+    def keywords(self) -> Set[str]:
+        return set(kw for kw in self._dto["colloq"].split(";") if kw != "")
 
     @property
     def maps(self) -> List[Map]:  # TODO Convert from Dict to List
@@ -602,7 +602,7 @@ class Gold(CassiopeiaObject):
 @searchable({str: ["name", "region", "platform", "locale", "keywords", "maps", "tags", "tier"], int: ["id"], Region: ["region"], Platform: ["platform"], Map: ["maps"]})
 class Item(CassiopeiaGhost):
     _data_types = {ItemData}
-    _load_types = {ItemData: Items}
+    _load_types = {ItemData: ItemListData}
 
     def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if region is None:
@@ -614,11 +614,11 @@ class Item(CassiopeiaGhost):
         if locale is None:
             locale = region.default_locale
         kwargs = {"region": region, "included_data": included_data, "locale": locale}
-        if id:
+        if id is not None:
             kwargs["id"] = id
-        if name:
+        if name is not None:
             kwargs["name"] = name
-        if version:
+        if version is not None:
             kwargs["version"] = version
         super().__init__(**kwargs)
 
@@ -639,7 +639,6 @@ class Item(CassiopeiaGhost):
         else:
             raise RuntimeError("Expected fields not present after loading.")
         data = find_matching_attribute(data, *find)
-
         super().__load_hook__(load_group, data)
 
     # What do we do about params like this that can exist in both data objects?

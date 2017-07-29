@@ -93,6 +93,7 @@ class Resource(Enum):
     blood_well = "Blood Well"
     crimson_rush = "Crimson Rush"
     none = "None"
+    no_cost = "No Cost"
 
 
 class Side(Enum):
@@ -174,6 +175,9 @@ class Season(Enum):
     preseason_7 = "PRESEASON2017"
     season_7 = "SEASON2017"
 
+    def from_id(id):
+        return {i: season for season, i in SEASON_IDS.items()}[id]
+
 
 SEASON_IDS = {
     Season.preseason_3: 0,
@@ -184,7 +188,8 @@ SEASON_IDS = {
     Season.season_5: 5,
     Season.preseason_6: 6,
     Season.season_6: 7,
-    Season.preseason_7: 8
+    Season.preseason_7: 8,
+    Season.season_7: 9
 }
 
 
@@ -247,6 +252,9 @@ class Queue(Enum):
     flex = "RANKED_FLEX_SR"
     blood_hunt = "ASSASSINATE_5x5"
     darkstar = "DARKSTAR_3x3"
+
+    def from_id(id):
+        return {i: season for season, i in QUEUE_IDS.items()}[id]
 
 
 QUEUE_IDS = {
