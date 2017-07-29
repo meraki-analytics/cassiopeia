@@ -279,5 +279,6 @@ class CassiopeiaGhostList(SearchableList, CassiopeiaGhost):
             return super().__getitem__(item)
         except (IndexError, SearchError):
             if not self._Ghost__all_loaded:
+                self.__triggered_load = True
                 self.__load__()
             return super().__getitem__(item)
