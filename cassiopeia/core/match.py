@@ -868,7 +868,7 @@ class MatchHistory(CassiopeiaGhostList):
         if not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region}
-        if account_id is not None and summoner is not None:
+        if account_id is not None and summoner is None:
             summoner = Summoner(account=account_id, region=region)
         elif isinstance(summoner, int):
             summoner = Summoner(id=summoner, region=region)

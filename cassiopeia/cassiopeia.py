@@ -1,22 +1,13 @@
 from typing import List, Union
 import datetime
 
-from .configuration import settings
 from .data import PATCHES, Region
 from .patches import Patch
 from .core import Champion, Summoner, Account, ChampionMastery, Rune, Mastery, Item, RunePage, MasteryPage, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Masteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Languages, ProfileIcons, MasteryPages, RunePages
 
 
 def get_matches(summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
-    if region is None:
-        region = settings.default_region
-    elif not isinstance(region, Region):
-        region = Region(region)
-    if isinstance(summoner, int):
-        summoner = Summoner(id=summoner)
-    elif isinstance(summoner, str):
-        summoner = Summoner(name=summoner)
-    return settings.pipeline.get(MatchHistory, query={"accountId": summoner.account.id, "region": region, "platform": region.platform.value})
+    return MatchHistory(summoner=summoner, region=region)
 
 
 def get_match(id, region: Union[Region, str] = None) -> Match:

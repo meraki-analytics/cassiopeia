@@ -52,7 +52,7 @@ def create_default_pipeline(api_key, verbose=False):
         for service in services:
             for p in service.provides:
                 print("Provides:", p)
-        for transformer in riotapi_transformers:
+        for transformer in riotapi_transformer:
             for t in transformer.transforms.items():
                 print("Transformer:", t)
         print()
