@@ -75,7 +75,7 @@ class LevelTipData(DataObject):
 
 class SummonerSpellData(DataObject):
     _dto_type = dto.SummonerSpellDto
-    _renamed = {"level_up_tips": "leveltip", "variables": "vars", "sanitized_description": "sanitizedDescription", "sanitized_tooltip": "sanitizedTooltip", "max_rank": "maxrank", "cooldowns": "cooldown", "costs": "cost", "alternative_images": "altimages", "effects": "effect", "resource": "costType", "included_data": "includedData"}
+    _renamed = {"variables": "vars", "sanitized_description": "sanitizedDescription", "sanitized_tooltip": "sanitizedTooltip", "max_rank": "maxrank", "cooldowns": "cooldown", "costs": "cost", "alternative_images": "altimages", "effects": "effect", "resource": "costType", "included_data": "includedData"}
 
     @property
     def region(self) -> str:
@@ -98,12 +98,8 @@ class SummonerSpellData(DataObject):
         return self._dto["modes"]
 
     @property
-    def level_up_tips(self) -> LevelTipData:
-        return LevelTipData.from_dto(self._dto["leveltip"])
-
-    @property
     def variables(self) -> List[SpellVarsData]:
-        return [SpellVarsData(v) for v in self._dto["vars"]]
+        return [SpellVarsData.from_dto(v) for v in self._dto["vars"]]
 
     @property
     def resource(self) -> str:
@@ -270,11 +266,11 @@ class SummonerSpell(CassiopeiaGhost):
         if locale is None:
             locale = region.default_locale
         kwargs = {"region": region, "included_data": included_data, "locale": locale}
-        if id:
+        if id is not None:
             kwargs["id"] = id
-        if name:
+        if name is not None:
             kwargs["name"] = name
-        if version:
+        if version is not None:
             kwargs["version"] = version
         super().__init__(**kwargs)
 
@@ -333,22 +329,8 @@ class SummonerSpell(CassiopeiaGhost):
     @CassiopeiaGhost.property(SummonerSpellData)
     @ghost_load_on(KeyError)
     @lazy
-    def modes(self) -> List[str]:
+    def modes(self) -> List[GameMode]:
         return SearchableList([GameMode(mode) for mode in self._data[SummonerSpellData].modes])
-
-    @CassiopeiaGhost.property(SummonerSpellData)
-    @ghost_load_on(KeyError)
-    @lazy
-    def keywords(self) -> List[str]:
-        """The keywords for this spell."""
-        return SearchableList(self._data[SummonerSpellData].level_up_tips.keywords)
-
-    @CassiopeiaGhost.property(SummonerSpellData)
-    @ghost_load_on(KeyError)
-    @lazy
-    def effects_by_level(self) -> List[str]:
-        """The level-up changes, level-by-level."""
-        return SearchableList(self._data[SummonerSpellData].level_up_tips.effects)
 
     @CassiopeiaGhost.property(SummonerSpellData)
     @ghost_load_on(KeyError)

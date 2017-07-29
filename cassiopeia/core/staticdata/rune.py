@@ -710,11 +710,11 @@ class Rune(CassiopeiaGhost):
         if locale is None:
             locale = region.default_locale
         kwargs = {"region": region, "included_data": included_data, "locale": locale}
-        if id:
+        if id is not None:
             kwargs["id"] = id
-        if name:
+        if name is not None:
             kwargs["name"] = name
-        if version:
+        if version is not None:
             kwargs["version"] = version
         super().__init__(**kwargs)
 

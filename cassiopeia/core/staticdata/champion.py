@@ -642,7 +642,7 @@ class ItemSet(CassiopeiaObject):
     @property
     def items(self) -> Dict[Item, int]:
         """A dictionary of items mapped to how many of them are recommended."""
-        return SearchableDictionary({Item(item.id): item.count for item in self._data[BlockData].items})
+        return SearchableDictionary({Item(id=item.id): item.count for item in self._data[BlockData].items})
 
     @property
     def rec_math(self) -> bool:
@@ -892,13 +892,13 @@ class Champion(CassiopeiaGhost):
         if locale is None:
             locale = region.default_locale
         kwargs = {"region": region, "included_data": included_data, "locale": locale}
-        if id:
+        if id is not None:
             kwargs["id"] = id
-        if key:
+        if key is not None:
             kwargs["key"] = key
-        if name:
+        if name is not None:
             kwargs["name"] = name
-        if version:
+        if version is not None:
             kwargs["version"] = version
         super().__init__(**kwargs)
 
