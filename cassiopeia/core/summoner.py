@@ -178,32 +178,32 @@ class Summoner(CassiopeiaGhost):
 
     # Special core methods
 
-    @property
+    @lazy_property
     def champion_masteries(self):
         from .championmastery import ChampionMasteries
         return ChampionMasteries(summoner=self, region=self.region)
 
-    @property
+    @lazy_property
     def mastery_pages(self):
         from .masterypage import MasteryPages
         return MasteryPages(summoner=self, region=self.region)
 
-    @property
+    @lazy_property
     def rune_pages(self):
         from .runepage import RunePages
         return RunePages(summoner=self, region=self.region)
 
-    @property
+    @lazy_property
     def match_history(self):
         from .match import MatchHistory
         return MatchHistory(summoner=self, region=self.region)
 
-    @property
+    @lazy_property
     def current_match(self):
         from .spectator import CurrentMatch
         return CurrentMatch(summoner=self, region=self.region)
 
-    #def league(self):
-    #    raise NotImplemented
-    #def league_entry(self):
-    #    raise NotImplemented
+    @lazy_property
+    def leagues(self):
+        from .league import Leagues
+        return Leagues(summoner=self, region=self.region)

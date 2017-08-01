@@ -40,7 +40,7 @@ class MasteriesTransformer(DataTransformer):
 
     @transform.register(MasteryPagesData, MasteryPages)
     def mastery_pages_data_to_core(self, value: MasteryPagesData, context: PipelineContext = None) -> MasteryPages:
-        return MasteryPages([self.mastery_page_data_to_core(page) for page in value], summoner_id=value.summoner.id)
+        return MasteryPages([self.mastery_page_data_to_core(page) for page in value], summoner=value.summoner_id)
 
     # Core to Dto
 
@@ -50,4 +50,4 @@ class MasteriesTransformer(DataTransformer):
 
     @transform.register(MasteryPages, MasteryPagesDto)
     def mastery_pages_core_to_dto(self, value: MasteryPages, context: PipelineContext = None) -> MasteryPagesDto:
-        return MasteryPagesDto([self.mastery_page_core_to_dto(page) for page in value], summonerId=value.summoner.id)
+        return MasteryPagesDto({"pages": set([self.mastery_page_core_to_dto(page) for page in value]), "summonerId": value._MasteryPages__summoner.id})

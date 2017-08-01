@@ -34,6 +34,10 @@ class FeaturedGamesData(DataObjectList):
     def client_refresh_interval(self) -> str:
         return self._dto["clientRefreshInterval"]
 
+    @property
+    def summoner_id(self) -> str:
+        return self._dto["summonerId"]
+
 
 class RuneData(DataObject):
     _renamed = {"id": "runeId"}

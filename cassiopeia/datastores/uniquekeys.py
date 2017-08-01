@@ -17,7 +17,7 @@ from ..dto.summoner import SummonerDto
 
 from ..core.common import provide_default_region
 from ..core.championmastery import ChampionMastery
-from ..core.league import LeagueSummoner
+from ..core.league import Leagues
 from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Languages, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions, Items, Champions, Maps, SummonerSpells, Masteries, Runes
 from ..core.status import ShardStatus
 from ..core.masterypage import MasteryPage
@@ -88,6 +88,8 @@ def construct_query(cls, **kwargs) -> dict:
         return construct_summoner_query(**kwargs)
     if cls is CurrentMatch:
         return construct_current_match_query(**kwargs)
+    if cls is Leagues:
+        return construct_leagues_query(**kwargs)
     else:
         return kwargs
 
@@ -138,6 +140,19 @@ def construct_champion_mastery_query(*, summoner: Union[Summoner, int, str], cha
 
 @provide_default_region
 def construct_current_match_query(*, summoner: Union[Summoner, int, str], region: Union[Region, str]) -> dict:
+    query = {"region": region}
+    if isinstance(summoner, Summoner):
+        query["summoner.id"] = summoner.id
+    elif isinstance(summoner, int):  # int
+        query["summoner.id"] = summoner
+    elif isinstance(summoner, str):
+        query["summoner.id"] = Summoner(name=summoner).id
+    assert "summoner.id" in query
+    return query
+
+
+@provide_default_region
+def construct_leagues_query(*, summoner: Union[Summoner, int, str], region: Union[Region, str]) -> dict:
     query = {"region": region}
     if isinstance(summoner, Summoner):
         query["summoner.id"] = summoner.id
@@ -1368,46 +1383,28 @@ def for_many_champion_mastery_query(query: Query) -> Generator[Tuple[str, Union[
 ##############
 
 
-validate_league_summoner_query = Query. \
+validate_leagues_query = Query. \
     has("platform").as_(Platform).also. \
-    has("queue").as_(Queue).also. \
-    has("playerOrTeamId").as_(int).or_("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str)
+    has("summoner.id").as_(int)
 
 
-validate_many_league_summoner_query = Query. \
+validate_many_leagues_query = Query. \
     has("platform").as_(Platform).also. \
-    has("queue").as_(Queue).also. \
-    has("summoners.id").as_(Iterable).or_("summoners.account.id").as_(Iterable).or_("summoners.name").as_(Iterable)
+    has("summoners.id").as_(Iterable)
 
 
-def for_league_summoner(league_summoner: LeagueSummoner, summoner_identifier: str = "id") -> Tuple[str, str, Union[int, str]]:
-    return league_summoner.platform.value, league_summoner.queue.value, _rgetattr(league_summoner.summoner, summoner_identifier)
+def for_leagues(leagues: Leagues, summoner_identifier: str = "summoner.id") -> Tuple[str, int]:
+    return leagues.platform.value, leagues._Leagues__summoner.id
 
 
-def for_league_summoner_query(query: Query) -> Tuple[str, str, Union[int, str]]:
-    if "playerOrTeamId" in query:
-        summoner_identifier = "playerOrTeamId"
-    elif "summoner.id" in query:
-        summoner_identifier = "summoner.id"
-    elif "summoner.account.id" in query:
-        summoner_identifier = "summoner.account.id"
-    else:
-        summoner_identifier = "summoner.name"
-    return query["platform"].value, query["queue"].value, query[summoner_identifier]
+def for_leagues_query(query: Query) -> Tuple[str, int]:
+    return query["platform"].value, query["summoner.id"]
 
 
-def for_many_league_summoner_query(query: Query) -> Generator[Tuple[str, str, Union[int, str]], None, None]:
-    if "summoners.id" in query:
-        summoner_identifiers, summoner_identifier_type = query["summoners.id"], int
-    elif "summoners.account.id" in query:
-        summoner_identifiers, summoner_identifier_type = query["summoners.account.id"], int
-    else:
-        summoner_identifiers, summoner_identifier_type = query["summoners.name"], str
-
-    for summoner_identifier in summoner_identifiers:
+def for_many_leagues_query(query: Query) -> Generator[Tuple[str, int], None, None]:
+    for id in query["summoners.id"]:
         try:
-            summoner_identifier = summoner_identifier_type(summoner_identifier)
-            yield query["platform"].value, query["queue"].value, summoner_identifier
+            yield query["platform"].value, id
         except ValueError as e:
             raise QueryValidationError from e
 
