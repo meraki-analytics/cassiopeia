@@ -16,6 +16,7 @@ def _default_services(api_key: str) -> Set[RiotAPIService]:
     from .match import MatchAPI
     from .spectator import SpectatorAPI
     from .status import StatusAPI
+    from .leagues import LeaguesAPI
 
     application_rate_limiters = {}
 
@@ -30,7 +31,8 @@ def _default_services(api_key: str) -> Set[RiotAPIService]:
         MasteryPageAPI(api_key, client, application_rate_limiters),
         MatchAPI(api_key, client, application_rate_limiters),
         SpectatorAPI(api_key, client, application_rate_limiters),
-        StatusAPI(api_key, client, application_rate_limiters)
+        StatusAPI(api_key, client, application_rate_limiters),
+        LeaguesAPI(api_key, client, application_rate_limiters)
     }
 
     return services

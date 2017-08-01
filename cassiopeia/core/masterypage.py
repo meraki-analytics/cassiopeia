@@ -24,6 +24,10 @@ class MasteryPagesData(DataObjectList):
     def region(self) -> str:
         return self._dto["region"]
 
+    @property
+    def summoner_id(self) -> str:
+        return self._dto["summonerId"]
+
 
 class MasteryData(DataObject):
     """This object contains mastery information."""

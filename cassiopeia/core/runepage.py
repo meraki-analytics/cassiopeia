@@ -25,6 +25,10 @@ class RunePagesData(DataObjectList):
     def region(self) -> str:
         return self._dto["region"]
 
+    @property
+    def summoner_id(self) -> str:
+        return self._dto["summonerId"]
+
 
 class RuneSlotData(DataObject):
     """This object contains rune slot information."""

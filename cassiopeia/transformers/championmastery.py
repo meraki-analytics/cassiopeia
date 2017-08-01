@@ -49,4 +49,4 @@ class ChampionMasteryTransformer(DataTransformer):
 
     @transform.register(ChampionMasteries, ChampionMasteryListDto)
     def champion_mastery_list_core_to_dto(self, value: ChampionMasteries, context: PipelineContext = None) -> ChampionMasteryListDto:
-        return ChampionMasteryListDto({"masteries": [self.champion_mastery_core_to_dto(cm) for cm in value], "summonerId": self.summoner.id, "region": self.region})
+        return ChampionMasteryListDto({"masteries": [self.champion_mastery_core_to_dto(cm) for cm in value], "summonerId": value._ChampionMasteries__summoner.id, "region": value.region})

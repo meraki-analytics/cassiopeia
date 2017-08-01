@@ -21,11 +21,15 @@ from ..dto import championmastery as dto
 
 class ChampionMasteryListData(DataObjectList):
     _dto_type = dto.ChampionMasteryListDto
-    _renamed = {}
+    _renamed = {"summoner_id": "summonerId"}
 
     @property
     def region(self) -> str:
         return self._dto["region"]
+
+    @property
+    def summoner_id(self) -> str:
+        return self._dto["summonerId"]
 
 
 class ChampionMasteryData(DataObject):

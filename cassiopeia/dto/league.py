@@ -1,6 +1,10 @@
 from .common import DtoObject
 
 
+class LeaguesListDto(DtoObject):
+    pass
+
+
 class LeagueListDto(DtoObject):
     pass
 

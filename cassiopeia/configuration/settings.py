@@ -21,6 +21,7 @@ def create_default_pipeline(api_key, verbose=False):
     from ..transformers.runes import RunesTransformer
     from ..transformers.spectator import SpectatorTransformer
     from ..transformers.status import StatusTransformer
+    from ..transformers.leagues import LeagueTransformer
 
     services = [
         Cache(),  # TODO Add expirations from file
@@ -35,7 +36,8 @@ def create_default_pipeline(api_key, verbose=False):
         MasteriesTransformer(),
         RunesTransformer(),
         SpectatorTransformer(),
-        StatusTransformer()
+        StatusTransformer(),
+        LeagueTransformer()
     ])
     pipeline = DataPipeline(services, [riotapi_transformer])
     pipeline._transformer = riotapi_transformer
