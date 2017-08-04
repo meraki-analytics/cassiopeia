@@ -161,7 +161,7 @@ class ChampionMastery(CassiopeiaGhost):
                 "championPointsSinceLastLevel": 0,
                 "lastPlayTime": None
             }
-            data = ChampionMasteryTransformer.champion_mastery_dto_to_data(dto)
+            data = ChampionMasteryTransformer.champion_mastery_dto_to_data(None, dto)
             self.__load_hook__(load_group, data)
 
     @property
