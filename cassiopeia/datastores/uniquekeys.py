@@ -17,7 +17,7 @@ from ..dto.summoner import SummonerDto
 
 from ..core.common import provide_default_region
 from ..core.championmastery import ChampionMastery
-from ..core.league import Leagues
+from ..core.league import Leagues, ChallengerLeague, MasterLeague
 from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Languages, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions, Items, Champions, Maps, SummonerSpells, Masteries, Runes
 from ..core.status import ShardStatus
 from ..core.masterypage import MasteryPage
@@ -1405,6 +1405,60 @@ def for_many_leagues_query(query: Query) -> Generator[Tuple[str, int], None, Non
     for id in query["summoners.id"]:
         try:
             yield query["platform"].value, id
+        except ValueError as e:
+            raise QueryValidationError from e
+
+# Challenger
+
+validate_challenger_league_query = Query. \
+    has("platform").as_(Platform).also. \
+    has("queue").as_(Queue)
+
+
+validate_many_challenger_league_query = Query. \
+    has("platform").as_(Platform).also. \
+    has("queues").as_(Iterable)
+
+
+def for_challenger_league(league: ChallengerLeague, queue_identifier: str = "value") -> Tuple[str, str]:
+    return league.platform.value, league.queue.value
+
+
+def for_challenger_league_query(query: Query) -> Tuple[str, str]:
+    return query["platform"].value, query["queue"].value
+
+
+def for_many_challenger_league_query(query: Query) -> Generator[Tuple[str, str], None, None]:
+    for queue in query["queues"]:
+        try:
+            yield query["platform"].value, queue.value
+        except ValueError as e:
+            raise QueryValidationError from e
+
+# Master
+
+validate_master_league_query = Query. \
+    has("platform").as_(Platform).also. \
+    has("queue").as_(Queue)
+
+
+validate_many_master_league_query = Query. \
+    has("platform").as_(Platform).also. \
+    has("queues").as_(Iterable)
+
+
+def for_master_league(league: MasterLeague, queue_identifier: str = "value") -> Tuple[str, str]:
+    return league.platform.value, league.queue.value
+
+
+def for_master_league_query(query: Query) -> Tuple[str, str]:
+    return query["platform"].value, query["queue"].value
+
+
+def for_many_master_league_query(query: Query) -> Generator[Tuple[str, str], None, None]:
+    for queue in query["queues"]:
+        try:
+            yield query["platform"].value, queue.value
         except ValueError as e:
             raise QueryValidationError from e
 

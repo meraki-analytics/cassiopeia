@@ -5,7 +5,7 @@ from merakicommons.cache import Cache as CommonsCache
 
 from . import uniquekeys
 from ..core.championmastery import ChampionMastery
-from ..core.league import Leagues
+from ..core.league import Leagues, ChallengerLeague, MasterLeague
 from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Realms, ProfileIcon, Languages, LanguageStrings, Versions, SummonerSpells, Items, Champions, Masteries, Runes, Maps, ProfileIcons
 from ..core.masterypage import MasteryPage
 from ..core.match import Match
@@ -141,6 +141,47 @@ class Cache(DataSource, DataSink):
     @put_many.register(Leagues)
     def put_many_league_summoner(self, items: Iterable[Leagues], context: PipelineContext = None) -> None:
         self._put_many(Leagues, items, uniquekeys.for_leagues, context=context)
+
+    # Challenger
+
+    @get.register(ChallengerLeague)
+    @validate_query(uniquekeys.validate_challenger_league_query, uniquekeys.convert_region_to_platform)
+    def get_league_summoner(self, query: Mapping[str, Any], context: PipelineContext = None) -> ChallengerLeague:
+        return self._get(ChallengerLeague, query, uniquekeys.for_challenger_league_query, context)
+
+    @get_many.register(ChallengerLeague)
+    @validate_query(uniquekeys.validate_many_challenger_league_query, uniquekeys.convert_region_to_platform)
+    def get_many_league_summoner(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[ChallengerLeague, None, None]:
+        return self._get_many(ChallengerLeague, query, uniquekeys.for_many_challenger_league_query, context)
+
+    @put.register(ChallengerLeague)
+    def put_league_summoner(self, item: ChallengerLeague, context: PipelineContext = None) -> None:
+        self._put(ChallengerLeague, item, uniquekeys.for_challenger_league, context=context)
+
+    @put_many.register(ChallengerLeague)
+    def put_many_league_summoner(self, items: Iterable[ChallengerLeague], context: PipelineContext = None) -> None:
+        self._put_many(ChallengerLeague, items, uniquekeys.for_challenger_league, context=context)
+
+    # Master
+
+    @get.register(MasterLeague)
+    @validate_query(uniquekeys.validate_master_league_query, uniquekeys.convert_region_to_platform)
+    def get_league_summoner(self, query: Mapping[str, Any], context: PipelineContext = None) -> MasterLeague:
+        return self._get(MasterLeague, query, uniquekeys.for_master_league_query, context)
+
+    @get_many.register(MasterLeague)
+    @validate_query(uniquekeys.validate_many_master_league_query, uniquekeys.convert_region_to_platform)
+    def get_many_league_summoner(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[MasterLeague, None, None]:
+        return self._get_many(MasterLeague, query, uniquekeys.for_many_master_league_query, context)
+
+    @put.register(MasterLeague)
+    def put_league_summoner(self, item: MasterLeague, context: PipelineContext = None) -> None:
+        self._put(MasterLeague, item, uniquekeys.for_master_league, context=context)
+
+    @put_many.register(MasterLeague)
+    def put_many_league_summoner(self, items: Iterable[MasterLeague], context: PipelineContext = None) -> None:
+        self._put_many(MasterLeague, items, uniquekeys.for_master_league, context=context)
+
 
     ###################
     # Static Data API #

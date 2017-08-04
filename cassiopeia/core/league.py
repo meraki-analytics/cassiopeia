@@ -140,6 +140,14 @@ class LeaguesListData(DataObjectList):
         return self._dto["region"]
 
 
+class ChallengerLeagueListData(LeagueListData):
+    pass
+
+
+class MasterLeagueListData(LeagueListData):
+    pass
+
+
 ##############
 # Core Types #
 ##############
@@ -319,16 +327,24 @@ class Leagues(CassiopeiaGhostList):
 
 
 class ChallengerLeague(League, CassiopeiaGhost):
-    def __init__(self, *, queue: Union[Queue, str, int]):
+    _data_types = {ChallengerLeagueListData}
+
+    def __init__(self, *, queue: Union[Queue, str, int] = None, region: Union[Region, str] = None):
+        kwargs = {"region": region}
         if isinstance(queue, int):
-            queue = Queue.from_id(queue)
+            kwargs["queue"] = Queue.from_id(queue)
         elif isinstance(queue, str):
-            queue = Queue(queue)
-        assert isinstance(queue, Queue)
-        super().__init__(queue=queue)
+            kwargs["queue"] = Queue(queue)
+        elif isinstance(queue, Queue):
+            kwargs["queue"] = queue
+        super().__init__(**kwargs)
 
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform, "queue": self.queue}
+
+    @lazy_property
+    def region(self) -> Region:
+        return Region(self._data[ChallengerLeagueListData].region)
 
     @lazy_property
     def tier(self) -> Tier:
@@ -336,31 +352,39 @@ class ChallengerLeague(League, CassiopeiaGhost):
 
     @lazy_property
     def queue(self) -> Queue:
-        return Queue(self._data[LeagueListData].queue)
+        return Queue(self._data[ChallengerLeagueListData].queue)
 
-    @CassiopeiaGhost.property(LeagueListData)
+    @CassiopeiaGhost.property(ChallengerLeagueListData)
     @ghost_load_on(KeyError)
     def name(self) -> str:
-        return self._data[LeagueListData].name
+        return self._data[ChallengerLeagueListData].name
 
-    @CassiopeiaGhost.property(LeagueListData)
+    @CassiopeiaGhost.property(ChallengerLeagueListData)
     @ghost_load_on(KeyError)
     @lazy
     def entries(self) -> List[LeagueEntry]:
-        return SearchableList([LeagueEntry.from_data(entry) for entry in self._data[LeagueListData].entries])
+        return SearchableList([LeagueEntry.from_data(entry) for entry in self._data[ChallengerLeagueListData].entries])
 
 
 class MasterLeague(League, CassiopeiaGhost):
-    def __init__(self, *, queue: Union[Queue, str, int]):
+    _data_types = {MasterLeagueListData}
+
+    def __init__(self, *, queue: Union[Queue, str, int] = None, region: Union[Region, str] = None):
+        kwargs = {"region": region}
         if isinstance(queue, int):
-            queue = Queue.from_id(queue)
+            kwargs["queue"] = Queue.from_id(queue)
         elif isinstance(queue, str):
-            queue = Queue(queue)
-        assert isinstance(queue, Queue)
-        super().__init__(queue=queue)
+            kwargs["queue"] = Queue(queue)
+        elif isinstance(queue, Queue):
+            kwargs["queue"] = queue
+        super().__init__(**kwargs)
 
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform, "queue": self.queue}
+
+    @lazy_property
+    def region(self) -> Region:
+        return Region(self._data[MasterLeagueListData].region)
 
     @lazy_property
     def tier(self) -> Tier:
@@ -368,15 +392,15 @@ class MasterLeague(League, CassiopeiaGhost):
 
     @lazy_property
     def queue(self) -> Queue:
-        return Queue(self._data[LeagueListData].queue)
+        return Queue(self._data[MasterLeagueListData].queue)
 
-    @CassiopeiaGhost.property(LeagueListData)
+    @CassiopeiaGhost.property(MasterLeagueListData)
     @ghost_load_on(KeyError)
     def name(self) -> str:
-        return self._data[LeagueListData].name
+        return self._data[MasterLeagueListData].name
 
-    @CassiopeiaGhost.property(LeagueListData)
+    @CassiopeiaGhost.property(MasterLeagueListData)
     @ghost_load_on(KeyError)
     @lazy
     def entries(self) -> List[LeagueEntry]:
-        return SearchableList([LeagueEntry.from_data(entry) for entry in self._data[LeagueListData].entries])
+        return SearchableList([LeagueEntry.from_data(entry) for entry in self._data[MasterLeagueListData].entries])

@@ -19,3 +19,11 @@ class MiniSeriesDto(DtoObject):
 
 class LeaguePositionsDto(DtoObject):
     pass
+
+
+class ChallengerLeagueListDto(DtoObject):
+    pass
+
+
+class MasterLeagueListDto(DtoObject):
+    pass
