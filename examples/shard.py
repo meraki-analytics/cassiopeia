@@ -1,5 +1,5 @@
 import cassiopeia as cass
-from cassiopeia.core import ShardStatus
+from cassiopeia import ShardStatus
 
 
 def get_shard():

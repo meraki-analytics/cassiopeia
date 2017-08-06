@@ -6,19 +6,19 @@ from .patches import Patch
 from .core import Champion, Summoner, Account, ChampionMastery, Rune, Mastery, Item, RunePage, MasteryPage, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Masteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Locales, ProfileIcons, MasteryPages, RunePages, ChallengerLeague, MasterLeague, Leagues
 
 
-def get_leagues(summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
+def get_leagues(summoner: Union[Summoner, int, str], region: Union[Region, str] = None) -> Leagues:
     return Leagues(summoner=summoner, region=region)
 
 
-def get_master_league(queue: Union[Queue, int, str], region: Union[Region, str] = None):
+def get_master_league(queue: Union[Queue, int, str], region: Union[Region, str] = None) -> MasterLeague:
     return MasterLeague(queue=queue, region=region)
 
 
-def get_challenger_league(queue: Union[Queue, int, str], region: Union[Region, str] = None):
+def get_challenger_league(queue: Union[Queue, int, str], region: Union[Region, str] = None) -> ChallengerLeague:
     return ChallengerLeague(queue=queue, region=region)
 
 
-def get_matches(summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
+def get_match_history(summoner: Union[Summoner, int, str], region: Union[Region, str] = None) -> MatchHistory:
     return MatchHistory(summoner=summoner, region=region)
 
 
@@ -26,19 +26,19 @@ def get_match(id, region: Union[Region, str] = None) -> Match:
     return Match(id=id, region=region)
 
 
-def get_featured_matches(region: Union[Region, str] = None):
+def get_featured_matches(region: Union[Region, str] = None) -> FeaturedMatches:
     return FeaturedMatches(region=region)
 
 
-def get_current_match(summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
+def get_current_match(summoner: Union[Summoner, int, str], region: Union[Region, str] = None) ->  CurrentMatch:
     return CurrentMatch(summoner=summoner, region=region)
 
 
-def get_champion_masteries(summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
+def get_champion_masteries(summoner: Union[Summoner, int, str], region: Union[Region, str] = None) -> ChampionMasteries:
     return ChampionMasteries(summoner=summoner, region=region)
 
 
-def get_champion_mastery(summoner: Union[Summoner, int, str], champion: Union[Champion, int, str], region: Union[Region, str] = None):
+def get_champion_mastery(summoner: Union[Summoner, int, str], champion: Union[Champion, int, str], region: Union[Region, str] = None) -> ChampionMastery:
     return ChampionMastery(champion=champion, summoner=summoner, region=region)
 
 
@@ -98,7 +98,7 @@ def get_language_strings(region: Union[Region, str] = None) -> LanguageStrings:
     return LanguageStrings(region=region)
 
 
-def get_languages(region: Union[Region, str] = None) -> List[str]:
+def get_locales(region: Union[Region, str] = None) -> List[str]:
     return Locales(region=region)
 
 

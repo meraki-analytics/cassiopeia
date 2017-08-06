@@ -1,4 +1,5 @@
 import cassiopeia as cass
+from cassiopeia import Masteries, Mastery
 
 
 def print_masteries():

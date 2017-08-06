@@ -1,5 +1,5 @@
 import cassiopeia as cass
-from cassiopeia.core import Summoner
+from cassiopeia import Summoner
 
 
 def print_summoner(name: str, region: str):

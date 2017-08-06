@@ -1,5 +1,5 @@
 import cassiopeia as cass
-from cassiopeia.core import Summoner
+from cassiopeia import Summoner
 
 
 def print_newest_match(name: str, account: int, id: int, region: str):

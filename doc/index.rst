@@ -81,11 +81,7 @@ Together these three lines illustrate the concise user interface that Cass provi
 Contributing
 ============
 
-Contributions are welcome! If you have idea or opinions on how things can be improved, don't hesitate to let us know by posting an issue on GitHub or @ing us on the Meraki or Riot API Discord channel. And we always want to hear from our users, even (especially) if it's just letting us know how you are using Cass.
-
-As a user you get to ignore the details and just use the features of Cass. But as a developer you get to dive into the nitty-gritty and pick apart the implementation that makes everything work. If you don't want to dive too deep, you can likely contribute even without knowing all the details. You can read more about how Cass works :ref:`here <inner-workings>`.
-
-If you have an idea but aren't sure about it, feel free to @ us on Discord and we can chat.
+Contributions are welcome and we have an entire :ref:`page <contributions>` devoted to ways in which you can help us with Cass.
 
 
 Overview
@@ -94,8 +90,10 @@ Overview
 .. toctree::
     :maxdepth: 1
 
+    cassiopeia/index.rst
     setup
     inner_workings
+    contributing
 
 
 Top Level APIs
@@ -103,29 +101,8 @@ Top Level APIs
 
 .. currentmodule:: cassiopeia
 
-.. autosummary::
-   :toctree: generated/
-
-   Summoner
-
 .. toctree::
     :maxdepth: 1
-
-    cassiopeia/cassiopeia
-
-
-Submodules used by APIs
-=======================
-
-Type System
-^^^^^^^^^^^
-
-.. toctree::
-    :maxdepth: 1
-
-    cassiopeia/core/index
-    cassiopeia/dto/index
-
 
 Index and Search
 ################

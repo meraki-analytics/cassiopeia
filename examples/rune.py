@@ -1,4 +1,5 @@
 import cassiopeia as cass
+from cassiopeia import Runes, Rune
 
 
 def print_t3_runes():

@@ -1,5 +1,5 @@
 import cassiopeia as cass
-from cassiopeia import Map
+from cassiopeia import Map, Maps
 
 def get_maps():
     maps = cass.get_maps()

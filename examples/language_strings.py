@@ -1,5 +1,5 @@
 import cassiopeia as cass
-from cassiopeia.core import LanguageStrings
+from cassiopeia import LanguageStrings
 
 
 def get_language_strings():

@@ -1,5 +1,5 @@
 import cassiopeia as cass
-from cassiopeia.core import Champion
+from cassiopeia import Champion
 
 
 def get_champions():

@@ -1,5 +1,5 @@
 import cassiopeia as cass
-from cassiopeia import SummonerSpell
+from cassiopeia import SummonerSpell, SummonerSpells
 from cassiopeia.data import GameMode
 
 def get_summoner_spells():

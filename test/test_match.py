@@ -8,21 +8,21 @@ from .constants import SUMMONER_NAME, UNKNOWN_SUMMONER_NAME
 
 
 def test_matches_return_type():
-    matches = cassiopeia.get_matches(SUMMONER_NAME)
+    match_history = cassiopeia.get_match_history(SUMMONER_NAME)
 
-    assert isinstance(matches, SearchableList)
-    assert all(isinstance(m, cassiopeia.Match) for m in matches)
+    assert isinstance(match_history, SearchableList)
+    assert all(isinstance(m, cassiopeia.Match) for m in match_history)
 
 
 def test_matches_raises_with_unknown_summoner():
     with pytest.raises(NotFoundError):
-        matches = cassiopeia.get_matches(UNKNOWN_SUMMONER_NAME)
-        matches[0]
+        match_history = cassiopeia.get_match_history(UNKNOWN_SUMMONER_NAME)
+        match_history[0]
 
 
 def test_match_correct_return():
-    matches = cassiopeia.get_matches(SUMMONER_NAME)
-    first_match = matches[0]
+    match_history = cassiopeia.get_match_history(SUMMONER_NAME)
+    first_match = match_history[0]
     first_match_data = first_match._data[cassiopeia.core.match.MatchData]._dto
 
     match_from_id = cassiopeia.get_match(first_match.id)

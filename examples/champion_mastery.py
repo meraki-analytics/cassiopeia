@@ -1,5 +1,5 @@
 import cassiopeia as cass
-from cassiopeia.core import Summoner, Champion, ChampionMastery
+from cassiopeia import Summoner, Champion, ChampionMastery
 
 def print_champion_mastery():
     # Name: Kalturi
