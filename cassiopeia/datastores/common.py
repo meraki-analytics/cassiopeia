@@ -9,6 +9,11 @@ from pycurl import Curl
 from merakicommons.ratelimits import RateLimiter
 
 try:
+    import certifi
+except ImportError:
+    certifi = None
+
+try:
     import ujson as json
 except ImportError:
     import json
@@ -61,6 +66,8 @@ class HTTPClient(object):
         curl.setopt(curl.WRITEDATA, buffer)
         curl.setopt(curl.HEADERFUNCTION, get_response_headers)
         curl.setopt(curl.HTTPHEADER, request_headers)
+        if certifi:
+            curl.setopt(curl.CAINFO, certifi.where())
 
         if _print_calls:  # TODO
             print("Making call: {}".format(url))
