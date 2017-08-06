@@ -1,0 +1,2 @@
+class DtoObject(dict):
+    pass

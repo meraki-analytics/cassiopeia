@@ -1,4 +1,0 @@
-pytest==2.8.4
-pytest-xdist==1.13.1
-flake8
-sqlalchemy

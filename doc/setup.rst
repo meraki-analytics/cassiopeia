@@ -24,7 +24,7 @@ For more information, consult Google.
 Dependencies
 ^^^^^^^^^^^^
 
-Cassiopeia depends on [SQLAlchemy](http://www.sqlalchemy.org/). It should be automatically installed for you if you install with pip. Otherwise, do `pip install sqlalchemy`.
+Cassiopeia depends on [SQLAlchemy](http://www.sqlalchemy.org/). It should be automatically installed for you if you install with pip. Otherwise, do ``pip install sqlalchemy``.
 
 
 Setting Additional Environment Variables
@@ -36,4 +36,3 @@ To create an environment variable on Windows, follow the directions `here <https
 On Linux or Mac, add ``export DEV_KEY='<DEVKEY>'`` to the end of your shell rc file (this should be ``~/.bashrc`` for most), where ``<DEVKEY>`` is your Riot-issued API key
 
 Restart your terminal.
-
