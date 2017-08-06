@@ -2,7 +2,7 @@ import re
 import zlib
 from contextlib import contextmanager
 from io import BytesIO
-from typing import Mapping, Any, Union
+from typing import Mapping, Any, Union, Dict
 from urllib.parse import urlencode
 
 from pycurl import Curl
@@ -18,9 +18,10 @@ _print_calls = True
 
 
 class HTTPError(RuntimeError):
-    def __init__(self, message, code):
+    def __init__(self, message, code, response_headers: Dict[str, str] = None):
         super().__init__(message)
         self.code = code
+        self.response_headers = response_headers or {}
 
 
 class HTTPClient(object):
@@ -110,7 +111,7 @@ class HTTPClient(object):
             else:
                 message = ""
 
-            raise HTTPError(message, status_code)
+            raise HTTPError(message, status_code, response_headers)
 
         return body, response_headers
 

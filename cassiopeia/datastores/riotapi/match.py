@@ -1,5 +1,5 @@
 from time import time
-from typing import Type, TypeVar, Mapping, Any, Iterable, Generator
+from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError
 from .common import RiotAPIService, APINotFoundError
@@ -9,17 +9,17 @@ from ...dto.match import MatchDto, MatchListDto, TimelineDto
 T = TypeVar("T")
 
 
-def _get_current_time(query: Mapping[str, Any], context: PipelineContext = None) -> int:
+def _get_current_time(query: MutableMapping[str, Any], context: PipelineContext = None) -> int:
     return int(time()) * 1000
 
 
 class MatchAPI(RiotAPIService):
     @DataSource.dispatch
-    def get(self, type: Type[T], query: Mapping[str, Any], context: PipelineContext = None) -> T:
+    def get(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> T:
         pass
 
     @DataSource.dispatch
-    def get_many(self, type: Type[T], query: Mapping[str, Any], context: PipelineContext = None) -> Iterable[T]:
+    def get_many(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> Iterable[T]:
         pass
 
     _validate_get_match_query = Query. \
@@ -27,14 +27,14 @@ class MatchAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get.register(MatchDto)
-    def get_match(self, query: Mapping[str, Any], context: PipelineContext = None) -> MatchDto:
+    def get_match(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MatchDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         MatchAPI._validate_get_match_query(query, context)
 
         url = "https://{platform}.api.riotgames.com/lol/match/v3/matches/{id}".format(platform=query["platform"].value.lower(), id=query["gameId"])
         try:
-            data = self._get(url, {}, self._rate_limiter(query["platform"], "matches/id"))
+            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "matches/id"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -47,7 +47,7 @@ class MatchAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get_many.register(MatchDto)
-    def get_many_match(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[MatchDto, None, None]:
+    def get_many_match(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[MatchDto, None, None]:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         MatchAPI._validate_get_many_match_query(query, context)
@@ -56,7 +56,7 @@ class MatchAPI(RiotAPIService):
             for id in query["ids"]:
                 url = "https://{platform}.api.riotgames.com/lol/match/v3/matches/{id}".format(platform=query["platform"].value.lower(), id=id)
                 try:
-                    data = self._get(url, {}, self._rate_limiter(query["platform"], "matches/id"))
+                    data = self._get(url, {}, self._get_rate_limiter(query["platform"], "matches/id"))
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
@@ -78,7 +78,7 @@ class MatchAPI(RiotAPIService):
         can_have("queues").as_(Iterable)
 
     @get.register(MatchListDto)
-    def get_match_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> MatchListDto:
+    def get_match_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MatchListDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         MatchAPI._validate_get_match_list_query(query, context)
@@ -120,7 +120,7 @@ class MatchAPI(RiotAPIService):
 
             url = "https://{platform}.api.riotgames.com/lol/match/v3/matchlists/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=query["account.id"])
             try:
-                data = self._get(url, params, self._rate_limiter(query["platform"], "matchlists/by-account/accountId"))
+                data = self._get(url, params, self._get_rate_limiter(query["platform"], "matchlists/by-account/accountId"))
             except APINotFoundError as error:
                 raise NotFoundError(str(error)) from error
 
@@ -151,7 +151,7 @@ class MatchAPI(RiotAPIService):
         can_have("queues").as_(Iterable)
 
     @get_many.register(MatchListDto)
-    def get_many_match_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[MatchListDto, None, None]:
+    def get_many_match_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[MatchListDto, None, None]:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         MatchAPI._validate_get_many_match_list_query(query, context)
@@ -161,7 +161,7 @@ class MatchAPI(RiotAPIService):
                 for id in query["account.ids"]:
                     url = "https://{platform}.api.riotgames.com/lol/match/v3/matchlists/by-account/{accountId}/recent".format(platform=query["platform"].value.lower(), accountId=id)
                     try:
-                        data = self._get(url, {}, self._rate_limiter(query["platform"], "matchlists/by-account/accountId/recent"))
+                        data = self._get(url, {}, self._get_rate_limiter(query["platform"], "matchlists/by-account/accountId/recent"))
                     except APINotFoundError as error:
                         raise NotFoundError(str(error)) from error
 
@@ -197,7 +197,7 @@ class MatchAPI(RiotAPIService):
                 for id in query["account.ids"]:
                     url = "https://{platform}.api.riotgames.com/lol/match/v3/matchlists/by-account/{account.id}".format(platform=query["platform"].value.lower(), accountId=id)
                     try:
-                        data = self._get(url, params, self._rate_limiter(query["platform"], "matchlists/by-account/accountId"))
+                        data = self._get(url, params, self._get_rate_limiter(query["platform"], "matchlists/by-account/accountId"))
                     except APINotFoundError as error:
                         raise NotFoundError(str(error)) from error
 
@@ -220,14 +220,14 @@ class MatchAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get.register(TimelineDto)
-    def get_match_timeline(self, query: Mapping[str, Any], context: PipelineContext = None) -> TimelineDto:
+    def get_match_timeline(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> TimelineDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         MatchAPI._validate_get_timeline_query(query, context)
 
         url = "https://{platform}.api.riotgames.com/lol/match/v3/timelines/by-match/{id}".format(platform=query["platform"].value.lower(), id=query["matchId"])
         try:
-            data = self._get(url, {}, self._rate_limiter(query["platform"], "timelines/by-match/id"))
+            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "timelines/by-match/id"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -240,7 +240,7 @@ class MatchAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get_many.register(TimelineDto)
-    def get_many_match_timeline(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[TimelineDto, None, None]:
+    def get_many_match_timeline(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[TimelineDto, None, None]:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         MatchAPI.validate_get_many_timeline_query(query, context)
@@ -249,7 +249,7 @@ class MatchAPI(RiotAPIService):
             for id in query["ids"]:
                 url = "https://{platform}.api.riotgames.com/lol/match/v3/timelines/by-match/{id}".format(platform=query["platform"].value.lower(), id=id)
                 try:
-                    data = self._get(url, {}, self._rate_limiter(query["platform"], "timelines/by-match/id"))
+                    data = self._get(url, {}, self._get_rate_limiter(query["platform"], "timelines/by-match/id"))
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 

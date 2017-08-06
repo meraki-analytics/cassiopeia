@@ -1,4 +1,4 @@
-from typing import Type, TypeVar, Mapping, Any, Iterable, Generator
+from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError
 from .common import RiotAPIService, APINotFoundError
@@ -10,11 +10,11 @@ T = TypeVar("T")
 
 class ChampionAPI(RiotAPIService):
     @DataSource.dispatch
-    def get(self, type: Type[T], query: Mapping[str, Any], context: PipelineContext = None) -> T:
+    def get(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> T:
         pass
 
     @DataSource.dispatch
-    def get_many(self, type: Type[T], query: Mapping[str, Any], context: PipelineContext = None) -> Iterable[T]:
+    def get_many(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> Iterable[T]:
         pass
 
     _validate_get_champion_status_query = Query. \
@@ -22,14 +22,14 @@ class ChampionAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get.register(ChampionDto)
-    def get_champion_status(self, query: Mapping[str, Any], context: PipelineContext = None) -> ChampionDto:
+    def get_champion_status(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         ChampionAPI._validate_get_champion_status_query(query, context)
 
         url = "https://{platform}.api.riotgames.com/lol/platform/v3/champions/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
         try:
-            data = self._get(url, {}, self._rate_limiter(query["platform"], "champions/id"))
+            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "champions/id"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -41,7 +41,7 @@ class ChampionAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get_many.register(ChampionDto)
-    def get_many_champion_status(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[ChampionDto, None, None]:
+    def get_many_champion_status(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionDto, None, None]:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         ChampionAPI._validate_get_many_champion_status_query(query, context)
@@ -52,7 +52,7 @@ class ChampionAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/platform/v3/champions".format(platform=query["platform"].value.lower())
         try:
-            data = self._get(url, params, self._rate_limiter(query["platform"], "champions"))
+            data = self._get(url, params, self._get_rate_limiter(query["platform"], "champions"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -77,7 +77,7 @@ class ChampionAPI(RiotAPIService):
         can_have("freeToPlay").with_default(False)
 
     @get.register(ChampionListDto)
-    def get_champion_status_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> ChampionListDto:
+    def get_champion_status_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionListDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         ChampionAPI._validate_get_champion_status_list_query(query, context)
@@ -88,7 +88,7 @@ class ChampionAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/platform/v3/champions".format(platform=query["platform"].value.lower())
         try:
-            data = self._get(url, params, self._rate_limiter(query["platform"], "champions"))
+            data = self._get(url, params, self._get_rate_limiter(query["platform"], "champions"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -101,7 +101,7 @@ class ChampionAPI(RiotAPIService):
         can_have("freeToPlay").with_default(False)
 
     @get_many.register(ChampionListDto)
-    def get_many_champion_status_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[ChampionListDto, None, None]:
+    def get_many_champion_status_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionListDto, None, None]:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         ChampionAPI._validate_get_many_champion_status_list_query(query, context)
@@ -115,7 +115,7 @@ class ChampionAPI(RiotAPIService):
                 platform = Platform(platform.upper())
                 url = "https://{platform}.api.riotgames.com/lol/platform/v3/champions".format(platform=platform.value.lower())
                 try:
-                    data = self._get(url, params, self._rate_limiter(platform, "champions"))
+                    data = self._get(url, params, self._get_rate_limiter(platform, "champions"))
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 

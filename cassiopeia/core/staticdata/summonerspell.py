@@ -322,7 +322,7 @@ class SummonerSpell(CassiopeiaGhost):
         return self._data[SummonerSpellData].locale
 
     @property
-    def included_data(self) -> str:
+    def included_data(self) -> Set[str]:
         """The data to included in the query for this summoner spell."""
         return self._data[SummonerSpellData].included_data
 

@@ -1,4 +1,4 @@
-from typing import Type, TypeVar, Mapping, Any, Iterable, Generator
+from typing import Type, TypeVar, MutableMapping, Any, Iterable
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError
 from .common import RiotAPIService, APINotFoundError
@@ -10,11 +10,11 @@ T = TypeVar("T")
 
 class SummonerAPI(RiotAPIService):
     @DataSource.dispatch
-    def get(self, type: Type[T], query: Mapping[str, Any], context: PipelineContext = None) -> T:
+    def get(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> T:
         pass
 
     @DataSource.dispatch
-    def get_many(self, type: Type[T], query: Mapping[str, Any], context: PipelineContext = None) -> Iterable[T]:
+    def get_many(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> Iterable[T]:
         pass
 
     _validate_get_summoner_query = Query. \
@@ -24,7 +24,7 @@ class SummonerAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get.register(SummonerDto)
-    def get_summoner(self, query: Mapping[str, Any], context: PipelineContext = None) -> SummonerDto:
+    def get_summoner(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> SummonerDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         SummonerAPI._validate_get_summoner_query(query, context)
@@ -42,7 +42,7 @@ class SummonerAPI(RiotAPIService):
             endpoint = ""
 
         try:
-            data = self._get(url, {}, self._rate_limiter(query["platform"], endpoint))
+            data = self._get(url, {}, self._get_rate_limiter(query["platform"], endpoint))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 

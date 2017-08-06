@@ -66,6 +66,7 @@ class Settings(object):
     def __init__(self, settings):
         self.__key = settings["Riot API"]["key"]
         self.__default_region = Region(settings["Riot API"]["region"].upper())
+        self.__limits = settings["Riot API"]["limits"]
         self.__pipeline = None
         for name in ["default", "core"]:
             logger = logging.getLogger(name)
@@ -95,6 +96,10 @@ class Settings(object):
     @property
     def default_platform(self):
         return Platform[self.__default_region.name]
+
+    @property
+    def rate_limits(self):
+        return self.__limits
 
 
 settings = Settings(config)

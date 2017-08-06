@@ -92,7 +92,7 @@ class ProfileIcons(CassiopeiaGhostList):
     def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
         self.clear()
         from ...transformers.staticdata import StaticDataTransformer
-        SearchableList.__init__(self, [StaticDataTransformer.profile_icons_data_to_core(None, i) for i in data])
+        SearchableList.__init__(self, [StaticDataTransformer.profile_icon_data_to_core(None, i) for i in data])
         super().__load_hook__(load_group, data)
 
     @lazy_property

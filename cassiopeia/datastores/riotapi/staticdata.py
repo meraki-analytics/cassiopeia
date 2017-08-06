@@ -1,4 +1,4 @@
-from typing import Type, TypeVar, Mapping, Any, Iterable, Generator
+from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError
 from .common import RiotAPIService, APINotFoundError
@@ -9,7 +9,7 @@ from ...dto.staticdata.rune import RuneDto, RuneListDto
 from ...dto.staticdata.item import ItemDto, ItemListDto
 from ...dto.staticdata.summonerspell import SummonerSpellDto, SummonerSpellListDto
 from ...dto.staticdata.version import VersionListDto
-from ...dto.staticdata.map import MapDto, MapListDto
+from ...dto.staticdata.map import MapListDto
 from ...dto.staticdata.realm import RealmDto
 from ...dto.staticdata.language import LanguagesDto, LanguageStringsDto
 from ...dto.staticdata.profileicon import ProfileIconDataDto
@@ -17,23 +17,23 @@ from ...dto.staticdata.profileicon import ProfileIconDataDto
 T = TypeVar("T")
 
 
-def _get_default_version(query: Mapping[str, Any], context: PipelineContext) -> str:
+def _get_default_version(query: MutableMapping[str, Any], context: PipelineContext) -> str:
     pipeline = context[PipelineContext.Keys.PIPELINE]
     versions = pipeline.get(VersionListDto, {"platform": query["platform"]})
     return versions["versions"][0]
 
 
-def _get_default_locale(query: Mapping[str, Any], context: PipelineContext) -> str:
+def _get_default_locale(query: MutableMapping[str, Any], context: PipelineContext) -> str:
     return query["platform"].default_locale
 
 
 class StaticDataAPI(RiotAPIService):
     @DataSource.dispatch
-    def get(self, type: Type[T], query: Mapping[str, Any], context: PipelineContext = None) -> T:
+    def get(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> T:
         pass
 
     @DataSource.dispatch
-    def get_many(self, type: Type[T], query: Mapping[str, Any], context: PipelineContext = None) -> Iterable[T]:
+    def get_many(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> Iterable[T]:
         pass
 
     #############
@@ -48,7 +48,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("includedData").with_default({"all"})
 
     @get.register(ChampionDto)
-    def get_champion(self, query: Mapping[str, Any], context: PipelineContext = None) -> ChampionDto:
+    def get_champion(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_champion_query(query, context)
@@ -61,7 +61,7 @@ class StaticDataAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/champions/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
         try:
-            data = self._get(url, params)
+            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/champion"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -79,7 +79,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("includedData").with_default({"all"})
 
     @get_many.register(ChampionDto)
-    def get_many_champion(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[ChampionDto, None, None]:
+    def get_many_champion(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionDto, None, None]:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_champion_query(query, context)
@@ -95,7 +95,7 @@ class StaticDataAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/champions".format(platform=query["platform"].value.lower())
         try:
-            data = self._get(url, params)
+            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/champion"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -122,7 +122,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("dataById").with_default(False)
 
     @get.register(ChampionListDto)
-    def get_champion_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> ChampionListDto:
+    def get_champion_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionListDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_champion_list_query(query, context)
@@ -138,7 +138,7 @@ class StaticDataAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/champions".format(platform=query["platform"].value.lower())
         try:
-            data = self._get(url, params)
+            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/champions"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -155,7 +155,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("dataById").with_default(False)
 
     @get_many.register(ChampionListDto)
-    def get_many_champion_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[ChampionListDto, None, None]:
+    def get_many_champion_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionListDto, None, None]:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_champion_list_query(query, context)
@@ -176,7 +176,7 @@ class StaticDataAPI(RiotAPIService):
                 platform = Platform(platform.upper())
                 url = "https://{platform}.api.riotgames.com/lol/static-data/v3/champions".format(platform=platform.value.lower())
                 try:
-                    data = self._get(url, params)
+                    data = self._get(url, params, self._get_rate_limiter(platform, "staticdata/champions"))
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
@@ -195,14 +195,14 @@ class StaticDataAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get.register(VersionListDto)
-    def get_versions(self, query: Mapping[str, Any], context: PipelineContext = None) -> VersionListDto:
+    def get_versions(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> VersionListDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_versions_query(query, context)
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/versions".format(platform=query["platform"].value.lower())
         try:
-            data = self._get(url, {})
+            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "staticdata/versions"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -210,31 +210,6 @@ class StaticDataAPI(RiotAPIService):
             "region": query["platform"].region.value,
             "versions": data
         })
-
-    _validate_get_many_versions_query = Query. \
-        has("platforms").as_(Iterable)
-
-    @get_many.register(VersionListDto)
-    def get_many_versions(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[VersionListDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
-        StaticDataAPI._validate_get_many_versions_query(query, context)
-
-        def generator():
-            for platform in query["platforms"]:
-                platform = Platform(platform.upper())
-                url = "https://{platform}.api.riotgames.com/lol/static-data/v3/versions".format(platform=platform.value.lower())
-                try:
-                    data = self._get(url, {})
-                except APINotFoundError as error:
-                    raise NotFoundError(str(error)) from error
-
-                yield VersionListDto({
-                    "region": platform.region.value,
-                    "versions": data
-                })
-
-        return generator()
 
     #############
     # Masteries #
@@ -248,7 +223,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("includedData").with_default({"all"})
 
     @get.register(MasteryDto)
-    def get_mastery(self, query: Mapping[str, Any], context: PipelineContext = None) -> MasteryDto:
+    def get_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasteryDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_mastery_query(query, context)
@@ -261,7 +236,7 @@ class StaticDataAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/masteries/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
         try:
-            data = self._get(url, params)
+            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/mastery"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -279,7 +254,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("includedData").with_default({"all"})
 
     @get_many.register(MasteryDto)
-    def get_many_mastery(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[MasteryDto, None, None]:
+    def get_many_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[MasteryDto, None, None]:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_mastery_query(query, context)
@@ -294,7 +269,7 @@ class StaticDataAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/masteries".format(platform=query["platform"].value.lower())
         try:
-            data = self._get(url, params)
+            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/mastery"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -320,7 +295,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("includedData").with_default({"all"})
 
     @get.register(MasteryListDto)
-    def get_mastery_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> MasteryListDto:
+    def get_mastery_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasteryListDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_mastery_list_query(query, context)
@@ -335,7 +310,7 @@ class StaticDataAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/masteries".format(platform=query["platform"].value.lower())
         try:
-            data = self._get(url, params)
+            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/masteries"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -351,7 +326,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("includedData").with_default({"all"})
 
     @get_many.register(MasteryListDto)
-    def get_many_mastery_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[MasteryListDto, None, None]:
+    def get_many_mastery_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[MasteryListDto, None, None]:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_mastery_list_query(query, context)
@@ -371,7 +346,7 @@ class StaticDataAPI(RiotAPIService):
                 platform = Platform(platform.upper())
                 url = "https://{platform}.api.riotgames.com/lol/static-data/v3/masteries".format(platform=platform.value.lower())
                 try:
-                    data = self._get(url, params)
+                    data = self._get(url, params, self._get_rate_limiter(platform, "staticdata/masteries"))
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
@@ -394,7 +369,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("includedData").with_default({"all"})
 
     @get.register(RuneDto)
-    def get_rune(self, query: Mapping[str, Any], context: PipelineContext = None) -> RuneDto:
+    def get_rune(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> RuneDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_rune_query(query, context)
@@ -407,7 +382,7 @@ class StaticDataAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/runes/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
         try:
-            data = self._get(url, params)
+            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/rune"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -425,7 +400,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("includedData").with_default({"all"})
 
     @get_many.register(RuneDto)
-    def get_many_rune(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[RuneDto, None, None]:
+    def get_many_rune(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[RuneDto, None, None]:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_rune_query(query, context)
@@ -440,7 +415,7 @@ class StaticDataAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/runes".format(platform=query["platform"].value.lower())
         try:
-            data = self._get(url, params)
+            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/rune"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -466,7 +441,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("includedData").with_default({"all"})
 
     @get.register(RuneListDto)
-    def get_rune_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> RuneListDto:
+    def get_rune_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> RuneListDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_rune_list_query(query, context)
@@ -481,7 +456,7 @@ class StaticDataAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/runes".format(platform=query["platform"].value.lower())
         try:
-            data = self._get(url, params)
+            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/runes"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -497,7 +472,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("includedData").with_default({"all"})
 
     @get_many.register(RuneListDto)
-    def get_many_rune_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[RuneListDto, None, None]:
+    def get_many_rune_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[RuneListDto, None, None]:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_rune_list_query(query, context)
@@ -517,7 +492,7 @@ class StaticDataAPI(RiotAPIService):
                 platform = Platform(platform.upper())
                 url = "https://{platform}.api.riotgames.com/lol/static-data/v3/runes".format(platform=platform.value.lower())
                 try:
-                    data = self._get(url, params)
+                    data = self._get(url, params, self._get_rate_limiter(platform, "staticdata/runes"))
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
@@ -540,7 +515,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("includedData").with_default({"all"})
 
     @get.register(ItemDto)
-    def get_item(self, query: Mapping[str, Any], context: PipelineContext = None) -> ItemDto:
+    def get_item(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ItemDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_item_query(query, context)
@@ -553,7 +528,7 @@ class StaticDataAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/items/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
         try:
-            data = self._get(url, params)
+            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/item"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -581,7 +556,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("includedData").with_default({"all"})
 
     @get_many.register(ItemDto)
-    def get_many_item(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[ItemDto, None, None]:
+    def get_many_item(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ItemDto, None, None]:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_item_query(query, context)
@@ -596,7 +571,7 @@ class StaticDataAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/items".format(platform=query["platform"].value.lower())
         try:
-            data = self._get(url, params)
+            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/item"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -632,7 +607,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("includedData").with_default({"all"})
 
     @get.register(ItemListDto)
-    def get_item_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> ItemListDto:
+    def get_item_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ItemListDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_item_list_query(query, context)
@@ -647,7 +622,7 @@ class StaticDataAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/items".format(platform=query["platform"].value.lower())
         try:
-            data = self._get(url, params)
+            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/items"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -674,7 +649,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("includedData").with_default({"all"})
 
     @get_many.register(ItemListDto)
-    def get_many_item_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[ItemListDto, None, None]:
+    def get_many_item_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ItemListDto, None, None]:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_item_list_query(query, context)
@@ -694,7 +669,7 @@ class StaticDataAPI(RiotAPIService):
                 platform = Platform(platform.upper())
                 url = "https://{platform}.api.riotgames.com/lol/static-data/v3/items".format(platform=platform.value.lower())
                 try:
-                    data = self._get(url, params)
+                    data = self._get(url, params, self._get_rate_limiter(platform, "staticdata/items"))
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
@@ -727,7 +702,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("includedData").with_default({"all"})
 
     @get.register(MapListDto)
-    def get_map_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> MapListDto:
+    def get_map_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MapListDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_map_list_query(query, context)
@@ -741,7 +716,7 @@ class StaticDataAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/maps".format(platform=query["platform"].value.lower())
         try:
-            data = self._get(url, params)
+            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/maps"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -760,7 +735,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("includedData").with_default({"all"})
 
     @get.register(SummonerSpellListDto)
-    def get_summoner_spell_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> SummonerSpellListDto:
+    def get_summoner_spell_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> SummonerSpellListDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_summoner_spell_list_query(query, context)
@@ -775,7 +750,7 @@ class StaticDataAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/summoner-spells".format(platform=query["platform"].value.lower())
         try:
-            data = self._get(url, params)
+            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/summoner-spells"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -791,7 +766,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("includedData").with_default({"all"})
 
     @get_many.register(SummonerSpellListDto)
-    def get_many_summoner_spell_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[SummonerSpellListDto, None, None]:
+    def get_many_summoner_spell_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[SummonerSpellListDto, None, None]:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_summoner_spell_list_query(query, context)
@@ -811,7 +786,7 @@ class StaticDataAPI(RiotAPIService):
                 platform = Platform(platform.upper())
                 url = "https://{platform}.api.riotgames.com/lol/static-data/v3/summoner-spells".format(platform=platform.value.lower())
                 try:
-                    data = self._get(url, params)
+                    data = self._get(url, params, self._get_rate_limiter(platform, "staticdata/summoner-spells"))
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
@@ -830,14 +805,14 @@ class StaticDataAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get.register(RealmDto)
-    def get_realms(self, query: Mapping[str, Any], context: PipelineContext = None) -> RealmDto:
+    def get_realms(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> RealmDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_realms_query(query, context)
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/realms".format(platform=query["platform"].value.lower())
         try:
-            data = self._get(url, {})
+            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "staticdata/realms"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -848,7 +823,7 @@ class StaticDataAPI(RiotAPIService):
         has("platforms").as_(Iterable)
 
     @get_many.register(RealmDto)
-    def get_many_realms(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[RealmDto, None, None]:
+    def get_many_realms(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[RealmDto, None, None]:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_realms_query(query, context)
@@ -858,7 +833,7 @@ class StaticDataAPI(RiotAPIService):
                 platform = Platform(platform.upper())
                 url = "https://{platform}.api.riotgames.com/lol/static-data/v3/realms".format(platform=platform.value.lower())
                 try:
-                    data = self._get(url, {})
+                    data = self._get(url, {}, self._get_rate_limiter(platform, "staticdata/realms"))
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
@@ -875,14 +850,14 @@ class StaticDataAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get.register(LanguagesDto)
-    def get_language(self, query: Mapping[str, Any], context: PipelineContext = None) -> LanguagesDto:
+    def get_language(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LanguagesDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_language_query(query, context)
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/languages".format(platform=query["platform"].value.lower())
         try:
-            data = self._get(url, {})
+            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "staticdata/language"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -893,7 +868,7 @@ class StaticDataAPI(RiotAPIService):
         has("platforms").as_(Iterable)
 
     @get_many.register(LanguagesDto)
-    def get_many_language(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[LanguagesDto, None, None]:
+    def get_many_language(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[LanguagesDto, None, None]:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_language_query(query, context)
@@ -903,7 +878,7 @@ class StaticDataAPI(RiotAPIService):
                 platform = Platform(platform.upper())
                 url = "https://{platform}.api.riotgames.com/lol/static-data/v3/languages".format(platform=platform.value.lower())
                 try:
-                    data = self._get(url, {})
+                    data = self._get(url, {}, self._get_rate_limiter(platform, "staticdata/language"))
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
@@ -922,7 +897,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("locale").with_default(_get_default_locale, supplies_type=str)
 
     @get.register(LanguageStringsDto)
-    def get_language_strings(self, query: Mapping[str, Any], context: PipelineContext = None) -> LanguageStringsDto:
+    def get_language_strings(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LanguageStringsDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_language_strings_query(query, context)
@@ -936,7 +911,7 @@ class StaticDataAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/language-strings".format(platform=query["platform"].value.lower())
         try:
-            data = self._get(url, params)
+            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/language-strings"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -950,7 +925,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("locale").as_(str)
 
     @get_many.register(LanguageStringsDto)
-    def get_many_language_strings(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[LanguageStringsDto, None, None]:
+    def get_many_language_strings(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[LanguageStringsDto, None, None]:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_language_strings_query(query, context)
@@ -968,7 +943,7 @@ class StaticDataAPI(RiotAPIService):
                 platform = Platform(platform.upper())
                 url = "https://{platform}.api.riotgames.com/lol/static-data/v3/language-strings".format(platform=platform.value.lower())
                 try:
-                    data = self._get(url, params)
+                    data = self._get(url, params, self._get_rate_limiter(platform, "staticdata/language-strings"))
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
@@ -988,7 +963,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("locale").with_default(_get_default_locale, supplies_type=str)
 
     @get.register(ProfileIconDataDto)
-    def get_profile_icon(self, query: Mapping[str, Any], context: PipelineContext = None) -> ProfileIconDataDto:
+    def get_profile_icon(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ProfileIconDataDto:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_profile_icon_query(query, context)
@@ -1002,7 +977,7 @@ class StaticDataAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/profile-icons".format(platform=query["platform"].value.lower())
         try:
-            data = self._get(url, params)
+            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/profile-icons"))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -1016,7 +991,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("locale").as_(str)
 
     @get_many.register(ProfileIconDataDto)
-    def get_many_profile_icon(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[ProfileIconDataDto, None, None]:
+    def get_many_profile_icon(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ProfileIconDataDto, None, None]:
         if "region" in query and "platform" not in query:
             query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_profile_icons_query(query, context)
@@ -1034,7 +1009,7 @@ class StaticDataAPI(RiotAPIService):
                 platform = Platform(platform.upper())
                 url = "https://{platform}.api.riotgames.com/lol/static-data/v3/profile-icons".format(platform=platform.value.lower())
                 try:
-                    data = self._get(url, params)
+                    data = self._get(url, params, self._get_rate_limiter(platform, "staticdata/profile-icons"))
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
