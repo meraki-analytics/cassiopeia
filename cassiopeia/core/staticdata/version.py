@@ -6,7 +6,7 @@ from merakicommons.cache import lazy_property
 from ...configuration import settings
 from ...data import Region, Platform
 from ...dto.staticdata.version import VersionListDto
-from ..common import DataObject, DataObjectList, CassiopeiaGhostList
+from ..common import CoreData, DataObjectList, CassiopeiaGhostList
 
 
 class VersionListData(DataObjectList):
@@ -32,7 +32,7 @@ class Versions(CassiopeiaGhostList):
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform}
 
-    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         self.clear()
         SearchableList.__init__(self, [v for v in data])
         super().__load_hook__(load_group, data)

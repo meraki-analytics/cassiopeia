@@ -6,7 +6,7 @@ from merakicommons.container import searchable
 
 from ...configuration import settings
 from ...data import Region, Platform
-from ..common import DataObject, CassiopeiaGhost
+from ..common import CoreData, CassiopeiaGhost
 from ...dto.staticdata import realm as dto
 
 
@@ -15,7 +15,7 @@ from ...dto.staticdata import realm as dto
 ##############
 
 
-class RealmData(DataObject):
+class RealmData(CoreData):
     _dto_type = dto.RealmDto
     _renamed = {"legacy_mode": "lg", "latest_data_dragon": "dd", "language": "l", "latest_versions": "n", "max_profile_icon_id": "profileiconmax", "store": "store", "version": "v", "cdn": "cdn", "css_version": "css"}
 

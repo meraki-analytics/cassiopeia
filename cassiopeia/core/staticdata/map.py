@@ -6,7 +6,7 @@ from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform
-from ..common import DataObject, CassiopeiaGhost, DataObjectList, CassiopeiaGhostList, get_latest_version
+from ..common import CoreData, CassiopeiaGhost, DataObjectList, CassiopeiaGhostList, get_latest_version
 from .common import ImageData, Sprite, Image
 from ...dto.staticdata import map as dto
 
@@ -33,7 +33,7 @@ class MapListData(DataObjectList):
         return self._dto["locale"]
 
 
-class MapData(DataObject):
+class MapData(CoreData):
     _dto_type = dto.MapDto
     _renamed = {"id": "mapId", "name": "mapName", "unpurchasable_items": "unpurchasableItemList"}
 
@@ -89,7 +89,7 @@ class Maps(CassiopeiaGhostList):
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale}
 
-    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         self.clear()
         from ...transformers.staticdata import StaticDataTransformer
         SearchableList.__init__(self, [StaticDataTransformer.map_data_to_core(None, i) for i in data])

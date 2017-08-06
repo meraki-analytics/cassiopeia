@@ -6,7 +6,7 @@ from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform, MasteryTree
-from ..common import DataObject, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
+from ..common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
 from .common import Sprite, Image
 from ...dto.staticdata import mastery as dto
 
@@ -37,7 +37,7 @@ class MasteryListData(DataObjectList):
         return self._dto["includedData"]
 
 
-class MasteryData(DataObject):
+class MasteryData(CoreData):
     _dto_type = dto.MasteryDto
     _renamed = {"prerequisite": "prereq", "tree": "masteryTree", "image_data": "image", "points": "ranks", "sanitized_description": "sanitizedDescription", "included_data": "includedData"}
 
@@ -117,7 +117,7 @@ class Masteries(CassiopeiaGhostList):
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
 
-    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         self.clear()
         from ...transformers.staticdata import StaticDataTransformer
         SearchableList.__init__(self, [StaticDataTransformer.mastery_data_to_core(None, i) for i in data])
@@ -176,7 +176,7 @@ class Mastery(CassiopeiaGhost):
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
 
-    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         def find_matching_attribute(datalist, attrname, attrvalue):
             for item in datalist:
                 if getattr(item, attrname, None) == attrvalue:

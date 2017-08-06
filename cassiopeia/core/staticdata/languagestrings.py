@@ -6,7 +6,7 @@ from merakicommons.container import searchable
 
 from ...configuration import settings
 from ...data import Region, Platform
-from ..common import DataObject, CassiopeiaGhost, get_latest_version
+from ..common import CoreData, CassiopeiaGhost, get_latest_version
 from ...dto.staticdata import realm as dto
 
 
@@ -15,7 +15,7 @@ from ...dto.staticdata import realm as dto
 ##############
 
 
-class LanguageStringsData(DataObject):
+class LanguageStringsData(CoreData):
     _dto_type = dto.RealmDto
     _renamed = {"strings": "data"}
 

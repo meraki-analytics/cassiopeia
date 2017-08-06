@@ -6,7 +6,7 @@ from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Resource, Region, Platform, GameMode
-from ..common import DataObject, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
+from ..common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
 from .common import ImageData, Image, Sprite
 from ...dto.staticdata import summonerspell as dto
 
@@ -37,7 +37,7 @@ class SummonerSpellListData(DataObjectList):
         return self._dto["includedData"]
 
 
-class SpellVarsData(DataObject):
+class SpellVarsData(CoreData):
     _renamed = {"ranks_with": "ranksWith", "dynamic": "dyn", "coefficients": "coeff"}
 
     @property  # This doesn't get returned by the API
@@ -61,7 +61,7 @@ class SpellVarsData(DataObject):
         return self._dto["key"]
 
 
-class LevelTipData(DataObject):
+class LevelTipData(CoreData):
     _renamed = {"effects": "effect", "keywords": "label"}
 
     @property
@@ -73,7 +73,7 @@ class LevelTipData(DataObject):
         return self._dto["label"]
 
 
-class SummonerSpellData(DataObject):
+class SummonerSpellData(CoreData):
     _dto_type = dto.SummonerSpellDto
     _renamed = {"variables": "vars", "sanitized_description": "sanitizedDescription", "sanitized_tooltip": "sanitizedTooltip", "max_rank": "maxrank", "cooldowns": "cooldown", "costs": "cost", "alternative_images": "altimages", "effects": "effect", "resource": "costType", "included_data": "includedData"}
 
@@ -187,7 +187,7 @@ class SummonerSpells(CassiopeiaGhostList):
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
 
-    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         self.clear()
         from ...transformers.staticdata import StaticDataTransformer
         SearchableList.__init__(self, [StaticDataTransformer.summoner_spell_data_to_core(None, ss) for ss in data])
@@ -277,7 +277,7 @@ class SummonerSpell(CassiopeiaGhost):
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
 
-    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         def find_matching_attribute(datalist, attrname, attrvalue):
             for item in datalist:
                 if getattr(item, attrname, None) == attrvalue:

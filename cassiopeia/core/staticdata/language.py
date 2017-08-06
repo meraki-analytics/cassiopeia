@@ -5,7 +5,7 @@ from merakicommons.container import SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform
-from ..common import DataObject, DataObjectList, CassiopeiaGhostList
+from ..common import CoreData, DataObjectList, CassiopeiaGhostList
 from ...dto.staticdata.language import LanguagesDto
 
 
@@ -32,7 +32,7 @@ class Locales(CassiopeiaGhostList):
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform}
 
-    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         self.clear()
         SearchableList.__init__(self, data)
         super().__load_hook__(load_group, data)

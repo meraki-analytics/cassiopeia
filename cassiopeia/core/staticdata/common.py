@@ -5,10 +5,10 @@ from merakicommons.cache import lazy_property
 from PIL.Image import Image as PILImage
 
 from ...configuration import settings
-from ..common import DataObject, CassiopeiaObject
+from ..common import CoreData, CassiopeiaObject
 
 
-class SpriteData(DataObject):
+class SpriteData(CoreData):
     _renamed = {"height": "h", "width": "w"}
 
     @property
@@ -36,7 +36,7 @@ class SpriteData(DataObject):
         return self._dto["h"]
 
 
-class ImageData(DataObject):
+class ImageData(CoreData):
     _renamed = {"height": "h", "width": "w"}
 
     @property

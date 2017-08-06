@@ -9,7 +9,7 @@ from merakicommons.container import searchable, SearchableList
 from ...configuration import settings
 from ...data import Region, Platform
 from ...dto.staticdata.profileicon import ProfileIconDataDto, ProfileIconListDto
-from ..common import DataObject, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
+from ..common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
 
 
 try:
@@ -42,7 +42,7 @@ class ProfileIconListData(DataObjectList):
         return self._dto["locale"]
 
 
-class ProfileIconData(DataObject):
+class ProfileIconData(CoreData):
     _dto_type = ProfileIconDataDto
     _renamed = {"id": "profileIconId"}
 
@@ -89,7 +89,7 @@ class ProfileIcons(CassiopeiaGhostList):
             pass
         return query
 
-    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         self.clear()
         from ...transformers.staticdata import StaticDataTransformer
         SearchableList.__init__(self, [StaticDataTransformer.profile_icon_data_to_core(None, i) for i in data])

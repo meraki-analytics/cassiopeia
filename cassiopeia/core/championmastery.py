@@ -7,7 +7,7 @@ from merakicommons.container import searchable, SearchableList
 
 from ..configuration import settings
 from ..data import Region, Platform
-from .common import DataObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList
+from .common import CoreData, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList
 from ..dto.championmastery import ChampionMasteryDto
 from .staticdata.champion import Champion
 from .summoner import Summoner
@@ -32,7 +32,7 @@ class ChampionMasteryListData(DataObjectList):
         return self._dto["summonerId"]
 
 
-class ChampionMasteryData(DataObject):
+class ChampionMasteryData(CoreData):
     _dto_type = ChampionMasteryDto
     _renamed = {"chest_granted": "chestGranted", "level": "championLevel", "points": "championPoints", "champion_id": "championId", "summoner_id": "playerId", "points_until_next_level": "championPointsUntilNextLevel", "points_since_last_level": "championPointsSinceLastLevel", "last_played": "lastPlayTime"}
 
@@ -92,7 +92,7 @@ class ChampionMasteries(CassiopeiaGhostList):
     def __get_query__(self) -> dict:
         return {"region": self.region, "summoner.id": self.summoner.id}
 
-    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         self.clear()
         from ..transformers.championmastery import ChampionMasteryTransformer
         SearchableList.__init__(self, [ChampionMasteryTransformer.champion_mastery_data_to_core(None, cm) for cm in data])
@@ -145,7 +145,7 @@ class ChampionMastery(CassiopeiaGhost):
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform.value, "summoner.id": self.summoner.id, "champion.id": self.champion.id}
 
-    def __load__(self, load_group: DataObject = None) -> None:
+    def __load__(self, load_group: CoreData = None) -> None:
         from datapipelines import NotFoundError
         try:
             return super().__load__(load_group)

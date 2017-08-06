@@ -6,7 +6,7 @@ from merakicommons.container import searchable, SearchableList
 
 from ..configuration import settings
 from ..data import Region, Platform
-from .common import DataObject, CassiopeiaObject, CassiopeiaGhost
+from .common import CoreData, CassiopeiaObject, CassiopeiaGhost
 
 
 ##############
@@ -14,7 +14,7 @@ from .common import DataObject, CassiopeiaObject, CassiopeiaGhost
 ##############
 
 
-class TranslationData(DataObject):
+class TranslationData(CoreData):
     _renamed = {}
 
     @property
@@ -30,7 +30,7 @@ class TranslationData(DataObject):
         return self._dto["updated_at"]
 
 
-class MessageData(DataObject):
+class MessageData(CoreData):
     _renamed = {}
 
     @property
@@ -62,7 +62,7 @@ class MessageData(DataObject):
         return self._dto["id"]
 
 
-class IncidentData(DataObject):
+class IncidentData(CoreData):
     _renamed = {}
 
     @property
@@ -82,7 +82,7 @@ class IncidentData(DataObject):
         return [MessageData.from_dto(message) for message in self._dto["updates"]]
 
 
-class ServiceData(DataObject):
+class ServiceData(CoreData):
     _renamed = {}
 
     @property
@@ -102,7 +102,7 @@ class ServiceData(DataObject):
         return self._dto["slug"]
 
 
-class ShardStatusData(DataObject):
+class ShardStatusData(CoreData):
     _renamed = {}
 
     @property

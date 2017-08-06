@@ -5,7 +5,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
 from ..data import Region, Platform
-from .common import DataObject, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList
+from .common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList
 from .summoner import Summoner
 from ..dto.masterypage import MasteryDto, MasteryPageDto, MasteryPagesDto
 from .staticdata.mastery import Mastery as StaticdataMastery
@@ -29,7 +29,7 @@ class MasteryPagesData(DataObjectList):
         return self._dto["summonerId"]
 
 
-class MasteryData(DataObject):
+class MasteryData(CoreData):
     """This object contains mastery information."""
     _dto_type = MasteryDto
     _renamed = {"points": "rank"}
@@ -45,7 +45,7 @@ class MasteryData(DataObject):
         return self._dto["rank"]
 
 
-class MasteryPageData(DataObject):
+class MasteryPageData(CoreData):
     """This object contains mastery page information."""
     _dto_type = MasteryPageDto
     _renamed = {}
@@ -94,7 +94,7 @@ class MasteryPages(CassiopeiaGhostList):
     def __get_query__(self):
         return {"summoner.id": self.__summoner.id, "region": self.region, "platform": self.platform}
 
-    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         self.clear()
         from ..transformers.masteries import MasteriesTransformer
         SearchableList.__init__(self, [MasteriesTransformer.mastery_page_data_to_core(None, i) for i in data])

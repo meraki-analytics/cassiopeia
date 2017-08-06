@@ -9,7 +9,7 @@ from ...configuration import settings
 from ...data import Resource, Region, Platform, Map, GameMode
 from ..champion import ChampionData as ChampionStatusData
 from ..champion import ChampionListData as ChampionStatusListData
-from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
+from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
 from .common import ImageData, Image, Sprite
 from ...dto.staticdata import champion as dto
 from .item import Item
@@ -42,7 +42,7 @@ class ChampionListData(DataObjectList):
         return self._dto["includedData"]
 
 
-class SpellVarsData(DataObject):
+class SpellVarsData(CoreData):
     _renamed = {"ranks_with": "ranksWith", "dynamic": "dyn", "coefficients": "coeff"}
 
     @property  # This doesn't get returned by the API
@@ -66,7 +66,7 @@ class SpellVarsData(DataObject):
         return self._dto["key"]
 
 
-class LevelTipData(DataObject):
+class LevelTipData(CoreData):
     _renamed = {"effects": "effect", "keywords": "label"}
 
     @property
@@ -78,7 +78,7 @@ class LevelTipData(DataObject):
         return self._dto["label"]
 
 
-class ChampionSpellData(DataObject):
+class ChampionSpellData(CoreData):
     _renamed = {"level_up_tips": "leveltip", "variables": "vars", "sanitized_description": "sanitizedDescription", "sanitized_tooltip": "sanitizedTooltip",
                 "max_rank": "maxrank", "cooldowns": "cooldown", "costs": "cost", "alternative_images": "altimages", "effects": "effect", "resource": "costType"}
 
@@ -147,7 +147,7 @@ class ChampionSpellData(DataObject):
         return self._dto["name"]
 
 
-class BlockItemData(DataObject):
+class BlockItemData(CoreData):
     _renamed = {}
 
     @property
@@ -159,7 +159,7 @@ class BlockItemData(DataObject):
         return self._dto["id"]
 
 
-class BlockData(DataObject):
+class BlockData(CoreData):
     _renamed = {"rec_math": "recMath"}
 
     @property
@@ -175,7 +175,7 @@ class BlockData(DataObject):
         return self._dto["type"]
 
 
-class RecommendedData(DataObject):
+class RecommendedData(CoreData):
     _renamed = {"item_sets": "blocks"}
 
     @property
@@ -207,7 +207,7 @@ class RecommendedData(DataObject):
         return self._dto["type"]
 
 
-class PassiveData(DataObject):
+class PassiveData(CoreData):
     _renamed = {"sanitized_description": "sanitizedDescription"}
 
     @property
@@ -227,7 +227,7 @@ class PassiveData(DataObject):
         return self._dto["description"]
 
 
-class SkinData(DataObject):
+class SkinData(CoreData):
     _renamed = {"number": "num"}
 
     @property
@@ -243,7 +243,7 @@ class SkinData(DataObject):
         return self._dto["id"]
 
 
-class StatsData(DataObject):
+class StatsData(CoreData):
     _renamed = {"armor_per_level": "armorperlevel",
                 "health_per_level": "hpperlevel",
                 "attack_damage": "attackdamage",
@@ -344,7 +344,7 @@ class StatsData(DataObject):
         return self._dto["critperlevel"]
 
 
-class InfoData(DataObject):
+class InfoData(CoreData):
     _renamed = {}
 
     @property
@@ -364,7 +364,7 @@ class InfoData(DataObject):
         return self._dto["magic"]
 
 
-class ChampionData(DataObject):
+class ChampionData(CoreData):
     _dto_type = dto.ChampionDto
     _renamed = {"ally_tips": "allytips", "enemy_tips": "enemytips", "recommended_itemsets": "recommended", "resource": "partype", "included_data": "includedData"}
 
@@ -478,7 +478,7 @@ class Champions(CassiopeiaGhostList):
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
 
-    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         self.clear()
         from ...transformers.staticdata import StaticDataTransformer
         SearchableList.__init__(self, [StaticDataTransformer.champion_data_to_core(None, c) for c in data])
@@ -905,7 +905,7 @@ class Champion(CassiopeiaGhost):
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
 
-    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         def find_matching_attribute(datalist, attrname, attrvalue):
             for item in datalist:
                 if getattr(item, attrname, None) == attrvalue:

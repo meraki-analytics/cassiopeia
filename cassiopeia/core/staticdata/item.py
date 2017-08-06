@@ -6,7 +6,7 @@ from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
 from ...data import Region, Platform, Map
-from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
+from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
 from .common import ImageData, Sprite, Image
 from ...dto.staticdata import item as dto
 
@@ -37,7 +37,7 @@ class ItemListData(DataObjectList):
         return self._dto["includedData"]
 
 
-class ItemTreeData(DataObject):
+class ItemTreeData(CoreData):
     _renamed = {}
 
     @property
@@ -49,7 +49,7 @@ class ItemTreeData(DataObject):
         return self._dto["tags"]
 
 
-class ItemStatsData(DataObject):
+class ItemStatsData(CoreData):
     _renamed = {"percent_critical_strike_damage": "PercentCritDamageMod", "percent_magic_resist": "PercentSpellBlockMod", "percent_health_regen": "PercentHPRegenMod", "percent_movespeed": "PercentMovementSpeedMod", "magic_resist": "FlatSpellBlockMod", "critical_strike_damage": "FlatCritDamageMod", "energy": "FlatEnergyPoolMod", "life_steal": "PercentLifeStealMod", "mana": "FlatMPPoolMod", "movespeed": "FlatMovementSpeedMod", "percent_attack_speed": "PercentAttackSpeedMod", "block": "FlatBlockMod", "percent_block": "PercentBlockMod", "energy_regen": "FlatEnergyRegenMod", "spell_vamp": "PercentSpellVampMod", "mana_regen": "FlatMPRegenMod", "dodge": "PercentDodgeMod", "attack_speed": "FlatAttackSpeedMod", "armor": "FlatArmorMod", "health_regen": "FlatHPRegenMod", "percent_ability_power": "PercentMagicDamageMod", "percent_mana_regen": "PercentMPPoolMod", "ability_power": "FlatMagicDamageMod", "percent_mana_regen": "PercentMPRegenMod", "percent_attack_damage": "PercentPhysicalDamageMod", "attack_damage": "FlatPhysicalDamageMod", "percent_health": "PercentHPPoolMod", "percent_armor": "PercentArmorMod", "percent_xp_bonus": "PercentEXPBonus", "health": "FlatHPPoolMod", "critical_strike_chance": "FlatCritChanceMod", "xp_bonus": "FlatEXPBonus"}
 
     @property
@@ -181,7 +181,7 @@ class ItemStatsData(DataObject):
         return self._dto["FlatEXPBonus"]
 
 
-class GoldData(DataObject):
+class GoldData(CoreData):
     _renamed = {}
 
     @property
@@ -201,7 +201,7 @@ class GoldData(DataObject):
         return self._dto["purchaseable"]
 
 
-class ItemData(DataObject):
+class ItemData(CoreData):
     _dto_type = dto.ItemDto
     _renamed = {"hide": "hideFromAll", "in_store": "inStore", "builds_into": "into", "builds_from": "from", "keywords": "colloq", "champion": "requiredChampion", "consume_on_full": "consumeOnFull", "sanitized_description": "sanitizedDescription", "tier": "depth", "max_stacks": "stacks", "included_data": "includedData"}
 
@@ -340,7 +340,7 @@ class Items(CassiopeiaGhostList):
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
 
-    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         self.clear()
         from ...transformers.staticdata import StaticDataTransformer
         SearchableList.__init__(self, [StaticDataTransformer.item_data_to_core(None, i) for i in data])
@@ -552,7 +552,7 @@ class Item(CassiopeiaGhost):
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
 
-    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         def find_matching_attribute(datalist, attrname, attrvalue):
             for item in datalist:
                 if getattr(item, attrname, None) == attrvalue:

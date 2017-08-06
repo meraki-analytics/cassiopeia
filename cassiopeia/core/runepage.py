@@ -6,7 +6,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
 from ..data import Region, Platform
-from .common import DataObject, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList
+from .common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList
 from .summoner import Summoner
 from ..dto.runepage import RuneSlotDto, RunePageDto, RunePagesDto
 from .staticdata.rune import Rune as StaticdataRune
@@ -30,7 +30,7 @@ class RunePagesData(DataObjectList):
         return self._dto["summonerId"]
 
 
-class RuneSlotData(DataObject):
+class RuneSlotData(CoreData):
     """This object contains rune slot information."""
     _dto_type = RuneSlotDto
     _renamed = {"id": "runeId", "slot": "runeSlotId"}
@@ -46,7 +46,7 @@ class RuneSlotData(DataObject):
         return self._dto["runeSlotId"]
 
 
-class RunePageData(DataObject):
+class RunePageData(CoreData):
     """This object contains rune page information."""
     _dto_type = RunePageDto
     _renamed = {"runes": "slots", "summoner_id": "summonerId"}
@@ -99,7 +99,7 @@ class RunePages(CassiopeiaGhostList):
     def __get_query__(self):
         return {"summoner.id": self.__summoner.id, "region": self.region, "platform": self.platform}
 
-    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         self.clear()
         from ..transformers.runes import RunesTransformer
         SearchableList.__init__(self, [RunesTransformer.rune_page_data_to_core(None, i) for i in data])

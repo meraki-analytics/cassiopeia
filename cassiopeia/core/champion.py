@@ -1,4 +1,4 @@
-from .common import DataObject
+from .common import CoreData
 from ..dto import champion as dto
 
 
@@ -6,7 +6,7 @@ class ChampionListData(list):
     _dto_type = dto.ChampionListDto
 
 
-class ChampionData(DataObject):
+class ChampionData(CoreData):
     _dto_type = dto.ChampionDto
     _renamed = {"ranked_enabled": "rankedPlayEnabled", "custom_enabled": "botEnabled", "coop_ai_enabled": "botMmEnabled",
                 "enabled": "active", "free_to_play": "freeToPlay", "champ_data": "champData"}
@@ -56,4 +56,4 @@ class ChampionData(DataObject):
         return self._dto["champData"]
 
 
-# No non-DataObject core type is needed
+# No non-CoreData core type is needed

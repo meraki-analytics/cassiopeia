@@ -8,7 +8,7 @@ from merakicommons.container import searchable, SearchableList, SearchableLazyLi
 
 from ..configuration import settings
 from ..data import Region, Platform, Tier, Map, GameType, GameMode, Queue, Division, Side, Season
-from .common import DataObject, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList
+from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList
 from ..dto import match as dto
 from .summoner import Summoner
 from .staticdata.champion import Champion
@@ -64,7 +64,7 @@ class MatchListData(DataObjectList):
         return self._dto["endTime"]
 
 
-class PositionData(DataObject):
+class PositionData(CoreData):
     _renamed = {}
 
     @property
@@ -76,7 +76,7 @@ class PositionData(DataObject):
         return self._dto["y"]
 
 
-class EventData(DataObject):
+class EventData(CoreData):
     _renamed = {"event_type": "eventType", "tower_type": "towerType", "team_id": "teamId", "ascended_type": "ascendedType", "killer_id": "killerId", "level_up_type": "levelUpType", "point_captured": "pointCaptured", "assisting_participant_ids": "assistingParticipantIds", "ward_type": "wardType", "monster_type": "monsterType", "skill_slot": "skillSlot", "victim_id": "victimId", "after_id": "afterId", "monster_sub_type": "monsterSubType", "lane_type": "laneType", "item_id": "itemId", "participant_id": "participantId", "building_type": "buildingType", "creator_id": "creatorId", "before_id": "beforeId"}
 
     @property
@@ -173,7 +173,7 @@ class EventData(DataObject):
         return self._dto["beforeId"]
 
 
-class ParticipantFrameData(DataObject):
+class ParticipantFrameData(CoreData):
     _renamed = {"total_gold": "totalGold", "team_score": "teamScore", "participant_id": "participantId", "current_gold": "currentGold", "minions_killed": "minionsKilled", "dominion_score": "dominionScore", "jungle_minions_killed": "jungleMinionsKilled"}
 
     @property
@@ -217,7 +217,7 @@ class ParticipantFrameData(DataObject):
         return self._dto["jungleMinionsKilled"]
 
 
-class FrameData(DataObject):
+class FrameData(CoreData):
     _renamed = {"participant_frames": "participantFrames"}
 
     @property
@@ -233,7 +233,7 @@ class FrameData(DataObject):
         return [EventData.from_dto(event) for event in self._dto["events"]]
 
 
-class TimelineData(DataObject):
+class TimelineData(CoreData):
     _dto_type = dto.TimelineDto
     _renamed = {"id": "matchId"}
 
@@ -254,7 +254,7 @@ class TimelineData(DataObject):
         return self._dto["frameInterval"]
 
 
-class ParticipantTimelineData(DataObject):
+class ParticipantTimelineData(CoreData):
     _renamed = {"id": "participantId", "cs_diff_per_min_deltas": "csDiffPerMinDeltas", "gold_per_min_deltas": "goldPerMinDeltas", "xp_pdiff_per_min_deltas": "xpDiffPerMinDeltas", "creeps_per_min_deltas": "creepsPerMinDeltas", "damage_taken_diff_per_min_deltas": "damageTakenDiffPerMinDeltas", "damage_taken_per_min_deltas": "damageTakenPerMinDeltas"}
 
     @property
@@ -298,7 +298,7 @@ class ParticipantTimelineData(DataObject):
         return self._dto["damageTakenDiffPerMinDeltas"]
 
 
-class ParticipantStatsData(DataObject):
+class ParticipantStatsData(CoreData):
     _renamed = {"physical_damage_dealt": "physicalDamageDealt", "magic_damage_dealt": "magicDamageDealt", "neutral_minions_killed_team_jungle": "neutralMinionsKilledTeamJungle", "total_player_score": "totalPlayerScore", "neutral_minions_killed_enemy_jungle": "neutralMinionsKilledEnemyJungle", "altars_captured": "altarsCaptured", "largest_critical_strike": "largestCriticalStrike", "total_damage_dealt": "totalDamageDealt", "magic_damage_dealt_to_champions": "magicDamageDealtToChampions", "vision_wards_bought_in_game": "visionWardsBoughtInGame", "damage_dealt_to_objectives": "damageDealtToObjectives", "largest_killing_spree": "largestKillingSpree", "quadra_kills": "quadraKills", "team_objective": "teamObjective", "total_time_crowd_control_dealt": "totalTimeCrowdControlDealt", "longest_time_spent_living": "longestTimeSpentLiving", "wards_killed": "wardsKilled", "first_tower_assist": "firstTowerAssist", "first_tower_kill": "firstTowerKill", "first_blood_assist": "firstBloodAssist", "vision_score": "visionScore", "wards_placed": "wardsPlaced", "turret_kills": "turretKills", "triple_kills": "tripleKills", "damage_self_mitigated": "damageSelfMitigated", "champion_level": "champLevel", "node_neutralize_assist": "nodeNeutralizeAssist", "first_inhibitor_kill": "firstInhibitorKill", "gold_earned": "goldEarned", "magical_damage_taken": "magicalDamageTaken", "double_kills": "doubleKills", "node_capture_assist": "nodeCaptureAssist", "true_damage_taken": "trueDamageTaken", "node_neutralize": "nodeNeutralize", "first_inhibitor_assist": "firstInhibitorAssist", "unreal_kills": "unrealKills", "neutral_minions_killed": "neutralMinionsKilled", "objective_player_score": "objectivePlayerScore", "combat_player_score": "combatPlayerScore", "damage_dealt_to_turrets": "damageDealtToTurrets", "altars_neutralized": "altarsNeutralized", "physical_damage_dealt_to_champions": "physicalDamageDealtToChampions", "gold_spent": "goldSpent", "true_damage_dealt": "trueDamageDealt", "true_damage_dealt_to_champions": "trueDamageDealtToChampions", "id": "participantId", "penta_kills": "pentaKills", "total_heal": "totalHeal", "total_minions_killed": "totalMinionsKilled", "first_blood_kill": "firstBloodKill", "node_capture": "nodeCapture", "largest_multi_kill": "largestMultiKill", "sight_wards_bought_in_game": "sightWardsBoughtInGame", "total_damage_dealt_to_champions": "totalDamageDealtToChampions", "total_units_healed": "totalUnitsHealed", "inhibitor_kills": "inhibitorKills", "total_score_rank": "totalScoreRank", "total_damage_taken": "totalDamageTaken", "killing_sprees": "killingSprees", "time_CCing_others": "timeCCingOthers", "physical_damage_taken": "physicalDamageTaken"}
 
     @property
@@ -590,7 +590,7 @@ class ParticipantStatsData(DataObject):
         return self._dto["physicalDamageTaken"]
 
 
-class ParticipantData(DataObject):
+class ParticipantData(CoreData):
     _renamed = {"id": "participantId", "side": "teamId", "summoner_spell_d_id": "spell1Id", "summoner_spell_f_id": "spell2Id", "champion_id": "championId", "rank_last_season":"highestAchievedSeasonTier"}
 
     @property
@@ -634,7 +634,7 @@ class ParticipantData(DataObject):
         return self._dto["championId"]
 
 
-class PlayerData(DataObject):
+class PlayerData(CoreData):
     _renamed = {"current_platform_id": "currentPlatformId", "summoner_name": "summonerName", "summoner_id": "summonerId", "match_history_uri": "matchHistoryUri", "platform_id": "platformId", "current_account_id": "currentAccountId", "profile_icon_id": "profileIcon", "account_id": "accountId"}
 
     @property
@@ -670,7 +670,7 @@ class PlayerData(DataObject):
         return self._dto["accountId"]
 
 
-class ParticipantIdentityData(DataObject):
+class ParticipantIdentityData(CoreData):
     _renamed = {"id": "participantId"}
 
     @property
@@ -682,7 +682,7 @@ class ParticipantIdentityData(DataObject):
         return self._dto["participantId"]
 
 
-class TeamData(DataObject):
+class TeamData(CoreData):
     _renamed = {"first_dragon": "firstDragon", "first_inhibitor": "firstInhibitor", "first_rift_herald": "firstRiftHerald", "first_baron": "firstBaron", "first_tower": "firstTower", "first_blood": "firstBlood", "baron_kills": "baronKills", "rift_herald_kills": "riftHeraldKills", "vilemaw_kills": "vilemawKills", "inhibitor_kills": "inhibitorKills", "tower_kills": "towerKills", "dragon_kills": "dragonKills", "dominion_victory_score": "dominionVictoryScore", "side": "teamId"}
 
     @property
@@ -750,7 +750,7 @@ class TeamData(DataObject):
         return self._dto["win"]
 
 
-class MatchReferenceData(DataObject):
+class MatchReferenceData(CoreData):
     _renamed = {"account_id": "accountId", "season_id": "season", "queue_id": "queue", "id": "gameId", "platform_id": "platformId", "champion_id": "champion", "creation": "timestamp"}
 
     @property
@@ -794,7 +794,7 @@ class MatchReferenceData(DataObject):
         return self._dto["timestamp"]
 
 
-class MatchData(DataObject):
+class MatchData(CoreData):
     _dto_type = dto.MatchDto
     _renamed = {"season_id": "seasonId", "queue_id": "queueId", "id": "gameId", "participant_identities": "participantIdentities", "version": "gameVersion", "platform_id": "platformId", "mode": "gameMode", "map_id": "mapId", "type": "gameType", "duration": "gameDuration", "creation": "gameCreation"}
 
@@ -883,7 +883,7 @@ class MatchHistory(CassiopeiaGhostList):
         query = {"platform": self.platform, "account.id": self.summoner.account.id}
         return query
 
-    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         self.clear()
         from ..transformers.match import MatchTransformer
         SearchableList.__init__(self, [MatchTransformer.match_reference_data_to_core(None, i) for i in data])
@@ -1490,7 +1490,7 @@ class Participant(CassiopeiaObject):
     _data_types = {ParticipantData, PlayerData}
 
     @classmethod
-    def from_data(cls, data: DataObject, match: "Match"):
+    def from_data(cls, data: CoreData, match: "Match"):
         self = super().from_data(data)
         self.__match = match
         return self
@@ -1582,7 +1582,7 @@ class Team(CassiopeiaObject):
     _data_types = {TeamData}
 
     @classmethod
-    def from_data(cls, data: DataObject, participants: List[Participant]):
+    def from_data(cls, data: CoreData, participants: List[Participant]):
         self = super().from_data(data)
         self.__participants = participants
         return self

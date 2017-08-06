@@ -8,7 +8,7 @@ from merakicommons.container import searchable, SearchableList, SearchableDictio
 
 from ..configuration import settings
 from ..data import Region, Platform, GameMode, GameType, Queue, Map
-from .common import DataObject, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList
+from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList
 from ..dto import spectator as dto
 from .staticdata.profileicon import ProfileIcon
 from .staticdata.champion import Champion
@@ -40,7 +40,7 @@ class FeaturedGamesData(DataObjectList):
         return self._dto["summonerId"]
 
 
-class RuneData(DataObject):
+class RuneData(CoreData):
     _renamed = {"id": "runeId"}
 
     @property
@@ -54,7 +54,7 @@ class RuneData(DataObject):
         return self._dto["count"]
 
 
-class MasteryData(DataObject):
+class MasteryData(CoreData):
     _renamed = {"id": "masteryId", "points": "rank"}
 
     @property
@@ -68,7 +68,7 @@ class MasteryData(DataObject):
         return self._dto["rank"]
 
 
-class CurrentGameParticipantData(DataObject):
+class CurrentGameParticipantData(CoreData):
     _renamed = {"profile_icon_id": "profileIconId", "champion_id": "championId", "summoner_name": "summonerName", "summoner_id": "summonerId", "bot": "bot", "team_id": "teamId", "summoner_spell_f": "spell1Id", "summoner_spell_d": "spell2Id"}
 
     @property
@@ -122,7 +122,7 @@ class CurrentGameParticipantData(DataObject):
         return self._dto["spell2Id"]
 
 
-class TeamData(DataObject):
+class TeamData(CoreData):
     _renamed = {}
 
     @property
@@ -134,7 +134,7 @@ class TeamData(DataObject):
         return {b["pickTurn"]: b["championId"] for b in self._dto["bans"]}
 
 
-class CurrentGameInfoData(DataObject):
+class CurrentGameInfoData(CoreData):
     _dto_type = dto.CurrentGameInfoDto
     _renamed = {"platform": "platformId", "observer_key": "observers", "creation": "gameStartTime", "duration": "gameLength", "mode": "gameMode", "map": "mapId", "type": "gameType", "queue": "gameQueueConfigId"}
 
@@ -203,7 +203,7 @@ class FeaturedMatches(CassiopeiaGhostList):
         query = {"platform": self.platform}
         return query
 
-    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         self.clear()
         from ..transformers.spectator import SpectatorTransformer
         SearchableList.__init__(self, [SpectatorTransformer.current_game_data_to_core(None, i) for i in data])
@@ -293,7 +293,7 @@ class CurrentMatch(CassiopeiaGhost):
         super().__init__(**kwargs)
 
     @classmethod
-    def from_data(cls, data: DataObject, summoner: Union[Summoner, int, str]):
+    def from_data(cls, data: CoreData, summoner: Union[Summoner, int, str]):
         self = super().from_data(data)
         if isinstance(summoner, str):
             summoner = Summoner(name=summoner)

@@ -6,7 +6,7 @@ from merakicommons.container import searchable, SearchableList
 
 from ..configuration import settings
 from ..data import Region, Platform, Tier, Division, Queue
-from .common import DataObject, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList
+from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList
 from ..dto.league import LeaguesListDto, LeagueListDto, LeagueItemDto, MiniSeriesDto
 from .summoner import Summoner
 
@@ -16,7 +16,7 @@ from .summoner import Summoner
 ##############
 
 
-class MiniSeriesData(DataObject):
+class MiniSeriesData(CoreData):
     _dto_type = MiniSeriesDto
     _renamed = {}
 
@@ -37,7 +37,7 @@ class MiniSeriesData(DataObject):
         return self._dto["progress"]
 
 
-class LeagueItemData(DataObject):
+class LeagueItemData(CoreData):
     _dto_type = LeagueItemDto
     _renamed = {"hot_streak": "hotStreak", "promos": "miniSeries", "summoner_id": "playerOrTeamId", "summoner_name": "playerOrTeamName", "league_points": "leaguePoints", "name": "leagueName", "queue": "queueType", "division": "rank", "fresh_blood": "freshBlood"}
 
@@ -102,7 +102,7 @@ class LeagueItemData(DataObject):
         return self._dto["leaguePoints"]
 
 
-class LeagueListData(DataObject):
+class LeagueListData(CoreData):
     _dto_type = LeagueListDto
     _renamed = {}
 
@@ -299,7 +299,7 @@ class Leagues(CassiopeiaGhostList):
     def __get_query__(self):
         return {"summoner.id": self.__summoner.id, "region": self.region, "platform": self.platform}
 
-    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         self.clear()
         from ..transformers.leagues import LeagueTransformer
         SearchableList.__init__(self, [LeagueTransformer.league_data_to_core(None, i) for i in data])

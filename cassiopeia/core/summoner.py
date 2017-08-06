@@ -8,7 +8,7 @@ from merakicommons.container import searchable
 
 from ..configuration import settings
 from ..data import Region, Platform
-from .common import DataObject, CassiopeiaObject, CassiopeiaGhost
+from .common import CoreData, CassiopeiaObject, CassiopeiaGhost
 from .staticdata import ProfileIcon
 from ..dto.summoner import SummonerDto
 
@@ -18,7 +18,7 @@ from ..dto.summoner import SummonerDto
 ##############
 
 
-class AccountData(DataObject):
+class AccountData(CoreData):
     _renamed = {"id": "accountId"}
 
     @property
@@ -26,7 +26,7 @@ class AccountData(DataObject):
         return self._dto["accountId"]
 
 
-class SummonerData(DataObject):
+class SummonerData(CoreData):
     _dto_type = SummonerDto
     _renamed = {"profile_icon": "profileIconId", "level": "summonerLevel", "revision_date": "revisionDate", "account_id": "accountId"}
 

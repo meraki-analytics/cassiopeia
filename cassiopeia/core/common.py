@@ -52,7 +52,7 @@ def get_latest_version(region: Union[Region, str], endpoint: Optional[str]):
         return Realms(region=region).version
 
 
-class DataObject(object):
+class CoreData(object):
     def __init__(self, **kwargs):
         self._dto = {}
         self._update(kwargs)
@@ -90,16 +90,16 @@ class DataObject(object):
         self._dto[key] = value
 
 
-class DataObjectList(list, DataObject):
+class DataObjectList(list, CoreData):
     def __str__(self):
         return list.__str__(self)
 
     def __init__(self, *args, **kwargs):
         list.__init__(self, *args)
-        DataObject.__init__(self, **kwargs)
+        CoreData.__init__(self, **kwargs)
 
     def from_dto(cls, dto: Union[list, DtoObject]):
-        self = DataObject.from_dto(dto)
+        self = CoreData.from_dto(dto)
         SearchableList.__init__(self, dto)
 
 
@@ -132,7 +132,7 @@ class CassiopeiaObject(object):
         self(**kwargs)
 
     @classmethod
-    def from_data(cls, data: DataObject):
+    def from_data(cls, data: CoreData):
         assert data is not None
         self = type.__call__(cls)  # Manually skip the CheckCache (well, all metaclasss' __call__s) for ghost objects if they are created via this constructor. Maybe CassiopeiaGhost should overload this method instead? I didn't because I'd have to copy-paste all the below code and I want it all in one spot for now.
         self._data = {_type: _type() for _type in self._data_types}
@@ -159,7 +159,7 @@ class CassiopeiaObject(object):
     @property
     @abstractmethod
     def _data_types(self) -> Set[type]:
-        """The `DataObject`_ types that belongs to this core type."""
+        """The `CoreData`_ types that belongs to this core type."""
         pass
 
     def __call__(self, **kwargs) -> "CassiopeiaObject":
@@ -185,7 +185,7 @@ class CassiopeiaObject(object):
 
 
 class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=CheckCache):
-    def __load__(self, load_group: DataObject = None) -> None:
+    def __load__(self, load_group: CoreData = None) -> None:
         if load_group is None:  # Load all groups
             if self._Ghost__all_loaded:
                 raise ValueError("object has already been loaded.")
@@ -209,9 +209,9 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=CheckCache):
     def __get_query__(self):
         pass
 
-    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
-        if not isinstance(data, DataObject):
-            raise TypeError("expected subclass of DataObject, got {cls}".format(cls=data.__class__))
+    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
+        if not isinstance(data, CoreData):
+            raise TypeError("expected subclass of CoreData, got {cls}".format(cls=data.__class__))
         self._data[load_group] = data
 
 
@@ -230,14 +230,14 @@ class CassiopeiaGhostList(SearchableList, CassiopeiaGhost):
         self.__triggered_load = False
 
     @classmethod
-    def from_data(cls, data: Union[list, DataObject]):
+    def from_data(cls, data: Union[list, CoreData]):
         raise NotImplemented
         #self = CassiopeiaGhost.from_data(data)
         #from ..transformers.staticdata import StaticDataTransformer
         #SearchableList.__init__(self, [StaticDataTransformer.champion_data_to_core(None, c) for c in data])
         #return self
 
-    def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
+    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         super().__load_hook__(load_group=load_group, data=data)
         # Since @Ghost.property isn't set, the ghost's __property won't set itself as loaded because it never gets called.
         # Therefore we manually set it as loaded here.
