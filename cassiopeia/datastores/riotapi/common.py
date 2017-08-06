@@ -104,10 +104,6 @@ class RiotAPIService(DataSource):
         return limiter
 
     def _get(self, url: str, parameters: MutableMapping[str, Any] = None, rate_limiter: MultiRateLimiter = None, connection: Curl = None, backoff: float = 1.) -> Union[dict, list, Any]:
-        if not self._headers["X-Riot-Token"]:
-            # TODO: Is this the best way to let secondary services (e.g. DDragon) work?
-            raise NotFoundError("No API key provided.")
-
         try:
             body, response_headers = self._client.get(url, parameters, self._headers, rate_limiter, connection)
 

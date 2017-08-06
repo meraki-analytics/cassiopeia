@@ -366,7 +366,7 @@ class InfoData(DataObject):
 
 class ChampionData(DataObject):
     _dto_type = dto.ChampionDto
-    _renamed = {"ally_tips": "allytips", "enemy_tips": "enemytips", "recommended_item_sets": "recommended", "resource": "partype", "included_data": "includedData"}
+    _renamed = {"ally_tips": "allytips", "enemy_tips": "enemytips", "recommended_itemsets": "recommended", "resource": "partype", "included_data": "includedData"}
 
     @property
     def region(self) -> str:
@@ -425,7 +425,7 @@ class ChampionData(DataObject):
         return self._dto["tags"]
 
     @property
-    def recommended_item_sets(self) -> List[RecommendedData]:
+    def recommended_itemsets(self) -> List[RecommendedData]:
         return [RecommendedData.from_dto(item) for item in self._dto["recommended"]]
 
     @property
@@ -667,7 +667,7 @@ class RecommendedItems(CassiopeiaObject):
     @lazy_property
     def item_sets(self) -> List[ItemSet]:
         """The recommended item sets."""
-        return SearchableList(ItemSet(itemset) for itemset in self._data[RecommendedData].item_sets)
+        return SearchableList(ItemSet.from_data(itemset) for itemset in self._data[RecommendedData].item_sets)
 
     @property
     def champion(self) -> "Champion":
@@ -1058,7 +1058,7 @@ class Champion(CassiopeiaGhost):
     @lazy
     def recommended_itemsets(self) -> List[RecommendedItems]:
         """The champion's recommended itemsets."""
-        return SearchableList(RecommendedItems(item) for item in self._data[ChampionData].recommended_itemsets)
+        return SearchableList(RecommendedItems.from_data(item) for item in self._data[ChampionData].recommended_itemsets)
 
     @CassiopeiaGhost.property(ChampionData)
     @ghost_load_on(KeyError)

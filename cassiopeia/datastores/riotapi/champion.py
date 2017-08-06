@@ -2,7 +2,7 @@ from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError
 from .common import RiotAPIService, APINotFoundError
-from ...data import Region, Platform
+from ...data import Platform
 from ...dto.champion import ChampionDto, ChampionListDto
 
 T = TypeVar("T")
@@ -23,8 +23,6 @@ class ChampionAPI(RiotAPIService):
 
     @get.register(ChampionDto)
     def get_champion_status(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         ChampionAPI._validate_get_champion_status_query(query, context)
 
         url = "https://{platform}.api.riotgames.com/lol/platform/v3/champions/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
@@ -42,8 +40,6 @@ class ChampionAPI(RiotAPIService):
 
     @get_many.register(ChampionDto)
     def get_many_champion_status(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         ChampionAPI._validate_get_many_champion_status_query(query, context)
 
         params = {
@@ -78,8 +74,6 @@ class ChampionAPI(RiotAPIService):
 
     @get.register(ChampionListDto)
     def get_champion_status_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionListDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         ChampionAPI._validate_get_champion_status_list_query(query, context)
 
         params = {
@@ -102,8 +96,6 @@ class ChampionAPI(RiotAPIService):
 
     @get_many.register(ChampionListDto)
     def get_many_champion_status_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionListDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         ChampionAPI._validate_get_many_champion_status_list_query(query, context)
 
         params = {

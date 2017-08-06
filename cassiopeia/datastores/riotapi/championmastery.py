@@ -2,7 +2,7 @@ from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError, validate_query
 from .common import RiotAPIService, APINotFoundError
-from ...data import Region, Platform
+from ...data import Platform
 from ...dto.championmastery import ChampionMasteryDto, ChampionMasteryListDto, ChampionMasteryScoreDto
 from ...dto.summoner import SummonerDto
 from ..uniquekeys import convert_region_to_platform
@@ -27,6 +27,7 @@ class ChampionMasteryAPI(RiotAPIService):
     @get.register(ChampionMasteryDto)
     @validate_query(_validate_get_champion_mastery_query, convert_region_to_platform)
     def get_champion_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionMasteryDto:
+        # TODO Is this still what we want to do?
         if "summoner.id" not in query:
             for k in ["summoner.account.id", "summoner.account_id", "summoner.accountId"]:
                 if k in query:
@@ -56,8 +57,6 @@ class ChampionMasteryAPI(RiotAPIService):
 
     @get_many.register(ChampionMasteryDto)
     def get_many_champion_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionMasteryDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         ChampionMasteryAPI._validate_get_many_champion_mastery_query(query, context)
 
         url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/champion-masteries/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summonerId"])
@@ -89,8 +88,6 @@ class ChampionMasteryAPI(RiotAPIService):
 
     @get.register(ChampionMasteryListDto)
     def get_champion_mastery_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionMasteryListDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         ChampionMasteryAPI._validate_get_champion_mastery_list_query(query, context)
 
         url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/champion-masteries/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
@@ -111,8 +108,6 @@ class ChampionMasteryAPI(RiotAPIService):
 
     @get_many.register(ChampionMasteryListDto)
     def get_many_champion_mastery_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionMasteryListDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         ChampionMasteryAPI._validate_get_many_champion_mastery_list_query(query, context)
 
         def generator():
@@ -137,8 +132,6 @@ class ChampionMasteryAPI(RiotAPIService):
 
     @get.register(ChampionMasteryScoreDto)
     def get_champion_mastery_score(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionMasteryScoreDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         ChampionMasteryAPI._validate_get_champion_mastery_score_query(query, context)
 
         url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/scores/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
@@ -159,8 +152,6 @@ class ChampionMasteryAPI(RiotAPIService):
 
     @get_many.register(ChampionMasteryScoreDto)
     def get_many_champion_mastery_score(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionMasteryScoreDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         ChampionMasteryAPI._validate_get_many_champion_mastery_score(query, context)
 
         def generator():

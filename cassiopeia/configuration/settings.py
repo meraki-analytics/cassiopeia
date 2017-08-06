@@ -26,8 +26,8 @@ def create_default_pipeline(api_key, verbose=False):
 
     services = [
         Cache(),  # TODO Add expirations from file
-        RiotAPI(api_key=api_key),
-        DDragonDataSource()  # TODO: Should this be before or after RiotAPI? Should this be default?
+        DDragonDataSource(),  # TODO: Should this be default?
+        RiotAPI(api_key=api_key)
     ]
     riotapi_transformer = CompositeDataTransformer([
         StaticDataTransformer(),

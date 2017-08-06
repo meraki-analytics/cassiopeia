@@ -356,7 +356,7 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(Maps, MapListDto)
     def map_list_core_to_dto(self, value: Maps, context: PipelineContext = None) -> MapListDto:
-        return MapListDto({"region": value.region, "version": value.version, "locale": value.locale, "data": {m.id: self.map_core_to_dto(m) for m in value}})
+        return MapListDto({"region": value.region, "version": value.version, "locale": value.locale, "data": {str(m.id): self.map_core_to_dto(m) for m in value}})
 
     # Version
 

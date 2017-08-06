@@ -2,7 +2,7 @@ from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError
 from .common import RiotAPIService, APINotFoundError
-from ...data import Platform, Region
+from ...data import Platform
 from ...dto.staticdata.champion import ChampionDto, ChampionListDto
 from ...dto.staticdata.mastery import MasteryDto, MasteryListDto
 from ...dto.staticdata.rune import RuneDto, RuneListDto
@@ -19,8 +19,8 @@ T = TypeVar("T")
 
 def _get_default_version(query: MutableMapping[str, Any], context: PipelineContext) -> str:
     pipeline = context[PipelineContext.Keys.PIPELINE]
-    versions = pipeline.get(VersionListDto, {"platform": query["platform"]})
-    return versions["versions"][0]
+    realms = pipeline.get(RealmDto, {"platform": query["platform"]})
+    return realms["version"]
 
 
 def _get_default_locale(query: MutableMapping[str, Any], context: PipelineContext) -> str:
@@ -49,8 +49,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get.register(ChampionDto)
     def get_champion(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_champion_query(query, context)
 
         params = {
@@ -80,8 +78,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get_many.register(ChampionDto)
     def get_many_champion(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_champion_query(query, context)
 
         params = {
@@ -123,8 +119,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get.register(ChampionListDto)
     def get_champion_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionListDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_champion_list_query(query, context)
 
         params = {
@@ -156,8 +150,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get_many.register(ChampionListDto)
     def get_many_champion_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionListDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_champion_list_query(query, context)
 
         params = {
@@ -196,8 +188,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get.register(VersionListDto)
     def get_versions(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> VersionListDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_versions_query(query, context)
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/versions".format(platform=query["platform"].value.lower())
@@ -224,8 +214,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get.register(MasteryDto)
     def get_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasteryDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_mastery_query(query, context)
 
         params = {
@@ -255,8 +243,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get_many.register(MasteryDto)
     def get_many_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[MasteryDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_mastery_query(query, context)
 
         params = {
@@ -296,8 +282,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get.register(MasteryListDto)
     def get_mastery_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasteryListDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_mastery_list_query(query, context)
 
         params = {
@@ -327,8 +311,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get_many.register(MasteryListDto)
     def get_many_mastery_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[MasteryListDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_mastery_list_query(query, context)
 
         params = {
@@ -370,8 +352,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get.register(RuneDto)
     def get_rune(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> RuneDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_rune_query(query, context)
 
         params = {
@@ -401,8 +381,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get_many.register(RuneDto)
     def get_many_rune(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[RuneDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_rune_query(query, context)
 
         params = {
@@ -442,8 +420,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get.register(RuneListDto)
     def get_rune_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> RuneListDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_rune_list_query(query, context)
 
         params = {
@@ -473,8 +449,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get_many.register(RuneListDto)
     def get_many_rune_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[RuneListDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_rune_list_query(query, context)
 
         params = {
@@ -516,8 +490,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get.register(ItemDto)
     def get_item(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ItemDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_item_query(query, context)
 
         params = {
@@ -557,8 +529,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get_many.register(ItemDto)
     def get_many_item(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ItemDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_item_query(query, context)
 
         params = {
@@ -608,8 +578,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get.register(ItemListDto)
     def get_item_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ItemListDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_item_list_query(query, context)
 
         params = {
@@ -650,8 +618,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get_many.register(ItemListDto)
     def get_many_item_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ItemListDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_item_list_query(query, context)
 
         params = {
@@ -703,8 +669,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get.register(MapListDto)
     def get_map_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MapListDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_map_list_query(query, context)
 
         params = {
@@ -737,8 +701,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get.register(SummonerSpellDto)
     def get_summoner_spell(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> SummonerSpellDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_summoner_spell_query(query, context)
 
         params = {
@@ -768,8 +730,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get_many.register(SummonerSpellDto)
     def get_many_summoner_spell(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[SummonerSpellDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_summoner_spell_query(query, context)
 
         params = {
@@ -809,8 +769,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get.register(SummonerSpellListDto)
     def get_summoner_spell_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> SummonerSpellListDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_summoner_spell_list_query(query, context)
 
         params = {
@@ -840,8 +798,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get_many.register(SummonerSpellListDto)
     def get_many_summoner_spell_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[SummonerSpellListDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_summoner_spell_list_query(query, context)
 
         params = {
@@ -879,8 +835,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get.register(RealmDto)
     def get_realms(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> RealmDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_realms_query(query, context)
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/realms".format(platform=query["platform"].value.lower())
@@ -897,8 +851,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get_many.register(RealmDto)
     def get_many_realms(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[RealmDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_realms_query(query, context)
 
         def generator():
@@ -919,14 +871,12 @@ class StaticDataAPI(RiotAPIService):
     # Language #
     ############
 
-    _validate_get_language_query = Query. \
+    _validate_get_languages_query = Query. \
         has("platform").as_(Platform)
 
     @get.register(LanguagesDto)
     def get_language(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LanguagesDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
-        StaticDataAPI._validate_get_language_query(query, context)
+        StaticDataAPI._validate_get_languages_query(query, context)
 
         url = "https://{platform}.api.riotgames.com/lol/static-data/v3/languages".format(platform=query["platform"].value.lower())
         try:
@@ -937,14 +887,12 @@ class StaticDataAPI(RiotAPIService):
         data = {"region": query["platform"].region.value, "languages": data}
         return LanguagesDto(data)
 
-    _validate_get_many_language_query = Query. \
+    _validate_get_many_languages_query = Query. \
         has("platforms").as_(Iterable)
 
     @get_many.register(LanguagesDto)
     def get_many_language(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[LanguagesDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
-        StaticDataAPI._validate_get_many_language_query(query, context)
+        StaticDataAPI._validate_get_many_languages_query(query, context)
 
         def generator():
             for platform in query["platforms"]:
@@ -971,8 +919,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get.register(LanguageStringsDto)
     def get_language_strings(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LanguageStringsDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_language_strings_query(query, context)
 
         params = {
@@ -999,8 +945,6 @@ class StaticDataAPI(RiotAPIService):
 
     @get_many.register(LanguageStringsDto)
     def get_many_language_strings(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[LanguageStringsDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
         StaticDataAPI._validate_get_many_language_strings_query(query, context)
 
         params = {}
@@ -1030,16 +974,14 @@ class StaticDataAPI(RiotAPIService):
     # Profile Icons #
     #################
 
-    _validate_get_profile_icon_query = Query. \
+    _validate_get_profile_icons_query = Query. \
         has("platform").as_(Platform).also. \
         can_have("version").as_(str).also. \
         can_have("locale").with_default(_get_default_locale, supplies_type=str)
 
     @get.register(ProfileIconDataDto)
-    def get_profile_icon(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ProfileIconDataDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
-        StaticDataAPI._validate_get_profile_icon_query(query, context)
+    def get_profile_icons(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ProfileIconDataDto:
+        StaticDataAPI._validate_get_profile_icons_query(query, context)
 
         params = {
             "locale": query["locale"]
@@ -1064,9 +1006,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("locale").as_(str)
 
     @get_many.register(ProfileIconDataDto)
-    def get_many_profile_icon(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ProfileIconDataDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
+    def get_many_profile_icons(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ProfileIconDataDto, None, None]:
         StaticDataAPI._validate_get_many_profile_icons_query(query, context)
 
         params = {}

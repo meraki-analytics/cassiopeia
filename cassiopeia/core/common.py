@@ -111,7 +111,7 @@ class CheckCache(type):
             # Try to find the obj in the cache
             from ..datastores.uniquekeys import construct_query
             query = construct_query(cls, **kwargs)
-            if hasattr(cls, "version") and "version" not in query:
+            if hasattr(cls, "version") and "version" not in query and not cls.__name__ == "Realms":
                 query["version"] = get_latest_version(region=query["region"], endpoint=None)
             try:
                 return cache.get(cls, query=query)
@@ -196,8 +196,7 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=CheckCache):
             if self._Ghost__is_loaded(load_group):
                 raise ValueError("object has already been loaded.")
             query = self.__get_query__()
-            if hasattr(self.__class__, "version") and "version" not in query:
-                from .staticdata import Versions
+            if hasattr(self.__class__, "version") and "version" not in query and not self.__class__.__name__ == "Realms":
                 query["version"] = get_latest_version(region=query["region"], endpoint=None)
             data = settings.pipeline.get(type=self._load_types[load_group], query=query)
             self.__load_hook__(load_group, data)

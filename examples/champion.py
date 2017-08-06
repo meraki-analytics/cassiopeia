@@ -12,7 +12,7 @@ def get_champions():
 
     print(annie.info.difficulty)
     print(annie.passive.name)
-    # print(annie.recommended_itemsets[0].item_sets[0].items)
+    print({item.name: count for item, count in annie.recommended_itemsets[0].item_sets[0].items.items()})
     print(annie.free_to_play)
     print(annie._Ghost__all_loaded)
     print(annie)
@@ -21,7 +21,7 @@ def get_champions():
     ziggs = cass.get_champion("Ziggs")
     print(ziggs.name)
     print(ziggs.region)
-    # print(ziggs.recommended_itemset[0].item_sets[0].items)
+    print({item.name: count for item, count in ziggs.recommended_itemsets[0].item_sets[0].items.items()})
     print(ziggs.free_to_play)
     for spell in ziggs.spells:
         for var in spell.variables:

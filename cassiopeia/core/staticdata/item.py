@@ -50,138 +50,134 @@ class ItemTreeData(DataObject):
 
 
 class ItemStatsData(DataObject):
-    _renamed = {"percent_crit_damage_mod": "PercentCritDamageMod", "percent_spell_block_mod": "PercentSpellBlockMod", "percent_hp_regen_mod": "PercentHPRegenMod", "percent_movement_speed_mod": "PercentMovementSpeedMod", "flat_spell_block_mod": "FlatSpellBlockMod", "flat_crit_damage_mod": "FlatCritDamageMod", "flat_energy_pool_mod": "FlatEnergyPoolMod", "percent_lifesteal_mod": "PercentLifeStealMod", "flat_mp_pool_mod": "FlatMPPoolMod", "flat_movement_speed_mod": "FlatMovementSpeedMod", "percent_attack_speed_mod": "PercentAttackSpeedMod", "flat_block_mod": "FlatBlockMod", "percent_block_mod": "PercentBlockMod", "flat_energy_regen_mod": "FlatEnergyRegenMod", "percent_spellvamp_mod": "PercentSpellVampMod", "flat_mp_regen_mod": "FlatMPRegenMod", "percent_dodge_mod": "PercentDodgeMod", "flat_attack_speed_mod": "FlatAttackSpeedMod", "flat_armor_mod": "FlatArmorMod", "flat_hp_regen_mod": "FlatHPRegenMod", "percent_magic_damage_mod": "PercentMagicDamageMod", "percent_mp_pool_mod": "PercentMPPoolMod", "flat_magic_damage_mod": "FlatMagicDamageMod", "percent_mp_regen_mod": "PercentMPRegenMod", "percent_physical_damage_mod": "PercentPhysicalDamageMod", "flat_physical_damage_mod": "FlatPhysicalDamageMod", "percent_hp_pool_mod": "PercentHPPoolMod", "percent_armor_mod": "PercentArmorMod", "percent_crit_chance_mod": "PercentCritChanceMod", "percent_exp_bonus": "PercentEXPBonus", "flat_hp_pool_mod": "FlatHPPoolMod", "flat_crit_chance_mod": "FlatCritChanceMod", "flat_exp_bonus": "FlatEXPBonus"}
+    _renamed = {"percent_critical_strike_damage": "PercentCritDamageMod", "percent_magic_resist": "PercentSpellBlockMod", "percent_health_regen": "PercentHPRegenMod", "percent_movespeed": "PercentMovementSpeedMod", "magic_resist": "FlatSpellBlockMod", "critical_strike_damage": "FlatCritDamageMod", "energy": "FlatEnergyPoolMod", "life_steal": "PercentLifeStealMod", "mana": "FlatMPPoolMod", "movespeed": "FlatMovementSpeedMod", "percent_attack_speed": "PercentAttackSpeedMod", "block": "FlatBlockMod", "percent_block": "PercentBlockMod", "energy_regen": "FlatEnergyRegenMod", "spell_vamp": "PercentSpellVampMod", "mana_regen": "FlatMPRegenMod", "dodge": "PercentDodgeMod", "attack_speed": "FlatAttackSpeedMod", "armor": "FlatArmorMod", "health_regen": "FlatHPRegenMod", "percent_ability_power": "PercentMagicDamageMod", "percent_mana_regen": "PercentMPPoolMod", "ability_power": "FlatMagicDamageMod", "percent_mana_regen": "PercentMPRegenMod", "percent_attack_damage": "PercentPhysicalDamageMod", "attack_damage": "FlatPhysicalDamageMod", "percent_health": "PercentHPPoolMod", "percent_armor": "PercentArmorMod", "percent_xp_bonus": "PercentEXPBonus", "health": "FlatHPPoolMod", "critical_strike_chance": "FlatCritChanceMod", "xp_bonus": "FlatEXPBonus"}
 
     @property
-    def percent_crit_damage_mod(self) -> float:
+    def percent_critical_strike_damage(self) -> float:
         return self._dto["PercentCritDamageMod"]
 
     @property
-    def percent_spell_block_mod(self) -> float:
+    def percent_magic_resist(self) -> float:
         return self._dto["PercentSpellBlockMod"]
 
     @property
-    def percent_hp_regen_mod(self) -> float:
+    def percent_health_regen(self) -> float:
         return self._dto["PercentHPRegenMod"]
 
     @property
-    def percent_movememnt_speed_mod(self) -> float:
+    def percent_movespeed(self) -> float:
         return self._dto["PercentMovementSpeedMod"]
 
     @property
-    def flat_spell_block_mod(self) -> str:
+    def magic_resist(self) -> str:
         return self._dto["FlatSpellBlockMod"]
 
     @property
-    def flat_crit_damage_mod(self) -> float:
+    def critical_strike_damage(self) -> float:
         return self._dto["FlatCritDamageMod"]
 
     @property
-    def flat_energy_pool_mod(self) -> float:
+    def energy(self) -> float:
         return self._dto["FlatEnergyPoolMod"]
 
     @property
-    def percent_lifesteal_mod(self) -> float:
+    def life_steal(self) -> float:
         return self._dto["PercentLifeStealMod"]
 
     @property
-    def flat_mp_pool_mod(self) -> float:
+    def mana(self) -> float:
         return self._dto["FlatMPPoolMod"]
 
     @property
-    def flat_movement_speed_mod(self) -> float:
+    def movespeed(self) -> float:
         return self._dto["FlatMovementSpeedMod"]
 
     @property
-    def percent_attack_speed_mod(self) -> float:
+    def percent_attack_speed(self) -> float:
         return self._dto["PercentAttackSpeedMod"]
 
     @property
-    def flat_block_mod(self) -> float:
+    def block(self) -> float:
         return self._dto["FlatBlockMod"]
 
     @property
-    def percent_block_mod(self) -> float:
+    def percent_block(self) -> float:
         return self._dto["PercentBlockMod"]
 
     @property
-    def flat_energy_regen_mod(self) -> float:
+    def energy_regen(self) -> float:
         return self._dto["FlatEnergyRegenMod"]
 
     @property
-    def percent_spellvamp_mod(self) -> float:
+    def spell_vamp(self) -> float:
         return self._dto["PercentSpellVampMod"]
 
     @property
-    def flat_mp_regen_mod(self) -> float:
+    def mana_regen(self) -> float:
         return self._dto["FlatMPRegenMod"]
 
     @property
-    def percent_dodge_mod(self) -> float:
+    def dodge(self) -> float:
         return self._dto["PercentDodgeMod"]
 
     @property
-    def flat_attack_speed_mod(self) -> float:
+    def attack_speed(self) -> float:
         return self._dto["FlatAttackSpeedMod"]
 
     @property
-    def flat_armor_mod(self) -> float:
+    def armor(self) -> float:
         return self._dto["FlatArmorMod"]
 
     @property
-    def flat_hp_regen_mod(self) -> float:
+    def health_regen(self) -> float:
         return self._dto["FlatHPRegenMod"]
 
     @property
-    def percent_magic_damage_mod(self) -> float:
+    def percent_ability_power(self) -> float:
         return self._dto["PercentMagicDamageMod"]
 
     @property
-    def percent_mp_pool_mod(self) -> float:
+    def percent_mana_regen(self) -> float:
         return self._dto["PercentMPPoolMod"]
 
     @property
-    def flat_magic_damage_mod(self) -> float:
+    def ability_power(self) -> float:
         return self._dto["FlatMagicDamageMod"]
 
     @property
-    def percent_mp_regen_mod(self) -> float:
+    def percent_mana_regen(self) -> float:
         return self._dto["PercentMPRegenMod"]
 
     @property
-    def percent_physical_damage_mod(self) -> float:
+    def percent_attack_damage(self) -> float:
         return self._dto["PercentPhysicalDamageMod"]
 
     @property
-    def flat_physical_damage_mod(self) -> float:
+    def attack_damage(self) -> float:
         return self._dto["FlatPhysicalDamageMod"]
 
     @property
-    def percent_hp_pool_mod(self) -> float:
+    def percent_health(self) -> float:
         return self._dto["PercentHPPoolMod"]
 
     @property
-    def percent_armor_mod(self) -> float:
+    def percent_armor(self) -> float:
         return self._dto["PercentArmorMod"]
 
     @property
-    def percent_crit_change_mod(self) -> float:
-        return self._dto["PercentCritChangeMod"]
-
-    @property
-    def percent_exp_bonus(self) -> float:
+    def percent_xp_bonus(self) -> float:
         return self._dto["PercentEXPBonus"]
 
     @property
-    def flat_hp_pool_mod(self) -> float:
+    def health(self) -> float:
         return self._dto["FlatHPPoolMod"]
 
     @property
-    def flat_crit_chance_mod(self) -> float:
-        return self._dto["FlatCritChanceMod"]
+    def critical_strike_chance(self) -> float:
+        return self._dto["FlatCritChanceMod"] + self._dto["PercentCritChanceMod"]
 
     @property
-    def flat_exp_bonus(self) -> float:
+    def xp_bonus(self) -> float:
         return self._dto["FlatEXPBonus"]
 
 
@@ -382,136 +378,132 @@ class ItemStats(CassiopeiaObject):
     _data_types = {ItemStatsData}
 
     @property
-    def percent_crit_damage_mod(self) -> float:
-        return self._data[ItemStatsData].percent_crit_damage_mod
+    def percent_critical_strike_damage(self) -> float:
+        return self._data[ItemStatsData].percent_critical_strike_damage
 
     @property
-    def percent_spell_block_mod(self) -> float:
-        return self._data[ItemStatsData].percent_spell_block_mod
+    def percent_magic_resist(self) -> float:
+        return self._data[ItemStatsData].percent_magic_resist
 
     @property
-    def percent_hp_regen_mod(self) -> float:
-        return self._data[ItemStatsData].percent_hp_regen_mod
+    def percent_health_regen(self) -> float:
+        return self._data[ItemStatsData].percent_health_regen
 
     @property
-    def percent_movememnt_speed_mod(self) -> float:
-        return self._data[ItemStatsData].percent_movememnt_speed_mod
+    def percent_movespeed(self) -> float:
+        return self._data[ItemStatsData].percent_movespeed
 
     @property
-    def flat_spell_block_mod(self) -> float:
-        return self._data[ItemStatsData].flat_spell_block_mod
+    def magic_resist(self) -> float:
+        return self._data[ItemStatsData].magic_resist
 
     @property
-    def flat_crit_damage_mod(self) -> float:
-        return self._data[ItemStatsData].flat_crit_damage_mod
+    def critical_strike_damage(self) -> float:
+        return self._data[ItemStatsData].critical_strike_damage
 
     @property
-    def flat_energy_pool_mod(self) -> float:
-        return self._data[ItemStatsData].flat_energy_pool_mod
+    def energy(self) -> float:
+        return self._data[ItemStatsData].energy
 
     @property
-    def percent_lifesteal_mod(self) -> float:
-        return self._data[ItemStatsData].percent_lifesteal_mod
+    def life_steal(self) -> float:
+        return self._data[ItemStatsData].life_steal
 
     @property
-    def flat_mp_pool_mod(self) -> float:
-        return self._data[ItemStatsData].flat_mp_pool_mod
+    def mana(self) -> float:
+        return self._data[ItemStatsData].mana
 
     @property
-    def flat_movement_speed_mod(self) -> float:
-        return self._data[ItemStatsData].flat_movement_speed_mod
+    def movespeed(self) -> float:
+        return self._data[ItemStatsData].movespeed
 
     @property
-    def percent_attack_speed_mod(self) -> float:
-        return self._data[ItemStatsData].percent_attack_speed_mod
+    def percent_attack_speed(self) -> float:
+        return self._data[ItemStatsData].percent_attack_speed
 
     @property
-    def flat_block_mod(self) -> float:
-        return self._data[ItemStatsData].flat_block_mod
+    def block(self) -> float:
+        return self._data[ItemStatsData].block
 
     @property
-    def percent_block_mod(self) -> float:
-        return self._data[ItemStatsData].percent_block_mod
+    def percent_block(self) -> float:
+        return self._data[ItemStatsData].percent_block
 
     @property
-    def flat_energy_regen_mod(self) -> float:
-        return self._data[ItemStatsData].flat_energy_regen_mod
+    def energy_regen(self) -> float:
+        return self._data[ItemStatsData].energy_regen
 
     @property
-    def percent_spellvamp_mod(self) -> float:
-        return self._data[ItemStatsData].percent_spellvamp_mod
+    def spell_vamp(self) -> float:
+        return self._data[ItemStatsData].spell_vamp
 
     @property
-    def flat_mp_regen_mod(self) -> float:
-        return self._data[ItemStatsData].flat_mp_regen_mod
+    def mana_regen(self) -> float:
+        return self._data[ItemStatsData].mana_regen
 
     @property
-    def percent_dodge_mod(self) -> float:
-        return self._data[ItemStatsData].percent_dodge_mod
+    def dodge(self) -> float:
+        return self._data[ItemStatsData].dodge
 
     @property
-    def flat_attack_speed_mod(self) -> float:
-        return self._data[ItemStatsData].flat_attack_speed_mod
+    def attack_speed(self) -> float:
+        return self._data[ItemStatsData].attack_speed
 
     @property
-    def flat_armor_mod(self) -> float:
-        return self._data[ItemStatsData].flat_armor_mod
+    def armor(self) -> float:
+        return self._data[ItemStatsData].armor
 
     @property
-    def flat_hp_regen_mod(self) -> float:
-        return self._data[ItemStatsData].flat_hp_regen_mod
+    def health_regen(self) -> float:
+        return self._data[ItemStatsData].health_regen
 
     @property
-    def percent_magic_damage_mod(self) -> float:
-        return self._data[ItemStatsData].percent_magic_damage_mod
+    def percent_ability_power(self) -> float:
+        return self._data[ItemStatsData].percent_ability_power
 
     @property
-    def percent_mp_pool_mod(self) -> float:
-        return self._data[ItemStatsData].percent_mp_pool_mod
+    def percent_mana_regen(self) -> float:
+        return self._data[ItemStatsData].percent_mana_regen
 
     @property
-    def flat_magic_damage_mod(self) -> float:
-        return self._data[ItemStatsData].flat_magic_damage_mod
+    def ability_power(self) -> float:
+        return self._data[ItemStatsData].ability_power
 
     @property
-    def percent_mp_regen_mod(self) -> float:
-        return self._data[ItemStatsData].percent_mp_regen_mod
+    def percent_mana_regen(self) -> float:
+        return self._data[ItemStatsData].percent_mana_regen
 
     @property
-    def percent_physical_damage_mod(self) -> float:
-        return self._data[ItemStatsData].percent_physical_damage_mod
+    def percent_attack_damage(self) -> float:
+        return self._data[ItemStatsData].percent_attack_damage
 
     @property
-    def flat_physical_damage_mod(self) -> float:
-        return self._data[ItemStatsData].flat_physical_damage_mod
+    def attack_damage(self) -> float:
+        return self._data[ItemStatsData].attack_damage
 
     @property
-    def percent_hp_pool_mod(self) -> float:
-        return self._data[ItemStatsData].percent_hp_pool_mod
+    def percent_health(self) -> float:
+        return self._data[ItemStatsData].percent_health
 
     @property
-    def percent_armor_mod(self) -> float:
-        return self._data[ItemStatsData].percent_armor_mod
+    def percent_armor(self) -> float:
+        return self._data[ItemStatsData].percent_armor
 
     @property
-    def percent_crit_change_mod(self) -> float:
-        return self._data[ItemStatsData].percent_crit_change_mod
+    def percent_xp_bonus(self) -> float:
+        return self._data[ItemStatsData].percent_xp_bonus
 
     @property
-    def percent_exp_bonus(self) -> float:
-        return self._data[ItemStatsData].percent_exp_bonus
+    def health(self) -> float:
+        return self._data[ItemStatsData].health
 
     @property
-    def flat_hp_pool_mod(self) -> float:
-        return self._data[ItemStatsData].flat_hp_pool_mod
+    def critical_strike_chance(self) -> float:
+        return self._data[ItemStatsData].critical_strike_chance
 
     @property
-    def flat_crit_chance_mod(self) -> float:
-        return self._data[ItemStatsData].flat_crit_chance_mod
-
-    @property
-    def flat_exp_bonus(self) -> float:
-        return self._data[ItemStatsData].flat_exp_bonus
+    def xp_bonus(self) -> float:
+        return self._data[ItemStatsData].xp_bonus
 
 
 class Gold(CassiopeiaObject):

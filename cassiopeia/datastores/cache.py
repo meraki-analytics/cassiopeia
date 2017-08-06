@@ -347,8 +347,8 @@ class Cache(DataSource, DataSink):
     @put_many.register(Maps)
     def put_many_maps(self, items: Iterable[Maps], context: PipelineContext = None) -> None:
         self._put_many(Maps, items, uniquekeys.for_maps, ("id",), ("name",), context=context)
-        for map in items:
-            self._put(Map, map, uniquekeys.for_map, ("id",), ("name",), context=context)
+        for maps in items:
+            self._put_many(Map, maps, uniquekeys.for_map, ("id",), ("name",), context=context)
 
     # Mastery
 

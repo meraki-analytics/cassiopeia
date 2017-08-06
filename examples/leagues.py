@@ -17,6 +17,12 @@ def print_leagues(summoner_name: str, region: str):
     print(leagues.fives.name)
     for entry in leagues.fives:
         print(entry.summoner.name, entry.league_points)
+        print(entry.tier)
+        print(entry.division)
+        print(entry.region)
+        print(entry.queue)
+        print(entry.name)
+        print()
 
     print()
     print("Challenger:")
