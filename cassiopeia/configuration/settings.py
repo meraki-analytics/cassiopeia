@@ -12,6 +12,7 @@ def create_default_pipeline(api_key, verbose=False):
     from datapipelines import DataPipeline, CompositeDataTransformer
     from ..datastores.cache import Cache
     from ..datastores.riotapi import RiotAPI
+    from ..datastores.ddragon import DDragonDataSource
     from ..transformers.staticdata import StaticDataTransformer
     from ..transformers.champion import ChampionTransformer
     from ..transformers.championmastery import ChampionMasteryTransformer
@@ -25,7 +26,8 @@ def create_default_pipeline(api_key, verbose=False):
 
     services = [
         Cache(),  # TODO Add expirations from file
-        RiotAPI(api_key=api_key)
+        RiotAPI(api_key=api_key),
+        DDragonDataSource()  # TODO: Should this be before or after RiotAPI? Should this be default?
     ]
     riotapi_transformer = CompositeDataTransformer([
         StaticDataTransformer(),
@@ -84,7 +86,7 @@ class Settings(object):
     @property
     def pipeline(self):
         if self.__pipeline is None:
-            if not self.__key.startswith("RGAPI"):
+            if self.__key and not self.__key.startswith("RGAPI"):
                 self.__key = os.environ[self.__key]
             self.__pipeline = create_default_pipeline(api_key=self.__key, verbose=False)
         return self.__pipeline

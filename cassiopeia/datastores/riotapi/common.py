@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import MutableMapping, Any, Union, TypeVar, Iterable, Type, Dict
 from collections import defaultdict
 
-from datapipelines import DataSource, PipelineContext
+from datapipelines import DataSource, PipelineContext, NotFoundError
 from merakicommons.ratelimits import RateLimiter, FixedWindowRateLimiter, MultiRateLimiter
 
 from ..common import HTTPClient, HTTPError, Curl
@@ -21,8 +21,13 @@ class APINotFoundError(HTTPError):
     pass
 
 
+class APIForbiddenError(APINotFoundError):
+    pass
+
+
 _ERROR_CODES = {
     400: APIRequestError,
+    401: APIForbiddenError,
     403: APIRequestError,
     404: APINotFoundError,
     415: RuntimeError,
@@ -99,6 +104,10 @@ class RiotAPIService(DataSource):
         return limiter
 
     def _get(self, url: str, parameters: MutableMapping[str, Any] = None, rate_limiter: MultiRateLimiter = None, connection: Curl = None, backoff: float = 1.) -> Union[dict, list, Any]:
+        if not self._headers["X-Riot-Token"]:
+            # TODO: Is this the best way to let secondary services (e.g. DDragon) work?
+            raise NotFoundError("No API key provided.")
+
         try:
             body, response_headers = self._client.get(url, parameters, self._headers, rate_limiter, connection)
 
@@ -177,6 +186,8 @@ class RiotAPIService(DataSource):
                 new_error = APINotFoundError("The Riot API returned a NOT FOUND error for the request. The received error was {code}: \"{message}\"".format(code=error.code, message=str(error)), error.code)
             elif new_error_type is APIRequestError:
                 new_error = APIRequestError("The Riot API returned an error on the request. The received error was {code}: \"{message}\"".format(code=error.code, message=str(error)), error.code)
+            elif new_error_type is APIForbiddenError:
+                new_error = APIForbiddenError("The Riot API returned a FORBIDDEN error for the request. The received error was {code}: \"{message}\"".format(code=error.code, message=str(error)), error.code)
             else:
                 new_error = new_error_type(str(error))
 
