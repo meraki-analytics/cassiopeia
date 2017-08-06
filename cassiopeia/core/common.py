@@ -1,8 +1,6 @@
 from abc import abstractmethod, abstractclassmethod
-from typing import Mapping, Any, Set, Dict, Union
-from enum import Enum
+from typing import Mapping, Any, Set, Union, Optional
 import functools
-import copy
 import logging
 
 from datapipelines import NotFoundError, UnsupportedError
@@ -46,9 +44,13 @@ def provide_default_region(method):
     return default_region_wrapper
 
 
-def get_latest_version(region):
-    from .staticdata.version import Versions
-    return Versions(region=region)[0]
+def get_latest_version(region: Union[Region, str], endpoint: Optional[str]):
+    from .staticdata.realm import Realms
+    if endpoint is not None:
+        return Realms(region=region).latest_versions[endpoint]
+    else:
+        return Realms(region=region).version
+
 
 class DataObject(object):
     def __init__(self, **kwargs):
@@ -76,23 +78,8 @@ class DataObject(object):
                 yield key
 
     def __str__(self):
+        # TODO Update this to return the correct stuff when we update the data for this layer.
         return str(self._dto)
-        #result = {}
-        #for key in dir(self):  # `vars` won't recursively look in the obj for things like properties, see htt#ps://stackoverflow.com/questions/980249/difference-between-dir-and-vars-keys-in-python
-        #    if not key.startswith("_") and key is not "from_dto":
-        #        # Don't just fail to print if the API didn't return a value.
-        #        try:
-        #            value = getattr(self, key)
-        #            if isinstance(value, DataObject):
-        #                value = str(value)
-        #            elif isinstance(value, list) and len(value) > 0 and isinstance(value[0], DataObject):
-        #                value = [str(v) for v in value]
-        #            elif isinstance(value, dict) and len(value) > 0 and isinstance(next(iter(value.values())), DataObject):
-        #                value = {key: str(v) for key, v in value.items()}
-        #            result[key] = value
-        #        except KeyError:  # A KeyError will be thrown when the properties try to do the dto lookup if the data doesn't exist
-        #            pass
-        #return str(result).replace("\\'", "'")
 
     def _update(self, data: Mapping[str, Any]) -> None:
         for key, value in data.items():
@@ -110,7 +97,6 @@ class DataObjectList(list, DataObject):
     def __init__(self, *args, **kwargs):
         list.__init__(self, *args)
         DataObject.__init__(self, **kwargs)
-        self._dto
 
     def from_dto(cls, dto: Union[list, DtoObject]):
         self = DataObject.from_dto(dto)
@@ -126,7 +112,7 @@ class CheckCache(type):
             from ..datastores.uniquekeys import construct_query
             query = construct_query(cls, **kwargs)
             if hasattr(cls, "version") and "version" not in query:
-                query["version"] = get_latest_version(query["region"])
+                query["version"] = get_latest_version(region=query["region"], endpoint=None)
             try:
                 return cache.get(cls, query=query)
             except (NotFoundError, UnsupportedError):
@@ -212,7 +198,7 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=CheckCache):
             query = self.__get_query__()
             if hasattr(self.__class__, "version") and "version" not in query:
                 from .staticdata import Versions
-                query["version"] = get_latest_version(region=query["region"])
+                query["version"] = get_latest_version(region=query["region"], endpoint=None)
             data = settings.pipeline.get(type=self._load_types[load_group], query=query)
             self.__load_hook__(load_group, data)
 
@@ -235,7 +221,7 @@ class CassiopeiaGhostList(SearchableList, CassiopeiaGhost):
         return id(self)
 
     @property
-    def _Ghost__load_groups(self) -> Set[DataObject]:
+    def _Ghost__load_groups(self) -> Set[type]:
         # Since @Ghost.property isn't set, the object doesn't have any load groups. Define them as equivalent to _data_types.
         return self._data_types
 

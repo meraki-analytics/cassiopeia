@@ -10,7 +10,7 @@ from ...data import Resource, Region, Platform, Map, GameMode
 from ..champion import ChampionData as ChampionStatusData
 from ..champion import ChampionListData as ChampionStatusListData
 from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
-from .common import ImageData, SpriteData, Image, Sprite
+from .common import ImageData, Image, Sprite
 from ...dto.staticdata import champion as dto
 from .item import Item
 
@@ -500,7 +500,7 @@ class Champions(CassiopeiaGhostList):
         try:
             return self._data[ChampionListData].version
         except KeyError:
-            version = get_latest_version(region=self.region)
+            version = get_latest_version(region=self.region, endpoint="champion")
             self(version=version)
             return self._data[ChampionListData].version
 
@@ -670,9 +670,9 @@ class RecommendedItems(CassiopeiaObject):
         return SearchableList(ItemSet(itemset) for itemset in self._data[RecommendedData].item_sets)
 
     @property
-    def champion(self) -> str:
-        """The champion to whom this set of recommendations belongs."""
-        return self._data[RecommendedData].champion
+    def champion(self) -> "Champion":
+        """The name of the champion to whom this set of recommendations belongs."""
+        return Champion(name=self._data[RecommendedData].champion)
 
     @property
     def title(self) -> str:
@@ -916,6 +916,8 @@ class Champion(CassiopeiaGhost):
             find = "id", self.id
         elif "name" in self._data[ChampionData]._dto or "name" in self._data[ChampionStatusData]._dto:
             find = "name", self.name
+        else:
+            raise RuntimeError("Impossible!")
         if load_group is ChampionData:
             data = find_matching_attribute(data, *find)
         else:
@@ -940,7 +942,7 @@ class Champion(CassiopeiaGhost):
         try:
             return self._data[ChampionData].version
         except KeyError:
-            version = get_latest_version(region=self.region)
+            version = get_latest_version(region=self.region, endpoint="champion")
             self(version=version)
             return self._data[ChampionData].version
 
@@ -1068,13 +1070,6 @@ class Champion(CassiopeiaGhost):
     @CassiopeiaGhost.property(ChampionData)
     @ghost_load_on(KeyError)
     @lazy
-    def image_info(self) -> Image:
-        """The image information for this champion."""
-        return Image(self._data[ChampionData].image, version=self.version)
-
-    @CassiopeiaGhost.property(ChampionData)
-    @ghost_load_on(KeyError)
-    @lazy
     def skins(self) -> List[Skin]:
         """This champion's skins."""
         skins = []
@@ -1097,12 +1092,15 @@ class Champion(CassiopeiaGhost):
         """This champion's spells."""
         return SearchableList(ChampionSpell.from_data(spell) for spell in self._data[ChampionData].spells)
 
-    @lazy_property
-    def image(self) -> PILImage:
-        """The image icon for this champion."""
-        return settings.pipeline.get(PILImage, query={"url": self.image_info.url})
+    @CassiopeiaGhost.property(ChampionData)
+    @ghost_load_on(KeyError)
+    @lazy
+    def image(self) -> Image:
+        """The image information for this champion."""
+        image = Image(self._data[ChampionData].image)
+        image(version=self.version)
+        return image
 
     @lazy_property
     def sprite(self) -> Sprite:
-        """The sprite that contains this champion's image icon."""
-        return self.image_info.sprite.image
+        return self.image.sprite_info

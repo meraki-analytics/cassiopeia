@@ -1,5 +1,4 @@
 from typing import Set, Union
-from PIL.Image import Image as PILImage
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
@@ -137,18 +136,17 @@ class Masteries(CassiopeiaGhostList):
         try:
             return self._data[MasteryListData].version
         except KeyError:
-            version = get_latest_version(region=self.region)
+            version = get_latest_version(region=self.region, endpoint="mastery")
             self(version=version)
             return self._data[MasteryListData].version
 
     @property
     def locale(self) -> str:
-        """The locale for this champion."""
         return self._data[MasteryListData].locale
 
     @property
     def included_data(self) -> Set[str]:
-        """A set of tags to return additonal information for this champion when it's loaded."""
+        """A set of tags to return additional information for this mastery when it's loaded."""
         return self._data[MasteryListData].included_data
 
 
@@ -211,7 +209,7 @@ class Mastery(CassiopeiaGhost):
         try:
             return self._data[MasteryData].version
         except KeyError:
-            version = get_latest_version(region=self.region)
+            version = get_latest_version(region=self.region, endpoint="mastery")
             self(version=version)
             return self._data[MasteryData].version
 
@@ -222,7 +220,7 @@ class Mastery(CassiopeiaGhost):
 
     @property
     def included_data(self) -> Set[str]:
-        """A set of tags to return additonal information for this mastery when it's loaded."""
+        """A set of tags to return additional information for this mastery when it's loaded."""
         return self._data[MasteryData].included_data
 
     @CassiopeiaGhost.property(MasteryData)
@@ -276,16 +274,12 @@ class Mastery(CassiopeiaGhost):
     @CassiopeiaGhost.property(MasteryData)
     @ghost_load_on(KeyError)
     @lazy
-    def image_info(self) -> Image:
+    def image(self) -> Image:
         """The image information for this mastery."""
-        return Image(self._data[MasteryData].image, version=self.version)
-
-    @lazy_property
-    def image(self) -> PILImage:
-        """The image icon for this mastery."""
-        return settings.pipeline.get(PILImage, query={"url": self.image_info.url})
+        image = Image.from_data(self._data[MasteryData].image)
+        image(version=self.version)
+        return image
 
     @lazy_property
     def sprite(self) -> Sprite:
-        """The sprite that contains this mastery's image icon."""
-        return self.image_info.sprite.image
+        return self.image.sprite_info

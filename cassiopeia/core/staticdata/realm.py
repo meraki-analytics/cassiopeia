@@ -6,7 +6,7 @@ from merakicommons.container import searchable
 
 from ...configuration import settings
 from ...data import Region, Platform
-from ..common import DataObject, CassiopeiaGhost, get_latest_version
+from ..common import DataObject, CassiopeiaGhost
 from ...dto.staticdata import realm as dto
 
 
@@ -104,14 +104,10 @@ class Realms(CassiopeiaGhost):
         """The locale for this realm."""
         return self._data[RealmData].locale
 
-    @property
+    @CassiopeiaGhost.property(RealmData)
+    @ghost_load_on(KeyError)
     def version(self) -> str:
-        """The version for this map."""
-        try:
-            return self._data[RealmData].version
-        except KeyError:
-            version = get_latest_version(region=self.region)
-            return self._data[RealmData].version
+        return self._data[RealmData].version
 
     @CassiopeiaGhost.property(RealmData)
     @ghost_load_on(KeyError)

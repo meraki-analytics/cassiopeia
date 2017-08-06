@@ -12,14 +12,6 @@ from .common import DataObject, CassiopeiaObject, CassiopeiaGhost
 from .staticdata import ProfileIcon
 from ..dto.summoner import SummonerDto
 
-try:
-    import ujson as json
-except ImportError:
-    import json
-
-
-_profile_icon_names = None
-
 
 ##############
 # Data Types #

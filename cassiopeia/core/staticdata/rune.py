@@ -8,7 +8,7 @@ from merakicommons.container import searchable, SearchableList
 from ...configuration import settings
 from ...data import Region, Platform, RuneType
 from ..common import DataObject, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
-from .common import Sprite, Image
+from .common import ImageData, Sprite, Image
 from ...dto.staticdata import rune as dto
 
 
@@ -356,8 +356,8 @@ class RuneData(DataObject):
         return RuneStatsData.from_dto(self._dto["stats"])
 
     @property
-    def image_data(self) -> str:
-        return self._dto["image"]
+    def image(self) -> ImageData:
+        return ImageData.from_dto(self._dto["image"])
 
     @property
     def tags(self) -> List[str]:
@@ -416,7 +416,7 @@ class Runes(CassiopeiaGhostList):
         try:
             return self._data[RuneListData].version
         except KeyError:
-            version = get_latest_version(region=self.region)
+            version = get_latest_version(region=self.region, endpoint="rune")
             self(version=version)
             return self._data[RuneListData].version
 
@@ -754,7 +754,7 @@ class Rune(CassiopeiaGhost):
         try:
             return self._data[RuneData].version
         except KeyError:
-            version = get_latest_version(region=self.region)
+            version = get_latest_version(region=self.region, endpoint="rune")
             self(version=version)
             return self._data[RuneData].version
 
@@ -815,16 +815,12 @@ class Rune(CassiopeiaGhost):
     @CassiopeiaGhost.property(RuneData)
     @ghost_load_on(KeyError)
     @lazy
-    def image_info(self) -> Image:
+    def image(self) -> Image:
         """The image information for this rune."""
-        return Image(self._data[RuneData].image, version=self.version)
-
-    @lazy_property
-    def image(self) -> PILImage:
-        """The image icon for this rune."""
-        return settings.pipeline.get(PILImage, query={"url": self.image_info.url})
+        image = Image(self._data[RuneData].image)
+        image(version=self.version)
+        return image
 
     @lazy_property
     def sprite(self) -> Sprite:
-        """The sprite that contains this rune's image icon."""
-        return self.image_info.sprite.image
+        return self.image.sprite_info

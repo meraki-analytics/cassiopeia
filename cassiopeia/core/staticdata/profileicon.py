@@ -3,7 +3,7 @@ from PIL.Image import Image as PILImage
 from typing import Union
 
 from merakicommons.ghost import ghost_load_on
-from merakicommons.cache import lazy_property
+from merakicommons.cache import lazy_property, lazy
 from merakicommons.container import searchable, SearchableList
 
 from ...configuration import settings
@@ -108,13 +108,12 @@ class ProfileIcons(CassiopeiaGhostList):
         try:
             return self._data[ProfileIconData].version
         except KeyError:
-            version = get_latest_version(region=self.region)
+            version = get_latest_version(region=self.region, endpoint="profileicon")
             self(version=version)
             return self._data[ProfileIconData].version
 
     @property
     def locale(self) -> str:
-        """The locale for this champion."""
         return self._data[ProfileIconData].locale
 
 
@@ -165,7 +164,7 @@ class ProfileIcon(CassiopeiaGhost):
         try:
             return self._data[ProfileIconData].version
         except KeyError:
-            version = get_latest_version(region=self.region)
+            version = get_latest_version(region=self.region, endpoint="profileicon")
             self(version=version)
             return self._data[ProfileIconData].version
 
@@ -178,7 +177,7 @@ class ProfileIcon(CassiopeiaGhost):
     def id(self) -> int:
         return self._data[ProfileIconData].id
 
-    @property
+    @lazy_property
     def name(self) -> Union[str, None]:
         global _profile_icon_names
         if _profile_icon_names is None:
@@ -196,10 +195,11 @@ class ProfileIcon(CassiopeiaGhost):
     @CassiopeiaGhost.property(ProfileIconData)
     @ghost_load_on(KeyError)
     def url(self) -> str:
-        version = get_latest_version(region=self.region)
+        version = get_latest_version(region=self.region, endpoint="profileicon")
         return "http://ddragon.leagueoflegends.com/cdn/{version}/img/profileicon/{id}.png".format(version=version, id=self.id)
 
     @CassiopeiaGhost.property(ProfileIconData)
     @ghost_load_on(KeyError)
+    @lazy
     def image(self) -> PILImage:
         return settings.pipeline.get(PILImage, query={"url": self.url})

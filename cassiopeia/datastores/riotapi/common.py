@@ -50,6 +50,7 @@ _METHOD_RATE_LIMITS.update({
     "staticdata/item": (10, 3600),
     "staticdata/items": (10, 3600),
     "staticdata/maps": (10, 3600),
+    "staticdata/summoner-spell": (10, 3600),
     "staticdata/summoner-spells": (10, 3600),
     "staticdata/realms": (10, 3600),
     "staticdata/language": (10, 3600),

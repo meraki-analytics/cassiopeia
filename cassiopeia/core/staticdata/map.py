@@ -1,5 +1,4 @@
 from typing import List, Union
-from PIL.Image import Image as PILImage
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
@@ -8,7 +7,7 @@ from merakicommons.container import searchable, SearchableList
 from ...configuration import settings
 from ...data import Region, Platform
 from ..common import DataObject, CassiopeiaGhost, DataObjectList, CassiopeiaGhostList, get_latest_version
-from .common import Sprite, Image, ImageData
+from .common import ImageData, Sprite, Image
 from ...dto.staticdata import map as dto
 
 
@@ -109,13 +108,12 @@ class Maps(CassiopeiaGhostList):
         try:
             return self._data[MapListData].version
         except KeyError:
-            version = get_latest_version(region=self.region)
+            version = get_latest_version(region=self.region, endpoint="map")
             self(version=version)
             return self._data[MapListData].version
 
     @property
     def locale(self) -> str:
-        """The locale for this champion."""
         return self._data[MapListData].locale
 
 
@@ -163,12 +161,10 @@ class Map(CassiopeiaGhost):
 
     @lazy_property
     def region(self) -> Region:
-        """The region for this champion."""
         return Region(self._data[MapData].region)
 
     @lazy_property
     def platform(self) -> Platform:
-        """The platform for this champion."""
         return self.region.platform
 
     @property
@@ -177,7 +173,7 @@ class Map(CassiopeiaGhost):
         try:
             return self._data[MapData].version
         except KeyError:
-            version = get_latest_version(region=self.region)
+            version = get_latest_version(region=self.region, endpoint="map")
             self(version=version)
             return self._data[MapData].version
 
@@ -205,16 +201,11 @@ class Map(CassiopeiaGhost):
     @CassiopeiaGhost.property(MapData)
     @ghost_load_on(KeyError)
     @lazy
-    def image_info(self) -> Image:
-        """The image information for this champion."""
-        return Image(self._data[MapData].image, version=self.version)
-
-    @lazy_property
-    def image(self) -> PILImage:
-        """The image icon for this champion."""
-        return settings.pipeline.get(PILImage, query={"url": self.image_info.url})
+    def image(self) -> Image:
+        image = Image.from_data(self._data[MapData].image)
+        image(version=self.version)
+        return image
 
     @lazy_property
     def sprite(self) -> Sprite:
-        """The sprite that contains this champion's image icon."""
-        return self.image_info.sprite.image
+        return self.image.sprite_info

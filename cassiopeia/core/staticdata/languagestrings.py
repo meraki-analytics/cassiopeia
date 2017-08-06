@@ -68,21 +68,18 @@ class LanguageStrings(CassiopeiaGhost):
 
     @lazy_property
     def region(self) -> Region:
-        """The region for this realm."""
         return Region(self._data[LanguageStringsData].region)
 
     @lazy_property
     def platform(self) -> Platform:
-        """The platform for this realm."""
         return self.region.platform
 
     @property
     def version(self) -> str:
-        """The version for this map."""
         try:
             return self._data[LanguageStringsData].version
         except KeyError:
-            version = get_latest_version(region=self.region)
+            version = get_latest_version(region=self.region, endpoint="language")
             self(version=version)
             return self._data[LanguageStringsData].version
 

@@ -2,7 +2,7 @@ import re
 import zlib
 from contextlib import contextmanager
 from io import BytesIO
-from typing import Mapping, Any, Union, Dict
+from typing import Mapping, MutableMapping, Any, Union, Dict
 from urllib.parse import urlencode
 
 from pycurl import Curl
@@ -82,7 +82,7 @@ class HTTPClient(object):
 
         return status_code, body, response_headers
 
-    def get(self, url: str, parameters: Mapping[str, Any] = None, headers: Mapping[str, str] = None, rate_limiter: RateLimiter = None, connection: Curl = None) -> (Union[dict, list, str, bytes], dict):
+    def get(self, url: str, parameters: MutableMapping[str, Any] = None, headers: Mapping[str, str] = None, rate_limiter: RateLimiter = None, connection: Curl = None) -> (Union[dict, list, str, bytes], dict):
         if parameters:
             parameters = {k: str(v).lower() if isinstance(v, bool) else v for k, v in parameters.items()}
             parameters = urlencode(parameters, doseq=True)

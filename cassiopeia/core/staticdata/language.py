@@ -18,7 +18,7 @@ class LanguagesData(DataObjectList):
         return self._dto["region"]
 
 
-class Languages(CassiopeiaGhostList):
+class Locales(CassiopeiaGhostList):
     _data_types = {LanguagesData}
 
     def __init__(self, *args, region: Union[Region, str] = None):
@@ -34,7 +34,6 @@ class Languages(CassiopeiaGhostList):
 
     def __load_hook__(self, load_group: DataObject, data: DataObject) -> None:
         self.clear()
-        from ...transformers.staticdata import StaticDataTransformer
         SearchableList.__init__(self, data)
         super().__load_hook__(load_group, data)
 

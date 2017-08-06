@@ -175,7 +175,7 @@ class Season(Enum):
     preseason_7 = "PRESEASON2017"
     season_7 = "SEASON2017"
 
-    def from_id(id):
+    def from_id(id: int):
         return {i: season for season, i in SEASON_IDS.items()}[id]
 
 
@@ -253,7 +253,7 @@ class Queue(Enum):
     blood_hunt = "ASSASSINATE_5x5"
     darkstar = "DARKSTAR_3x3"
 
-    def from_id(id):
+    def from_id(id: int):
         return {i: season for season, i in QUEUE_IDS.items()}[id]
 
 

@@ -6,7 +6,7 @@ from merakicommons.cache import Cache as CommonsCache
 from . import uniquekeys
 from ..core.championmastery import ChampionMastery
 from ..core.league import Leagues, ChallengerLeague, MasterLeague
-from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Realms, ProfileIcon, Languages, LanguageStrings, Versions, SummonerSpells, Items, Champions, Masteries, Runes, Maps, ProfileIcons
+from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Realms, ProfileIcon, Locales, LanguageStrings, Versions, SummonerSpells, Items, Champions, Masteries, Runes, Maps, ProfileIcons
 from ..core.masterypage import MasteryPage
 from ..core.match import Match
 from ..core.runepage import RunePage
@@ -101,24 +101,24 @@ class Cache(DataSource, DataSink):
     @put.register(ChampionMastery)
     def put_champion_mastery(self, item: ChampionMastery, context: PipelineContext = None) -> None:
         self._put(ChampionMastery, item, uniquekeys.for_champion_mastery,
-            ("id", "id"),
-            ("id", "name"),
-            ("account.id", "id"),
-            ("account.id", "name"),
-            ("name", "id"),
-            ("name", "name"),
-            context=context)
+                  ("id", "id"),
+                  ("id", "name"),
+                  ("account.id", "id"),
+                  ("account.id", "name"),
+                  ("name", "id"),
+                  ("name", "name"),
+                  context=context)
 
     @put_many.register(ChampionMastery)
     def put_many_champion_mastery(self, items: Iterable[ChampionMastery], context: PipelineContext = None) -> None:
         self._put_many(ChampionMastery, items, uniquekeys.for_champion_mastery,
-            ("id", "id"),
-            ("id", "name"),
-            ("account.id", "id"),
-            ("account.id", "name"),
-            ("name", "id"),
-            ("name", "name"),
-            context=context)
+                       ("id", "id"),
+                       ("id", "name"),
+                       ("account.id", "id"),
+                       ("account.id", "name"),
+                       ("name", "id"),
+                       ("name", "name"),
+                       context=context)
 
     ##############
     # League API #
@@ -181,7 +181,6 @@ class Cache(DataSource, DataSink):
     @put_many.register(MasterLeague)
     def put_many_league_summoner(self, items: Iterable[MasterLeague], context: PipelineContext = None) -> None:
         self._put_many(MasterLeague, items, uniquekeys.for_master_league, context=context)
-
 
     ###################
     # Static Data API #
@@ -273,23 +272,23 @@ class Cache(DataSource, DataSink):
 
     # Language
 
-    @get.register(Languages)
+    @get.register(Locales)
     @validate_query(uniquekeys.validate_languages_query, uniquekeys.convert_region_to_platform)
-    def get_languages(self, query: Mapping[str, Any], context: PipelineContext = None) -> Languages:
-        return self._get(Languages, query, uniquekeys.for_languages_query, context)
+    def get_languages(self, query: Mapping[str, Any], context: PipelineContext = None) -> Locales:
+        return self._get(Locales, query, uniquekeys.for_languages_query, context)
 
-    @get_many.register(Languages)
+    @get_many.register(Locales)
     @validate_query(uniquekeys.validate_many_languages_query, uniquekeys.convert_region_to_platform)
-    def get_many_languages(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[Languages, None, None]:
-        return self._get_many(Languages, query, uniquekeys.for_many_languages_query, context)
+    def get_many_languages(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[Locales, None, None]:
+        return self._get_many(Locales, query, uniquekeys.for_many_languages_query, context)
 
-    @put.register(Languages)
-    def put_languages(self, item: Languages, context: PipelineContext = None) -> None:
-        self._put(Languages, item, uniquekeys.for_languages, context=context)
+    @put.register(Locales)
+    def put_languages(self, item: Locales, context: PipelineContext = None) -> None:
+        self._put(Locales, item, uniquekeys.for_languages, context=context)
 
-    @put_many.register(Languages)
-    def put_many_languages(self, items: Iterable[Languages], context: PipelineContext = None) -> None:
-        self._put_many(Languages, items, uniquekeys.for_languages, context=context)
+    @put_many.register(Locales)
+    def put_many_languages(self, items: Iterable[Locales], context: PipelineContext = None) -> None:
+        self._put_many(Locales, items, uniquekeys.for_languages, context=context)
 
     @get.register(LanguageStrings)
     @validate_query(uniquekeys.validate_language_strings_query, uniquekeys.convert_region_to_platform)
@@ -351,7 +350,6 @@ class Cache(DataSource, DataSink):
         for map in items:
             self._put(Map, map, uniquekeys.for_map, ("id",), ("name",), context=context)
 
-
     # Mastery
 
     @get.register(Mastery)
@@ -394,7 +392,6 @@ class Cache(DataSource, DataSink):
         for mastery in items:
             self._put(Mastery, mastery, uniquekeys.for_mastery, ("id",), ("name",), context=context)
 
-
     # Profile Icon
 
     @get.register(ProfileIcon)
@@ -436,7 +433,6 @@ class Cache(DataSource, DataSink):
         self._put_many(ProfileIcons, items, uniquekeys.for_profile_icons, ("id",), ("name",), context=context)
         for profile_icon in items:
             self._put(ProfileIcon, profile_icon, uniquekeys.for_profile_icon, ("id",), ("name",), context=context)
-
 
     # Realm
 
@@ -500,7 +496,6 @@ class Cache(DataSource, DataSink):
         for rune in items:
             self._put(Mastery, rune, uniquekeys.for_rune, ("id",), ("name",), context=context)
 
-
     # Summoner Spell
 
     @get.register(SummonerSpell)
@@ -542,7 +537,6 @@ class Cache(DataSource, DataSink):
         self._put_many(SummonerSpells, items, uniquekeys.for_summoner_spells, ("id",), ("name",), context=context)
         for summoner_spell in items:
             self._put(Mastery, summoner_spell, uniquekeys.for_summoner_spell, ("id",), ("name",), context=context)
-
 
     # Versions
 

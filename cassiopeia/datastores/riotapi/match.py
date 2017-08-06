@@ -195,7 +195,7 @@ class MatchAPI(RiotAPIService):
 
             def generator():
                 for id in query["account.ids"]:
-                    url = "https://{platform}.api.riotgames.com/lol/match/v3/matchlists/by-account/{account.id}".format(platform=query["platform"].value.lower(), accountId=id)
+                    url = "https://{platform}.api.riotgames.com/lol/match/v3/matchlists/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=id)
                     try:
                         data = self._get(url, params, self._get_rate_limiter(query["platform"], "matchlists/by-account/accountId"))
                     except APINotFoundError as error:

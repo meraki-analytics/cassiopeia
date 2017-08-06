@@ -18,7 +18,7 @@ from ..dto.summoner import SummonerDto
 from ..core.common import provide_default_region
 from ..core.championmastery import ChampionMastery
 from ..core.league import Leagues, ChallengerLeague, MasterLeague
-from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Languages, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions, Items, Champions, Maps, SummonerSpells, Masteries, Runes
+from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Locales, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions, Items, Champions, Maps, SummonerSpells, Masteries, Runes
 from ..core.status import ShardStatus
 from ..core.masterypage import MasteryPage
 from ..core.match import Match
@@ -1619,7 +1619,7 @@ validate_many_languages_query = Query. \
     has("platforms").as_(Iterable)
 
 
-def for_languages(languages: Languages) -> str:
+def for_languages(languages: Locales) -> str:
     return languages.platform.value
 
 
@@ -1860,7 +1860,7 @@ validate_many_realms_query = Query. \
 
 
 def for_realms(realm: Realms) -> str:
-    return realm["platform"]
+    return realm.platform.value
 
 
 def for_realms_query(query: Query) -> str:

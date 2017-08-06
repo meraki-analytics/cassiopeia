@@ -1,6 +1,7 @@
 from typing import List, Dict, Union
 import datetime
 
+from datapipelines import NotFoundError
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
@@ -10,7 +11,7 @@ from ..data import Region, Platform, GameMode, GameType, Queue, Map
 from .common import DataObject, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList
 from ..dto import spectator as dto
 from .staticdata.profileicon import ProfileIcon
-from .staticdata.champion import Champion, ChampionData
+from .staticdata.champion import Champion
 from .staticdata.rune import Rune
 from .staticdata.mastery import Mastery
 from .staticdata.summonerspell import SummonerSpell
@@ -54,7 +55,7 @@ class RuneData(DataObject):
 
 
 class MasteryData(DataObject):
-    _renamed = {"id": "masteryId"}
+    _renamed = {"id": "masteryId", "points": "rank"}
 
     @property
     def id(self) -> int:
@@ -62,7 +63,7 @@ class MasteryData(DataObject):
         return self._dto["masteryId"]
 
     @property
-    def rank(self) -> int:
+    def points(self) -> int:
         """The number of points put into this mastery by the user"""
         return self._dto["rank"]
 
@@ -240,7 +241,7 @@ class Participant(CassiopeiaObject):
 
     @property
     def masteries(self) -> Dict[Mastery, int]:
-        return SearchableDictionary({Mastery(id=mastery.id): mastery.rank for mastery in self._data[CurrentGameParticipantData].masteries})
+        return SearchableDictionary({Mastery(id=mastery.id): mastery.points for mastery in self._data[CurrentGameParticipantData].masteries})
 
     @property
     def is_bot(self) -> bool:
@@ -305,6 +306,16 @@ class CurrentMatch(CassiopeiaGhost):
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform, "summoner.id": self.__summoner.id}
 
+    @property
+    def exists(self):
+        try:
+            if not self._Ghost__all_loaded:
+                self.__load__()
+            self.creation  # Make sure we can access this attribute
+            return True
+        except (AttributeError, NotFoundError):
+            return False
+
     @lazy_property
     def region(self) -> Region:
         """The region for this summoner."""
@@ -358,7 +369,7 @@ class CurrentMatch(CassiopeiaGhost):
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
     @ghost_load_on(KeyError)
-    def duration(self) -> datetime.datetime:
+    def duration(self) -> datetime.timedelta:
         return datetime.timedelta(seconds=self._data[CurrentGameInfoData].duration)
 
     @CassiopeiaGhost.property(CurrentGameInfoData)

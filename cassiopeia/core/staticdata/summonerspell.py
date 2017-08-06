@@ -7,7 +7,7 @@ from merakicommons.container import searchable, SearchableList
 from ...configuration import settings
 from ...data import Resource, Region, Platform, GameMode
 from ..common import DataObject, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
-from .common import Image, ImageData
+from .common import ImageData, Image, Sprite
 from ...dto.staticdata import summonerspell as dto
 
 
@@ -206,7 +206,7 @@ class SummonerSpells(CassiopeiaGhostList):
         try:
             return self._data[SummonerSpellListData].version
         except KeyError:
-            version = get_latest_version(region=self.region)
+            version = get_latest_version(region=self.region, endpoint="summoner")
             self(version=version)
             return self._data[SummonerSpellListData].version
 
@@ -312,7 +312,7 @@ class SummonerSpell(CassiopeiaGhost):
         try:
             return self._data[SummonerSpellData].version
         except KeyError:
-            version = get_latest_version(region=self.region)
+            version = get_latest_version(region=self.region, endpoint="summoner")
             self(version=version)
             return self._data[SummonerSpellData].version
 
@@ -346,12 +346,9 @@ class SummonerSpell(CassiopeiaGhost):
         """The resource consumed when using this spell."""
         return Resource(self._data[SummonerSpellData].resource)
 
-    @CassiopeiaGhost.property(SummonerSpellData)
-    @ghost_load_on(KeyError)
-    @lazy
-    def image_info(self) -> Image:
-        """The info about the spell's image, which can be pulled from datadragon."""
-        return Image(self._data[SummonerSpellData].image)
+    @lazy_property
+    def sprite(self) -> Sprite:
+        return self.image.sprite_info
 
     @CassiopeiaGhost.property(SummonerSpellData)
     @ghost_load_on(KeyError)
@@ -435,3 +432,15 @@ class SummonerSpell(CassiopeiaGhost):
     def name(self) -> str:
         """The spell's name."""
         return self._data[SummonerSpellData].name
+
+    @CassiopeiaGhost.property(SummonerSpellData)
+    @ghost_load_on(KeyError)
+    @lazy
+    def image(self) -> Image:
+        image = Image(self._data[SummonerSpellData].image)
+        image(version=self.version)
+        return image
+
+    @lazy_property
+    def sprite(self) -> Sprite:
+        return self.image.sprite_info

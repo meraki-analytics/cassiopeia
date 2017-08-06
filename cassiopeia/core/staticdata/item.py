@@ -1,5 +1,4 @@
 from typing import List, Set, Mapping, Union
-from PIL.Image import Image as PILImage
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
@@ -8,7 +7,7 @@ from merakicommons.container import searchable, SearchableList
 from ...configuration import settings
 from ...data import Region, Platform, Map
 from ..common import DataObject, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
-from .common import Sprite, Image
+from .common import ImageData, Sprite, Image
 from ...dto.staticdata import item as dto
 
 
@@ -48,70 +47,6 @@ class ItemTreeData(DataObject):
     @property
     def tags(self) -> List[str]:
         return self._dto["tags"]
-
-
-class SpriteData(DataObject):
-    _renamed = {"height": "h", "width": "w"}
-
-    @property
-    def version(self) -> str:
-        return self._dto["version"]
-
-    @property
-    def sprite(self) -> str:
-        return self._dto["sprite"]
-
-    @property
-    def x(self) -> int:
-        return self._dto["x"]
-
-    @property
-    def y(self) -> int:
-        return self._dto["y"]
-
-    @property
-    def width(self) -> int:
-        return self._dto["w"]
-
-    @property
-    def height(self) -> int:
-        return self._dto["h"]
-
-
-class ImageData(DataObject):
-    _renamed = {"height": "h", "width": "w"}
-
-    @property
-    def version(self) -> str:
-        return self._dto["version"]
-
-    @property
-    def full(self) -> str:
-        return self._dto["full"]
-
-    @property
-    def group(self) -> str:
-        return self._dto["group"]
-
-    @property
-    def height(self) -> int:
-        return self._dto["h"]
-
-    @property
-    def width(self) -> int:
-        return self._dto["w"]
-
-    @property
-    def y(self) -> int:
-        return self._dto["y"]
-
-    @property
-    def x(self) -> int:
-        return self._dto["x"]
-
-    @property
-    def sprite(self) -> str:
-        return self._dto["sprite"]
 
 
 class ItemStatsData(DataObject):
@@ -331,9 +266,9 @@ class ItemData(DataObject):
         """List of maps where this item is available."""
         return self._dto["maps"]
 
-    #@property
-    #def special_recipe(self) -> int:
-    #    return self._dto["specialRecipe"]
+    @property
+    def special_recipe(self) -> int:
+        return self._dto["specialRecipe"]
 
     @property
     def image(self) -> ImageData:
@@ -352,7 +287,7 @@ class ItemData(DataObject):
         return self._dto["effect"]
 
     @property
-    def champion(self) -> int:
+    def champion(self) -> str:
         return self._dto["requiredChampion"]
 
     @property
@@ -428,18 +363,18 @@ class Items(CassiopeiaGhostList):
         try:
             return self._data[ItemListData].version
         except KeyError:
-            version = get_latest_version(region=self.region)
+            version = get_latest_version(region=self.region, endpoint="item")
             self(version=version)
             return self._data[ItemListData].version
 
     @property
     def locale(self) -> str:
-        """The locale for this champion."""
+        """The locale for this item."""
         return self._data[ItemListData].locale
 
     @property
     def included_data(self) -> Set[str]:
-        """A set of tags to return additonal information for this champion when it's loaded."""
+        """A set of tags to return additional information for this item when it's loaded."""
         return self._data[ItemListData].included_data
 
 
@@ -637,35 +572,33 @@ class Item(CassiopeiaGhost):
         elif "name" in self._data[ItemData]._dto:
             find = "name", self.name
         else:
-            raise RuntimeError("Expected fields not present after loading.")
+            raise RuntimeError("Impossible!")
         data = find_matching_attribute(data, *find)
         super().__load_hook__(load_group, data)
 
-    # What do we do about params like this that can exist in both data objects?
-    # They will be set on both data objects always, so we can choose either one to return.
     @lazy_property
     def region(self) -> Region:
-        """The region for this champion."""
+        """The region for this item."""
         return Region(self._data[ItemData].region)
 
     @lazy_property
     def platform(self) -> Platform:
-        """The platform for this champion."""
+        """The platform for this item."""
         return self.region.platform
 
     @property
     def version(self) -> str:
-        """The version for this champion."""
+        """The version for this item."""
         try:
             return self._data[ItemData].version
         except KeyError:
-            version = get_latest_version(region=self.region)
+            version = get_latest_version(region=self.region, endpoint="item")
             self(version=version)
             return self._data[ItemData].version
 
     @property
     def locale(self) -> str:
-        """The locale for this champion."""
+        """The locale for this item."""
         return self._data[ItemData].locale
 
     @property
@@ -742,7 +675,8 @@ class Item(CassiopeiaGhost):
     @CassiopeiaGhost.property(ItemData)
     @ghost_load_on(KeyError)
     def champion(self) -> "Champion":
-        return self._data[ItemData].champion
+        from .champion import Champion
+        return Champion(name=self._data[ItemData].champion)
 
     @CassiopeiaGhost.property(ItemData)
     @ghost_load_on(KeyError)
@@ -787,16 +721,12 @@ class Item(CassiopeiaGhost):
     @CassiopeiaGhost.property(ItemData)
     @ghost_load_on(KeyError)
     @lazy
-    def image_info(self) -> Image:
-        """The image information for this champion."""
-        return Image(self._data[ItemData].image, version=self.version)
-
-    @lazy_property
-    def image(self) -> PILImage:
-        """The image icon for this champion."""
-        return settings.pipeline.get(PILImage, query={"url": self.image_info.url})
+    def image(self) -> Image:
+        """The image information for this item."""
+        image = Image.from_data(self._data[ItemData].image)
+        image(version=self.version)
+        return image
 
     @lazy_property
     def sprite(self) -> Sprite:
-        """The sprite that contains this champion's image icon."""
-        return self.image_info.sprite.image
+        return self.image.sprite_info

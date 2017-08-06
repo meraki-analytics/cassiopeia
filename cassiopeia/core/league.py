@@ -39,7 +39,7 @@ class MiniSeriesData(DataObject):
 
 class LeagueItemData(DataObject):
     _dto_type = LeagueItemDto
-    _renamed = {"hot_streak": "hotStreak", "promos": "miniSeries", "summoner_id": "playerOrTeamId", "summoner_name": "playerOrTeamName", "league_points": "leaguePoints", "name": "leagueName", "queue": "queueType", "division": "rank"}
+    _renamed = {"hot_streak": "hotStreak", "promos": "miniSeries", "summoner_id": "playerOrTeamId", "summoner_name": "playerOrTeamName", "league_points": "leaguePoints", "name": "leagueName", "queue": "queueType", "division": "rank", "fresh_blood": "freshBlood"}
 
     @property
     def region(self) -> str:
@@ -95,7 +95,7 @@ class LeagueItemData(DataObject):
 
     @property
     def fresh_blood(self) -> bool:
-        return self._dto["fresh_blood"]
+        return self._dto["freshBlood"]
 
     @property
     def league_points(self) -> int:

@@ -104,6 +104,10 @@ class Sprite(CassiopeiaObject):
     def url(self) -> str:
         return "http://ddragon.leagueoflegends.com/cdn/{version}/img/sprite/{sprite}".format(version=self.version, sprite=self.sprite)
 
+    @lazy_property
+    def image(self) -> PILImage:
+        return settings.pipeline.get(PILImage, query={"url": self.url})
+
 
 @searchable({str: ["full", "url"]})
 class Image(CassiopeiaObject):

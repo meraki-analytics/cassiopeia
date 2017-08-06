@@ -176,7 +176,6 @@ class EventData(DataObject):
 class ParticipantFrameData(DataObject):
     _renamed = {"total_gold": "totalGold", "team_score": "teamScore", "participant_id": "participantId", "current_gold": "currentGold", "minions_killed": "minionsKilled", "dominion_score": "dominionScore", "jungle_minions_killed": "jungleMinionsKilled"}
 
-
     @property
     def total_gold(self) -> int:
         return self._dto["totalGold"]
@@ -1139,7 +1138,7 @@ class Timeline(CassiopeiaGhost):
     @CassiopeiaGhost.property(TimelineData)
     @ghost_load_on(KeyError)
     def frames(self) -> List[Frame]:
-        return SearchableList([Frame(frame) for frame in self._data[TimelineData].frame])
+        return SearchableList([Frame.from_data(frame) for frame in self._data[TimelineData].frame])
 
     @CassiopeiaGhost.property(TimelineData)
     @ghost_load_on(KeyError)
@@ -1700,7 +1699,7 @@ class Match(CassiopeiaGhost):
 
     @lazy_property
     def timeline(self) -> Timeline:
-        return Timeline(id = self.id, region=self.region.value)
+        return Timeline(id=self.id, region=self.region.value)
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on(KeyError)
@@ -1805,8 +1804,8 @@ class Match(CassiopeiaGhost):
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on(KeyError)
     @lazy
-    def duration(self) -> datetime.datetime:
-        return datetime.datetime.fromtimestamp(self._data[MatchData].duration / 1000)
+    def duration(self) -> datetime.timedelta:
+        return datetime.timedelta(seconds=self._data[MatchData].duration)
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on(KeyError)

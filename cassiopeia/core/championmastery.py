@@ -7,7 +7,7 @@ from merakicommons.container import searchable, SearchableList
 
 from ..configuration import settings
 from ..data import Region, Platform
-from .common import DataObject, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList
+from .common import DataObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList
 from ..dto.championmastery import ChampionMasteryDto
 from .staticdata.champion import Champion
 from .summoner import Summoner
@@ -100,12 +100,10 @@ class ChampionMasteries(CassiopeiaGhostList):
 
     @lazy_property
     def region(self) -> Region:
-        """The region for this champion."""
         return Region(self._data[ChampionMasteryListData].region)
 
     @lazy_property
     def platform(self) -> Platform:
-        """The platform for this champion."""
         return self.region.platform
 
     @property
@@ -166,12 +164,10 @@ class ChampionMastery(CassiopeiaGhost):
 
     @property
     def region(self) -> Region:
-        """The region for this champion."""
         return Region(self._data[ChampionMasteryData].region)
 
     @lazy_property
     def platform(self) -> Platform:
-        """The platform for this champion."""
         return self.region.platform
 
     @CassiopeiaGhost.property(ChampionMasteryData)

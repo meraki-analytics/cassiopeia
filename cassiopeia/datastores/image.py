@@ -1,4 +1,4 @@
-from typing import Type, TypeVar, Mapping, Any, Iterable, Generator
+from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
 from io import BytesIO
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError
@@ -18,18 +18,18 @@ class ImageDataSource(DataSource):
             self._client = http_client
 
     @DataSource.dispatch
-    def get(self, type: Type[T], query: Mapping[str, Any], context: PipelineContext = None) -> T:
+    def get(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> T:
         pass
 
     @DataSource.dispatch
-    def get_many(self, type: Type[T], query: Mapping[str, Any], context: PipelineContext = None) -> Iterable[T]:
+    def get_many(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> Iterable[T]:
         pass
 
     _validate_get_image = Query. \
         has("url").as_(str)
 
     @get.register(Image)
-    def get_image(self, query: Mapping[str, Any], context: PipelineContext = None) -> Image:
+    def get_image(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Image:
         ImageDataSource._validate_get_image(query, context)
         try:
             data, _ = self._client.get(query["url"])
@@ -41,7 +41,7 @@ class ImageDataSource(DataSource):
         has("urls").as_(Iterable)
 
     @get_many.register(Image)
-    def get_many_image(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[Image, None, None]:
+    def get_many_image(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[Image, None, None]:
         ImageDataSource._validate_get_many_image(query, context)
 
         def generator():

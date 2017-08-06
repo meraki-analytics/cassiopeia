@@ -11,7 +11,7 @@ from ..core.staticdata.summonerspell import SummonerSpellData, SummonerSpellList
 from ..core.staticdata.version import VersionListData, Versions
 from ..core.staticdata.map import MapData, MapListData, Map, Maps
 from ..core.staticdata.realm import RealmData, Realms
-from ..core.staticdata.language import LanguagesData, Languages
+from ..core.staticdata.language import LanguagesData, Locales
 from ..core.staticdata.languagestrings import LanguageStringsData, LanguageStrings
 from ..core.staticdata.profileicon import ProfileIconData, ProfileIconListData, ProfileIcon, ProfileIcons
 
@@ -159,7 +159,7 @@ class StaticDataTransformer(DataTransformer):
     @transform.register(RealmDto, RealmData)
     def realm_dto_to_data(self, value: RealmDto, context: PipelineContext = None) -> RealmData:
         data = deepcopy(value)
-        return RealmData(**data, region=value["region"])
+        return RealmData(**data)
 
     # Languages
 
@@ -268,9 +268,9 @@ class StaticDataTransformer(DataTransformer):
 
     # Languages
 
-    @transform.register(LanguagesData, Languages)
-    def languages_data_to_core(self, value: LanguagesData, context: PipelineContext = None) -> Languages:
-        return Languages(value, region=value.region)
+    @transform.register(LanguagesData, Locales)
+    def languages_data_to_core(self, value: LanguagesData, context: PipelineContext = None) -> Locales:
+        return Locales(value, region=value.region)
 
     # Language Strings
 
@@ -372,8 +372,8 @@ class StaticDataTransformer(DataTransformer):
 
     # Languages
 
-    @transform.register(Languages, LanguagesDto)
-    def languages_core_to_dto(self, value: Languages, context: PipelineContext = None) -> LanguagesDto:
+    @transform.register(Locales, LanguagesDto)
+    def languages_core_to_dto(self, value: Locales, context: PipelineContext = None) -> LanguagesDto:
         return LanguagesDto({"region": value.region, "languages": [v for v in value]})
 
     # Language Strings

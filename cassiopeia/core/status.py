@@ -47,7 +47,7 @@ class MessageData(DataObject):
 
     @property
     def translations(self) -> List[TranslationData]:
-        return [TranslationData(trans) for trans in self._dto["translations"]]
+        return [TranslationData.from_dto(trans) for trans in self._dto["translations"]]
 
     @property
     def updated_at(self) -> str:
@@ -79,7 +79,7 @@ class IncidentData(DataObject):
 
     @property
     def updates(self) -> List[MessageData]:
-        return [MessageData(message) for message in self._dto["updates"]]
+        return [MessageData.from_dto(message) for message in self._dto["updates"]]
 
 
 class ServiceData(DataObject):
@@ -91,7 +91,7 @@ class ServiceData(DataObject):
 
     @property
     def incidents(self) -> List[IncidentData]:
-        return [IncidentData(inc) for inc in self._dto["incidents"]]
+        return [IncidentData.from_dto(inc) for inc in self._dto["incidents"]]
 
     @property
     def name(self) -> str:
@@ -123,7 +123,7 @@ class ShardStatusData(DataObject):
 
     @property
     def services(self) -> List[ServiceData]:
-        return [ServiceData(service) for service in self._dto["services"]]
+        return [ServiceData.from_dto(service) for service in self._dto["services"]]
 
     @property
     def slug(self) -> str:
@@ -205,7 +205,7 @@ class Incident(CassiopeiaObject):
 
     @property
     def updates(self) -> List[Message]:
-        return SearchableList([Message(message) for message in self._data[IncidentData].updates])
+        return SearchableList([Message.from_data(message) for message in self._data[IncidentData].updates])
 
 
 class Service(CassiopeiaObject):
@@ -217,7 +217,7 @@ class Service(CassiopeiaObject):
 
     @property
     def incidents(self) -> List[Incident]:
-        return SearchableList([Incident(inc) for inc in self._data[ServiceData].incidents])
+        return SearchableList([Incident.from_data(inc) for inc in self._data[ServiceData].incidents])
 
     @property
     def name(self) -> str:
@@ -273,7 +273,7 @@ class ShardStatus(CassiopeiaGhost):
     @CassiopeiaGhost.property(ShardStatusData)
     @ghost_load_on(KeyError)
     def services(self) -> List[Service]:
-        return SearchableList([Service(service) for service in self._data[ShardStatusData].services])
+        return SearchableList([Service.from_data(service) for service in self._data[ShardStatusData].services])
 
     @CassiopeiaGhost.property(ShardStatusData)
     @ghost_load_on(KeyError)
