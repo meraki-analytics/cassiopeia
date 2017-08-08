@@ -18,7 +18,7 @@ if sys.version_info.major != 3 and sys.version_info.minor != 6:
 
 setup(
     name="cassiopeia",
-    version="3.0.1-rc1",
+    version="3.0.2-rc1",
     author="Jason Maldonis; Rob Rua",
     author_email="team@merakianalytics.com",
     url="https://github.com/meraki-analytics/cassiopeia",
@@ -39,5 +39,6 @@ setup(
     license="MIT",
     packages=find_packages(),
     zip_safe=True,
-    install_requires=install_requires
+    install_requires=install_requires,
+    include_package_data=True
 )
