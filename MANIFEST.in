@@ -1,1 +1,4 @@
 include cassiopeia/configuration/default.json
+include cassiopeia/profile_icon_names.json
+recursive-include cassiopeia/types
+recursive-include cassiopeia/transformers
