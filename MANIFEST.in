@@ -1,1 +1,1 @@
-include *.json
+include cassiopeia/configuration/default.json
