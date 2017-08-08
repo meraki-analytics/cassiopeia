@@ -90,7 +90,7 @@ class ChampionMasteries(CassiopeiaGhostList):
         self.__summoner = summoner
 
     def __get_query__(self) -> dict:
-        return {"region": self.region, "summoner.id": self.summoner.id}
+        return {"region": self.region, "platform": self.platform, "summoner.id": self.summoner.id}
 
     def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         self.clear()
