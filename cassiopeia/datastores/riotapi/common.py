@@ -1,3 +1,4 @@
+import time
 from abc import abstractmethod
 from typing import MutableMapping, Any, Union, TypeVar, Iterable, Type, Dict
 from collections import defaultdict
@@ -153,9 +154,8 @@ class RiotAPIService(DataSource):
             # Try to properly handling the 429 and retry the call after the appropriate time limit.
             if error.code == 429:
                 if "X-Rate-Limit-Type" not in error.response_headers or error.response_headers["X-Rate-Limit-Type"] == "service":
-                    # Back off for 1 second
-                    import time
-                    time.sleep(backoff)  # TODO: Don't use time.sleep...
+                    # Back off for one or more seconds
+                    time.sleep(backoff)
                     if backoff < 3:  # Backoff at most 3 times, then quit
                         print("INFO: Unexpected service rate limit, backing off for {} seconds.".format(backoff))
                         return self._get(url, parameters, rate_limiter, connection, backoff + 1)  # Backoff for 1 more second each time. This isn't exponential backoff but it's probably fine.
