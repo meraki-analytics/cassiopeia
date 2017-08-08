@@ -1,6 +1,5 @@
 import sys
 import os
-import configparser
 
 try:
     import ujson as json
@@ -15,12 +14,12 @@ if len(sys.argv) > 1 and any(fn.endswith(".json") for fn in sys.argv):
             filename = fn
             break
 else:
-    filename = os.path.join(head, "default.json")
+    filename = os.path.join(head, "defaultsettings.json")
 
 if not os.path.exists(filename):
     filename = os.path.join(head, filename)
     if not os.path.exists(filename):
-        filename = os.path.join(head, "default.json")
+        filename = os.path.join(head, "defaultsettings.json")
 
 config = json.loads(open(filename).read())
 if "logging" not in config:
