@@ -61,7 +61,10 @@ _METHOD_RATE_LIMITS.update({
     "staticdata/realms": (10, 3600),
     "staticdata/language": (10, 3600),
     "staticdata/language-strings": (10, 3600),
-    "staticdata/profile-icons": (10, 3600)
+    "staticdata/profile-icons": (10, 3600),
+    "masteries/by-summoner/summonerId": (400, 60),
+    "runes/by-summoner/summonerId": (400, 60),
+    "champions": (400, 60)
 })
 
 
