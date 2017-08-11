@@ -863,7 +863,7 @@ class MatchData(CoreData):
 class MatchHistory(CassiopeiaGhostList):
     _data_types = {MatchListData}
 
-    def __init__(self, *args, summoner: Union[Summoner, str, int] = None, account_id: int = None, region: Union[Region, str]):
+    def __init__(self, *args, summoner: Union[Summoner, str, int] = None, account_id: int = None, region: Union[Region, str] = None):
         if region is None:
             region = settings.default_region
         if not isinstance(region, Region):

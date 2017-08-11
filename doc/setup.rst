@@ -13,26 +13,21 @@ If you would like to get Cassiopeia with the most recent updates (even before th
 
 Next, add the newly downloaded cassiopeia source directory to your ``PYTHONPATH`` environment variable. If a ``PYTHONPATH`` environment variable does not exist on your system (which may be true if you have a newly installed version of python), you will need to create it.
 
-On Windows, follow the instructions `here <https://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/sysdm_advancd_environmnt_addchange_variable.mspx?mfr=true>`_. Note that if you need multiple paths on your ``PYTHONPATH``, you can separate them by a ``;``.
+On Windows, follow the instructions `here <https://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/sysdm_advancd_environmnt_addchange_variable.mspx?mfr=true>`_. Note that if you need multiple paths on your ``PYTHONPATH``, you can separate them with a ``;``.
 
 On Mac or Linux, add ``export PYTHONPATH=$PYTHONPATH:<CASSIOPEIA PATH>`` to the end of your shell rc file (this should be ``~/.bashrc`` for most), where ``<CASSIOPEIA PATH>`` is the path of the directory you cloned, or the cassiopeia.zip file you downloaded.
 
-Restart your terminal.
+Restart your terminal/IDE.
 
-For more information, consult Google.
-
-Dependencies
-^^^^^^^^^^^^
-
-Cassiopeia depends on [SQLAlchemy](http://www.sqlalchemy.org/). It should be automatically installed for you if you install with pip. Otherwise, do ``pip install sqlalchemy``.
+Google can probably give you more information as well, and note that the path name you add your your ``PYTHONPATH`` should end in ``.../cassiopeia``.
 
 
-Setting Additional Environment Variables
-========================================
-By default, the examples in Cassiopeia look for an environment variable on your system called ``DEV_KEY`` to set your API key within ``cassiopeia.riotapi`` and ``cassiopeia.baseriotapi``. You can create a new environment variable called ``DEV_KEY``, and a similarly named environment variable for your production key if you have one (although Cassiopeia will never use your production key unless you change the code).
+Setting Your API Key and Other Settings
+=======================================
+By default, Cass's settings are stored in a json file located ``cassiopeia/configuration/default.json``. You can modify this file or create a custom settings file and pass it in as the first argument to your program.
 
-To create an environment variable on Windows, follow the directions `here <https://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/sysdm_advancd_environmnt_addchange_variable.mspx?mfr=true>`_.
+In order to set your API key, Cass will look for an environment variable on your system called ``RIOT_API_KEY``. You can change this by manually specifying your API key in your settings file, or changing the name of the environment variable. To create an environment variable on Windows, follow the directions `here <https://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/sysdm_advancd_environmnt_addchange_variable.mspx?mfr=true>`_. On Linux or Mac, add ``export RIOT_API_KEY='<YOUR_API_KEY>'`` to the end of your shell rc file (this should be ``~/.bashrc`` for most), where ``<YOUR_API_KEY>`` is your Riot-issued API key. Then your terminal/IDE.
 
-On Linux or Mac, add ``export DEV_KEY='<DEVKEY>'`` to the end of your shell rc file (this should be ``~/.bashrc`` for most), where ``<DEVKEY>`` is your Riot-issued API key
+In your settings file, you can also set a default region. This region will be used if you did not provide a region when using Cassiopeia objects.
 
-Restart your terminal.
+We will add more customizable settings in the future, so feel free to check this section every so often.

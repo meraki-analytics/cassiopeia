@@ -1,7 +1,7 @@
 from enum import Enum
 from collections import OrderedDict
 
-from .patches import patches as _patches
+from .patches import Patch, patches as _patches
 
 PATCHES = OrderedDict(((patch.start, patch) for patch in _patches), key=lambda patch: patch.start)
 
