@@ -9,6 +9,8 @@ from ...configuration import settings
 from ...data import Resource, Region, Platform, Map, GameMode
 from ..champion import ChampionData as ChampionStatusData
 from ..champion import ChampionListData as ChampionStatusListData
+from ..championgg import GGChampionData as GGChampionData
+from ..championgg import GGChampionListData as GGChampionListData
 from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
 from .common import ImageData, Image, Sprite
 from ...dto.staticdata import champion as dto
@@ -879,8 +881,8 @@ class Info(CassiopeiaObject):
 
 @searchable({str: ["name", "key", "title", "region", "platform", "locale", "resource", "tags"], int: ["id"], Region: ["region"], Platform: ["platform"], bool: ["free_to_play"], Resource: ["resource"]})
 class Champion(CassiopeiaGhost):
-    _data_types = {ChampionData, ChampionStatusData}
-    _load_types = {ChampionData: ChampionListData, ChampionStatusData: ChampionStatusListData}
+    _data_types = {ChampionData, ChampionStatusData, GGChampionData}
+    _load_types = {ChampionData: ChampionListData, ChampionStatusData: ChampionStatusListData, GGChampionData: GGChampionListData}
 
     def __init__(self, *, id: int = None, name: str = None, key: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if region is None:
@@ -918,10 +920,7 @@ class Champion(CassiopeiaGhost):
             find = "name", self.name
         else:
             raise RuntimeError("Impossible!")
-        if load_group is ChampionData:
-            data = find_matching_attribute(data, *find)
-        else:
-            data = find_matching_attribute(data, *find)
+        data = find_matching_attribute(data, *find)
         super().__load_hook__(load_group, data)
 
     # What do we do about params like this that can exist in both data objects?
@@ -1104,3 +1103,13 @@ class Champion(CassiopeiaGhost):
     @lazy_property
     def sprite(self) -> Sprite:
         return self.image.sprite_info
+
+    @CassiopeiaGhost.property(GGChampionData)
+    @ghost_load_on(KeyError)
+    def win_rate(self) -> float:
+        return self._data[GGChampionData].win_rate
+
+    @CassiopeiaGhost.property(GGChampionData)
+    @ghost_load_on(KeyError)
+    def play_rate(self) -> float:
+        return self._data[GGChampionData].play_rate

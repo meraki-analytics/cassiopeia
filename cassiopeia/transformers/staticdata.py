@@ -368,7 +368,7 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(Realms, RealmDto)
     def realm_core_to_dto(self, value: Realms, context: PipelineContext = None) -> RealmDto:
-        return RealmDto({"region": value.region, **value[RealmData]._dto})
+        return RealmDto({"region": value.region, **value._data[RealmData]._dto})
 
     # Languages
 

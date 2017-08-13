@@ -8,11 +8,12 @@ from .load import config
 logging.basicConfig(format='%(asctime)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.WARNING)
 
 
-def create_default_pipeline(api_key, verbose=False):
+def create_default_pipeline(riot_api_key, verbose=False):
     from datapipelines import DataPipeline, CompositeDataTransformer
     from ..datastores.cache import Cache
     from ..datastores.riotapi import RiotAPI
     from ..datastores.ddragon import DDragonDataSource
+    from ..datastores.championgg import ChampionGGSource
     from ..transformers.staticdata import StaticDataTransformer
     from ..transformers.champion import ChampionTransformer
     from ..transformers.championmastery import ChampionMasteryTransformer
@@ -23,11 +24,13 @@ def create_default_pipeline(api_key, verbose=False):
     from ..transformers.spectator import SpectatorTransformer
     from ..transformers.status import StatusTransformer
     from ..transformers.leagues import LeagueTransformer
+    from ..transformers.championgg import ChampionGGTransformer
 
     services = [
         Cache(),  # TODO Add expirations from file
         DDragonDataSource(),  # TODO: Should this be default?
-        RiotAPI(api_key=api_key)
+        RiotAPI(api_key=riot_api_key),
+        ChampionGGSource(api_key=os.environ["CHAMPYONGG_KEY"])
     ]
     riotapi_transformer = CompositeDataTransformer([
         StaticDataTransformer(),
@@ -41,7 +44,11 @@ def create_default_pipeline(api_key, verbose=False):
         StatusTransformer(),
         LeagueTransformer()
     ])
-    pipeline = DataPipeline(services, [riotapi_transformer])
+
+    champion_gg_transformers = CompositeDataTransformer([
+        ChampionGGTransformer()
+    ])
+    pipeline = DataPipeline(services, [riotapi_transformer, champion_gg_transformers])
     pipeline._transformer = riotapi_transformer
 
     # Manually put the cache on the pipeline. TODO Is this the best way?
@@ -88,7 +95,7 @@ class Settings(object):
         if self.__pipeline is None:
             if self.__key and not self.__key.startswith("RGAPI"):
                 self.__key = os.environ[self.__key]
-            self.__pipeline = create_default_pipeline(api_key=self.__key, verbose=False)
+            self.__pipeline = create_default_pipeline(riot_api_key=self.__key, verbose=False)
         return self.__pipeline
 
     @property
