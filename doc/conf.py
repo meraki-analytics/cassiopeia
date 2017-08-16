@@ -37,7 +37,8 @@ import typing
 try:
     typing.Collection
 except AttributeError:
-    from collections.abc import Sized, Iterable, Container, _check_methods
+    from collections.abc import Sized, Iterable, Container
+    from _collections_abc import _check_methods
     class Collection(Sized, Iterable, Container):
         __slots__ = ()
 
