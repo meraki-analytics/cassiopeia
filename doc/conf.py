@@ -19,13 +19,13 @@ import os
 from unittest.mock import MagicMock
 
 
-# Mock pycurl
+# Mock pycurl because rtds doesn't support C code, and typing because it's not on 3.6 yet
 class Mock(MagicMock):
     @classmethod
     def __getattr__(cls, name):
             return MagicMock()
 
-MOCK_MODULES = ['pycurl']
+MOCK_MODULES = ['pycurl', 'typing']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
