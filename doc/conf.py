@@ -30,12 +30,28 @@ sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
 # Monkey patch in typing.Collection so that rtd (which uses py3.5) can find it.
+# The declarations are copied from the python source code:
+# https://github.com/python/typing/blob/master/src/typing.py
+# https://github.com/python/cpython/blob/3.6/Lib/_collections_abc.py
 import typing
 try:
     typing.Collection
 except AttributeError:
-    import collections
-    typing.Collection = collections.abc.Collection
+    from collections.abc import Sized, Iterable, Container, _check_methods
+    class Collection(Sized, Iterable, Container):
+        __slots__ = ()
+
+        @classmethod
+        def __subclasshook__(cls, C):
+            if cls is Collection:
+                return _check_methods(C,  "__len__", "__iter__", "__contains__")
+            return NotImplemented
+
+    from typing import Iterable, Container, T_co
+    class Collection(Sized, Iterable[T_co], Container[T_co], extra=Collection):
+        __slots__ = ()
+
+    typing.Collection = Collection
 
 
 # If extensions (or modules to document with autodoc) are in another directory,
