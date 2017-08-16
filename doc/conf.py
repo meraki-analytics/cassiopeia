@@ -29,6 +29,15 @@ MOCK_MODULES = ['pycurl', 'typing']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
+# Monkey patch in typing.Collection so that rtd (which uses py3.5) can find it.
+import typing
+try:
+    typing.Collection
+except AttributeError:
+    import collections
+    typing.Collection = collections.abc.Collection
+
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
