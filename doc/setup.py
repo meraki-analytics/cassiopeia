@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 
 install_requires = [
-    "datapipelines",
+    "datapipelines==1.0.1",
     "merakicommons",
     "Pillow"
 ]
