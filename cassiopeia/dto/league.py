@@ -9,11 +9,11 @@ class LeagueListDto(DtoObject):
     pass
 
 
-class LeagueItemDto(DtoObject):
+class MiniSeriesDto(DtoObject):
     pass
 
 
-class MiniSeriesDto(DtoObject):
+class LeaguePositionDto(DtoObject):
     pass
 
 

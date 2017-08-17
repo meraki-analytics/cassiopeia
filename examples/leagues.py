@@ -8,12 +8,18 @@ def print_leagues(summoner_name: str, region: str):
     print("Name:", summoner.name)
     print("ID:", summoner.id)
 
+    positions = cass.get_league_positions(summoner)
+    # positions = summoner.league_positions
+    for league in positions:
+        print(league.name)
+    print()
+
     # leagues = cass.get_leagues(summoner)
     leagues = summoner.leagues
     for league in leagues:
         print(league.name)
-
     print()
+
     print(leagues.fives.name)
     for entry in leagues.fives:
         print(entry.summoner.name, entry.league_points)

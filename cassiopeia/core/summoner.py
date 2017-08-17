@@ -199,3 +199,8 @@ class Summoner(CassiopeiaGhost):
     def leagues(self):
         from .league import Leagues
         return Leagues(summoner=self, region=self.region)
+
+    @lazy_property
+    def league_positions(self):
+        from .league import LeagueEntries
+        return LeagueEntries(summoner=self, region=self.region)

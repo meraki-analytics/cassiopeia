@@ -1,5 +1,5 @@
 flake8
 pytest
-merakicommons==1.0.2
-datapipelines==1.0.2
+merakicommons
+datapipelines
 Pillow

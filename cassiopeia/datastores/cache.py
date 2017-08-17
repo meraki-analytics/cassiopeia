@@ -5,7 +5,7 @@ from merakicommons.cache import Cache as CommonsCache
 
 from . import uniquekeys
 from ..core.championmastery import ChampionMastery
-from ..core.league import Leagues, ChallengerLeague, MasterLeague
+from ..core.league import LeagueEntries, Leagues, ChallengerLeague, MasterLeague
 from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Realms, ProfileIcon, Locales, LanguageStrings, Versions, SummonerSpells, Items, Champions, Masteries, Runes, Maps, ProfileIcons
 from ..core.masterypage import MasteryPage
 from ..core.match import Match
@@ -123,6 +123,28 @@ class Cache(DataSource, DataSink):
     ##############
     # League API #
     ##############
+
+    # LeagueEntries
+
+    @get.register(LeagueEntries)
+    @validate_query(uniquekeys.validate_league_entries_query, uniquekeys.convert_region_to_platform)
+    def get_league_position(self, query: Mapping[str, Any], context: PipelineContext = None) -> LeagueEntries:
+        return self._get(LeagueEntries, query, uniquekeys.for_leagues_query, context)
+
+    @get_many.register(LeagueEntries)
+    @validate_query(uniquekeys.validate_many_league_entries_query, uniquekeys.convert_region_to_platform)
+    def get_many_league_position(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[LeagueEntries, None, None]:
+        return self._get_many(LeagueEntries, query, uniquekeys.for_many_league_entries_query, context)
+
+    @put.register(LeagueEntries)
+    def put_league_position(self, item: LeagueEntries, context: PipelineContext = None) -> None:
+        self._put(LeagueEntries, item, uniquekeys.for_league_entries, context=context)
+
+    @put_many.register(LeagueEntries)
+    def put_many_league_position(self, items: Iterable[LeagueEntries], context: PipelineContext = None) -> None:
+        self._put_many(LeagueEntries, items, uniquekeys.for_league_entries, context=context)
+
+    # Leagues
 
     @get.register(Leagues)
     @validate_query(uniquekeys.validate_leagues_query, uniquekeys.convert_region_to_platform)

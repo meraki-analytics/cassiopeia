@@ -6,4 +6,4 @@ from .masterypage import MasteryPage, MasteryPages
 from .match import Match, MatchHistory
 from .spectator import CurrentMatch, FeaturedMatches
 from .status import ShardStatus
-from .league import ChallengerLeague, MasterLeague, Leagues
+from .league import ChallengerLeague, MasterLeague, Leagues, LeagueEntries
