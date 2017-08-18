@@ -105,7 +105,7 @@ class LeagueTransformer(DataTransformer):
 
     @transform.register(Leagues, LeaguesListDto)
     def leagues_list_core_to_dto(self, value: Leagues, context: PipelineContext = None) -> LeaguesListDto:
-        return LeaguesListDto({"leagues": set([LeagueTransformer.league_list_core_to_dto(self, league) for league in value]), "summonerId": value._Leagues__summoner.id, "region": value.region})
+        return LeaguesListDto({"leagues": list([LeagueTransformer.league_list_core_to_dto(self, league) for league in value]), "summonerId": value._Leagues__summoner.id, "region": value.region})
 
     @transform.register(ChallengerLeague, ChallengerLeagueListDto)
     def challenger_league_list_core_to_dto(self, value: ChallengerLeague, context: PipelineContext = None) -> ChallengerLeagueListDto:
