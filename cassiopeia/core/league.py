@@ -252,7 +252,7 @@ class LeagueEntry(CassiopeiaGhost):
 
     @lazy_property
     def summoner(self) -> Summoner:
-        return Summoner(id=self._data[LeaguePositionData].summoner_id, name=self._data[LeaguePositionData].summoner_name)
+        return Summoner(id=self._data[LeaguePositionData].summoner_id, name=self._data[LeaguePositionData].summoner_name, region=self.region)
 
     @property
     def fresh_blood(self) -> bool:
@@ -304,9 +304,9 @@ class LeagueEntries(CassiopeiaGhostList):
     def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
         super().__init__(*args, region=region)
         if isinstance(summoner, str):
-            summoner = Summoner(name=summoner)
+            summoner = Summoner(name=summoner, region=region)
         elif isinstance(summoner, int):
-            summoner = Summoner(id=summoner)
+            summoner = Summoner(id=summoner, region=region)
         self.__summoner = summoner
 
     def __get_query__(self):
@@ -345,9 +345,9 @@ class Leagues(CassiopeiaGhostList):
     def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
         super().__init__(*args, region=region)
         if isinstance(summoner, str):
-            summoner = Summoner(name=summoner)
+            summoner = Summoner(name=summoner, region=region)
         elif isinstance(summoner, int):
-            summoner = Summoner(id=summoner)
+            summoner = Summoner(id=summoner, region=region)
         self.__summoner = summoner
 
     def __get_query__(self):

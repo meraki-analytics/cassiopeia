@@ -900,7 +900,7 @@ class MatchHistory(CassiopeiaGhostList):
 
     @lazy_property
     def summoner(self) -> Summoner:
-        return Summoner(account=self._data[MatchListData].account_id)
+        return Summoner(account=self._data[MatchListData].account_id, region=self.region)
 
     @lazy_property
     def region(self) -> Region:

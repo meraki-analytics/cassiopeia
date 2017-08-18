@@ -301,19 +301,19 @@ class CurrentMatch(CassiopeiaGhost):
 
         if summoner is not None:
             if isinstance(summoner, str):
-                summoner = Summoner(name=summoner)
+                summoner = Summoner(name=summoner, region=region)
             elif isinstance(summoner, int):
-                summoner = Summoner(id=summoner)
+                summoner = Summoner(id=summoner, region=region)
             self.__summoner = summoner
         super().__init__(**kwargs)
 
     @classmethod
-    def from_data(cls, data: CoreData, summoner: Union[Summoner, int, str]):
+    def from_data(cls, data: CurrentGameInfoData, summoner: Union[Summoner, int, str]):
         self = super().from_data(data)
         if isinstance(summoner, str):
-            summoner = Summoner(name=summoner)
+            summoner = Summoner(name=summoner, region=data.region)
         elif isinstance(summoner, int):
-            summoner = Summoner(id=summoner)
+            summoner = Summoner(id=summoner, region=data.region)
         self.__summoner = summoner
         return self
 
