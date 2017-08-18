@@ -94,12 +94,12 @@ class CurrentGameParticipantData(CoreData):
     @property
     def runes(self) -> List[RuneData]:
         """The runes used by this participant"""
-        return self._dto["runes"]
+        return [RuneData.from_dto(rune) for rune in self._dto["runes"]]
 
     @property
     def masteries(self) -> List[MasteryData]:
         """The masteries used by this participant"""
-        return self._dto["masteries"]
+    return [MasteryData.from_dto(mastery) for mastery in self._dto["masteries"]]
 
     @property
     def is_bot(self) -> int:
