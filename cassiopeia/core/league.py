@@ -51,7 +51,7 @@ class LeaguePositionData(CoreData):
 
     @property
     def queue(self) -> str:
-        return self._dto["queue"]
+        return self._dto["queueType"]
 
     @property
     def name(self) -> str:
@@ -172,24 +172,29 @@ class MiniSeries(CassiopeiaObject):
 
     @property
     def wins(self) -> int:
-        return self._data[MiniSeriesData].wins  # sum(self.progress)
+        return self._data[MiniSeriesData].wins  # sum(self.progress)  # This will work too
 
     @property
-    def loses(self) -> int:
-        return self._data[MiniSeriesData].loses  # len(self._data[MiniSeriesData].progress) - sum(self.progress)
+    def losses(self) -> int:
+        return self._data[MiniSeriesData].losses  # len(self._data[MiniSeriesData].progress[0]) - sum(self.progress)  # This will work too
 
     @property
     def wins_required(self) -> int:
         """2 or 3 wins will be required for promotion."""
-        return self._data[MiniSeriesData].target  # len(self._data[MiniSeriesData].progress)
+        return self._data[MiniSeriesData].target  # {3: 2, 5: 3}[len(self._data[MiniSeriesData].progress[0])]
+
+    @property
+    def not_played(self) -> int:
+        """The number of games in the player's promos that they haven't played yet."""
+        return len(self._data[MiniSeriesData].progress) - len(self.progress)
 
     @lazy_property
     def progress(self) -> List[bool]:
         """A list of True/False for the number of games the played in the mini series indicating if the player won or lost."""
-        return [True if p == "W" else False for p in self._data[MiniSeriesData].progress if p is not None]
+        return [True if p == "W" else False for p in self._data[MiniSeriesData].progress if p != "N"]
 
 
-@searchable({str: ["division", "name", "summoner"], bool: ["hot_streak", "veteran", "fresh_blood"], Division: ["division"], Summoner: ["summoner"]})
+@searchable({str: ["division", "name", "summoner"], bool: ["hot_streak", "veteran", "fresh_blood"], Division: ["division"], Summoner: ["summoner"], Queue: ["queue"]})
 class LeagueEntry(CassiopeiaGhost):
     _data_types = {LeaguePositionData}
 

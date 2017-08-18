@@ -43,7 +43,7 @@ class LeagueTransformer(DataTransformer):
             for entry in league["entries"]:
                 entry["tier"] = league["tier"]
                 entry["leagueName"] = league["name"]
-                entry["queue"] = league["queue"]
+                entry["queueType"] = league["queue"]
                 entry["region"] = league["region"]
         data = [LeagueTransformer.league_list_dto_to_data(self, league) for league in data["leagues"]]
         return LeaguesListData(data, summoner_id=value["summonerId"], region=value["region"])
