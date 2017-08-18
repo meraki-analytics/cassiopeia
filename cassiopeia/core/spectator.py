@@ -99,7 +99,7 @@ class CurrentGameParticipantData(CoreData):
     @property
     def masteries(self) -> List[MasteryData]:
         """The masteries used by this participant"""
-    return [MasteryData.from_dto(mastery) for mastery in self._dto["masteries"]]
+        return [MasteryData.from_dto(mastery) for mastery in self._dto["masteries"]]
 
     @property
     def is_bot(self) -> int:
