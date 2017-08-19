@@ -6,7 +6,7 @@ from ..data import Region, Platform, Queue, Tier
 
 from ..dto.champion import ChampionListDto as ChampionStatusListDto, ChampionDto as ChampionStatusDto
 from ..dto.championmastery import ChampionMasteryDto, ChampionMasteryListDto, ChampionMasteryScoreDto
-from ..dto.league import LeagueListDto, LeaguePositionsDto
+from ..dto.league import LeagueListDto, LeaguePositionDto
 from ..dto.staticdata import ChampionDto, ChampionListDto, ItemDto, ItemListDto, LanguageStringsDto, LanguagesDto, MasteryDto, MasteryListDto, ProfileIconDataDto, ProfileIconDetailsDto, RealmDto, RuneDto, RuneListDto, SummonerSpellDto, SummonerSpellListDto, MapDto, MapListDto, VersionListDto
 from ..dto.status import ShardStatusDto
 from ..dto.masterypage import MasteryPagesDto, MasteryPageDto
@@ -17,7 +17,7 @@ from ..dto.summoner import SummonerDto
 
 from ..core.common import provide_default_region
 from ..core.championmastery import ChampionMastery
-from ..core.league import Leagues, ChallengerLeague, MasterLeague
+from ..core.league import LeagueEntries, Leagues, ChallengerLeague, MasterLeague
 from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Locales, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions, Items, Champions, Maps, SummonerSpells, Masteries, Runes
 from ..core.status import ShardStatus
 from ..core.masterypage import MasteryPage
@@ -88,7 +88,7 @@ def construct_query(cls, **kwargs) -> dict:
         return construct_summoner_query(**kwargs)
     if cls is CurrentMatch:
         return construct_current_match_query(**kwargs)
-    if cls is Leagues:
+    if cls is Leagues or cls is LeagueEntries:
         return construct_leagues_query(**kwargs)
     else:
         return kwargs
@@ -360,7 +360,7 @@ validate_many_league_positions_dto_query = Query. \
     has("summonerIds").as_(Iterable)
 
 
-def for_league_positions_dto(league_positions: LeaguePositionsDto) -> Tuple[str, int]:
+def for_league_positions_dto(league_positions: LeaguePositionDto) -> Tuple[str, int]:
     return league_positions["platform"], league_positions["summonerId"]
 
 
@@ -1382,6 +1382,35 @@ def for_many_champion_mastery_query(query: Query) -> Generator[Tuple[str, Union[
 # League API #
 ##############
 
+
+# League Entriess
+
+validate_league_entries_query = Query. \
+    has("platform").as_(Platform).also. \
+    has("summoner.id").as_(int)
+
+
+validate_many_league_entries_query = Query. \
+    has("platform").as_(Platform).also. \
+    has("summoners.id").as_(Iterable)
+
+
+def for_league_entries(leagues: Leagues, summoner_identifier: str = "summoner.id") -> Tuple[str, int]:
+    return leagues.platform.value, leagues._LeagueEntries__summoner.id
+
+
+def for_league_entries_query(query: Query) -> Tuple[str, int]:
+    return query["platform"].value, query["summoner.id"]
+
+
+def for_many_league_entries_query(query: Query) -> Generator[Tuple[str, int], None, None]:
+    for id in query["summoners.id"]:
+        try:
+            yield query["platform"].value, id
+        except ValueError as e:
+            raise QueryValidationError from e
+
+# Leagues
 
 validate_leagues_query = Query. \
     has("platform").as_(Platform).also. \

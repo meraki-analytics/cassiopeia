@@ -84,9 +84,9 @@ class ChampionMasteries(CassiopeiaGhostList):
     def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
         super().__init__(*args, region=region)
         if isinstance(summoner, str):
-            summoner = Summoner(name=summoner)
+            summoner = Summoner(name=summoner, region=region)
         elif isinstance(summoner, int):
-            summoner = Summoner(id=summoner)
+            summoner = Summoner(id=summoner, region=region)
         self.__summoner = summoner
 
     def __get_query__(self) -> dict:
@@ -126,7 +126,7 @@ class ChampionMastery(CassiopeiaGhost):
             if isinstance(summoner, Summoner):
                 self.__class__.summoner.fget._lazy_set(self, summoner)
             elif isinstance(summoner, str):
-                summoner = Summoner(name=summoner)
+                summoner = Summoner(name=summoner, region=region)
                 self.__class__.summoner.fget._lazy_set(self, summoner)
             else:  # int
                 kwargs["summoner_id"] = summoner
@@ -180,7 +180,7 @@ class ChampionMastery(CassiopeiaGhost):
     @lazy
     def summoner(self) -> Summoner:
         """Summoner for this entry."""
-        return Summoner(id=self._data[ChampionMasteryData].summoner_id)
+        return Summoner(id=self._data[ChampionMasteryData].summoner_id, region=self.region)
 
     @CassiopeiaGhost.property(ChampionMasteryData)
     @ghost_load_on(KeyError)

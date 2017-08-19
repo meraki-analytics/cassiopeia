@@ -900,7 +900,7 @@ class MatchHistory(CassiopeiaGhostList):
 
     @lazy_property
     def summoner(self) -> Summoner:
-        return Summoner(account=self._data[MatchListData].account_id)
+        return Summoner(account=self._data[MatchListData].account_id, region=self.region)
 
     @lazy_property
     def region(self) -> Region:
@@ -1729,9 +1729,14 @@ class Match(CassiopeiaGhost):
                     return participant
 
         def generate_participants(match):
+            if "participants" not in match._data[MatchData]._dto:
+                empty_match = True
+            else:
+                empty_match = False
+
             # If a participant was provided from a matchref, yield that first
             yielded_one = False
-            if len(match._data[MatchData].participants) == 1:
+            if not empty_match and len(match._data[MatchData].participants) == 1:
                 yielded_one = True
                 try:
                     yield match.__participants[0]
@@ -1743,7 +1748,7 @@ class Match(CassiopeiaGhost):
 
             # Create all the participants if any haven't been created yet.
             # Note that it's important to overwrite the one from the matchref if it was loaded because we have more data after we load the full match.
-            if yielded_one or len(match.__participants) < len(match._data[MatchData].participants):
+            if empty_match or yielded_one or len(match.__participants) < len(match._data[MatchData].participants):
                 if not match._Ghost__is_loaded(MatchData):
                     match.__load__(MatchData)
                     match._Ghost__set_loaded(MatchData)  # __load__ doesn't trigger __set_loaded. is this a "bug"?

@@ -18,7 +18,7 @@ Things we need help with!
 
 * Very few methods / properties have doc strings. While not glorious, it is an incredibly helpful thing to do and you will quickly learning all the pieces of Cass.
 
-* In the previous version of Cass, we used regex to pull item stats from tooltips, because the static data is missing a significant number of stats. The old code can be found :ref:`here <https://github.com/meraki-analytics/cassiopeia/blob/db8930d534e400299bf8ebb814449e101e6f6fbc/cassiopeia/type/core/staticdata.py#L251>` and needs to be ported to this version of Cass.
+* In the previous version of Cass, we used regex to pull item stats from tooltips, because the static data is missing a significant number of stats. The old code can be found `here <https://github.com/meraki-analytics/cassiopeia/blob/db8930d534e400299bf8ebb814449e101e6f6fbc/cassiopeia/type/core/staticdata.py#L251>_` and needs to be ported to this version of Cass.
 
 * We want to support Redis, Mongo, and SQLAlchemy. To do so, new datasources should be added (along side the Riot API and the in-memory cache) to support each of these.
 
@@ -28,7 +28,7 @@ Things we need help with!
 
 * We have some tests in place, but a thorough testing of all attributes of all objects would be extremely helpful.
 
-* The :ref:`champion.gg api <api.champion.gg>` can be added to Cass as a datasource, and it's data should be integrated directly into Cass's objects. I believe champion.gg only provides data for the latest patch.
+* The `champion.gg api <api.champion.gg>_` can be added to Cass as a datasource, and it's data should be integrated directly into Cass's objects. I believe champion.gg only provides data for the latest patch.
 
 * Add functionality for setting ``version="latest"`` for all objects.
 

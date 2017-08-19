@@ -1,0 +1,54 @@
+import random
+from sortedcontainers import SortedList
+
+from cassiopeia.core import Summoner, MatchHistory, Match
+from cassiopeia.data import Queue, Patch
+
+
+def filter_match_history(summoner, patch):
+    #match_history = MatchHistory(summoner=summoner, begin_time=patch.start, end_time=patch.end, queue=Queue.ranked_solo.value)
+    match_history = MatchHistory(summoner=summoner)
+    match_history.filter(
+        lambda match: match.creation > patch.start and
+                      match.creation < patch.end and
+                      match.queue is Queue.ranked_solo
+    )
+    return match_history
+
+
+def collect_matches():
+    initial_summoner_name = "Kalturi"
+
+    summoner = Summoner(name=initial_summoner_name)
+    patch_715 = Patch.from_str("7.15")
+
+    unpulled_summoner_ids = SortedList([summoner.id])
+    pulled_summoner_ids = SortedList()
+
+    unpulled_match_ids = SortedList()
+    pulled_match_ids = SortedList()
+
+    while unpulled_summoner_ids:
+        # Get a random summoner from our list of unpulled summoners and pull their match history
+        new_summoner_id = random.choice(unpulled_summoner_ids)
+        new_summoner = Summoner(id=new_summoner_id)
+        matches = filter_match_history(new_summoner, patch_715)
+        unpulled_match_ids.update([match.id for match in matches])
+        unpulled_summoner_ids.remove(new_summoner_id)
+        pulled_summoner_ids.add(new_summoner_id)
+
+        while unpulled_match_ids:
+            # Get a random match from our list of matches
+            new_match_id = random.choice(unpulled_match_ids)
+            new_match = Match(id=new_match_id)
+            for participant in new_match.participants:
+                if participant.summoner.id not in pulled_summoner_ids and participant.summoner.id not in unpulled_summoner_ids:
+                    unpulled_summoner_ids.add(participant.summoner.id)
+            # The above lines will trigger the match to load its data by iterating over all the participants.
+            # If you have a database in your datapipeline, the match will automatically be stored in it.
+            unpulled_match_ids.remove(new_match_id)
+            pulled_match_ids.add(new_match_id)
+
+
+if __name__ == "__main__":
+    collect_matches()

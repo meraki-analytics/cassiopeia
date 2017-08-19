@@ -3,7 +3,11 @@ import datetime
 
 from .data import PATCHES, Region, Queue
 from .patches import Patch
-from .core import Champion, Summoner, Account, ChampionMastery, Rune, Mastery, Item, RunePage, MasteryPage, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Masteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Locales, ProfileIcons, MasteryPages, RunePages, ChallengerLeague, MasterLeague, Leagues
+from .core import Champion, Summoner, Account, ChampionMastery, Rune, Mastery, Item, RunePage, MasteryPage, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Masteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Locales, ProfileIcons, MasteryPages, RunePages, ChallengerLeague, MasterLeague, Leagues, LeagueEntries
+
+
+def get_league_positions(summoner: Union[Summoner, int, str], region: Union[Region, str] = None) -> Leagues:
+    return LeagueEntries(summoner=summoner, region=region)
 
 
 def get_leagues(summoner: Union[Summoner, int, str], region: Union[Region, str] = None) -> Leagues:

@@ -94,12 +94,12 @@ class CurrentGameParticipantData(CoreData):
     @property
     def runes(self) -> List[RuneData]:
         """The runes used by this participant"""
-        return self._dto["runes"]
+        return [RuneData.from_dto(rune) for rune in self._dto["runes"]]
 
     @property
     def masteries(self) -> List[MasteryData]:
         """The masteries used by this participant"""
-        return self._dto["masteries"]
+        return [MasteryData.from_dto(mastery) for mastery in self._dto["masteries"]]
 
     @property
     def is_bot(self) -> int:
@@ -226,6 +226,12 @@ class FeaturedMatches(CassiopeiaGhostList):
 class Participant(CassiopeiaObject):
     _data_types = {CurrentGameParticipantData}
 
+    @classmethod
+    def from_data(cls, data: CoreData, region: Region):
+        self = super().from_data(data)
+        self.__region = region
+        return self
+
     @property
     def champion(self) -> Champion:
         return Champion(id=self._data[CurrentGameParticipantData].champion_id)
@@ -233,7 +239,10 @@ class Participant(CassiopeiaObject):
     @property
     def summoner(self) -> Summoner:
         ProfileIcon(id=self._data[CurrentGameParticipantData].profile_icon_id)
-        return Summoner(id=self._data[CurrentGameParticipantData].summoner_id, name=self._data[CurrentGameParticipantData].summoner_name)
+        if "summonerId" in self._data[CurrentGameParticipantData]._dto:
+            return Summoner(id=self._data[CurrentGameParticipantData].summoner_id, name=self._data[CurrentGameParticipantData].summoner_name, region=self.__region)
+        else:
+            return Summoner(name=self._data[CurrentGameParticipantData].summoner_name, region=self.__region)
 
     @property
     def runes(self) -> Dict[Rune, int]:
@@ -264,9 +273,15 @@ class Participant(CassiopeiaObject):
 class Team(CassiopeiaObject):
     _data_types = {TeamData}
 
+    @classmethod
+    def from_data(cls, data: CoreData, region: Region):
+        self = super().from_data(data)
+        self.__region = region
+        return self
+
     @lazy_property
     def participants(self) -> List[Participant]:
-        return SearchableList([Participant(p) for p in self._data[TeamData].participants])
+        return SearchableList([Participant.from_data(p, region=self.__region) for p in self._data[TeamData].participants])
 
     @lazy_property
     def bans(self) -> Dict[int, Champion]:
@@ -286,22 +301,21 @@ class CurrentMatch(CassiopeiaGhost):
 
         if summoner is not None:
             if isinstance(summoner, str):
-                summoner = Summoner(name=summoner)
+                summoner = Summoner(name=summoner, region=region)
             elif isinstance(summoner, int):
-                summoner = Summoner(id=summoner)
+                summoner = Summoner(id=summoner, region=region)
             self.__summoner = summoner
         super().__init__(**kwargs)
 
     @classmethod
-    def from_data(cls, data: CoreData, summoner: Union[Summoner, int, str]):
+    def from_data(cls, data: CurrentGameInfoData, summoner: Union[Summoner, int, str]):
         self = super().from_data(data)
         if isinstance(summoner, str):
-            summoner = Summoner(name=summoner)
+            summoner = Summoner(name=summoner, region=data.region)
         elif isinstance(summoner, int):
-            summoner = Summoner(id=summoner)
+            summoner = Summoner(id=summoner, region=data.region)
         self.__summoner = summoner
         return self
-
 
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform, "summoner.id": self.__summoner.id}
@@ -318,12 +332,10 @@ class CurrentMatch(CassiopeiaGhost):
 
     @lazy_property
     def region(self) -> Region:
-        """The region for this summoner."""
         return Region(self._data[CurrentGameInfoData].region)
 
     @lazy_property
     def platform(self) -> Platform:
-        """The platform for this summoner."""
         return self.region.platform
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
@@ -335,17 +347,17 @@ class CurrentMatch(CassiopeiaGhost):
     @ghost_load_on(KeyError)
     @lazy
     def teams(self) -> List[Team]:
-        return SearchableList([Team(team) for team in self._data[CurrentGameInfoData].teams])
+        return SearchableList([Team.from_data(team, region=self.region) for team in self._data[CurrentGameInfoData].teams])
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
     @ghost_load_on(KeyError)
     def blue_team(self) -> Team:
-        return self._data[CurrentGameInfoData].teams[0]
+        return self.teams[0]
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
     @ghost_load_on(KeyError)
     def red_team(self) -> Team:
-        return self._data[CurrentGameInfoData].teams[1]
+        return self.teams[1]
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
     @ghost_load_on(KeyError)
@@ -365,7 +377,7 @@ class CurrentMatch(CassiopeiaGhost):
     @CassiopeiaGhost.property(CurrentGameInfoData)
     @ghost_load_on(KeyError)
     def queue(self) -> Queue:
-        return Queue(self._data[CurrentGameInfoData].queue)
+        return Queue.from_id(self._data[CurrentGameInfoData].queue)
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
     @ghost_load_on(KeyError)

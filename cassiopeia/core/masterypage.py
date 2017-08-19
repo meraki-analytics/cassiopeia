@@ -86,9 +86,9 @@ class MasteryPages(CassiopeiaGhostList):
     def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
         super().__init__(*args, region=region)
         if isinstance(summoner, str):
-            summoner = Summoner(name=summoner)
+            summoner = Summoner(name=summoner, region=region)
         elif isinstance(summoner, int):
-            summoner = Summoner(id=summoner)
+            summoner = Summoner(id=summoner, region=region)
         self.__summoner = summoner
 
     def __get_query__(self):
@@ -130,7 +130,7 @@ class MasteryPage(CassiopeiaGhost):
 
     @lazy_property
     def summoner(self) -> Summoner:
-        return Summoner(id=self._data[MasteryPageData].summoner_id)
+        return Summoner(id=self._data[MasteryPageData].summoner_id, region=self.region)
 
     @CassiopeiaGhost.property(MasteryPageData)
     @ghost_load_on(KeyError)

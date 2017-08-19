@@ -8,8 +8,7 @@ from setuptools import setup, find_packages
 install_requires = [
     "datapipelines",
     "merakicommons",
-    "Pillow",
-    "pycurl"
+    "Pillow"
 ]
 
 # Require python 3.6
@@ -18,9 +17,6 @@ if sys.version_info.major != 3 and sys.version_info.minor != 6:
 
 setup(
     name="cassiopeia",
-    version="3.0.10",
-    author="Jason Maldonis; Rob Rua",
-    author_email="team@merakianalytics.com",
     url="https://github.com/meraki-analytics/cassiopeia",
     description="Riot Games Developer API Wrapper (3rd Party)",
     keywords=["LoL", "League of Legends", "Riot Games", "API", "REST"],
