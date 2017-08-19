@@ -13,6 +13,7 @@ Masteries
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:
 
 
 .. autoclass:: Mastery
@@ -25,6 +26,7 @@ Masteries
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:
 
 
 .. autoclass:: cassiopeia.core.masterypage.MasteryPage

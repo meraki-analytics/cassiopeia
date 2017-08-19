@@ -12,6 +12,7 @@ Runes
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:
 
 
 .. autoclass:: Rune
@@ -24,6 +25,7 @@ Runes
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:
 
 
 .. autoclass:: cassiopeia.core.runepage.RunePage

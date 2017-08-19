@@ -11,9 +11,56 @@ Champions
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:
 
 
 .. autoclass:: Champion
     :members:
     :undoc-members:
     :show-inheritance:
+
+.. autoclass:: cassiopeia.plugins.championgg.core.ChampionGGStats
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. autoclass:: cassiopeia.core.staticdata.champion.Info
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. autoclass:: cassiopeia.core.staticdata.champion.Stats
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. autoclass:: cassiopeia.core.staticdata.champion.Skin
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. autoclass:: cassiopeia.core.staticdata.champion.Passive
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. autoclass:: cassiopeia.core.staticdata.champion.RecommendedItems
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. autoclass:: cassiopeia.core.staticdata.champion.ItemSet
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. autoclass:: cassiopeia.core.staticdata.champion.ChampionSpell
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. autoclass:: cassiopeia.core.staticdata.champion.SpellVars
+    :members:
+    :undoc-members:
+    :show-inheritance:
+

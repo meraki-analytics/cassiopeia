@@ -17,6 +17,7 @@ Leagues
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:
 
 
 .. autoclass:: cassiopeia.core.league.League
@@ -32,6 +33,23 @@ Leagues
 
 
 .. autoclass:: MasterLeague
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+.. autoclass:: cassiopeia.core.league.MiniSeries
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. autoclass:: cassiopeia.core.league.LeagueEntries
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :inherited-members:
+
+.. autoclass:: cassiopeia.core.league.LeagueEntry
     :members:
     :undoc-members:
     :show-inheritance:
