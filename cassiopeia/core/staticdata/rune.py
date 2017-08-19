@@ -817,7 +817,7 @@ class Rune(CassiopeiaGhost):
     @lazy
     def image(self) -> Image:
         """The image information for this rune."""
-        image = Image(self._data[RuneData].image)
+        image = Image.from_data(self._data[RuneData].image)
         image(version=self.version)
         return image
 
