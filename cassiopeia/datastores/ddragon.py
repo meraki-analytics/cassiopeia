@@ -1,7 +1,7 @@
-import json
 from typing import Type, TypeVar, MutableMapping, Any, Iterable
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError
+
 from ..data import Platform
 from ..dto.staticdata.champion import ChampionListDto
 from ..dto.staticdata.mastery import MasteryListDto
@@ -13,9 +13,13 @@ from ..dto.staticdata.profileicon import ProfileIconDataDto
 from ..dto.staticdata.language import LanguagesDto, LanguageStringsDto
 from ..dto.staticdata.realm import RealmDto
 from ..dto.staticdata.map import MapListDto
-
 from .common import HTTPClient, HTTPError
 from .riotapi.staticdata import _get_default_version
+
+try:
+    import ujson as json
+except ImportError:
+    import json
 
 T = TypeVar("T")
 

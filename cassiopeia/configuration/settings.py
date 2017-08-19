@@ -8,7 +8,7 @@ from .load import config
 logging.basicConfig(format='%(asctime)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.WARNING)
 
 
-def create_default_pipeline(api_key, verbose=False):
+def create_default_pipeline(riot_api_key: str, championgg_api_key: str = None, verbose: bool = False):
     from datapipelines import DataPipeline, CompositeDataTransformer
     from ..datastores.cache import Cache
     from ..datastores.riotapi import RiotAPI
@@ -27,7 +27,7 @@ def create_default_pipeline(api_key, verbose=False):
     services = [
         Cache(),  # TODO Add expirations from file
         DDragonDataSource(),  # TODO: Should this be default?
-        RiotAPI(api_key=api_key)
+        RiotAPI(api_key=riot_api_key),
     ]
     riotapi_transformer = CompositeDataTransformer([
         StaticDataTransformer(),
@@ -41,8 +41,18 @@ def create_default_pipeline(api_key, verbose=False):
         StatusTransformer(),
         LeagueTransformer()
     ])
-    pipeline = DataPipeline(services, [riotapi_transformer])
-    pipeline._transformer = riotapi_transformer
+    transformers = [riotapi_transformer]
+
+    if "championgg" in settings.plugins:
+        from ..plugins.championgg.datastores import ChampionGGSource
+        from ..plugins.championgg.transformers import ChampionGGTransformer
+        transformers.append(
+            ChampionGGTransformer()
+        )
+        services.append(
+            ChampionGGSource(api_key=championgg_api_key)
+        )
+    pipeline = DataPipeline(services, transformers)
 
     # Manually put the cache on the pipeline. TODO Is this the best way?
     for datastore in services:
@@ -56,7 +66,7 @@ def create_default_pipeline(api_key, verbose=False):
         for service in services:
             for p in service.provides:
                 print("Provides:", p)
-        for transformer in riotapi_transformer:
+        for transformer in transformers:
             for t in transformer.transforms.items():
                 print("Transformer:", t)
         print()
@@ -70,6 +80,7 @@ class Settings(object):
         self.__default_region = Region(settings["Riot API"]["region"].upper())
         self.__limits = settings["Riot API"]["limits"]
         self.__pipeline = None
+        self.__plugins = settings.get("plugins", [])
         for name in ["default", "core"]:
             logger = logging.getLogger(name)
             level = settings["logging"].get(name, logging.WARNING)  # Set default logging level to WARNING.
@@ -88,7 +99,14 @@ class Settings(object):
         if self.__pipeline is None:
             if self.__key and not self.__key.startswith("RGAPI"):
                 self.__key = os.environ[self.__key]
-            self.__pipeline = create_default_pipeline(api_key=self.__key, verbose=False)
+            if "championgg" in self.__plugins:
+                championgg_api_key = self.__plugins["championgg"]["key"]
+                championgg_api_key = os.environ.get(championgg_api_key, championgg_api_key)
+            else:
+                championgg_api_key = None
+            self.__pipeline = create_default_pipeline(riot_api_key=self.__key,
+                                                      championgg_api_key=championgg_api_key,
+                                                      verbose=False)
         return self.__pipeline
 
     @property
@@ -102,6 +120,10 @@ class Settings(object):
     @property
     def rate_limits(self):
         return self.__limits
+
+    @property
+    def plugins(self):
+        return self.__plugins
 
 
 settings = Settings(config)

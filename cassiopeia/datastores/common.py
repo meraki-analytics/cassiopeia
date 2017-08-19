@@ -89,10 +89,11 @@ class HTTPClient(object):
 
         return status_code, body, response_headers
 
-    def get(self, url: str, parameters: MutableMapping[str, Any] = None, headers: Mapping[str, str] = None, rate_limiter: RateLimiter = None, connection: Curl = None) -> (Union[dict, list, str, bytes], dict):
+    def get(self, url: str, parameters: MutableMapping[str, Any] = None, headers: Mapping[str, str] = None, rate_limiter: RateLimiter = None, connection: Curl = None, encode_parameters: bool = True) -> (Union[dict, list, str, bytes], dict):
         if parameters:
-            parameters = {k: str(v).lower() if isinstance(v, bool) else v for k, v in parameters.items()}
-            parameters = urlencode(parameters, doseq=True)
+            if encode_parameters:
+                parameters = {k: str(v).lower() if isinstance(v, bool) else v for k, v in parameters.items()}
+                parameters = urlencode(parameters, doseq=True)
             url = "{url}?{params}".format(url=url, params=parameters)
 
         status_code, body, response_headers = HTTPClient._get(url, headers, rate_limiter, connection)

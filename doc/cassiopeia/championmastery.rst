@@ -12,6 +12,7 @@ Champion Masteries
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:
 
 
 .. autoclass:: ChampionMastery

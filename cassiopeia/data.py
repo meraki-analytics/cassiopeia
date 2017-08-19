@@ -205,6 +205,14 @@ class Lane(Enum):
     bot_lane = "BOT_LANE"
 
 
+class Role(Enum):
+    top = "TOP"
+    jungle = "JUNGLE"
+    mid = "MIDDLE"
+    adc = "DUO_CARRY"
+    support = "DUO_SUPPORT"
+
+
 class Queue(Enum):
     custom = "CUSTOM"
     normal_blind_threes = "NORMAL_3x3"

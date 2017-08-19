@@ -20,7 +20,7 @@ T = TypeVar("T")
 def _get_default_version(query: MutableMapping[str, Any], context: PipelineContext) -> str:
     pipeline = context[PipelineContext.Keys.PIPELINE]
     realms = pipeline.get(RealmDto, {"platform": query["platform"]})
-    return realms["version"]
+    return realms["v"]
 
 
 def _get_default_locale(query: MutableMapping[str, Any], context: PipelineContext) -> str:

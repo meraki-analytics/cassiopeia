@@ -10,6 +10,7 @@ Maps
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:
 
 
 .. autoclass:: Map

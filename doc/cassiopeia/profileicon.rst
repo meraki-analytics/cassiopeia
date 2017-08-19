@@ -11,6 +11,7 @@ Profile Icons
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:
 
 
 .. autoclass:: cassiopeia.core.staticdata.profileicon.ProfileIcon

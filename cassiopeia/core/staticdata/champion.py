@@ -6,7 +6,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
 from ...configuration import settings
-from ...data import Resource, Region, Platform, Map, GameMode
+from ...data import Resource, Region, Platform, Map, GameMode, Role, Tier, Patch
 from ..champion import ChampionData as ChampionStatusData
 from ..champion import ChampionListData as ChampionStatusListData
 from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
@@ -918,10 +918,7 @@ class Champion(CassiopeiaGhost):
             find = "name", self.name
         else:
             raise RuntimeError("Impossible!")
-        if load_group is ChampionData:
-            data = find_matching_attribute(data, *find)
-        else:
-            data = find_matching_attribute(data, *find)
+        data = find_matching_attribute(data, *find)
         super().__load_hook__(load_group, data)
 
     # What do we do about params like this that can exist in both data objects?

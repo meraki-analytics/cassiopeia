@@ -24,7 +24,8 @@ if filename is None:
 if not os.path.exists(filename):
     filename = os.path.normpath(os.path.join(head, filename))
     if not os.path.exists(filename):
-        filename = default_filename
+        print("WARNING! Could not find settings file {}, using default.".format(filename))
+        filename = os.path.normpath(os.path.join(head, "default.json"))
 
 config = json.loads(open(filename).read())
 if "logging" not in config:
