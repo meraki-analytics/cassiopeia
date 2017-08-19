@@ -6,7 +6,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
 from ...configuration import settings
-from ...data import Resource, Region, Platform, Map, GameMode
+from ...data import Resource, Region, Platform, Map, GameMode, Role, Tier, Patch
 from ..champion import ChampionData as ChampionStatusData
 from ..champion import ChampionListData as ChampionStatusListData
 from ..championgg import GGChampionData as GGChampionData
@@ -918,6 +918,9 @@ class Champion(CassiopeiaGhost):
             find = "id", self.id
         elif "name" in self._data[ChampionData]._dto or "name" in self._data[ChampionStatusData]._dto:
             find = "name", self.name
+            if load_group == GGChampionData:  # The championgg api doesn't return champion name, so we need to use the ID. Pull it since it wasn't provided at init.
+                self.__load__(ChampionData)
+                find = "id", self.id
         else:
             raise RuntimeError("Impossible!")
         data = find_matching_attribute(data, *find)
@@ -1106,10 +1109,93 @@ class Champion(CassiopeiaGhost):
 
     @CassiopeiaGhost.property(GGChampionData)
     @ghost_load_on(KeyError)
-    def win_rate(self) -> float:
-        return self._data[GGChampionData].win_rate
+    def win_rate(self) -> SearchableDictionary:
+        return SearchableDictionary({Role(role): value for role, value in self._data[GGChampionData].win_rate.items()})
 
     @CassiopeiaGhost.property(GGChampionData)
     @ghost_load_on(KeyError)
-    def play_rate(self) -> float:
-        return self._data[GGChampionData].play_rate
+    def play_rate(self) -> SearchableDictionary:
+        return SearchableDictionary({Role(role): value for role, value in self._data[GGChampionData].play_rate.items()})
+
+    @CassiopeiaGhost.property(GGChampionData)
+    @ghost_load_on(KeyError)
+    def play_rate_by_role(self) -> SearchableDictionary:
+        return SearchableDictionary({Role(role): value for role, value in self._data[GGChampionData].play_rate_by_role.items()})
+
+    @CassiopeiaGhost.property(GGChampionData)
+    @ghost_load_on(KeyError)
+    def ban_rate(self) -> SearchableDictionary:
+        return SearchableDictionary({Role(role): value for role, value in self._data[GGChampionData].ban_rate.items()})
+
+    @CassiopeiaGhost.property(GGChampionData)
+    @ghost_load_on(KeyError)
+    def games_played(self) -> SearchableDictionary:
+        return SearchableDictionary({Role(role): value for role, value in self._data[GGChampionData].games_played.items()})
+
+    @CassiopeiaGhost.property(GGChampionData)
+    @ghost_load_on(KeyError)
+    def damage_composition(self) -> SearchableDictionary:
+        return SearchableDictionary({Role(role): value for role, value in self._data[GGChampionData].damage_composition.items()})
+
+    @CassiopeiaGhost.property(GGChampionData)
+    @ghost_load_on(KeyError)
+    def kills(self) -> SearchableDictionary:
+        return SearchableDictionary({Role(role): value for role, value in self._data[GGChampionData].kills.items()})
+
+    @CassiopeiaGhost.property(GGChampionData)
+    @ghost_load_on(KeyError)
+    def total_damage_taken(self) -> SearchableDictionary:
+        return SearchableDictionary({Role(role): value for role, value in self._data[GGChampionData].total_damage_taken.items()})
+
+    @CassiopeiaGhost.property(GGChampionData)
+    @ghost_load_on(KeyError)
+    def wards_killed(self) -> SearchableDictionary:
+        return SearchableDictionary({Role(role): value for role, value in self._data[GGChampionData].wards_killed.items()})
+
+    @CassiopeiaGhost.property(GGChampionData)
+    @ghost_load_on(KeyError)
+    def neutral_minions_killed_in_team_jungle(self) -> SearchableDictionary:
+        return SearchableDictionary({Role(role): value for role, value in self._data[GGChampionData].neutral_minions_killed_in_team_jungle.items()})
+
+    @CassiopeiaGhost.property(GGChampionData)
+    @ghost_load_on(KeyError)
+    def assists(self) -> SearchableDictionary:
+        return SearchableDictionary({Role(role): value for role, value in self._data[GGChampionData].assists.items()})
+
+    @CassiopeiaGhost.property(GGChampionData)
+    @ghost_load_on(KeyError)
+    def performance_score(self) -> SearchableDictionary:
+        return SearchableDictionary({Role(role): value for role, value in self._data[GGChampionData].performance_score.items()})
+
+    @CassiopeiaGhost.property(GGChampionData)
+    @ghost_load_on(KeyError)
+    def neutral_minions_killed_in_enemy_jungle(self) -> SearchableDictionary:
+        return SearchableDictionary({Role(role): value for role, value in self._data[GGChampionData].neutral_minions_killed_in_enemy_jungle.items()})
+
+    @CassiopeiaGhost.property(GGChampionData)
+    @ghost_load_on(KeyError)
+    def gold_earned(self) -> SearchableDictionary:
+        return SearchableDictionary({Role(role): value for role, value in self._data[GGChampionData].gold_earned.items()})
+
+    @CassiopeiaGhost.property(GGChampionData)
+    @ghost_load_on(KeyError)
+    def deaths(self) -> SearchableDictionary:
+        return SearchableDictionary({Role(role): value for role, value in self._data[GGChampionData].deaths.items()})
+
+    @CassiopeiaGhost.property(GGChampionData)
+    @ghost_load_on(KeyError)
+    def minions_killed(self) -> SearchableDictionary:
+        return SearchableDictionary({Role(role): value for role, value in self._data[GGChampionData].minions_killed.items()})
+
+    @CassiopeiaGhost.property(GGChampionData)
+    @ghost_load_on(KeyError)
+    def total_healed(self) -> SearchableDictionary:
+        return SearchableDictionary({Role(role): value for role, value in self._data[GGChampionData].total_healed.items()})
+
+    @CassiopeiaGhost.property(GGChampionData)
+    @ghost_load_on(KeyError)
+    def championgg_metadata(self) -> dict:
+        return {
+            "elo": [Tier(tier) for tier in self._data[GGChampionData].elo],
+            "patch": Patch.from_str(self._data[GGChampionData].patch)
+        }

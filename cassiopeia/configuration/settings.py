@@ -30,7 +30,7 @@ def create_default_pipeline(riot_api_key, verbose=False):
         Cache(),  # TODO Add expirations from file
         DDragonDataSource(),  # TODO: Should this be default?
         RiotAPI(api_key=riot_api_key),
-        ChampionGGSource(api_key=os.environ["CHAMPYONGG_KEY"])
+        ChampionGGSource(api_key=os.environ["CHAMPIONGG_KEY"])
     ]
     riotapi_transformer = CompositeDataTransformer([
         StaticDataTransformer(),

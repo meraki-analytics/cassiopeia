@@ -10,6 +10,9 @@ class Patch(object):
         self._start = start
         self._end = end
 
+    def __str__(self):
+        return self._patch
+
     @classmethod
     def from_str(cls, string) -> "Patch":
         for patch in cls.__patches:

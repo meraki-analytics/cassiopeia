@@ -30,6 +30,8 @@ class ChampionGGSource(DataSource):
             FixedWindowRateLimiter(10, 50)
         )
 
+        self._cached_data = {}
+
     @DataSource.dispatch
     def get(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> T:
         pass
@@ -53,23 +55,29 @@ class ChampionGGSource(DataSource):
         if query["version"] != latest_version:
             raise ValueError("Can only get champion.gg data for champions on the most recent version.")
 
-        params = {
-            "api_key": self._key,
-            "limit": 300,
-            "skip": 0,
-            #"elo": "PLATINUM,DIAMOND,MASTER,CHALLENGER",
-            #"champData": "kda,damage,minions,wins,wards,positions,normalized,averageGames,overallPerformanceScore,goldEarned,sprees,hashes,wins,maxMins,matchups",
-            "sort": "winRate-desc",
-            "abriged": False
-        }
-        params = "&".join(["{key}={value}".format(key=key, value=value) for key, value in params.items()])
-
-        url = "http://api.champion.gg/v2/champions"
         try:
-            data, response_headers = self._client.get(url, params, rate_limiter=self._rate_limiter, connection=None, encode_parameters=False)
-        except HTTPError as error:
-            raise NotFoundError(str(error)) from error
+            return self._cached_data[(self.get_gg_champion_list, query["version"])]
+        except KeyError:
+            params = {
+                "api_key": self._key,
+                "limit": 300,
+                "skip": 0,
+                #"elo": "PLATINUM,DIAMOND,MASTER,CHALLENGER",
+                #"champData": "kda,damage,minions,wins,wards,positions,normalized,averageGames,overallPerformanceScore,goldEarned,sprees,hashes,wins,maxMins,matchups",
+                "champData": "kda,damage,minions,wards,overallPerformanceScore,goldEarned",  # I manually chose a selection of data to return by default; I chose this data because it's relatively small and provides some additional useful information.
+                "sort": "winRate-desc",
+                "abriged": False
+            }
+            params = "&".join(["{key}={value}".format(key=key, value=value) for key, value in params.items()])
 
-        for datum in data:
-            datum.pop("_id")
-        return GGChampionListDto({"region": query["platform"].region.value, "data": data})
+            url = "http://api.champion.gg/v2/champions"
+            try:
+                data, response_headers = self._client.get(url, params, rate_limiter=self._rate_limiter, connection=None, encode_parameters=False)
+            except HTTPError as error:
+                raise NotFoundError(str(error)) from error
+
+            for datum in data:
+                datum.pop("_id")
+            result = GGChampionListDto({"region": query["platform"].region.value, "data": data})
+            self._cached_data[(self.get_gg_champion_list, query["version"])] = result
+            return result
