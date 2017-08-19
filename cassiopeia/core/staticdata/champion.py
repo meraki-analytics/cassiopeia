@@ -572,7 +572,7 @@ class ChampionSpell(CassiopeiaObject):
     @lazy_property
     def image_info(self) -> Image:
         """The info about the spell's image, which can be pulled from datadragon."""
-        return Image(self._data[ChampionSpellData].image)
+        return Image.from_data(self._data[ChampionSpellData].image)
 
     @property
     def sanitized_description(self) -> str:
@@ -627,7 +627,7 @@ class ChampionSpell(CassiopeiaObject):
     @lazy_property
     def alternative_images(self) -> List[Image]:
         """The alternative images for this spell. These won't exist after patch NN, when Riot standardized all images."""
-        return SearchableList(Image(alt) for alt in self._data[ChampionSpellData].alternative_images)
+        return SearchableList(Image.from_data(alt) for alt in self._data[ChampionSpellData].alternative_images)
 
     @property
     def name(self) -> str:
@@ -702,7 +702,7 @@ class Passive(CassiopeiaObject):
     @lazy_property
     def image_info(self) -> Image:
         """The info about the spell's image, which can be pulled from datadragon."""
-        return Image(self._data[PassiveData].image)
+        return Image.from_data(self._data[PassiveData].image)
 
     @property
     def sanitized_description(self) -> str:
@@ -1094,7 +1094,7 @@ class Champion(CassiopeiaGhost):
     @lazy
     def image(self) -> Image:
         """The image information for this champion."""
-        image = Image(self._data[ChampionData].image)
+        image = Image.from_data(self._data[ChampionData].image)
         image(version=self.version)
         return image
 

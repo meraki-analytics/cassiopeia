@@ -419,7 +419,7 @@ class SummonerSpell(CassiopeiaGhost):
     @lazy
     def alternative_images(self) -> List[Image]:
         """The alternative images for this spell. These won't exist after patch NN, when Riot standardized all images."""
-        return SearchableList(Image(alt) for alt in self._data[SummonerSpellData].alternative_images)
+        return SearchableList(Image.from_data(alt) for alt in self._data[SummonerSpellData].alternative_images)
 
     @CassiopeiaGhost.property(SummonerSpellData)
     @ghost_load_on(KeyError)
@@ -437,7 +437,7 @@ class SummonerSpell(CassiopeiaGhost):
     @ghost_load_on(KeyError)
     @lazy
     def image(self) -> Image:
-        image = Image(self._data[SummonerSpellData].image)
+        image = Image.from_data(self._data[SummonerSpellData].image)
         image(version=self.version)
         return image
 
