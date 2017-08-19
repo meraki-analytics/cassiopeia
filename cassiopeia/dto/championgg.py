@@ -1,9 +1,9 @@
 from .common import DtoObject
 
 
-class GGChampionListDto(DtoObject):
+class ChampionGGListDto(DtoObject):
     pass
 
 
-class GGChampionDto(DtoObject):
+class ChampionGGDto(DtoObject):
     pass

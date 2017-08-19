@@ -4,8 +4,8 @@ from collections import defaultdict
 
 from datapipelines import DataTransformer, PipelineContext
 
-from ..core.championgg import GGChampionData, GGChampionListData
-from ..dto.championgg import GGChampionDto, GGChampionListDto
+from ..core.championgg import ChampionGGData, ChampionGGListData
+from ..dto.championgg import ChampionGGDto, ChampionGGListDto
 
 T = TypeVar("T")
 F = TypeVar("F")
@@ -18,8 +18,8 @@ class ChampionGGTransformer(DataTransformer):
 
     # Dto to Data
 
-    @transform.register(GGChampionDto, GGChampionData)
-    def champion_gg_dto_to_data(self, value: GGChampionDto, context: PipelineContext = None) -> GGChampionData:
+    @transform.register(ChampionGGDto, ChampionGGData)
+    def champion_gg_dto_to_data(self, value: ChampionGGDto, context: PipelineContext = None) -> ChampionGGData:
         data = deepcopy(value)
         id = data[0]["championId"]
         reformatted = defaultdict(dict)
@@ -34,16 +34,14 @@ class ChampionGGTransformer(DataTransformer):
             reformatted["championId"] = id
             reformatted["elo"] = elo
             reformatted["patch"] = patch
-        return GGChampionData.from_dto(reformatted)
+        return ChampionGGData.from_dto(reformatted)
 
-    @transform.register(GGChampionListDto, GGChampionListData)
-    def champion_gg_list_dto_to_data(self, value: GGChampionListDto, context: PipelineContext = None) -> GGChampionListData:
+    @transform.register(ChampionGGListDto, ChampionGGListData)
+    def champion_gg_list_dto_to_data(self, value: ChampionGGListDto, context: PipelineContext = None) -> ChampionGGListData:
         data = deepcopy(value)
         reformatted =  {item["championId"]: [] for item in data["data"]}
         for item in data["data"]:
             reformatted[item["championId"]].append(item)
         data["data"] = [self.champion_gg_dto_to_data(item) for item in reformatted.values()]
-        for c in data["data"]:
-            c._update({"region": data["region"]})
         data = data["data"]
-        return GGChampionListData(data)
+        return ChampionGGListData(data)

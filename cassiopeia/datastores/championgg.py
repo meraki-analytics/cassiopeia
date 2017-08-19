@@ -3,8 +3,7 @@ from typing import Type, TypeVar, MutableMapping, Any, Iterable
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError
 from merakicommons.ratelimits import FixedWindowRateLimiter, MultiRateLimiter
 
-from ..data import Platform
-from ..dto.championgg import GGChampionDto, GGChampionListDto
+from ..dto.championgg import ChampionGGDto, ChampionGGListDto
 from .common import HTTPClient, HTTPError
 from .riotapi.staticdata import _get_default_version
 
@@ -45,26 +44,25 @@ class ChampionGGSource(DataSource):
     #############
 
     _validate_get_gg_champion_list_query = Query. \
-        has("platform").as_(Platform).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str)
+        has("patch").as_(str).also. \
+        can_have("includedData").with_default(lambda *args, **kwargs: "kda,damage,minions,wards,overallPerformanceScore,goldEarned", supplies_type=str).also. \
+        can_have("elo").with_default(lambda *args, **kwargs: "PLATINUM,DIAMOND,MASTER,CHALLENGER", supplies_type=str).also. \
+        can_have("limit").with_default(lambda *args, **kwargs: 300, supplies_type=int)
 
-    @get.register(GGChampionListDto)
-    def get_gg_champion_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> GGChampionListDto:
+    @get.register(ChampionGGListDto)
+    def get_gg_champion_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionGGListDto:
         self._validate_get_gg_champion_list_query(query, context)
-        latest_version = _get_default_version(query=query, context=context)
-        if query["version"] != latest_version:
-            raise ValueError("Can only get champion.gg data for champions on the most recent version.")
 
         try:
-            return self._cached_data[(self.get_gg_champion_list, query["version"])]
+            return self._cached_data[(self.get_gg_champion_list, query["patch"])]
         except KeyError:
             params = {
                 "api_key": self._key,
-                "limit": 300,
+                "limit": query["limit"],
                 "skip": 0,
-                #"elo": "PLATINUM,DIAMOND,MASTER,CHALLENGER",
+                #"elo": query["elo"],
                 #"champData": "kda,damage,minions,wins,wards,positions,normalized,averageGames,overallPerformanceScore,goldEarned,sprees,hashes,wins,maxMins,matchups",
-                "champData": "kda,damage,minions,wards,overallPerformanceScore,goldEarned",  # I manually chose a selection of data to return by default; I chose this data because it's relatively small and provides some additional useful information.
+                "champData": query["includedData"],
                 "sort": "winRate-desc",
                 "abriged": False
             }
@@ -78,6 +76,6 @@ class ChampionGGSource(DataSource):
 
             for datum in data:
                 datum.pop("_id")
-            result = GGChampionListDto({"region": query["platform"].region.value, "data": data})
-            self._cached_data[(self.get_gg_champion_list, query["version"])] = result
+            result = ChampionGGListDto({"data": data})
+            self._cached_data[(self.get_gg_champion_list, query["patch"])] = result
             return result
