@@ -1,5 +1,5 @@
 import json
-from typing import Type, TypeVar, MutableMapping, Any, Iterable
+from typing import Type, TypeVar, MutableMapping, Any, Iterable, Mapping
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError
 from ..data import Platform
@@ -101,7 +101,7 @@ class DDragonDataSource(DataSource):
 
                 for var in spell["vars"]:
                     # coeff is always a list, even if just one item
-                    if not isinstance(var["coeff"], list):
+                    if not isinstance(var["coeff"], Iterable):
                         var["coeff"] = [var["coeff"]]
 
         body["region"] = query["platform"].region.value
@@ -306,7 +306,6 @@ class DDragonDataSource(DataSource):
         except HTTPError as e:
             raise NotFoundError(str(e)) from e
 
-        body.pop("basic")
 
         for rune_id, rune in body["data"].items():
             rune["id"] = int(rune_id)
@@ -319,6 +318,15 @@ class DDragonDataSource(DataSource):
             # colloq and plaintext are always(?) null, and don"t appear in static data.
             rune.pop("colloq")
             rune.pop("plaintext")
+
+        for field, value in body["basic"].items():
+            for rune in body["data"].values():
+                rune.setdefault(field, value)
+                if isinstance(value, Mapping):
+                    for stat_name, stat in value.items():
+                        rune[field].setdefault(stat_name, stat)
+
+        body.pop("basic")
 
         body["region"] = query["platform"].region.value
         body["locale"] = locale
@@ -350,8 +358,6 @@ class DDragonDataSource(DataSource):
         except HTTPError as e:
             raise NotFoundError(str(e)) from e
 
-        body.pop("basic")
-
         for group in body["groups"]:
             # key in static data -> id on DDragon
             group["key"] = group.pop("id")
@@ -360,6 +366,15 @@ class DDragonDataSource(DataSource):
             item["id"] = int(item_id)
             # TODO: Sanitizer?
             item["sanitizedDescription"] = item["description"]
+
+        for field, value in body["basic"].items():
+            for item in body["data"].values():
+                item.setdefault(field, value)
+                if isinstance(value, Mapping):
+                    for stat_name, stat in value.items():
+                        item[field].setdefault(stat_name, stat)
+
+        body.pop("basic")
 
         body["region"] = query["platform"].region.value
         body["locale"] = locale
