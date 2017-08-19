@@ -20,6 +20,10 @@ from unittest.mock import MagicMock
 from unittest.mock import MagicMock
 
 
+# Add all plugins to RTDs arguments so it reads them all.
+sys.argv.append("all_plugins.json")
+
+
 # Mock pycurl because rtds doesn't support C code, and typing because it's not on 3.6 yet
 class Mock(MagicMock):
     @classmethod

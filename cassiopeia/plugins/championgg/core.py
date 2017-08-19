@@ -4,14 +4,14 @@ from merakicommons.ghost import ghost_load_on
 from merakicommons.container import SearchableDictionary
 from merakicommons.cache import lazy_property
 
-from ..configuration import settings
-from ..dto import championgg as dto
-from ..data import Region, Role, Tier, Patch
-from .common import CoreData, CassiopeiaGhost, DataObjectList
+from ...configuration import settings
+from .dto import ChampionGGDto, ChampionGGListDto
+from ...data import Region, Role, Tier, Patch
+from ...core.common import CoreData, CassiopeiaGhost, DataObjectList
 
 
 class ChampionGGListData(DataObjectList):
-    _dto_type = dto.ChampionGGListDto
+    _dto_type = ChampionGGListDto
     _renamed = {}
 
     @property
@@ -20,7 +20,7 @@ class ChampionGGListData(DataObjectList):
 
 
 class ChampionGGData(CoreData):
-    _dto_type = dto.ChampionGGDto
+    _dto_type = ChampionGGDto
     _renamed = {"included_data": "champData", "win_rate": "winRate", "id": "championId", "play_rate": "playRate", "games_played": "gamesPlayed", "percent_role_played": "percentRolePlayed", "ban_rate": "banRate", "damage_composition": "damageComposition", "total_damage_taken": "totalDamageTaken", "wards_killed": "wardsKilled", "neutralMinionsKilledTeamJungle": "neutralMinionsKilledTeamJungle", "performance_score": "overallPerformanceScore", "neutralMinionsKilledEnemyJungle": "neutralMinionsKilledEnemyJungle", "gold_earned": "goldEarned", "wards_placed": "wardPlaced", "minions_killed": "minionsKilled", "total_healed": "totalHeal"}
 
     @property

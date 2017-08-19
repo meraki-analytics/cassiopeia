@@ -14,8 +14,6 @@ from .common import ImageData, Image, Sprite
 from ...dto.staticdata import champion as dto
 from .item import Item
 
-from ..championgg import ChampionGGStats
-
 
 ##############
 # Data Types #
@@ -1103,10 +1101,3 @@ class Champion(CassiopeiaGhost):
     @lazy_property
     def sprite(self) -> Sprite:
         return self.image.sprite_info
-
-    @lazy_property
-    def championgg(self) -> ChampionGGStats:
-        latest_version = get_latest_version(self.region, endpoint="champion")
-        if self.version != latest_version:
-            raise ValueError("Can only get champion.gg data for champions on the most recent version.")
-        return ChampionGGStats(id=self.id, patch=Patch.from_str(".".join(self.version.split(".")[:-1])))

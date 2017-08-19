@@ -1,0 +1,19 @@
+{
+  "Riot API": {
+    "region": "NA",
+    "key": "RIOT_API_KEY",
+    "limits": [
+      [20, 1],
+      [100, 120]
+    ]
+  },
+  "logging": {
+    "default": "WARNING",
+    "core": "WARNING"
+  },
+  "plugins": {
+    "championgg": {
+      "key": "CHAMPIONGG_KEY"
+    }
+  }
+}

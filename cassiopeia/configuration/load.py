@@ -19,6 +19,7 @@ else:
 if not os.path.exists(filename):
     filename = os.path.join(head, filename)
     if not os.path.exists(filename):
+        print("WARNING! Could not find settings file {}, using default.".format(filename))
         filename = os.path.join(head, "default.json")
 
 config = json.loads(open(filename).read())

@@ -28,7 +28,7 @@ Things we need help with!
 
 * We have some tests in place, but a thorough testing of all attributes of all objects would be extremely helpful.
 
-* The `champion.gg api <api.champion.gg>_` can be added to Cass as a datasource, and it's data should be integrated directly into Cass's objects. I believe champion.gg only provides data for the latest patch.
+* Some data from the `champion.gg api <api.champion.gg>_` is available through Cass (via the ``Champion`` object). The remaining data should be added as well. You can find the relevant code in the ``plugins/championgg`` directory.
 
 * Add functionality for setting ``version="latest"`` for all objects.
 

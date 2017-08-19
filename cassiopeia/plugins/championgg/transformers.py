@@ -4,8 +4,8 @@ from collections import defaultdict
 
 from datapipelines import DataTransformer, PipelineContext
 
-from ..core.championgg import ChampionGGData, ChampionGGListData
-from ..dto.championgg import ChampionGGDto, ChampionGGListDto
+from .core import ChampionGGData, ChampionGGListData
+from .dto import ChampionGGDto, ChampionGGListDto
 
 T = TypeVar("T")
 F = TypeVar("F")

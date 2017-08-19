@@ -1,4 +1,4 @@
-from .common import DtoObject
+from ...core.common import DtoObject
 
 
 class ChampionGGListDto(DtoObject):

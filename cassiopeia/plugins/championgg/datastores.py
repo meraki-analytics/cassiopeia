@@ -3,9 +3,8 @@ from typing import Type, TypeVar, MutableMapping, Any, Iterable
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError
 from merakicommons.ratelimits import FixedWindowRateLimiter, MultiRateLimiter
 
-from ..dto.championgg import ChampionGGDto, ChampionGGListDto
-from .common import HTTPClient, HTTPError
-from .riotapi.staticdata import _get_default_version
+from .dto import ChampionGGListDto
+from ...datastores.common import HTTPClient, HTTPError
 
 try:
     import ujson as json
@@ -52,6 +51,7 @@ class ChampionGGSource(DataSource):
     @get.register(ChampionGGListDto)
     def get_gg_champion_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionGGListDto:
         self._validate_get_gg_champion_list_query(query, context)
+        assert query["elo"] in ["BRONZE", "SILVER", "GOLD", "PLATINUM", "PLATINUM,DIAMOND,MASTER,CHALLENGER"]
 
         try:
             return self._cached_data[(self.get_gg_champion_list, query["patch"])]
@@ -60,7 +60,7 @@ class ChampionGGSource(DataSource):
                 "api_key": self._key,
                 "limit": query["limit"],
                 "skip": 0,
-                #"elo": query["elo"],
+                #"elo": query["elo"],  # TODO For some reason I can't get this to work properly.
                 #"champData": "kda,damage,minions,wins,wards,positions,normalized,averageGames,overallPerformanceScore,goldEarned,sprees,hashes,wins,maxMins,matchups",
                 "champData": query["includedData"],
                 "sort": "winRate-desc",
