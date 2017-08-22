@@ -97,7 +97,7 @@ class LeagueTransformer(DataTransformer):
 
     @transform.register(LeagueEntries, LeaguePositionsDto)
     def league_positions_core_to_dto(self, value: LeagueEntries, context: PipelineContext = None) -> LeaguePositionsDto:
-        return LeaguePositionsDto({"positions": set([LeagueTransformer.league_position_core_to_dto(self, position) for position in value]), "summonerId": value._LeagueEntries__summoner.id, "region": value.region})
+        return LeaguePositionsDto({"positions": list([LeagueTransformer.league_position_core_to_dto(self, position) for position in value]), "summonerId": value._LeagueEntries__summoner.id, "region": value.region})
 
     @transform.register(League, LeagueListDto)
     def league_list_core_to_dto(self, value: League, context: PipelineContext = None) -> LeaguesListDto:
