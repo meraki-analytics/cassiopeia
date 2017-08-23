@@ -208,7 +208,7 @@ class Lane(Enum):
 class Role(Enum):
     top = "TOP"
     jungle = "JUNGLE"
-    mid = "MIDDLE"
+    middle = "MIDDLE"
     adc = "DUO_CARRY"
     support = "DUO_SUPPORT"
 

@@ -307,6 +307,10 @@ class LeagueEntries(CassiopeiaGhostList):
     _data_types = {LeaguePositionsData}
 
     def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
         super().__init__(*args, region=region)
         if isinstance(summoner, str):
             summoner = Summoner(name=summoner, region=region)
@@ -348,6 +352,10 @@ class Leagues(CassiopeiaGhostList):
     _data_types = {LeaguesListData}
 
     def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
         super().__init__(*args, region=region)
         if isinstance(summoner, str):
             summoner = Summoner(name=summoner, region=region)
@@ -389,6 +397,10 @@ class ChallengerLeague(League, CassiopeiaGhost):
     _data_types = {ChallengerLeagueListData}
 
     def __init__(self, *, queue: Union[Queue, str, int] = None, region: Union[Region, str] = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
         kwargs = {"region": region}
         if isinstance(queue, int):
             kwargs["queue"] = Queue.from_id(queue)
@@ -429,6 +441,10 @@ class MasterLeague(League, CassiopeiaGhost):
     _data_types = {MasterLeagueListData}
 
     def __init__(self, *, queue: Union[Queue, str, int] = None, region: Union[Region, str] = None):
+        if region is None:
+            region = settings.default_region
+        if not isinstance(region, Region):
+            region = Region(region)
         kwargs = {"region": region}
         if isinstance(queue, int):
             kwargs["queue"] = Queue.from_id(queue)

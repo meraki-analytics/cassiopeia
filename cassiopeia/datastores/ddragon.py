@@ -364,6 +364,16 @@ class DDragonDataSource(DataSource):
             item["id"] = int(item_id)
             # TODO: Sanitizer?
             item["sanitizedDescription"] = item["description"]
+            if item["id"] == 3632:  # This item doesn't have a name.
+                item["name"] = ""
+            if "tags" not in item:
+                item["tags"] = []
+            if "depth" not in item:
+                item["depth"] = 1
+            if "colloq" not in item:
+                item["colloq"] = ""
+            if "plaintext" not in item:
+                item["plaintext"] = ""
 
         body["region"] = query["platform"].region.value
         body["locale"] = locale

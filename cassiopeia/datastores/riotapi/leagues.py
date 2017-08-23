@@ -38,6 +38,8 @@ class LeaguesAPI(RiotAPIService):
         data = {"positions": data}
         data["region"] = query["platform"].region.value
         data["summonerId"] = query["summoner.id"]
+        for position in data["positions"]:
+            position["region"] = data["region"]
         return LeaguePositionsDto(data)
 
     _validate_get_many_league_positions_query = Query. \
@@ -61,6 +63,8 @@ class LeaguesAPI(RiotAPIService):
                 data = {"positions": data}
                 data["region"] = query["platform"].region.value
                 data["summonerId"] = id
+                for position in data["positions"]:
+                    position["region"] = data["region"]
                 yield LeaguePositionsDto(data)
 
         return generator()
@@ -86,6 +90,10 @@ class LeaguesAPI(RiotAPIService):
         data = {"leagues": data}
         data["region"] = query["platform"].region.value
         data["summonerId"] = query["summoner.id"]
+        for league in data["leagues"]:
+            league["region"] = data["region"]
+            for entry in league["entries"]:
+                entry["region"] = data["region"]
         return LeaguesListDto(data)
 
     _validate_get_many_leagues_query = Query. \
@@ -109,6 +117,10 @@ class LeaguesAPI(RiotAPIService):
                 data = {"leagues": data}
                 data["region"] = query["platform"].region.value
                 data["summonerId"] = id
+                for league in data["leagues"]:
+                    league["region"] = data["region"]
+                    for entry in league["entries"]:
+                        entry["region"] = data["region"]
                 yield LeaguesListDto(data)
 
         return generator()
@@ -132,6 +144,8 @@ class LeaguesAPI(RiotAPIService):
 
         data["region"] = query["platform"].region.value
         data["queue"] = query["queue"].value
+        for entry in data["entries"]:
+            entry["region"] = data["region"]
         return ChallengerLeagueListDto(data)
 
     _validate_get_many_challenger_league_query = Query. \
@@ -155,6 +169,8 @@ class LeaguesAPI(RiotAPIService):
                 data = {"leagues": data}
                 data["region"] = query["platform"].region.value
                 data["queue"] = queue.value
+                for entry in data["entries"]:
+                    entry["region"] = data["region"]
                 yield ChallengerLeagueListDto(data)
 
         return generator()
@@ -178,6 +194,8 @@ class LeaguesAPI(RiotAPIService):
 
         data["region"] = query["platform"].region.value
         data["queue"] = query["queue"].value
+        for entry in data["entries"]:
+            entry["region"] = data["region"]
         return MasterLeagueListDto(data)
 
     _validate_get_many_master_league_query = Query. \
@@ -201,6 +219,8 @@ class LeaguesAPI(RiotAPIService):
                 data = {"leagues": data}
                 data["region"] = query["platform"].region.value
                 data["queue"] = queue.value
+                for entry in data["entries"]:
+                    entry["region"] = data["region"]
                 yield MasterLeagueListDto(data)
 
         return generator()

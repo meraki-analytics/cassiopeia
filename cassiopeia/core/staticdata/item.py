@@ -223,7 +223,7 @@ class ItemData(CoreData):
 
     @property
     def gold(self) -> GoldData:
-        return self._dto["gold"]
+        return GoldData.from_dto(self._dto["gold"])
 
     @property
     def plaintext(self) -> str:
@@ -607,7 +607,7 @@ class Item(CassiopeiaGhost):
     @CassiopeiaGhost.property(ItemData)
     @ghost_load_on(KeyError)
     def gold(self) -> Gold:
-        return self._data[ItemData].gold
+        return Gold.from_data(self._data[ItemData].gold)
 
     @CassiopeiaGhost.property(ItemData)
     @ghost_load_on(KeyError)
@@ -646,8 +646,9 @@ class Item(CassiopeiaGhost):
 
     @CassiopeiaGhost.property(ItemData)
     @ghost_load_on(KeyError)
+    @lazy
     def maps(self) -> List[Map]:
-        return self._data[ItemData].maps
+        return [Map(int(id)) for id, allowed in self._data[ItemData].maps.items() if allowed]
 
     @CassiopeiaGhost.property(ItemData)
     @ghost_load_on(KeyError)
