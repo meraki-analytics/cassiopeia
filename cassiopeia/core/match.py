@@ -1026,7 +1026,7 @@ class Event(CassiopeiaObject):
 
     @property
     def item_id(self) -> int:
-        return self._data[EventData].items_id
+        return self._data[EventData].item_id
 
     @property
     def participant_id(self) -> int:
@@ -1106,7 +1106,7 @@ class Frame(CassiopeiaObject):
 
     @property
     def events(self) -> List[Event]:
-        return SearchableList([Event(event) for event in self._data[FrameData].events])
+        return SearchableList([Event.from_data(event) for event in self._data[FrameData].events])
 
 
 class Timeline(CassiopeiaGhost):
@@ -1138,7 +1138,7 @@ class Timeline(CassiopeiaGhost):
     @CassiopeiaGhost.property(TimelineData)
     @ghost_load_on(KeyError)
     def frames(self) -> List[Frame]:
-        return SearchableList([Frame.from_data(frame) for frame in self._data[TimelineData].frame])
+        return SearchableList([Frame.from_data(frame) for frame in self._data[TimelineData].frames])
 
     @CassiopeiaGhost.property(TimelineData)
     @ghost_load_on(KeyError)
@@ -1506,13 +1506,13 @@ class Participant(CassiopeiaObject):
 
     @lazy_property
     @load_match_on_keyerror
-    def runes(self) -> List["Rune"]:
-        return self._data[ParticipantData].runes
+    def runes(self) -> Dict["Rune", int]:
+        return SearchableDictionary({Rune(id=rune["runeId"]): rune["rank"] for rune in self._data[ParticipantData].runes})
 
     @lazy_property
     @load_match_on_keyerror
-    def masteries(self) -> List["Mastery"]:
-        return self._data[ParticipantData].masteries
+    def masteries(self) -> Dict["Mastery", int]:
+        return SearchableDictionary({Mastery(id=mastery["masteryId"]): mastery["rank"] for mastery in self._data[ParticipantData].masteries})
 
     @lazy_property
     @load_match_on_keyerror
