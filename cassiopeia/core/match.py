@@ -1475,8 +1475,9 @@ def load_match_on_keyerror(method):
             return method(self, *args, **kwargs)
         except KeyError:  # teamId
             # The match has only partially loaded this participant and it doesn't have all it's data, so load the full match
-            self._Participant__match.__load__(MatchData)
-            self._Participant__match._Ghost__set_loaded(MatchData)
+            if not self._Participant__match._Ghost__is_loaded(MatchData):
+                self._Participant__match.__load__(MatchData)
+                self._Participant__match._Ghost__set_loaded(MatchData)
             for participant in self._Participant__match.participants:
                 if participant.summoner.name == self.summoner.name:
                     self._data[ParticipantData] = participant._data[ParticipantData]
@@ -1675,12 +1676,15 @@ class Match(CassiopeiaGhost):
     @classmethod
     def from_match_reference(cls, ref):
         # TODO Somehow put in ref.lane, ref.role, and ref.champion_id
-        participant = {"participantId": 0, "championId": ref.champion_id}
-        player = {"participantId": 0, "accountId": ref.account_id, "currentPlatformId": ref.platform_id}
         instance = cls(id=ref.id, region=ref.region)
-        instance(season_id=ref.season_id, queue_id=ref.queue_id, creation=ref.creation)
-        instance._data[MatchData]._dto["participants"] = [participant]
-        instance._data[MatchData]._dto["participantIdentities"] = [{"participantId": 0, "player": player}]
+        # The below line is necessary because it's possible to pull this match from the cache (which has Match core objects in it).
+        # In that case, the data will already be loaded and we don't want to overwrite anything.
+        if "participants" not in instance._data[MatchData]._dto:
+            participant = {"participantId": 0, "championId": ref.champion_id}
+            player = {"participantId": 0, "accountId": ref.account_id, "currentPlatformId": ref.platform_id}
+            instance(season_id=ref.season_id, queue_id=ref.queue_id, creation=ref.creation)
+            instance._data[MatchData]._dto["participants"] = [participant]
+            instance._data[MatchData]._dto["participantIdentities"] = [{"participantId": 0, "player": player}]
         return instance
 
     @lazy_property

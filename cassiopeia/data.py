@@ -112,6 +112,7 @@ class Map(Enum):
     howling_abyss = 12
     butchers_bridge = 14
     cosmic_ruins = 16
+    valoran_city_park = 18
 
 
 class GameMode(Enum):
