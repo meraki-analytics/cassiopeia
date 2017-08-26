@@ -70,9 +70,10 @@ class MatchAPI(RiotAPIService):
         has("account.id").as_(int).also. \
         has("platform").as_(Platform).also. \
         can_have("recent").with_default(False).also. \
-        can_have("startTime").with_default(0).also. \
-        can_have("endTime").with_default(_get_current_time, supplies_type=int).also. \
-        can_have("startIndex").as_(int).and_("endIndex").as_(int).also. \
+        can_have("startTime").as_(int).also. \
+        can_have("endTime").as_(int).also. \
+        can_have("startIndex").with_default(0).also. \
+        can_have("endIndex").with_default(50).also. \
         can_have("seasons").as_(Iterable).also. \
         can_have("champion.ids").as_(Iterable).also. \
         can_have("queues").as_(Iterable)
@@ -95,8 +96,8 @@ class MatchAPI(RiotAPIService):
             return MatchListDto(data)
         else:
             params = {
-                "beginTime": query["startTime"],
-                "endTime": query["endTime"]
+                "beginIndex": query["startIndex"],
+                "endIndex": query["endIndex"]
             }
 
             if "startIndex" in query and "endIndex" in query:
@@ -126,8 +127,8 @@ class MatchAPI(RiotAPIService):
 
             data["accountId"] = query["account.id"]
             data["region"] = query["platform"].region.value
-            data["startTime"] = query["startTime"]
-            data["endTime"] = query["endTime"]
+            data["startIndex"] = query["startIndex"]
+            data["endIndex"] = query["endIndex"]
             if "seasons" in query:
                 data["seasons"] = seasons
             if "champion.ids" in query:
@@ -143,9 +144,10 @@ class MatchAPI(RiotAPIService):
         has("account.ids").as_(Iterable).also. \
         has("platform").as_(Platform).also. \
         can_have("recent").with_default(False).also. \
-        can_have("startTime").with_default(0).also. \
-        can_have("endTime").with_default(_get_current_time, supplies_type=int).also. \
-        can_have("startIndex").as_(int).and_("endIndex").as_(int).also. \
+        can_have("startTime").as_(int).also. \
+        can_have("endTime").as_(int).also. \
+        can_have("startIndex").with_default(0).also. \
+        can_have("endIndex").with_default(50).also. \
         can_have("seasons").as_(Iterable).also. \
         can_have("champion.ids").as_(Iterable).also. \
         can_have("queues").as_(Iterable)
@@ -170,8 +172,8 @@ class MatchAPI(RiotAPIService):
                     yield MatchListDto(data)
         else:
             params = {
-                "beginTime": query["startTime"],
-                "endTime": query["endTime"]
+                "beginIndex": query["startIndex"],
+                "endIndex": query["endIndex"]
             }
 
             if "startIndex" in query and "endIndex" in query:
@@ -203,8 +205,8 @@ class MatchAPI(RiotAPIService):
 
                     data["account.id"] = id
                     data["region"] = query["platform"].region.value
-                    data["startTime"] = query["startTime"]
-                    data["endTime"] = query["endTime"]
+                    data["startIndex"] = query["startIndex"]
+                    data["endIndex"] = query["endIndex"]
                     if "seasons" in query:
                         data["seasons"] = seasons
                     if "champion.ids" in query:
