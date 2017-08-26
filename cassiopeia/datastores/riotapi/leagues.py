@@ -31,7 +31,8 @@ class LeaguesAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/league/v3/positions/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
         try:
-            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "positions/by-summoner/summonerId"))
+            print("positions/by-summoner/summonerId {}".format(query["platform"].value))
+            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "positions/by-summoner/summonerId {}".format(query["platform"].value)))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -56,7 +57,7 @@ class LeaguesAPI(RiotAPIService):
             for id in query["summoner.ids"]:
                 url = "https://{platform}.api.riotgames.com/lol/league/v3/positions/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=id)
                 try:
-                    data = self._get(url, {}, self._get_rate_limiter(query["platform"], "positions/by-summoner/summonerId"))
+                    data = self._get(url, {}, self._get_rate_limiter(query["platform"], "positions/by-summoner/summonerId {}".format(query["platform"].value)))
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
@@ -83,7 +84,7 @@ class LeaguesAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/league/v3/leagues/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
         try:
-            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "leagues/by-summoner/summonerId"))
+            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "leagues/by-summoner/summonerId {}".format(query["platform"].value)))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -110,7 +111,7 @@ class LeaguesAPI(RiotAPIService):
             for id in query["summoner.ids"]:
                 url = "https://{platform}.api.riotgames.com/lol/league/v3/leagues/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=id)
                 try:
-                    data = self._get(url, {}, self._get_rate_limiter(query["platform"], "leagues/by-summoner/summonerId"))
+                    data = self._get(url, {}, self._get_rate_limiter(query["platform"], "leagues/by-summoner/summonerId {}".format(query["platform"].value)))
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
@@ -138,7 +139,7 @@ class LeaguesAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/league/v3/challengerleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=query["queue"].value)
         try:
-            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "challengerleagues/by-queue"))
+            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "challengerleagues/by-queue {}".format(query["platform"].value)))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -162,7 +163,7 @@ class LeaguesAPI(RiotAPIService):
             for queue in query["queues"]:
                 url = "https://{platform}.api.riotgames.com/lol/league/v3/challengerleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=queue.value)
                 try:
-                    data = self._get(url, {}, self._get_rate_limiter(query["platform"], "challengerleagues/by-queue"))
+                    data = self._get(url, {}, self._get_rate_limiter(query["platform"], "challengerleagues/by-queue {}".format(query["platform"].value)))
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
@@ -188,7 +189,7 @@ class LeaguesAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/league/v3/masterleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=query["queue"].value)
         try:
-            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "masterleagues/by-queue"))
+            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "masterleagues/by-queue {}".format(query["platform"].value)))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -212,7 +213,7 @@ class LeaguesAPI(RiotAPIService):
             for queue in query["queues"]:
                 url = "https://{platform}.api.riotgames.com/lol/league/v3/masterleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=queue.value)
                 try:
-                    data = self._get(url, {}, self._get_rate_limiter(query["platform"], "masterleagues/by-queue"))
+                    data = self._get(url, {}, self._get_rate_limiter(query["platform"], "masterleagues/by-queue {}".format(query["platform"].value)))
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
