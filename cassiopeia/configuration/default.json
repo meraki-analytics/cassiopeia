@@ -8,6 +8,7 @@
     ]
   },
   "logging": {
+    "print_calls": true,
     "default": "WARNING",
     "core": "WARNING"
   }

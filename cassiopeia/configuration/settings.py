@@ -26,7 +26,7 @@ def create_default_pipeline(riot_api_key: str, championgg_api_key: str = None, v
 
     services = [
         Cache(),  # TODO Add expirations from file
-        DDragonDataSource(),  # TODO: Should this be default?
+        DDragonDataSource(),
         RiotAPI(api_key=riot_api_key),
     ]
     riotapi_transformer = CompositeDataTransformer([
@@ -76,7 +76,8 @@ def create_default_pipeline(riot_api_key: str, championgg_api_key: str = None, v
 
 class Settings(object):
     def __init__(self, settings):
-        self.__key = settings["Riot API"]["key"]
+        self.__settings = settings
+        self.__riot_api_key = settings["Riot API"]["key"]
         self.__default_region = Region(settings["Riot API"]["region"].upper())
         self.__limits = settings["Riot API"]["limits"]
         self.__pipeline = None
@@ -91,22 +92,24 @@ class Settings(object):
     def set_pipeline(self, pipeline):
         self.__pipeline = pipeline
 
-    def set_region(self, region):
+    def set_region(self, region: Region):
         self.__default_region = region
 
     @property
     def pipeline(self):
         if self.__pipeline is None:
-            if self.__key and not self.__key.startswith("RGAPI"):
-                self.__key = os.environ[self.__key]
+            if self.__riot_api_key and not self.__riot_api_key.startswith("RGAPI"):
+                self.__riot_api_key = os.environ[self.__riot_api_key]
             if "championgg" in self.__plugins:
                 championgg_api_key = self.__plugins["championgg"]["key"]
                 championgg_api_key = os.environ.get(championgg_api_key, championgg_api_key)
             else:
                 championgg_api_key = None
-            self.__pipeline = create_default_pipeline(riot_api_key=self.__key,
+            self.__pipeline = create_default_pipeline(riot_api_key=self.__riot_api_key,
                                                       championgg_api_key=championgg_api_key,
                                                       verbose=False)
+            from ..cassiopeia import print_calls
+            print_calls(self.__settings["logging"]["print_calls"])
         return self.__pipeline
 
     @property
@@ -125,5 +128,10 @@ class Settings(object):
     def plugins(self):
         return self.__plugins
 
+    def set_riot_api_key(self, key):
+        from ..datastores.riotapi.common import RiotAPIService
+        for source in self.pipeline._sources:
+            if isinstance(source, RiotAPIService):
+                source._headers["X-Riot-Token"] = key
 
 settings = Settings(config)

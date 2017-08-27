@@ -4,7 +4,22 @@ import datetime
 from .data import PATCHES, Region, Queue, Season
 from .patches import Patch
 from .core import Champion, Summoner, Account, ChampionMastery, Rune, Mastery, Item, RunePage, MasteryPage, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Masteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Locales, ProfileIcons, MasteryPages, RunePages, ChallengerLeague, MasterLeague, Leagues, LeagueEntries
+from .configuration import settings as _settings
+from .datastores import common as _common_datastore
 
+
+# Settings endpoints
+
+def set_riot_api_key(key: str):
+    _settings.set_riot_api_key(key)
+
+def set_default_region(region: Region):
+    _settings.set_region(region)
+
+def print_calls(tf: bool):
+    _common_datastore._print_calls = tf
+
+# Data endpoints
 
 def get_league_positions(summoner: Union[Summoner, int, str], region: Union[Region, str] = None) -> Leagues:
     return LeagueEntries(summoner=summoner, region=region)
