@@ -1,11 +1,7 @@
 {
   "Riot API": {
     "region": "NA",
-    "key": "RIOT_API_KEY",
-    "limits": [
-      [20, 1],
-      [100, 120]
-    ]
+    "key": "RIOT_API_KEY"
   },
   "logging": {
     "print_calls": true,

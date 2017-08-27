@@ -1,8 +1,8 @@
 import re
 import zlib
-from contextlib import contextmanager
+from contextlib import contextmanager, ExitStack
 from io import BytesIO
-from typing import Mapping, MutableMapping, Any, Union, Dict
+from typing import Mapping, MutableMapping, Any, Union, Dict, List
 from urllib.parse import urlencode
 
 from pycurl import Curl
@@ -20,6 +20,7 @@ except ImportError:
 
 
 _print_calls = True
+_print_api_key = False
 
 
 class HTTPError(RuntimeError):
@@ -39,7 +40,7 @@ class HTTPClient(object):
         return status_code
 
     @staticmethod
-    def _get(url: str, headers: Mapping[str, str] = None, rate_limiter: RateLimiter = None, connection: Curl = None) -> (int, bytes, dict):
+    def _get(url: str, headers: Mapping[str, str] = None, rate_limiters: List[RateLimiter] = None, connection: Curl = None) -> (int, bytes, dict):
         if not headers:
             request_headers = ["Accept-Encoding: gzip"]
         else:
@@ -69,10 +70,17 @@ class HTTPClient(object):
         if certifi:
             curl.setopt(curl.CAINFO, certifi.where())
 
-        if _print_calls:  # TODO
-            print("Making call: {}".format(url))
-        if rate_limiter:
-            with rate_limiter:
+        if _print_calls:
+            _url = url
+            if isinstance(_url, bytes):
+                _url = str(_url)[2:-1]
+            if _print_api_key and headers is not None and "X-Riot-Token" in headers:
+                _url += "?api_key={}".format(headers["X-Riot-Token"])
+            print("Making call: {}".format(_url))
+        if rate_limiters:
+            with ExitStack() as stack:
+                # Enter each context manager / rate limiter
+                limiters = [stack.enter_context(rate_limiter) for rate_limiter in rate_limiters]
                 status_code = HTTPClient._execute(curl, connection is None)
         else:
             status_code = HTTPClient._execute(curl, connection is None)
@@ -89,14 +97,14 @@ class HTTPClient(object):
 
         return status_code, body, response_headers
 
-    def get(self, url: str, parameters: MutableMapping[str, Any] = None, headers: Mapping[str, str] = None, rate_limiter: RateLimiter = None, connection: Curl = None, encode_parameters: bool = True) -> (Union[dict, list, str, bytes], dict):
+    def get(self, url: str, parameters: MutableMapping[str, Any] = None, headers: Mapping[str, str] = None, rate_limiters: List[RateLimiter] = None, connection: Curl = None, encode_parameters: bool = True) -> (Union[dict, list, str, bytes], dict):
         if parameters:
             if encode_parameters:
                 parameters = {k: str(v).lower() if isinstance(v, bool) else v for k, v in parameters.items()}
                 parameters = urlencode(parameters, doseq=True)
             url = "{url}?{params}".format(url=url, params=parameters)
 
-        status_code, body, response_headers = HTTPClient._get(url, headers, rate_limiter, connection)
+        status_code, body, response_headers = HTTPClient._get(url, headers, rate_limiters, connection)
 
         content_type = response_headers.get("Content-Type", "application/octet-stream").upper()
 

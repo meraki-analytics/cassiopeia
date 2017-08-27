@@ -92,9 +92,10 @@ Overview
 
     cassiopeia/index.rst
     setup
+    settings
     inner_workings
+    plugins
     contributing
-
 
 Top Level APIs
 ==============

@@ -968,7 +968,7 @@ class MatchHistory(CassiopeiaGhostLazyList):
         return datetime.datetime.fromtimestamp(self._data[MatchListData].end_time / 1000)
 
 
-class Postion(CassiopeiaObject):
+class Position(CassiopeiaObject):
     _data_types = {PositionData}
 
     @property
@@ -1070,8 +1070,8 @@ class Event(CassiopeiaObject):
         return self._data[EventData].creator_id
 
     @property
-    def position(self) -> PositionData:
-        return self._data[EventData].position
+    def position(self) -> Position:
+        return Position.from_data(self._data[EventData].position)
 
     @property
     def before_id(self) -> int:
@@ -1110,8 +1110,8 @@ class ParticipantFrame(CassiopeiaObject):
         return self._data[ParticipantFrameData].dominion_score
 
     @property
-    def position(self) -> PositionData:
-        return self._data[ParticipantFrameData].position
+    def position(self) -> Position:
+        return Position.from_data(self._data[ParticipantFrameData].position)
 
     @property
     def xp(self) -> int:

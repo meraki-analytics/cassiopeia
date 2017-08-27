@@ -1,6 +1,7 @@
 Setup
 #####
 
+**Cassiopeia requires Python 3.6 and we highly recommend installing Anaconda with Python 3.6.**
 
 Install using pip
 =================

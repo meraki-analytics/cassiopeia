@@ -16,8 +16,9 @@ def set_riot_api_key(key: str):
 def set_default_region(region: Region):
     _settings.set_region(region)
 
-def print_calls(tf: bool):
-    _common_datastore._print_calls = tf
+def print_calls(calls: bool, api_key: bool = False):
+    _common_datastore._print_calls = calls
+    _common_datastore._print_api_key = api_key
 
 # Data endpoints
 
