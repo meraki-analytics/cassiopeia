@@ -239,9 +239,15 @@ class CassiopeiaGhostList(SearchableList, CassiopeiaGhost):
         # Therefore we manually set it as loaded here.
         self._Ghost__set_loaded(load_group)
 
+    def __len__(self):
+        if not self._Ghost__all_loaded and not self.__triggered_load:
+            # See the below explanation in __iter__.
+            self.__triggered_load = True
+            self.__load__()
+        return super().__len__()
+
     def __iter__(self):
         if not self._Ghost__all_loaded and not self.__triggered_load:
-            # TODO Discuss the below line with Rob.
             # This seems like a weird hack, but it also seems required. The issue is that within the Cache I call a .put
             #  on all the items in this object after putting this object itself in the cache.
             #  To do that, I iterate over this object, calling this __iter__ method, which triggers a __load__ (two
