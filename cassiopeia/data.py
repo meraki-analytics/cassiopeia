@@ -316,7 +316,13 @@ QUEUE_IDS = {
 }
 
 RANKED_QUEUES = {
+    Queue.ranked_threes,
+    Queue.ranked_fives,
+    Queue.ranked_premade_fives,
+    Queue.ranked_premade_threes,
     Queue.flex,
     Queue.flex_threes,
-    Queue.ranked_solo
+    Queue.ranked_solo,
+    Queue.ranked_solo_queue,
+    Queue.ranked_dynamic_queue
 }

@@ -5,7 +5,7 @@ import logging
 
 from datapipelines import NotFoundError, UnsupportedError
 from merakicommons.ghost import Ghost
-from merakicommons.container import SearchableList, SearchError
+from merakicommons.container import SearchableList, SearchableLazyList, SearchError
 
 from ..configuration import settings
 from ..data import Region, Platform
@@ -232,10 +232,6 @@ class CassiopeiaGhostList(SearchableList, CassiopeiaGhost):
     @classmethod
     def from_data(cls, data: Union[list, CoreData]):
         raise NotImplemented
-        #self = CassiopeiaGhost.from_data(data)
-        #from ..transformers.staticdata import StaticDataTransformer
-        #SearchableList.__init__(self, [StaticDataTransformer.champion_data_to_core(None, c) for c in data])
-        #return self
 
     def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         super().__load_hook__(load_group=load_group, data=data)
@@ -267,3 +263,25 @@ class CassiopeiaGhostList(SearchableList, CassiopeiaGhost):
                 self.__triggered_load = True
                 self.__load__()
             return super().__getitem__(item)
+
+
+class CassiopeiaGhostLazyList(SearchableLazyList, CassiopeiaGhost):
+    def __hash__(self):
+        return id(self)
+
+    @property
+    def _Ghost__load_groups(self) -> Set[type]:
+        # Since @Ghost.property isn't set, the object doesn't have any load groups. Define them as equivalent to _data_types.
+        return self._data_types
+
+    def __init__(self, generator, **kwargs):
+        SearchableLazyList.__init__(self, generator)
+        CassiopeiaGhost.__init__(self, **kwargs)
+        self.__triggered_load = False
+
+    @classmethod
+    def from_data(cls, data: Union[list, CoreData]):
+        raise NotImplemented
+
+    def __load__(self, load_group: CoreData = None) -> None:
+        raise RuntimeError("A SearchableLazyList object should never be loaded. Instead, it's generator handles the loading.")

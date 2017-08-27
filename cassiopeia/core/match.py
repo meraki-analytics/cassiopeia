@@ -8,7 +8,7 @@ from merakicommons.container import searchable, SearchableList, SearchableLazyLi
 
 from ..configuration import settings
 from ..data import Region, Platform, Tier, Map, GameType, GameMode, Queue, Division, Side, Season
-from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList
+from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostLazyList
 from ..dto import match as dto
 from .summoner import Summoner
 from .staticdata.champion import Champion
@@ -860,15 +860,25 @@ class MatchData(CoreData):
 ##############
 
 
-class MatchHistory(CassiopeiaGhostList):
+class MatchHistory(CassiopeiaGhostLazyList):
+    """The match history for a summoner. By default, this will return the entire match history."""
     _data_types = {MatchListData}
 
-    def __init__(self, *args, summoner: Union[Summoner, str, int] = None, account_id: int = None, region: Union[Region, str] = None):
+    def __init__(self, summoner: Union[Summoner, str, int] = None, account_id: int = None, region: Union[Region, str] = None, begin_index: int = 0, end_index: int = None, begin_time: datetime.datetime = None, end_time: datetime.datetime = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
+        assert end_index is None or end_index > begin_index
         if region is None:
             region = settings.default_region
         if not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region}
+        kwargs["queues"] = queues or []
+        kwargs["seasons"] = seasons or []
+        champions = champions or []
+        kwargs["champion_ids"] = [champion.id for champion in champions]
+        kwargs["begin_index"] = begin_index
+        kwargs["end_index"] = end_index
+        kwargs["begin_time"] = begin_time
+        kwargs["end_time"] = end_time
         if account_id is not None and summoner is None:
             summoner = Summoner(account=account_id, region=region)
         elif isinstance(summoner, int):
@@ -877,26 +887,45 @@ class MatchHistory(CassiopeiaGhostList):
             summoner = Summoner(name=summoner, region=region)
         assert isinstance(summoner, Summoner)
         self.__class__.summoner.fget._lazy_set(self, summoner)
-        super().__init__(*args, **kwargs)
+
+        def generate_matchlists(begin_index: int, end_index: int):
+            from ..transformers.match import MatchTransformer
+            final_end = end_index
+            begin_index = begin_index
+            end_index = end_index or begin_index + 50
+            while final_end is None or begin_index < final_end:
+                # Get another matchlist page and yield by entry
+                query = self.__get_query__()
+                query["beginIndex"] = begin_index
+                query["endIndex"] = end_index
+                data = settings.pipeline.get(type=MatchListData, query=query)
+                for matchrefdata in data:
+                    match = MatchTransformer.match_reference_data_to_core(None, matchrefdata)
+                    # We have a summoner object (probably) already created, and if one was passed in then this is pretty crucial to do:
+                    # Put the summoner object that this match history was instantiated with into the participant[0] so that searchable
+                    # list syntax on e.g. the name will work without loading the summoner.
+                    # For example:
+                    #    summoner = Summoner(name=name, account=account, id=id, region=region)
+                    #    match = summoner.match_history[0]
+                    #    p = match.participants[name]  # This will work without loading the summoner because the name was prvided
+                    match.participants[0].__class__.summoner.fget._lazy_set(match.participants[0], self.summoner)
+                    yield match
+                if len(data) < end_index - begin_index:
+                    break
+                begin_index += len(data)
+                end_index = begin_index + 50
+
+        super().__init__(generate_matchlists(begin_index, end_index), **kwargs)
 
     def __get_query__(self):
         query = {"platform": self.platform, "account.id": self.summoner.account.id}
+        if self.queues is not None:
+            query["queues"] = self.queues
+        if self.seasons is not None:
+            query["seasons"] = self.seasons
+        if self.champions is not None:
+            query["champions"] = self.champions
         return query
-
-    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
-        self.clear()
-        from ..transformers.match import MatchTransformer
-        SearchableList.__init__(self, [MatchTransformer.match_reference_data_to_core(None, i) for i in data])
-        # We have a summoner object (probably) already created, and if one was passed in then this is pretty crucial to do:
-        # Put the summoner object that this match history was instantiated with into the participant[0] so that searchable
-        # list syntax on e.g. the name will work without loading the summoner.
-        # For example:
-        #    summoner = Summoner(name=name, account=account, id=id, region=region)
-        #    match = summoner.match_history[0]
-        #    p = match.participants[name]  # This will work without loading the summoner because the name was prvided
-        for match in self:
-            match.participants[0].__class__.summoner.fget._lazy_set(match.participants[0], self.summoner)
-        super().__load_hook__(load_group, data)
 
     @lazy_property
     def summoner(self) -> Summoner:

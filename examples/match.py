@@ -1,5 +1,6 @@
 import cassiopeia as cass
-from cassiopeia.core import Summoner, Match
+from cassiopeia import Summoner, Match
+from cassiopeia.data import Season, Queue
 
 
 def print_newest_match(name: str, account: int, id: int, region: str):
@@ -8,9 +9,17 @@ def print_newest_match(name: str, account: int, id: int, region: str):
 
     summoner = Summoner(name=name, account=account, id=id, region=region)
 
-    # matches = cass.get_matches(summoner)
+    # A MatchHistory is a lazy list, meaning it's elements only get loaded as-needed.
+
+    # match_history = cass.get_match_history(summoner, seasons={Season.season_7}, queues={Queue.ranked_solo_queue})
     match_history = summoner.match_history
-    match = match_history[0]  # TODO This is triggering two match history loads for some reason...
+
+    # Load the entire match history by iterating over all its elements so that we know how long it is.
+    for match in match_history:
+        pass
+    print("Length of match history:", len(match_history))
+
+    match = match_history[0]
     print('Match ID:', match.id)
 
     p = match.participants[name]

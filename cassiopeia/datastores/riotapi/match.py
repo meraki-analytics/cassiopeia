@@ -70,9 +70,9 @@ class MatchAPI(RiotAPIService):
         has("account.id").as_(int).also. \
         has("platform").as_(Platform).also. \
         can_have("recent").with_default(False).also. \
-        can_have("startTime").as_(int).also. \
+        can_have("beginTime").as_(int).also. \
         can_have("endTime").as_(int).also. \
-        can_have("startIndex").with_default(0).also. \
+        can_have("beginIndex").with_default(0).also. \
         can_have("endIndex").with_default(50).also. \
         can_have("seasons").as_(Iterable).also. \
         can_have("champion.ids").as_(Iterable).also. \
@@ -96,12 +96,12 @@ class MatchAPI(RiotAPIService):
             return MatchListDto(data)
         else:
             params = {
-                "beginIndex": query["startIndex"],
+                "beginIndex": query["beginIndex"],
                 "endIndex": query["endIndex"]
             }
 
-            if "startIndex" in query and "endIndex" in query:
-                params["beginIndex"] = query["startIndex"]
+            if "beginIndex" in query and "endIndex" in query:
+                params["beginIndex"] = query["beginIndex"]
                 params["endIndex"] = query["endIndex"]
 
             if "seasons" in query:
@@ -127,7 +127,7 @@ class MatchAPI(RiotAPIService):
 
             data["accountId"] = query["account.id"]
             data["region"] = query["platform"].region.value
-            data["startIndex"] = query["startIndex"]
+            data["beginIndex"] = query["beginIndex"]
             data["endIndex"] = query["endIndex"]
             if "seasons" in query:
                 data["seasons"] = seasons
@@ -144,9 +144,9 @@ class MatchAPI(RiotAPIService):
         has("account.ids").as_(Iterable).also. \
         has("platform").as_(Platform).also. \
         can_have("recent").with_default(False).also. \
-        can_have("startTime").as_(int).also. \
+        can_have("beginTime").as_(int).also. \
         can_have("endTime").as_(int).also. \
-        can_have("startIndex").with_default(0).also. \
+        can_have("beginIndex").with_default(0).also. \
         can_have("endIndex").with_default(50).also. \
         can_have("seasons").as_(Iterable).also. \
         can_have("champion.ids").as_(Iterable).also. \
@@ -172,12 +172,12 @@ class MatchAPI(RiotAPIService):
                     yield MatchListDto(data)
         else:
             params = {
-                "beginIndex": query["startIndex"],
+                "beginIndex": query["beginIndex"],
                 "endIndex": query["endIndex"]
             }
 
-            if "startIndex" in query and "endIndex" in query:
-                params["beginIndex"] = query["startIndex"]
+            if "beginIndex" in query and "endIndex" in query:
+                params["beginIndex"] = query["beginIndex"]
                 params["endIndex"] = query["endIndex"]
 
             if "seasons" in query:
@@ -205,7 +205,7 @@ class MatchAPI(RiotAPIService):
 
                     data["account.id"] = id
                     data["region"] = query["platform"].region.value
-                    data["startIndex"] = query["startIndex"]
+                    data["beginIndex"] = query["beginIndex"]
                     data["endIndex"] = query["endIndex"]
                     if "seasons" in query:
                         data["seasons"] = seasons
