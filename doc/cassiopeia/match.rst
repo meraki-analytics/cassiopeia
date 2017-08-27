@@ -15,15 +15,10 @@ Matches
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:
 
 
 .. autoclass:: Match
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-.. autoclass:: cassiopeia.core.match.Participant
     :members:
     :undoc-members:
     :show-inheritance:
@@ -35,7 +30,49 @@ Matches
     :show-inheritance:
 
 
+.. autoclass:: cassiopeia.core.match.Participant
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+.. autoclass:: cassiopeia.core.match.ParticipantStats
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+.. autoclass:: cassiopeia.core.match.ParticipantTimeline
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 .. autoclass:: cassiopeia.core.match.Timeline
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+.. autoclass:: cassiopeia.core.match.Frame
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+.. autoclass:: cassiopeia.core.match.ParticipantFrame
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+.. autoclass:: cassiopeia.core.match.Event
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+.. autoclass:: cassiopeia.core.match.Position
     :members:
     :undoc-members:
     :show-inheritance:
