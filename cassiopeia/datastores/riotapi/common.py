@@ -214,12 +214,20 @@ class RiotAPIService(DataSource):
                     if error.response_headers["X-Rate-Limit-Type"] == "application":
                         print("WARNING: Unexpected 429 due to application rate limit.")
                         if backoff < 3:  # Backoff isn't directly, here we're using it simply to prevent blacklisting if something in our code is wrong
-                            rate_limiter.restrict_for(error.response_headers["Retry-After"])
+                            if isinstance(rate_limiter, MultiRateLimiter):
+                                for _rate_limiter in rate_limiter:
+                                    _rate_limiter.restrict_for(error.response_headers["Retry-After"])
+                            else:
+                                rate_limiter.restrict_for(error.response_headers["Retry-After"])
                             return self._get(url, parameters, rate_limiter, connection, backoff + 1)  # Backoff for 1 more second each time. This isn't exponential backoff but it's probably fine.
                     elif error.response_headers["X-Rate-Limit-Type"] == "method":
                         print("WARNING: Unexpected 429 due to method rate limit.")
                         if backoff < 3:  # Backoff isn't directly, here we're using it simply to prevent blacklisting if something in our code is wrong
-                            rate_limiter.restrict_for(error.response_headers["Retry-After"])
+                            if isinstance(rate_limiter, MultiRateLimiter):
+                                for _rate_limiter in rate_limiter:
+                                    _rate_limiter.restrict_for(error.response_headers["Retry-After"])
+                            else:
+                                rate_limiter.restrict_for(error.response_headers["Retry-After"])
                             return self._get(url, parameters, rate_limiter, connection, backoff + 1)  # Backoff for 1 more second each time. This isn't exponential backoff but it's probably fine.
                     else:
                         raise RuntimeError("Unknown response header value for `X-Rate-Limit-Type`: {}".format(error.response_headers["X-Rate-Limit-Type"]))
