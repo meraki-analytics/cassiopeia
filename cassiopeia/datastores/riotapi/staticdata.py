@@ -1,3 +1,4 @@
+import copy
 from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError
@@ -41,7 +42,7 @@ class StaticDataAPI(RiotAPIService):
     #############
 
     _validate_get_champion_query = Query. \
-        has("id").as_(int).also. \
+        has("id").as_(int).or_("name").as_(str).also. \
         has("platform").as_(Platform).also. \
         can_have("version").with_default(_get_default_version, supplies_type=str).also. \
         can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
@@ -51,23 +52,45 @@ class StaticDataAPI(RiotAPIService):
     def get_champion(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionDto:
         StaticDataAPI._validate_get_champion_query(query, context)
 
-        params = {
-            "version": query["version"],
-            "locale": query["locale"],
-            "tags": ",".join(list(query["includedData"]))
-        }
+        from ...configuration.settings import settings
+        if settings.request_by_id or "name" in query:  # Get by champion list
+            champions_query = copy.deepcopy(query)
+            champions = self.get_champion_list(query=champions_query, context=context)
 
-        url = "https://{platform}.api.riotgames.com/lol/static-data/v3/champions/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
-        try:
-            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/champion"))
-        except APINotFoundError as error:
-            raise NotFoundError(str(error)) from error
+            def find_matching_attribute(list_of_dtos, attrname, attrvalue):
+                for dto in list_of_dtos:
+                    if dto.get(attrname, None) == attrvalue:
+                        return dto
 
-        data["region"] = query["platform"].region.value
-        data["version"] = query["version"]
-        data["locale"] = query["locale"]
-        data["includedData"] = query["includedData"]
-        return ChampionDto(data)
+            if "id" in query:
+                champion = find_matching_attribute(champions["data"].values(), "id", query["id"])
+            elif "name" in query:
+                champion = find_matching_attribute(champions["data"].values(), "name", query["name"])
+            else:
+                raise ValueError("Impossible!")
+            champion["region"] = query["platform"].region.value
+            champion["version"] = query["version"]
+            champion["locale"] = query["locale"]
+            champion["includedData"] = query["includedData"]
+            return ChampionDto(champion)
+        else:
+            params = {
+                "version": query["version"],
+                "locale": query["locale"],
+                "tags": ",".join(list(query["includedData"]))
+            }
+
+            url = "https://{platform}.api.riotgames.com/lol/static-data/v3/champions/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
+            try:
+                data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/champion"))
+            except APINotFoundError as error:
+                raise NotFoundError(str(error)) from error
+
+            data["region"] = query["platform"].region.value
+            data["version"] = query["version"]
+            data["locale"] = query["locale"]
+            data["includedData"] = query["includedData"]
+            return ChampionDto(data)
 
     _validate_get_many_champion_query = Query. \
         has("ids").as_(Iterable).also. \
@@ -139,6 +162,11 @@ class StaticDataAPI(RiotAPIService):
         data["region"] = query["platform"].region.value
         data["locale"] = query["locale"]
         data["includedData"] = query["includedData"]
+        for champion in data["data"].values():
+            champion["region"] = query["platform"].region.value
+            champion["version"] = query["version"]
+            champion["locale"] = query["locale"]
+            champion["includedData"] = query["includedData"]
         return ChampionListDto(data)
 
     _validate_get_many_champion_list_query = Query. \
@@ -206,7 +234,7 @@ class StaticDataAPI(RiotAPIService):
     #############
 
     _validate_get_mastery_query = Query. \
-        has("id").as_(int).also. \
+        has("id").as_(int).or_("name").as_(str).also. \
         has("platform").as_(Platform).also. \
         can_have("version").with_default(_get_default_version, supplies_type=str).also. \
         can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
@@ -216,23 +244,45 @@ class StaticDataAPI(RiotAPIService):
     def get_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasteryDto:
         StaticDataAPI._validate_get_mastery_query(query, context)
 
-        params = {
-            "version": query["version"],
-            "locale": query["locale"],
-            "tags": ",".join(list(query["includedData"]))
-        }
+        from ...configuration.settings import settings
+        if settings.request_by_id or "name" in query:  # Get by mastery list
+            mastery_query = copy.deepcopy(query)
+            masteries = self.get_mastery_list(query=mastery_query, context=context)
 
-        url = "https://{platform}.api.riotgames.com/lol/static-data/v3/masteries/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
-        try:
-            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/mastery"))
-        except APINotFoundError as error:
-            raise NotFoundError(str(error)) from error
+            def find_matching_attribute(list_of_dtos, attrname, attrvalue):
+                for dto in list_of_dtos:
+                    if dto.get(attrname, None) == attrvalue:
+                        return dto
 
-        data["region"] = query["platform"].region.value
-        data["version"] = query["version"]
-        data["locale"] = query["locale"]
-        data["includedData"] = query["includedData"]
-        return MasteryDto(data)
+            if "id" in query:
+                mastery = find_matching_attribute(masteries["data"].values(), "id", query["id"])
+            elif "name" in query:
+                mastery = find_matching_attribute(masteries["data"].values(), "name", query["name"])
+            else:
+                raise ValueError("Impossible!")
+            mastery["region"] = query["platform"].region.value
+            mastery["version"] = query["version"]
+            mastery["locale"] = query["locale"]
+            mastery["includedData"] = query["includedData"]
+            return MasteryDto(mastery)
+        else:
+            params = {
+                "version": query["version"],
+                "locale": query["locale"],
+                "tags": ",".join(list(query["includedData"]))
+            }
+
+            url = "https://{platform}.api.riotgames.com/lol/static-data/v3/masteries/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
+            try:
+                data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/mastery"))
+            except APINotFoundError as error:
+                raise NotFoundError(str(error)) from error
+
+            data["region"] = query["platform"].region.value
+            data["version"] = query["version"]
+            data["locale"] = query["locale"]
+            data["includedData"] = query["includedData"]
+            return MasteryDto(data)
 
     _validate_get_many_mastery_query = Query. \
         has("ids").as_(Iterable).also. \
@@ -301,6 +351,11 @@ class StaticDataAPI(RiotAPIService):
         data["region"] = query["platform"].region.value
         data["locale"] = query["locale"]
         data["includedData"] = query["includedData"]
+        for mastery in data["data"].values():
+            mastery["region"] = query["platform"].region.value
+            mastery["version"] = data["version"]
+            mastery["locale"] = query["locale"]
+            mastery["includedData"] = query["includedData"]
         return MasteryListDto(data)
 
     _validate_get_many_mastery_list_query = Query. \
@@ -344,7 +399,7 @@ class StaticDataAPI(RiotAPIService):
     #########
 
     _validate_get_rune_query = Query. \
-        has("id").as_(int).also. \
+        has("id").as_(int).or_("name").as_(str).also. \
         has("platform").as_(Platform).also. \
         can_have("version").with_default(_get_default_version, supplies_type=str).also. \
         can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
@@ -354,23 +409,45 @@ class StaticDataAPI(RiotAPIService):
     def get_rune(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> RuneDto:
         StaticDataAPI._validate_get_rune_query(query, context)
 
-        params = {
-            "version": query["version"],
-            "locale": query["locale"],
-            "tags": ",".join(list(query["includedData"]))
-        }
+        from ...configuration.settings import settings
+        if settings.request_by_id or "name" in query:  # Get by rune list
+            runes_query = copy.deepcopy(query)
+            runes = self.get_rune_list(query=runes_query, context=context)
 
-        url = "https://{platform}.api.riotgames.com/lol/static-data/v3/runes/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
-        try:
-            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/rune"))
-        except APINotFoundError as error:
-            raise NotFoundError(str(error)) from error
+            def find_matching_attribute(list_of_dtos, attrname, attrvalue):
+                for dto in list_of_dtos:
+                    if dto.get(attrname, None) == attrvalue:
+                        return dto
 
-        data["region"] = query["platform"].region.value
-        data["version"] = query["version"]
-        data["locale"] = query["locale"]
-        data["includedData"] = query["includedData"]
-        return RuneDto(data)
+            if "id" in query:
+                rune = find_matching_attribute(runes["data"].values(), "id", query["id"])
+            elif "name" in query:
+                rune = find_matching_attribute(runes["data"].values(), "name", query["name"])
+            else:
+                raise ValueError("Impossible!")
+            rune["region"] = query["platform"].region.value
+            rune["version"] = query["version"]
+            rune["locale"] = query["locale"]
+            rune["includedData"] = query["includedData"]
+            return RuneDto(rune)
+        else:
+            params = {
+                "version": query["version"],
+                "locale": query["locale"],
+                "tags": ",".join(list(query["includedData"]))
+            }
+
+            url = "https://{platform}.api.riotgames.com/lol/static-data/v3/runes/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
+            try:
+                data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/rune"))
+            except APINotFoundError as error:
+                raise NotFoundError(str(error)) from error
+
+            data["region"] = query["platform"].region.value
+            data["version"] = query["version"]
+            data["locale"] = query["locale"]
+            data["includedData"] = query["includedData"]
+            return RuneDto(data)
 
     _validate_get_many_rune_query = Query. \
         has("ids").as_(Iterable).also. \
@@ -439,6 +516,11 @@ class StaticDataAPI(RiotAPIService):
         data["region"] = query["platform"].region.value
         data["locale"] = query["locale"]
         data["includedData"] = query["includedData"]
+        for rune in data["data"].values():
+            rune["region"] = query["platform"].region.value
+            rune["version"] = query["version"]
+            rune["locale"] = query["locale"]
+            rune["includedData"] = query["includedData"]
         return RuneListDto(data)
 
     _validate_get_many_rune_list_query = Query. \
@@ -482,7 +564,7 @@ class StaticDataAPI(RiotAPIService):
     #########
 
     _validate_get_item_query = Query. \
-        has("id").as_(int).also. \
+        has("id").as_(int).or_("name").as_(str).also. \
         has("platform").as_(Platform).also. \
         can_have("version").with_default(_get_default_version, supplies_type=str).also. \
         can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
@@ -492,33 +574,55 @@ class StaticDataAPI(RiotAPIService):
     def get_item(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ItemDto:
         StaticDataAPI._validate_get_item_query(query, context)
 
-        params = {
-            "version": query["version"],
-            "locale": query["locale"],
-            "tags": ",".join(list(query["includedData"]))
-        }
+        from ...configuration.settings import settings
+        if settings.request_by_id or "name" in query:  # Get by item list
+            items_query = copy.deepcopy(query)
+            items = self.get_item_list(query=items_query, context=context)
 
-        url = "https://{platform}.api.riotgames.com/lol/static-data/v3/items/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
-        try:
-            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/item"))
-        except APINotFoundError as error:
-            raise NotFoundError(str(error)) from error
+            def find_matching_attribute(list_of_dtos, attrname, attrvalue):
+                for dto in list_of_dtos:
+                    if dto.get(attrname, None) == attrvalue:
+                        return dto
 
-        data["region"] = query["platform"].region.value
-        data["version"] = query["version"]
-        data["locale"] = query["locale"]
-        data["includedData"] = query["includedData"]
-        if data["id"] == 3632:  # This item doesn't have a name.
-            data["name"] = ""
-        if "tags" not in data:
-            data["tags"] = []
-        if "depth" not in data:
-            data["depth"] = 1
-        if "colloq" not in data:
-            data["colloq"] = ""
-        if "plaintext" not in data:
-            data["plaintext"] = ""
-        return ItemDto(data)
+            if "id" in query:
+                item = find_matching_attribute(items["data"].values(), "id", query["id"])
+            elif "name" in query:
+                item = find_matching_attribute(items["data"].values(), "name", query["name"])
+            else:
+                raise ValueError("Impossible!")
+            item["region"] = query["platform"].region.value
+            item["version"] = query["version"]
+            item["locale"] = query["locale"]
+            item["includedData"] = query["includedData"]
+            return ItemDto(item)
+        else:
+            params = {
+                "version": query["version"],
+                "locale": query["locale"],
+                "tags": ",".join(list(query["includedData"]))
+            }
+
+            url = "https://{platform}.api.riotgames.com/lol/static-data/v3/items/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
+            try:
+                data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/item"))
+            except APINotFoundError as error:
+                raise NotFoundError(str(error)) from error
+
+            data["region"] = query["platform"].region.value
+            data["version"] = query["version"]
+            data["locale"] = query["locale"]
+            data["includedData"] = query["includedData"]
+            if data["id"] == 3632:  # This item doesn't have a name.
+                data["name"] = ""
+            if "tags" not in data:
+                data["tags"] = []
+            if "depth" not in data:
+                data["depth"] = 1
+            if "colloq" not in data:
+                data["colloq"] = ""
+            if "plaintext" not in data:
+                data["plaintext"] = ""
+            return ItemDto(data)
 
     _validate_get_many_item_query = Query. \
         has("ids").as_(Iterable).also. \
@@ -608,6 +712,10 @@ class StaticDataAPI(RiotAPIService):
                 item["colloq"] = ""
             if "plaintext" not in item:
                 item["plaintext"] = ""
+            item["region"] = query["platform"].region.value
+            item["version"] = query["version"]
+            item["locale"] = query["locale"]
+            item["includedData"] = query["includedData"]
         return ItemListDto(data)
 
     _validate_get_many_item_list_query = Query. \
@@ -693,7 +801,7 @@ class StaticDataAPI(RiotAPIService):
     ###################
 
     _validate_get_summoner_spell_query = Query. \
-        has("id").as_(int).also. \
+        has("id").as_(int).or_("name").as_(str).also. \
         has("platform").as_(Platform).also. \
         can_have("version").with_default(_get_default_version, supplies_type=str).also. \
         can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
@@ -703,23 +811,45 @@ class StaticDataAPI(RiotAPIService):
     def get_summoner_spell(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> SummonerSpellDto:
         StaticDataAPI._validate_get_summoner_spell_query(query, context)
 
-        params = {
-            "version": query["version"],
-            "locale": query["locale"],
-            "tags": ",".join(list(query["includedData"]))
-        }
+        from ...configuration.settings import settings
+        if settings.request_by_id or "name" in query:  # Get by summoner spell list
+            summoner_spells_query = copy.deepcopy(query)
+            summoner_spells = self.get_summoner_spell_list(query=summoner_spells_query, context=context)
 
-        url = "https://{platform}.api.riotgames.com/lol/static-data/v3/summoner-spells/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
-        try:
-            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/summoner-spell"))
-        except APINotFoundError as error:
-            raise NotFoundError(str(error)) from error
+            def find_matching_attribute(list_of_dtos, attrname, attrvalue):
+                for dto in list_of_dtos:
+                    if dto.get(attrname, None) == attrvalue:
+                        return dto
 
-        data["region"] = query["platform"].region.value
-        data["version"] = query["version"]
-        data["locale"] = query["locale"]
-        data["includedData"] = query["includedData"]
-        return SummonerSpellDto(data)
+            if "id" in query:
+                summoner_spell = find_matching_attribute(summoner_spells["data"].values(), "id", query["id"])
+            elif "name" in query:
+                summoner_spell = find_matching_attribute(summoner_spells["data"].values(), "name", query["name"])
+            else:
+                raise ValueError("Impossible!")
+            summoner_spell["region"] = query["platform"].region.value
+            summoner_spell["version"] = query["version"]
+            summoner_spell["locale"] = query["locale"]
+            summoner_spell["includedData"] = query["includedData"]
+            return SummonerSpellDto(summoner_spell)
+        else:
+            params = {
+                "version": query["version"],
+                "locale": query["locale"],
+                "tags": ",".join(list(query["includedData"]))
+            }
+
+            url = "https://{platform}.api.riotgames.com/lol/static-data/v3/summoner-spells/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
+            try:
+                data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/summoner-spell"))
+            except APINotFoundError as error:
+                raise NotFoundError(str(error)) from error
+
+            data["region"] = query["platform"].region.value
+            data["version"] = query["version"]
+            data["locale"] = query["locale"]
+            data["includedData"] = query["includedData"]
+            return SummonerSpellDto(data)
 
     _validate_get_many_summoner_spell_query = Query. \
         has("ids").as_(Iterable).also. \
@@ -788,6 +918,11 @@ class StaticDataAPI(RiotAPIService):
         data["region"] = query["platform"].region.value
         data["locale"] = query["locale"]
         data["includedData"] = query["includedData"]
+        for summoner_spell in data["data"]:
+            summoner_spell["region"] = query["platform"].region.value
+            summoner_spell["version"] = query["version"]
+            summoner_spell["locale"] = query["locale"]
+            summoner_spell["includedData"] = query["includedData"]
         return SummonerSpellListDto(data)
 
     _validate_get_many_summoner_spell_list_query = Query. \

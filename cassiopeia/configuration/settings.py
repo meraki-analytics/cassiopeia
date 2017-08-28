@@ -84,6 +84,7 @@ class Settings(object):
             self.__default_region = Region(self.__default_region.upper())
         self.__limiting_share = riot_api_config.get("limiting_share", 1.0)
         self.__request_handler_configs = riot_api_config.get("request_handling", {})
+        self.__request_by_id = riot_api_config.get("request_by_id", True)
         self.__pipeline = None
         self.__plugins = settings.get("plugins", [])
         logging_config = settings.get("logging", {})
@@ -132,6 +133,10 @@ class Settings(object):
         return Platform[self.__default_region.name]
 
     @property
+    def request_by_id(self):
+        return self.__request_by_id
+
+    @property
     def plugins(self):
         return self.__plugins
 
@@ -141,5 +146,6 @@ class Settings(object):
             for source in sources:
                 if isinstance(source, RiotAPI):
                     source.set_api_key(key)
+
 
 settings = Settings(config)

@@ -1,20 +1,22 @@
+import copy
 from typing import Type, TypeVar, MutableMapping, Any, Iterable
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError
 
 from ..data import Platform
-from ..dto.staticdata.champion import ChampionListDto
-from ..dto.staticdata.mastery import MasteryListDto
-from ..dto.staticdata.rune import RuneListDto
-from ..dto.staticdata.item import ItemListDto
-from ..dto.staticdata.summonerspell import SummonerSpellListDto
+from ..dto.staticdata.champion import ChampionDto, ChampionListDto
+from ..dto.staticdata.mastery import MasteryDto, MasteryListDto
+from ..dto.staticdata.rune import RuneDto, RuneListDto
+from ..dto.staticdata.item import ItemDto, ItemListDto
+from ..dto.staticdata.summonerspell import SummonerSpellDto, SummonerSpellListDto
 from ..dto.staticdata.version import VersionListDto
 from ..dto.staticdata.profileicon import ProfileIconDataDto
 from ..dto.staticdata.language import LanguagesDto, LanguageStringsDto
 from ..dto.staticdata.realm import RealmDto
-from ..dto.staticdata.map import MapListDto
+from ..dto.staticdata.map import MapDto, MapListDto
 from .common import HTTPClient, HTTPError
 from .riotapi.staticdata import _get_default_version
+from .uniquekeys import _hash_included_data
 
 try:
     import ujson as json
@@ -31,6 +33,8 @@ class DDragonDataSource(DataSource):
         else:
             self._client = http_client
 
+        self._cache = {ChampionListDto: {}, RuneListDto: {}, MasteryListDto: {}, ItemListDto: {}, SummonerSpellListDto: {}, MapListDto: {}}
+
     @DataSource.dispatch
     def get(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> T:
         pass
@@ -39,9 +43,49 @@ class DDragonDataSource(DataSource):
     def get_many(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> Iterable[T]:
         pass
 
+    def calculate_hash(self, query):
+        hash = list(value for _, value in sorted(query.items()))
+        for i, value in enumerate(hash):
+            if isinstance(value, set):
+                hash[i] = _hash_included_data(value)
+        return tuple(hash)
+
     #############
     # Champions #
     #############
+
+    _validate_get_champion_query = Query. \
+        has("platform").as_(Platform).also. \
+        has("id").as_(int).or_("name").as_(str).also. \
+        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("locale").also. \
+        can_have("includedData")
+
+    @get.register(ChampionDto)
+    def get_champion(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionDto:
+        self._validate_get_champion_query(query, context)
+
+        champions_query = copy.deepcopy(query)
+        champions = self.get_champion_list(query=champions_query, context=context)
+
+        def find_matching_attribute(list_of_dtos, attrname, attrvalue):
+            for dto in list_of_dtos:
+                if dto.get(attrname, None) == attrvalue:
+                    return dto
+
+        # The `data` is a list of champion data instances
+        if "id" in query:
+            find = "id", query["id"]
+        elif "name" in query:
+            find = "name", query["name"]
+        else:
+            raise RuntimeError("Impossible!")
+        champion = find_matching_attribute(champions["data"].values(), *find)
+        champion["region"] = query["platform"].region.value
+        champion["version"] = query["version"]
+        champion["locale"] = query["locale"]
+        champion["includedData"] = query["includedData"]
+        return ChampionDto(champion)
 
     _validate_get_champion_list_query = Query. \
         has("platform").as_(Platform).also. \
@@ -54,6 +98,13 @@ class DDragonDataSource(DataSource):
         self._validate_get_champion_list_query(query, context)
 
         locale = query["locale"] if "locale" in query else query["platform"].default_locale
+        query["locale"] = locale
+
+        ahash = self.calculate_hash(query)
+        try:
+            return self._cache[ChampionListDto][ahash]
+        except KeyError:
+            pass
 
         url = "http://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/championFull.json".format(
             version=query["version"],
@@ -65,6 +116,10 @@ class DDragonDataSource(DataSource):
             raise NotFoundError(str(e)) from e
 
         for champ_name, champ in body["data"].items():
+            champ["region"] = query["platform"].region.value
+            body["locale"] = locale
+            body["includedData"] = {"all"}
+
             champ["id"], champ["key"] = int(champ["key"]), champ["id"]
 
             for skin in champ["skins"]:
@@ -111,7 +166,9 @@ class DDragonDataSource(DataSource):
         body["region"] = query["platform"].region.value
         body["locale"] = locale
         body["includedData"] = {"all"}
-        return ChampionListDto(body)
+        result = ChampionListDto(body)
+        self._cache[ChampionListDto][ahash] = result
+        return result
 
     ############
     # Versions #
@@ -181,6 +238,37 @@ class DDragonDataSource(DataSource):
     # Maps #
     ########
 
+    _validate_get_map_query = Query. \
+        has("platform").as_(Platform).also. \
+        has("id").as_(int).or_("name").as_(str).also. \
+        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("locale")
+
+    @get.register(MapDto)
+    def get_map(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MapDto:
+        self._validate_get_map_query(query, context)
+
+        maps_query = copy.deepcopy(query)
+        maps = self.get_map_list(query=maps_query, context=context)
+
+        def find_matching_attribute(list_of_dtos, attrname, attrvalue):
+            for dto in list_of_dtos:
+                if dto.get(attrname, None) == attrvalue:
+                    return dto
+
+        # The `data` is a list of map data instances
+        if "id" in query:
+            find = "id", query["mapId"]
+        elif "name" in query:
+            find = "name", query["mapName"]
+        else:
+            raise RuntimeError("Impossible!")
+        map = find_matching_attribute(maps["data"].values(), *find)
+        map["region"] = query["platform"].region.value
+        map["version"] = query["version"]
+        map["locale"] = query["locale"]
+        return MapDto(map)
+
     _validate_get_map_list_query = Query. \
         has("platform").as_(Platform).also. \
         can_have("version").with_default(_get_default_version, supplies_type=str).also. \
@@ -191,6 +279,13 @@ class DDragonDataSource(DataSource):
         self._validate_get_map_list_query(query, context)
 
         locale = query["locale"] if "locale" in query else query["platform"].default_locale
+        query["locale"] = locale
+
+        ahash = self.calculate_hash(query)
+        try:
+            return self._cache[MapListDto][ahash]
+        except KeyError:
+            pass
 
         url = "http://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/map.json".format(
             version=query["version"],
@@ -206,7 +301,9 @@ class DDragonDataSource(DataSource):
         for map in body["data"].values():
             map["mapName"] = map.pop("MapName")
             map["mapId"] = map.pop("MapId")
-        return MapListDto(body)
+        result = MapListDto(body)
+        self._cache[MapListDto][ahash] = result
+        return result
 
     ####################
     # Language Strings #
@@ -240,6 +337,43 @@ class DDragonDataSource(DataSource):
     # Masteries #
     #############
 
+    _validate_get_mastery_query = Query. \
+        has("platform").as_(Platform).also. \
+        has("id").as_(int).or_("name").as_(str).also. \
+        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("locale").also. \
+        can_have("includedData")
+
+    @get.register(MasteryDto)
+    def get_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasteryDto:
+        self._validate_get_mastery_query(query, context)
+
+        masteries_query = copy.deepcopy(query)
+        if "id" in masteries_query:
+            masteries_query.pop("id")
+        if "name" in masteries_query:
+            masteries_query.pop("name")
+        masteries = self.get_mastery_list(query=masteries_query, context=context)
+
+        def find_matching_attribute(list_of_dtos, attrname, attrvalue):
+            for dto in list_of_dtos:
+                if dto.get(attrname, None) == attrvalue:
+                    return dto
+
+        # The `data` is a list of mastery data instances
+        if "id" in query:
+            find = "id", query["id"]
+        elif "name" in query:
+            find = "name", query["name"]
+        else:
+            raise RuntimeError("Impossible!")
+        mastery = find_matching_attribute(masteries["data"].values(), *find)
+        mastery["region"] = query["platform"].region.value
+        mastery["version"] = query["version"]
+        mastery["locale"] = query["locale"]
+        mastery["includedData"] = query["includedData"]
+        return MasteryDto(mastery)
+
     _validate_get_mastery_list_query = Query. \
         has("platform").as_(Platform).also. \
         can_have("version").with_default(_get_default_version, supplies_type=str).also. \
@@ -251,6 +385,13 @@ class DDragonDataSource(DataSource):
         self._validate_get_mastery_list_query(query,  context)
 
         locale = query["locale"] if "locale" in query else query["platform"].default_locale
+        query["locale"] = locale
+
+        ahash = self.calculate_hash(query)
+        try:
+            return self._cache[MasteryListDto][ahash]
+        except KeyError:
+            pass
 
         url = "http://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/mastery.json".format(
             version=query["version"],
@@ -283,11 +424,46 @@ class DDragonDataSource(DataSource):
         body["region"] = query["platform"].region.value
         body["locale"] = locale
         body["includedData"] = {"all"}
-        return MasteryListDto(body)
+        result = MasteryListDto(body)
+        self._cache[MasteryListDto][ahash] = result
+        return result
 
     #########
     # Runes #
     #########
+
+    _validate_get_rune_query = Query. \
+        has("platform").as_(Platform).also. \
+        has("id").as_(int).or_("name").as_(str).also. \
+        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("locale").also. \
+        can_have("includedData")
+
+    @get.register(RuneDto)
+    def get_rune(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> RuneDto:
+        self._validate_get_rune_query(query, context)
+
+        runes_query = copy.deepcopy(query)
+        runes = self.get_rune_list(query=runes_query, context=context)
+
+        def find_matching_attribute(list_of_dtos, attrname, attrvalue):
+            for dto in list_of_dtos:
+                if dto.get(attrname, None) == attrvalue:
+                    return dto
+
+        # The `data` is a list of rune data instances
+        if "id" in query:
+            find = "id", query["id"]
+        elif "name" in query:
+            find = "name", query["name"]
+        else:
+            raise RuntimeError("Impossible!")
+        rune = find_matching_attribute(runes["data"].values(), *find)
+        rune["region"] = query["platform"].region.value
+        rune["version"] = query["version"]
+        rune["locale"] = query["locale"]
+        rune["includedData"] = query["includedData"]
+        return RuneDto(rune)
 
     _validate_get_rune_list_query = Query. \
         has("platform").as_(Platform).also. \
@@ -300,6 +476,13 @@ class DDragonDataSource(DataSource):
         self._validate_get_rune_list_query(query, context)
 
         locale = query["locale"] if "locale" in query else query["platform"].default_locale
+        query["locale"] = locale
+
+        ahash = self.calculate_hash(query)
+        try:
+            return self._cache[RuneListDto][ahash]
+        except KeyError:
+            pass
 
         url = "http://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/rune.json".format(
             version=query["version"],
@@ -327,11 +510,46 @@ class DDragonDataSource(DataSource):
         body["region"] = query["platform"].region.value
         body["locale"] = locale
         body["includedData"] = {"all"}
-        return RuneListDto(body)
+        result = RuneListDto(body)
+        self._cache[RuneListDto][ahash] = result
+        return result
 
     #########
     # Items #
     #########
+
+    _validate_get_item_query = Query. \
+        has("platform").as_(Platform).also. \
+        has("id").as_(int).or_("name").as_(str).also. \
+        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("locale").also. \
+        can_have("includedData")
+
+    @get.register(ItemDto)
+    def get_item(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ItemDto:
+        self._validate_get_item_query(query, context)
+
+        items_query = copy.deepcopy(query)
+        items = self.get_item_list(query=items_query, context=context)
+
+        def find_matching_attribute(list_of_dtos, attrname, attrvalue):
+            for dto in list_of_dtos:
+                if dto.get(attrname, None) == attrvalue:
+                    return dto
+
+        # The `data` is a list of item data instances
+        if "id" in query:
+            find = "id", query["id"]
+        elif "name" in query:
+            find = "name", query["name"]
+        else:
+            raise RuntimeError("Impossible!")
+        item = find_matching_attribute(items["data"].values(), *find)
+        item["region"] = query["platform"].region.value
+        item["version"] = query["version"]
+        item["locale"] = query["locale"]
+        item["includedData"] = query["includedData"]
+        return ItemDto(item)
 
     _validate_get_item_list_query = Query. \
         has("platform").as_(Platform).also. \
@@ -344,6 +562,13 @@ class DDragonDataSource(DataSource):
         self._validate_get_item_list_query(query, context)
 
         locale = query["locale"] if "locale" in query else query["platform"].default_locale
+        query["locale"] = locale
+
+        ahash = self.calculate_hash(query)
+        try:
+            return self._cache[ItemListDto][ahash]
+        except KeyError:
+            pass
 
         url = "http://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/item.json".format(
             version=query["version"],
@@ -378,12 +603,46 @@ class DDragonDataSource(DataSource):
         body["region"] = query["platform"].region.value
         body["locale"] = locale
         body["includedData"] = {"all"}
-
-        return ItemListDto(body)
+        result = ItemListDto(body)
+        self._cache[ItemListDto][ahash] = result
+        return result
 
     ###################
     # Summoner Spells #
     ###################
+
+    _validate_get_summoner_spell_query = Query. \
+        has("platform").as_(Platform).also. \
+        has("id").as_(int).or_("name").as_(str).also. \
+        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("locale").also. \
+        can_have("includedData")
+
+    @get.register(SummonerSpellDto)
+    def get_summoner_spell(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> SummonerSpellDto:
+        self._validate_get_summoner_spell_query(query, context)
+
+        summoner_spells_query = copy.deepcopy(query)
+        summoner_spells = self.get_summoner_spell_list(query=summoner_spells_query, context=context)
+
+        def find_matching_attribute(list_of_dtos, attrname, attrvalue):
+            for dto in list_of_dtos:
+                if dto.get(attrname, None) == attrvalue:
+                    return dto
+
+        # The `data` is a list of summoner_spell data instances
+        if "id" in query:
+            find = "id", query["id"]
+        elif "name" in query:
+            find = "name", query["name"]
+        else:
+            raise RuntimeError("Impossible!")
+        summoner_spell = find_matching_attribute(summoner_spells["data"].values(), *find)
+        summoner_spell["region"] = query["platform"].region.value
+        summoner_spell["version"] = query["version"]
+        summoner_spell["locale"] = query["locale"]
+        summoner_spell["includedData"] = query["includedData"]
+        return SummonerSpellDto(summoner_spell)
 
     _validate_get_summoner_spell_list_query = Query. \
         has("platform").as_(Platform).also. \
@@ -396,6 +655,13 @@ class DDragonDataSource(DataSource):
         self._validate_get_summoner_spell_list_query(query, context)
 
         locale = query["locale"] if "locale" in query else query["platform"].default_locale
+        query["locale"] = locale
+
+        ahash = self.calculate_hash(query)
+        try:
+            return self._cache[SummonerSpellListDto][ahash]
+        except KeyError:
+            pass
 
         url = "http://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/summoner.json".format(
             version=query["version"],
@@ -420,7 +686,9 @@ class DDragonDataSource(DataSource):
         body["region"] = query["platform"].region.value
         body["locale"] = locale
         body["includedData"] = {"all"}
-        return SummonerSpellListDto(body)
+        result = SummonerSpellListDto(body)
+        self._cache[SummonerSpellListDto][ahash] = result
+        return result
 
     #################
     # Profile Icons #

@@ -698,7 +698,6 @@ class RuneStats(CassiopeiaObject):
 @searchable({str: ["name", "tags", "type", "region", "platform", "locale"], int: ["id"], RuneType: ["type"], Region: ["region"], Platform: ["platform"]})
 class Rune(CassiopeiaGhost):
     _data_types = {RuneData}
-    _load_types = {RuneData: RuneListData}
 
     def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if region is None:
@@ -719,24 +718,12 @@ class Rune(CassiopeiaGhost):
         super().__init__(**kwargs)
 
     def __get_query__(self):
-        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
-
-    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
-        def find_matching_attribute(datalist, attrname, attrvalue):
-            for item in datalist:
-                if getattr(item, attrname, None) == attrvalue:
-                    return item
-
-        # The `data` is a dict of summoner spell data instances
+        query = {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
         if "id" in self._data[RuneData]._dto:
-            find = "id", self.id
-        elif "name" in self._data[RuneData]._dto:
-            find = "name", self.name
-        else:
-            raise RuntimeError("Expected fields not present after loading.")
-        data = find_matching_attribute(data, *find)
-
-        super().__load_hook__(load_group, data)
+            query["id"] = self._data[RuneData].id
+        if "name" in self._data[RuneData]._dto:
+            query["name"] = self._data[RuneData].name
+        return query
 
     @lazy_property
     def region(self) -> Region:

@@ -529,7 +529,6 @@ class Gold(CassiopeiaObject):
 @searchable({str: ["name", "region", "platform", "locale", "keywords", "maps", "tags", "tier"], int: ["id"], Region: ["region"], Platform: ["platform"], Map: ["maps"]})
 class Item(CassiopeiaGhost):
     _data_types = {ItemData}
-    _load_types = {ItemData: ItemListData}
 
     def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if region is None:
@@ -550,23 +549,12 @@ class Item(CassiopeiaGhost):
         super().__init__(**kwargs)
 
     def __get_query__(self):
-        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
-
-    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
-        def find_matching_attribute(datalist, attrname, attrvalue):
-            for item in datalist:
-                if getattr(item, attrname, None) == attrvalue:
-                    return item
-
-        # The `data` is a dict of summoner spell data instances
+        query = {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
         if "id" in self._data[ItemData]._dto:
-            find = "id", self.id
-        elif "name" in self._data[ItemData]._dto:
-            find = "name", self.name
-        else:
-            raise RuntimeError("Impossible!")
-        data = find_matching_attribute(data, *find)
-        super().__load_hook__(load_group, data)
+            query["id"] = self._data[ItemData].id
+        if "name" in self._data[ItemData]._dto:
+            query["name"] = self._data[ItemData].name
+        return query
 
     @lazy_property
     def region(self) -> Region:

@@ -120,7 +120,6 @@ class Maps(CassiopeiaGhostList):
 @searchable({str: ["name", "locale"], int: ["id"]})
 class Map(CassiopeiaGhost):
     _data_types = {MapData}
-    _load_types = {MapData: MapListData}
 
     def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None):
         if region is None:
@@ -139,25 +138,12 @@ class Map(CassiopeiaGhost):
         super().__init__(**kwargs)
 
     def __get_query__(self):
-        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale}
-
-    def __load_hook__(self, load_group, data) -> None:
-        def find_matching_attribute(datalist, attrname, attrvalue):
-            for item in datalist:
-                if getattr(item, attrname, None) == attrvalue:
-                    return item
-            else:
-                raise ValueError("could not find matching {}={} in {}".format(attrname, attrvalue, datalist))
-
-        # The `data` is a dict of map data instances
+        query = {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale}
         if "mapId" in self._data[MapData]._dto:
-            find = "id", self.id
-        elif "mapName" in self._data[MapData]._dto:
-            find = "name", self.name
-        else:
-            raise ValueError("unknown `id` and `name`")
-        data = find_matching_attribute(data, *find)
-        super().__load_hook__(load_group, data)
+            query["id"] = self.id
+        if "mapName" in self._data[MapData]._dto:
+            query["name"] = self.name
+        return query
 
     @lazy_property
     def region(self) -> Region:

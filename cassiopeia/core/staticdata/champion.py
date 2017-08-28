@@ -880,7 +880,6 @@ class Info(CassiopeiaObject):
 @searchable({str: ["name", "key", "title", "region", "platform", "locale", "resource", "tags"], int: ["id"], Region: ["region"], Platform: ["platform"], bool: ["free_to_play"], Resource: ["resource"]})
 class Champion(CassiopeiaGhost):
     _data_types = {ChampionData, ChampionStatusData}
-    _load_types = {ChampionData: ChampionListData, ChampionStatusData: ChampionStatusListData}
 
     def __init__(self, *, id: int = None, name: str = None, key: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if region is None:
@@ -903,23 +902,12 @@ class Champion(CassiopeiaGhost):
         super().__init__(**kwargs)
 
     def __get_query__(self):
-        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
-
-    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
-        def find_matching_attribute(datalist, attrname, attrvalue):
-            for item in datalist:
-                if getattr(item, attrname, None) == attrvalue:
-                    return item
-
-        # The `data` is a list of champion data instances
-        if "id" in self._data[ChampionData]._dto or "id" in self._data[ChampionStatusData]._dto:
-            find = "id", self.id
-        elif "name" in self._data[ChampionData]._dto or "name" in self._data[ChampionStatusData]._dto:
-            find = "name", self.name
-        else:
-            raise RuntimeError("Impossible!")
-        data = find_matching_attribute(data, *find)
-        super().__load_hook__(load_group, data)
+        query = {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
+        if "id" in self._data[ChampionData]._dto:
+            query["id"] = self._data[ChampionData].id
+        if "name" in self._data[ChampionData]._dto:
+            query["name"] = self._data[ChampionData].name
+        return query
 
     # What do we do about params like this that can exist in both data objects?
     # They will be set on both data objects always, so we can choose either one to return.

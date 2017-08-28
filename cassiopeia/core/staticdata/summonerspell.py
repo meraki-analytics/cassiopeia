@@ -254,7 +254,6 @@ class SpellVars(CassiopeiaObject):
 @searchable({str: ["name", "key", "keywords", "resource"], Resource: ["resource"]})
 class SummonerSpell(CassiopeiaGhost):
     _data_types = {SummonerSpellData}
-    _load_types = {SummonerSpellData: SummonerSpellListData}
 
     def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if region is None:
@@ -275,27 +274,13 @@ class SummonerSpell(CassiopeiaGhost):
         super().__init__(**kwargs)
 
     def __get_query__(self):
-        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
-
-    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
-        def find_matching_attribute(datalist, attrname, attrvalue):
-            for item in datalist:
-                if getattr(item, attrname, None) == attrvalue:
-                    return item
-
-        # The `data` is a dict of summoner spell data instances
+        query = {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
+        if "id" in self._data[SummonerSpellData]._dto:
+            query["id"] = self._data[SummonerSpellData].id
         if "name" in self._data[SummonerSpellData]._dto:
-            find = "name", self.name
-        elif "id" in self._data[SummonerSpellData]._dto:
-            find = "id", self.id
-        else:
-            raise RuntimeError("Expected fields not present after loading.")
-        data = find_matching_attribute(data, *find)
+            query["name"] = self._data[SummonerSpellData].name
+        return query
 
-        super().__load_hook__(load_group, data)
-
-    # What do we do about params like this that can exist in both data objects?
-    # They will be set on both data objects always, so we can choose either one to return.
     @lazy_property
     def region(self) -> Region:
         """The region for this summoner spell."""

@@ -1,3 +1,4 @@
+import copy
 from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError
@@ -18,21 +19,39 @@ class ChampionAPI(RiotAPIService):
         pass
 
     _validate_get_champion_status_query = Query. \
-        has("id").as_(int).also. \
+        has("id").as_(int).or_("name").as_(str).also. \
         has("platform").as_(Platform)
 
     @get.register(ChampionDto)
     def get_champion_status(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionDto:
         ChampionAPI._validate_get_champion_status_query(query, context)
 
-        url = "https://{platform}.api.riotgames.com/lol/platform/v3/champions/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
-        try:
-            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "champions/id"))
-        except APINotFoundError as error:
-            raise NotFoundError(str(error)) from error
+        from ...configuration.settings import settings
+        if settings.request_by_id or "name" in query:  # Get by champion status list
+            champions_query = copy.deepcopy(query)
+            champions = self.get_champion_status_list(query=champions_query, context=context)
 
-        data["region"] = query["platform"].region.value
-        return ChampionDto(**data)
+            def find_matching_attribute(list_of_dtos, attrname, attrvalue):
+                for dto in list_of_dtos:
+                    if dto.get(attrname, None) == attrvalue:
+                        return dto
+
+            if "id" in query:
+                champion = find_matching_attribute(champions["champions"], "id", query["id"])
+            elif "name" in query:
+                champion = find_matching_attribute(champions["champions"], "name", query["name"])
+            else:
+                raise ValueError("Impossible!")
+            return ChampionDto(champion)
+        else:
+            url = "https://{platform}.api.riotgames.com/lol/platform/v3/champions/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
+            try:
+                data = self._get(url, {}, self._get_rate_limiter(query["platform"], "champions/id"))
+            except APINotFoundError as error:
+                raise NotFoundError(str(error)) from error
+
+            data["region"] = query["platform"].region.value
+            return ChampionDto(**data)
 
     _validate_get_many_champion_status_query = Query. \
         has("ids").as_(Iterable).also. \
