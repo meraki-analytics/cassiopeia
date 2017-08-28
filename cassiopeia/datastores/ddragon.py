@@ -66,6 +66,10 @@ class DDragonDataSource(DataSource):
         self._validate_get_champion_query(query, context)
 
         champions_query = copy.deepcopy(query)
+        if "id" in champions_query:
+            champions_query.pop("id")
+        if "name" in champions_query:
+            champions_query.pop("name")
         champions = self.get_champion_list(query=champions_query, context=context)
 
         def find_matching_attribute(list_of_dtos, attrname, attrvalue):
@@ -81,6 +85,8 @@ class DDragonDataSource(DataSource):
         else:
             raise RuntimeError("Impossible!")
         champion = find_matching_attribute(champions["data"].values(), *find)
+        if champion is None:
+            raise NotFoundError
         champion["region"] = query["platform"].region.value
         champion["version"] = query["version"]
         champion["locale"] = query["locale"]
@@ -249,6 +255,10 @@ class DDragonDataSource(DataSource):
         self._validate_get_map_query(query, context)
 
         maps_query = copy.deepcopy(query)
+        if "id" in maps_query:
+            maps_query.pop("id")
+        if "name" in maps_query:
+            maps_query.pop("name")
         maps = self.get_map_list(query=maps_query, context=context)
 
         def find_matching_attribute(list_of_dtos, attrname, attrvalue):
@@ -264,6 +274,8 @@ class DDragonDataSource(DataSource):
         else:
             raise RuntimeError("Impossible!")
         map = find_matching_attribute(maps["data"].values(), *find)
+        if map is None:
+            raise NotFoundError
         map["region"] = query["platform"].region.value
         map["version"] = query["version"]
         map["locale"] = query["locale"]
@@ -368,6 +380,8 @@ class DDragonDataSource(DataSource):
         else:
             raise RuntimeError("Impossible!")
         mastery = find_matching_attribute(masteries["data"].values(), *find)
+        if mastery is None:
+            raise NotFoundError
         mastery["region"] = query["platform"].region.value
         mastery["version"] = query["version"]
         mastery["locale"] = query["locale"]
@@ -444,6 +458,10 @@ class DDragonDataSource(DataSource):
         self._validate_get_rune_query(query, context)
 
         runes_query = copy.deepcopy(query)
+        if "id" in runes_query:
+            runes_query.pop("id")
+        if "name" in runes_query:
+            runes_query.pop("name")
         runes = self.get_rune_list(query=runes_query, context=context)
 
         def find_matching_attribute(list_of_dtos, attrname, attrvalue):
@@ -459,6 +477,8 @@ class DDragonDataSource(DataSource):
         else:
             raise RuntimeError("Impossible!")
         rune = find_matching_attribute(runes["data"].values(), *find)
+        if rune is None:
+            raise NotFoundError
         rune["region"] = query["platform"].region.value
         rune["version"] = query["version"]
         rune["locale"] = query["locale"]
@@ -530,6 +550,10 @@ class DDragonDataSource(DataSource):
         self._validate_get_item_query(query, context)
 
         items_query = copy.deepcopy(query)
+        if "id" in items_query:
+            items_query.pop("id")
+        if "name" in items_query:
+            items_query.pop("name")
         items = self.get_item_list(query=items_query, context=context)
 
         def find_matching_attribute(list_of_dtos, attrname, attrvalue):
@@ -545,6 +569,8 @@ class DDragonDataSource(DataSource):
         else:
             raise RuntimeError("Impossible!")
         item = find_matching_attribute(items["data"].values(), *find)
+        if item is None:
+            raise NotFoundError
         item["region"] = query["platform"].region.value
         item["version"] = query["version"]
         item["locale"] = query["locale"]
@@ -623,6 +649,10 @@ class DDragonDataSource(DataSource):
         self._validate_get_summoner_spell_query(query, context)
 
         summoner_spells_query = copy.deepcopy(query)
+        if "id" in summoner_spells_query:
+            summoner_spells_query.pop("id")
+        if "name" in summoner_spells_query:
+            summoner_spells_query.pop("name")
         summoner_spells = self.get_summoner_spell_list(query=summoner_spells_query, context=context)
 
         def find_matching_attribute(list_of_dtos, attrname, attrvalue):
@@ -638,6 +668,8 @@ class DDragonDataSource(DataSource):
         else:
             raise RuntimeError("Impossible!")
         summoner_spell = find_matching_attribute(summoner_spells["data"].values(), *find)
+        if summoner_spell is None:
+            raise NotFoundError
         summoner_spell["region"] = query["platform"].region.value
         summoner_spell["version"] = query["version"]
         summoner_spell["locale"] = query["locale"]

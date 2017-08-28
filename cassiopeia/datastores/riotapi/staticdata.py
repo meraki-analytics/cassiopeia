@@ -10,10 +10,11 @@ from ...dto.staticdata.rune import RuneDto, RuneListDto
 from ...dto.staticdata.item import ItemDto, ItemListDto
 from ...dto.staticdata.summonerspell import SummonerSpellDto, SummonerSpellListDto
 from ...dto.staticdata.version import VersionListDto
-from ...dto.staticdata.map import MapListDto
+from ...dto.staticdata.map import MapDto, MapListDto
 from ...dto.staticdata.realm import RealmDto
 from ...dto.staticdata.language import LanguagesDto, LanguageStringsDto
 from ...dto.staticdata.profileicon import ProfileIconDataDto
+from ..uniquekeys import _hash_included_data
 
 T = TypeVar("T")
 
@@ -29,6 +30,10 @@ def _get_default_locale(query: MutableMapping[str, Any], context: PipelineContex
 
 
 class StaticDataAPI(RiotAPIService):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._cache = {ChampionListDto: {}, RuneListDto: {}, MasteryListDto: {}, ItemListDto: {}, SummonerSpellListDto: {}, MapListDto: {}}
+
     @DataSource.dispatch
     def get(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> T:
         pass
@@ -36,6 +41,13 @@ class StaticDataAPI(RiotAPIService):
     @DataSource.dispatch
     def get_many(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> Iterable[T]:
         pass
+
+    def calculate_hash(self, query):
+        hash = list(value for _, value in sorted(query.items()))
+        for i, value in enumerate(hash):
+            if isinstance(value, set):
+                hash[i] = _hash_included_data(value)
+        return tuple(hash)
 
     #############
     # Champions #
@@ -55,6 +67,10 @@ class StaticDataAPI(RiotAPIService):
         from ...configuration.settings import settings
         if settings.request_by_id or "name" in query:  # Get by champion list
             champions_query = copy.deepcopy(query)
+            if "id" in champions_query:
+                champions_query.pop("id")
+            if "name" in champions_query:
+                champions_query.pop("name")
             champions = self.get_champion_list(query=champions_query, context=context)
 
             def find_matching_attribute(list_of_dtos, attrname, attrvalue):
@@ -68,6 +84,8 @@ class StaticDataAPI(RiotAPIService):
                 champion = find_matching_attribute(champions["data"].values(), "name", query["name"])
             else:
                 raise ValueError("Impossible!")
+            if champion is None:
+                raise NotFoundError
             champion["region"] = query["platform"].region.value
             champion["version"] = query["version"]
             champion["locale"] = query["locale"]
@@ -144,6 +162,12 @@ class StaticDataAPI(RiotAPIService):
     def get_champion_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionListDto:
         StaticDataAPI._validate_get_champion_list_query(query, context)
 
+        ahash = self.calculate_hash(query)
+        try:
+            return self._cache[ChampionListDto][ahash]
+        except KeyError:
+            pass
+
         params = {
             "locale": query["locale"],
             "tags": ",".join(list(query["includedData"])),
@@ -167,7 +191,9 @@ class StaticDataAPI(RiotAPIService):
             champion["version"] = query["version"]
             champion["locale"] = query["locale"]
             champion["includedData"] = query["includedData"]
-        return ChampionListDto(data)
+        result = ChampionListDto(data)
+        self._cache[ChampionListDto][ahash] = result
+        return result
 
     _validate_get_many_champion_list_query = Query. \
         has("platforms").as_(Iterable).also. \
@@ -247,6 +273,10 @@ class StaticDataAPI(RiotAPIService):
         from ...configuration.settings import settings
         if settings.request_by_id or "name" in query:  # Get by mastery list
             mastery_query = copy.deepcopy(query)
+            if "id" in mastery_query:
+                mastery_query.pop("id")
+            if "name" in mastery_query:
+                mastery_query.pop("name")
             masteries = self.get_mastery_list(query=mastery_query, context=context)
 
             def find_matching_attribute(list_of_dtos, attrname, attrvalue):
@@ -260,6 +290,8 @@ class StaticDataAPI(RiotAPIService):
                 mastery = find_matching_attribute(masteries["data"].values(), "name", query["name"])
             else:
                 raise ValueError("Impossible!")
+            if mastery is None:
+                raise NotFoundError
             mastery["region"] = query["platform"].region.value
             mastery["version"] = query["version"]
             mastery["locale"] = query["locale"]
@@ -334,6 +366,12 @@ class StaticDataAPI(RiotAPIService):
     def get_mastery_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasteryListDto:
         StaticDataAPI._validate_get_mastery_list_query(query, context)
 
+        ahash = self.calculate_hash(query)
+        try:
+            return self._cache[MasteryListDto][ahash]
+        except KeyError:
+            pass
+
         params = {
             "locale": query["locale"],
             "tags": ",".join(list(query["includedData"]))
@@ -356,7 +394,9 @@ class StaticDataAPI(RiotAPIService):
             mastery["version"] = data["version"]
             mastery["locale"] = query["locale"]
             mastery["includedData"] = query["includedData"]
-        return MasteryListDto(data)
+        result = MasteryListDto(data)
+        self._cache[MasteryListDto][ahash] = result
+        return result
 
     _validate_get_many_mastery_list_query = Query. \
         has("platforms").as_(Iterable).also. \
@@ -412,6 +452,10 @@ class StaticDataAPI(RiotAPIService):
         from ...configuration.settings import settings
         if settings.request_by_id or "name" in query:  # Get by rune list
             runes_query = copy.deepcopy(query)
+            if "id" in runes_query:
+                runes_query.pop("id")
+            if "name" in runes_query:
+                runes_query.pop("name")
             runes = self.get_rune_list(query=runes_query, context=context)
 
             def find_matching_attribute(list_of_dtos, attrname, attrvalue):
@@ -425,6 +469,8 @@ class StaticDataAPI(RiotAPIService):
                 rune = find_matching_attribute(runes["data"].values(), "name", query["name"])
             else:
                 raise ValueError("Impossible!")
+            if rune is None:
+                raise NotFoundError
             rune["region"] = query["platform"].region.value
             rune["version"] = query["version"]
             rune["locale"] = query["locale"]
@@ -499,6 +545,12 @@ class StaticDataAPI(RiotAPIService):
     def get_rune_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> RuneListDto:
         StaticDataAPI._validate_get_rune_list_query(query, context)
 
+        ahash = self.calculate_hash(query)
+        try:
+            return self._cache[RuneListDto][ahash]
+        except KeyError:
+            pass
+
         params = {
             "locale": query["locale"],
             "tags": ",".join(list(query["includedData"]))
@@ -521,7 +573,9 @@ class StaticDataAPI(RiotAPIService):
             rune["version"] = query["version"]
             rune["locale"] = query["locale"]
             rune["includedData"] = query["includedData"]
-        return RuneListDto(data)
+        result = RuneListDto(data)
+        self._cache[RuneListDto][ahash] = result
+        return result
 
     _validate_get_many_rune_list_query = Query. \
         has("platforms").as_(Iterable).also. \
@@ -577,6 +631,10 @@ class StaticDataAPI(RiotAPIService):
         from ...configuration.settings import settings
         if settings.request_by_id or "name" in query:  # Get by item list
             items_query = copy.deepcopy(query)
+            if "id" in items_query:
+                items_query.pop("id")
+            if "name" in items_query:
+                items_query.pop("name")
             items = self.get_item_list(query=items_query, context=context)
 
             def find_matching_attribute(list_of_dtos, attrname, attrvalue):
@@ -590,6 +648,8 @@ class StaticDataAPI(RiotAPIService):
                 item = find_matching_attribute(items["data"].values(), "name", query["name"])
             else:
                 raise ValueError("Impossible!")
+            if item is None:
+                raise NotFoundError
             item["region"] = query["platform"].region.value
             item["version"] = query["version"]
             item["locale"] = query["locale"]
@@ -684,6 +744,12 @@ class StaticDataAPI(RiotAPIService):
     def get_item_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ItemListDto:
         StaticDataAPI._validate_get_item_list_query(query, context)
 
+        ahash = self.calculate_hash(query)
+        try:
+            return self._cache[ItemListDto][ahash]
+        except KeyError:
+            pass
+
         params = {
             "locale": query["locale"],
             "tags": ",".join(list(query["includedData"]))
@@ -716,7 +782,9 @@ class StaticDataAPI(RiotAPIService):
             item["version"] = query["version"]
             item["locale"] = query["locale"]
             item["includedData"] = query["includedData"]
-        return ItemListDto(data)
+        result = ItemListDto(data)
+        self._cache[ItemListDto][ahash] = result
+        return result
 
     _validate_get_many_item_list_query = Query. \
         has("platforms").as_(Iterable).also. \
@@ -769,6 +837,43 @@ class StaticDataAPI(RiotAPIService):
     # Maps #
     ########
 
+    _validate_get_map_query = Query. \
+        has("id").as_(int).or_("name").as_(str).also. \
+        has("platform").as_(Platform).also. \
+        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("locale").with_default(_get_default_locale, supplies_type=str)
+
+    @get.register(MapDto)
+    def get_map(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MapDto:
+        StaticDataAPI._validate_get_map_query(query, context)
+
+        from ...configuration.settings import settings
+        if settings.request_by_id or "name" in query:  # Get by map list
+            maps_query = copy.deepcopy(query)
+            if "id" in maps_query:
+                maps_query.pop("id")
+            if "name" in maps_query:
+                maps_query.pop("name")
+            maps = self.get_map_list(query=maps_query, context=context)
+
+            def find_matching_attribute(list_of_dtos, attrname, attrvalue):
+                for dto in list_of_dtos:
+                    if dto.get(attrname, None) == attrvalue:
+                        return dto
+
+            if "id" in query:
+                map = find_matching_attribute(maps["data"].values(), "id", query["id"])
+            elif "name" in query:
+                map = find_matching_attribute(maps["data"].values(), "name", query["name"])
+            else:
+                raise ValueError("Impossible!")
+            if map is None:
+                raise NotFoundError
+            map["region"] = query["platform"].region.value
+            map["version"] = query["version"]
+            map["locale"] = query["locale"]
+            return MapDto(map)
+
     _validate_get_map_list_query = Query. \
         has("platform").as_(Platform).also. \
         can_have("version").as_(str).also. \
@@ -778,6 +883,12 @@ class StaticDataAPI(RiotAPIService):
     @get.register(MapListDto)
     def get_map_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MapListDto:
         StaticDataAPI._validate_get_map_list_query(query, context)
+
+        ahash = self.calculate_hash(query)
+        try:
+            return self._cache[MapListDto][ahash]
+        except KeyError:
+            pass
 
         params = {
             "locale": query["locale"]
@@ -794,7 +905,9 @@ class StaticDataAPI(RiotAPIService):
 
         data["region"] = query["platform"].region.value
         data["locale"] = query["locale"]
-        return MapListDto(data)
+        result = MapListDto(data)
+        self._cache[MapListDto][ahash] = result
+        return result
 
     ###################
     # Summoner Spells #
@@ -814,6 +927,10 @@ class StaticDataAPI(RiotAPIService):
         from ...configuration.settings import settings
         if settings.request_by_id or "name" in query:  # Get by summoner spell list
             summoner_spells_query = copy.deepcopy(query)
+            if "id" in summoner_spells_query:
+                summoner_spells_query.pop("id")
+            if "name" in summoner_spells_query:
+                summoner_spells_query.pop("name")
             summoner_spells = self.get_summoner_spell_list(query=summoner_spells_query, context=context)
 
             def find_matching_attribute(list_of_dtos, attrname, attrvalue):
@@ -827,6 +944,8 @@ class StaticDataAPI(RiotAPIService):
                 summoner_spell = find_matching_attribute(summoner_spells["data"].values(), "name", query["name"])
             else:
                 raise ValueError("Impossible!")
+            if summoner_spell is None:
+                raise NotFoundError
             summoner_spell["region"] = query["platform"].region.value
             summoner_spell["version"] = query["version"]
             summoner_spell["locale"] = query["locale"]
@@ -901,6 +1020,12 @@ class StaticDataAPI(RiotAPIService):
     def get_summoner_spell_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> SummonerSpellListDto:
         StaticDataAPI._validate_get_summoner_spell_list_query(query, context)
 
+        ahash = self.calculate_hash(query)
+        try:
+            return self._cache[SummonerSpellListDto][ahash]
+        except KeyError:
+            pass
+
         params = {
             "locale": query["locale"],
             "tags": ",".join(list(query["includedData"]))
@@ -923,7 +1048,9 @@ class StaticDataAPI(RiotAPIService):
             summoner_spell["version"] = query["version"]
             summoner_spell["locale"] = query["locale"]
             summoner_spell["includedData"] = query["includedData"]
-        return SummonerSpellListDto(data)
+        result = SummonerSpellListDto(data)
+        self._cache[SummonerSpellListDto][ahash] = result
+        return result
 
     _validate_get_many_summoner_spell_list_query = Query. \
         has("platforms").as_(Iterable).also. \
