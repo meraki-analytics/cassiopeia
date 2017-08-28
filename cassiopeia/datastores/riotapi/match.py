@@ -40,6 +40,9 @@ class MatchAPI(RiotAPIService):
 
         data["gameId"] = query["gameId"]
         data["region"] = query["platform"].region.value
+        for participant in data["participants"]:
+            participant.setdefault("runes", [])
+            participant.setdefault("masteries", [])
         return MatchDto(data)
 
     _validate_get_many_match_query = Query. \
@@ -59,7 +62,11 @@ class MatchAPI(RiotAPIService):
                     data = self._get(url, {}, self._get_rate_limiter(query["platform"], "matches/id"))
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
-
+                
+                for participant in data["participants"]:
+                    participant.setdefault("runes", [])
+                    participant.setdefault("masteries", [])
+ 
                 data["gameId"] = id
                 data["region"] = query["platform"].region.value
                 yield MatchDto(data)

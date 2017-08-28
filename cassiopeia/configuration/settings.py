@@ -142,6 +142,7 @@ class Settings(object):
 
     def set_riot_api_key(self, key):
         from ..datastores.riotapi import RiotAPI
+        self.__riot_api_key = key
         for sources in self.pipeline._sources:
             for source in sources:
                 if isinstance(source, RiotAPI):
