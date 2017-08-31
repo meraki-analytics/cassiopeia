@@ -2,6 +2,8 @@ import os
 import logging
 from typing import Dict, Union
 
+from datapipelines import DataPipeline, CompositeDataTransformer
+
 from ..data import Region, Platform
 from .load import config
 
@@ -9,8 +11,7 @@ from .load import config
 logging.basicConfig(format='%(asctime)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.WARNING)
 
 
-def create_default_pipeline(riot_api_key: str, championgg_api_key: str = None, limiting_share: float = 1.0, handler_configs: Dict = None, verbose: bool = False):
-    from datapipelines import DataPipeline, CompositeDataTransformer
+def create_default_pipeline(riot_api_key: str, championgg_api_key: str = None, limiting_share: float = 1.0, handler_configs: Dict = None, verbose: bool = False) -> DataPipeline:
     from ..datastores.cache import Cache
     from ..datastores.riotapi import RiotAPI
     from ..datastores.ddragon import DDragonDataSource
@@ -55,7 +56,7 @@ def create_default_pipeline(riot_api_key: str, championgg_api_key: str = None, l
         )
     pipeline = DataPipeline(services, transformers)
 
-    # Manually put the cache on the pipeline. TODO Is this the best way?
+    # Manually put the cache on the pipeline.
     for datastore in services:
         if isinstance(datastore, Cache):
             pipeline._cache = datastore
@@ -106,7 +107,7 @@ class Settings(object):
         self.__default_region = region
 
     @property
-    def pipeline(self):
+    def pipeline(self) -> DataPipeline:
         if self.__pipeline is None:
             if self.__riot_api_key and not self.__riot_api_key.startswith("RGAPI"):
                 self.__riot_api_key = os.environ[self.__riot_api_key]

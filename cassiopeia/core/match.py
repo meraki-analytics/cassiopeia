@@ -892,7 +892,7 @@ class MatchHistory(CassiopeiaGhostLazyList):
             from ..transformers.match import MatchTransformer
             final_end = end_index
             begin_index = begin_index
-            end_index = end_index or begin_index + 50
+            end_index = end_index or begin_index + 100
             while final_end is None or begin_index < final_end:
                 # Get another matchlist page and yield by entry
                 query = self.__get_query__()
@@ -913,7 +913,7 @@ class MatchHistory(CassiopeiaGhostLazyList):
                 if len(data) < end_index - begin_index:
                     break
                 begin_index += len(data)
-                end_index = begin_index + 50
+                end_index = begin_index + 100
 
         super().__init__(generate_matchlists(begin_index, end_index), **kwargs)
 
@@ -1224,6 +1224,20 @@ class ParticipantTimeline(CassiopeiaObject):
 class ParticipantStats(CassiopeiaObject):
     _data_types = {ParticipantStatsData}
 
+    def __init__(self, version: str = None, **kwargs):
+        self.__version = version
+        super().__init__(**kwargs)
+
+    @classmethod
+    def from_data(cls, data: ParticipantStatsData, version):
+        self = super().from_data(data)
+        self.__version = version
+        return self
+
+    @property
+    def version(self):
+        return self.__version
+
     @property
     def physical_damage_dealt(self) -> int:
         return self._data[ParticipantStatsData].physical_damage_dealt
@@ -1318,7 +1332,7 @@ class ParticipantStats(CassiopeiaObject):
                self._data[ParticipantStatsData].item5,
                self._data[ParticipantStatsData].item6
         ]
-        return SearchableList([Item(id=id) for id in ids if id])
+        return SearchableList([Item(id=id, version=self.version) for id in ids if id])
 
     @property
     def first_blood_assist(self) -> bool:
@@ -1525,10 +1539,17 @@ class Participant(CassiopeiaObject):
         self.__match = match
         return self
 
+    @property
+    def version(self):
+        version = self.__match.version
+        version = version.split(".")[0:2]
+        version = ".".join(version) + ".1"  # Always use x.x.1 because I don't know how to figure out what the last version number should be.
+        return version
+
     @lazy_property
     @load_match_on_keyerror
     def stats(self) -> ParticipantStats:
-        return ParticipantStats.from_data(self._data[ParticipantData].stats)
+        return ParticipantStats.from_data(self._data[ParticipantData].stats, version=self.version)
 
     @property
     def id(self) -> int:
@@ -1537,12 +1558,12 @@ class Participant(CassiopeiaObject):
     @lazy_property
     @load_match_on_keyerror
     def runes(self) -> Dict["Rune", int]:
-        return SearchableDictionary({Rune(id=rune["runeId"]): rune["rank"] for rune in self._data[ParticipantData].runes})
+        return SearchableDictionary({Rune(id=rune["runeId"], version=self.version): rune["rank"] for rune in self._data[ParticipantData].runes})
 
     @lazy_property
     @load_match_on_keyerror
     def masteries(self) -> Dict["Mastery", int]:
-        return SearchableDictionary({Mastery(id=mastery["masteryId"]): mastery["rank"] for mastery in self._data[ParticipantData].masteries})
+        return SearchableDictionary({Mastery(id=mastery["masteryId"], version=self.version): mastery["rank"] for mastery in self._data[ParticipantData].masteries})
 
     @lazy_property
     @load_match_on_keyerror
@@ -1557,12 +1578,12 @@ class Participant(CassiopeiaObject):
     @lazy_property
     @load_match_on_keyerror
     def summoner_spell_d(self) -> SummonerSpell:
-        return SummonerSpell(id=self._data[ParticipantData].summoner_spell_d_id)
+        return SummonerSpell(id=self._data[ParticipantData].summoner_spell_d_id, version=self.version)
 
     @lazy_property
     @load_match_on_keyerror
     def summoner_spell_f(self) -> SummonerSpell:
-        return SummonerSpell(id=self._data[ParticipantData].summoner_spell_f_id)
+        return SummonerSpell(id=self._data[ParticipantData].summoner_spell_f_id, version=self.version)
 
     @lazy_property
     @load_match_on_keyerror
@@ -1573,7 +1594,7 @@ class Participant(CassiopeiaObject):
     @load_match_on_keyerror
     def champion(self) -> "Champion":
         from .staticdata.champion import Champion
-        return Champion(id=self._data[ParticipantData].champion_id)
+        return Champion(id=self._data[ParticipantData].champion_id, version=self.version)
 
     # All the Player data from ParticipantIdentities.player is contained in the Summoner class.
     # The non-current accountId and platformId should never be relevant/used, and can be deleted from our type system.
@@ -1643,7 +1664,7 @@ class Team(CassiopeiaObject):
 
     @property
     def bans(self) -> List["Champion"]:
-        return [Champion(id=champion_id) for champion_id in self._data[TeamData].bans]
+        return [Champion(id=champion_id, version=self.__participants[0].version) for champion_id in self._data[TeamData].bans]
 
     @property
     def baron_kills(self) -> int:

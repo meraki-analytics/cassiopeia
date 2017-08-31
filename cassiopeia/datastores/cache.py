@@ -84,6 +84,9 @@ class Cache(DataSource, DataSink):
             self._cache.put(type, key, item, expire_seconds)
         # TODO: Put EXPIRATION into context once cache expiration works
 
+    def clear(self, type: Type[T]):
+        self._cache._data[type].clear()
+
     ########################
     # Champion Mastery API #
     ########################

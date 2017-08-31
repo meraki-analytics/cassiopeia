@@ -1,6 +1,7 @@
 import cassiopeia as cass
 from cassiopeia import Summoner, Match
 from cassiopeia.data import Season, Queue
+from collections import Counter
 
 
 def print_newest_match(name: str, account: int, id: int, region: str):
@@ -15,9 +16,14 @@ def print_newest_match(name: str, account: int, id: int, region: str):
     match_history = summoner.match_history
 
     # Load the entire match history by iterating over all its elements so that we know how long it is.
+    played_champions = Counter()
     for match in match_history:
-        pass
+        played_champions[match.participants[summoner.name].champion.name] += 1
     print("Length of match history:", len(match_history))
+    print("Top 10 champions {} played:".format(summoner.name))
+    for name, count in played_champions.most_common(10):
+        print(name, count)
+    print()
 
     match = match_history[0]
     print('Match ID:', match.id)
