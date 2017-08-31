@@ -1,6 +1,6 @@
 import datetime
 
-from typing import Optional as _Optional
+from typing import Optional as _Optional, Union as _Union
 
 
 class Patch(object):
@@ -14,12 +14,22 @@ class Patch(object):
         return self._patch
 
     @classmethod
-    def from_str(cls, string) -> "Patch":
+    def from_str(cls, string: str) -> "Patch":
         for patch in cls.__patches:
             if string in patch.patch:
                 return patch
         else:
             raise ValueError("Unknown patch name {}".format(string))
+
+    @classmethod
+    def from_date(cls, date: _Union[datetime.date, datetime.datetime]) -> "Patch":
+        if isinstance(date, datetime.datetime):
+            date = date.date()
+        for patch in cls.__patches:
+            if patch.start <= date < patch.end:
+                return patch
+        else:
+            raise ValueError("Unknown patch date {}".format(date))
 
     @property
     def name(self):
@@ -230,7 +240,7 @@ patches = [
     Patch(name="Season 7", patch="7.12", start=datetime.date(2017, 6, 14), end=datetime.date(2017, 6, 28)),
     Patch(name="Season 7", patch="7.13", start=datetime.date(2017, 6, 28), end=datetime.date(2017, 7, 12)),
     Patch(name="Season 7", patch="7.14", start=datetime.date(2017, 7, 12), end=datetime.date(2017, 7, 26)),
-    Patch(name="Season 7", patch="7.15", start=datetime.date(2017, 7, 26), end=datetime.date(2017, 7, 26)),
+    Patch(name="Season 7", patch="7.15", start=datetime.date(2017, 7, 26), end=datetime.date(2017, 8, 9)),
     Patch(name="Season 7", patch="7.16", start=datetime.date(2017, 8, 9), end=datetime.date(2017, 8, 23)),
     Patch(name="Season 7", patch="7.17", start=datetime.date(2017, 8, 23), end=None)
 ]

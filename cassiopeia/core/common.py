@@ -111,7 +111,7 @@ class CheckCache(type):
             # Try to find the obj in the cache
             from ..datastores.uniquekeys import construct_query
             query = construct_query(cls, **kwargs)
-            if hasattr(cls, "version") and "version" not in query and not cls.__name__ == "Realms":
+            if hasattr(cls, "version") and query.get("version", None) is None and not cls.__name__ == "Realms":
                 query["version"] = get_latest_version(region=query["region"], endpoint=None)
             try:
                 return cache.get(cls, query=query)
