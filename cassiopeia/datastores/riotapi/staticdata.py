@@ -65,7 +65,7 @@ class StaticDataAPI(RiotAPIService):
         StaticDataAPI._validate_get_champion_query(query, context)
 
         from ...configuration.settings import settings
-        if settings.request_by_id or "name" in query:  # Get by champion list
+        if settings.request_by_id or "id" not in query:  # Get by champion list
             champions_query = copy.deepcopy(query)
             if "id" in champions_query:
                 champions_query.pop("id")
@@ -271,7 +271,7 @@ class StaticDataAPI(RiotAPIService):
         StaticDataAPI._validate_get_mastery_query(query, context)
 
         from ...configuration.settings import settings
-        if settings.request_by_id or "name" in query:  # Get by mastery list
+        if settings.request_by_id or "id" not in query:  # Get by mastery list
             mastery_query = copy.deepcopy(query)
             if "id" in mastery_query:
                 mastery_query.pop("id")
@@ -450,7 +450,7 @@ class StaticDataAPI(RiotAPIService):
         StaticDataAPI._validate_get_rune_query(query, context)
 
         from ...configuration.settings import settings
-        if settings.request_by_id or "name" in query:  # Get by rune list
+        if settings.request_by_id or "id" not in query:  # Get by rune list
             runes_query = copy.deepcopy(query)
             if "id" in runes_query:
                 runes_query.pop("id")
@@ -629,7 +629,7 @@ class StaticDataAPI(RiotAPIService):
         StaticDataAPI._validate_get_item_query(query, context)
 
         from ...configuration.settings import settings
-        if settings.request_by_id or "name" in query:  # Get by item list
+        if settings.request_by_id or "id" not in query:  # Get by item list
             items_query = copy.deepcopy(query)
             if "id" in items_query:
                 items_query.pop("id")
@@ -848,7 +848,7 @@ class StaticDataAPI(RiotAPIService):
         StaticDataAPI._validate_get_map_query(query, context)
 
         from ...configuration.settings import settings
-        if settings.request_by_id or "name" in query:  # Get by map list
+        if settings.request_by_id or "id" not in query:  # Get by map list
             maps_query = copy.deepcopy(query)
             if "id" in maps_query:
                 maps_query.pop("id")
@@ -925,7 +925,7 @@ class StaticDataAPI(RiotAPIService):
         StaticDataAPI._validate_get_summoner_spell_query(query, context)
 
         from ...configuration.settings import settings
-        if settings.request_by_id or "name" in query:  # Get by summoner spell list
+        if settings.request_by_id or "id" not in query:  # Get by summoner spell list
             summoner_spells_query = copy.deepcopy(query)
             if "id" in summoner_spells_query:
                 summoner_spells_query.pop("id")

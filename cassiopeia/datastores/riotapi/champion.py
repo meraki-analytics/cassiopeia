@@ -27,7 +27,7 @@ class ChampionAPI(RiotAPIService):
         ChampionAPI._validate_get_champion_status_query(query, context)
 
         from ...configuration.settings import settings
-        if settings.request_by_id or "name" in query:  # Get by champion status list
+        if settings.request_by_id or "id" not in query:  # Get by champion status list
             champions_query = copy.deepcopy(query)
             champions = self.get_champion_status_list(query=champions_query, context=context)
 
