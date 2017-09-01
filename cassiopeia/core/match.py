@@ -1328,12 +1328,12 @@ class ParticipantStats(CassiopeiaObject):
         # we need to pull the entire match data.
         # On the other hand, we can probably use the creation date (which comes with a matchref) and get the patch #
         # and therefore version # from the patch.
-        if settings.version_from_match == "patch":
-            patch = Patch.from_date(self.__match.creation)
-            version = patch.majorminor + ".1"  # Just always use x.x.1
-        elif settings.version_from_match == "version":
+        if settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
             version = self.__match.version
             version = ".".join(version.split(".")[:2]) + ".1"
+        elif settings.version_from_match == "patch":
+            patch = Patch.from_date(self.__match.creation)
+            version = patch.majorminor + ".1"  # Just always use x.x.1
         else:
             version = None
         return SearchableList([Item(id=id, version=version) for id in ids if id])
@@ -1563,12 +1563,12 @@ class Participant(CassiopeiaObject):
     @load_match_on_keyerror
     def runes(self) -> Dict["Rune", int]:
         # See ParticipantStats for info
-        if settings.version_from_match == "patch":
-            patch = Patch.from_date(self.__match.creation)
-            version = patch.majorminor + ".1"  # Just always use x.x.1
-        elif settings.version_from_match == "version":
+        if settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
             version = self.__match.version
             version = ".".join(version.split(".")[:2]) + ".1"
+        elif settings.version_from_match == "patch":
+            patch = Patch.from_date(self.__match.creation)
+            version = patch.majorminor + ".1"  # Just always use x.x.1
         else:
             version = None
         return SearchableDictionary({Rune(id=rune["runeId"], version=version): rune["rank"] for rune in self._data[ParticipantData].runes})
@@ -1577,12 +1577,12 @@ class Participant(CassiopeiaObject):
     @load_match_on_keyerror
     def masteries(self) -> Dict["Mastery", int]:
         # See ParticipantStats for info
-        if settings.version_from_match == "patch":
-            patch = Patch.from_date(self.__match.creation)
-            version = patch.majorminor + ".1"  # Just always use x.x.1
-        elif settings.version_from_match == "version":
+        if settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
             version = self.__match.version
             version = ".".join(version.split(".")[:2]) + ".1"
+        elif settings.version_from_match == "patch":
+            patch = Patch.from_date(self.__match.creation)
+            version = patch.majorminor + ".1"  # Just always use x.x.1
         else:
             version = None
         return SearchableDictionary({Mastery(id=mastery["masteryId"], version=version): mastery["rank"] for mastery in self._data[ParticipantData].masteries})
@@ -1601,12 +1601,12 @@ class Participant(CassiopeiaObject):
     @load_match_on_keyerror
     def summoner_spell_d(self) -> SummonerSpell:
         # See ParticipantStats for info
-        if settings.version_from_match == "patch":
-            patch = Patch.from_date(self.__match.creation)
-            version = patch.majorminor + ".1"  # Just always use x.x.1
-        elif settings.version_from_match == "version":
+        if settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
             version = self.__match.version
             version = ".".join(version.split(".")[:2]) + ".1"
+        elif settings.version_from_match == "patch":
+            patch = Patch.from_date(self.__match.creation)
+            version = patch.majorminor + ".1"  # Just always use x.x.1
         else:
             version = None
         return SummonerSpell(id=self._data[ParticipantData].summoner_spell_d_id, version=version)
@@ -1615,12 +1615,12 @@ class Participant(CassiopeiaObject):
     @load_match_on_keyerror
     def summoner_spell_f(self) -> SummonerSpell:
         # See ParticipantStats for info
-        if settings.version_from_match == "patch":
-            patch = Patch.from_date(self.__match.creation)
-            version = patch.majorminor + ".1"  # Just always use x.x.1
-        elif settings.version_from_match == "version":
+        if settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
             version = self.__match.version
             version = ".".join(version.split(".")[:2]) + ".1"
+        elif settings.version_from_match == "patch":
+            patch = Patch.from_date(self.__match.creation)
+            version = patch.majorminor + ".1"  # Just always use x.x.1
         else:
             version = None
         return SummonerSpell(id=self._data[ParticipantData].summoner_spell_f_id, version=version)
@@ -1634,12 +1634,12 @@ class Participant(CassiopeiaObject):
     @load_match_on_keyerror
     def champion(self) -> "Champion":
         # See ParticipantStats for info
-        if settings.version_from_match == "patch":
-            patch = Patch.from_date(self.__match.creation)
-            version = patch.majorminor + ".1"  # Just always use x.x.1
-        elif settings.version_from_match == "version":
+        if settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
             version = self.__match.version
             version = ".".join(version.split(".")[:2]) + ".1"
+        elif settings.version_from_match == "patch":
+            patch = Patch.from_date(self.__match.creation)
+            version = patch.majorminor + ".1"  # Just always use x.x.1
         else:
             version = None
         from .staticdata.champion import Champion

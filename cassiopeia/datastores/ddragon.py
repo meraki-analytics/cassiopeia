@@ -15,7 +15,7 @@ from ..dto.staticdata.language import LanguagesDto, LanguageStringsDto
 from ..dto.staticdata.realm import RealmDto
 from ..dto.staticdata.map import MapDto, MapListDto
 from .common import HTTPClient, HTTPError
-from .riotapi.staticdata import _get_default_version
+from .riotapi.staticdata import _get_latest_version
 from .uniquekeys import _hash_included_data
 
 try:
@@ -57,7 +57,7 @@ class DDragonDataSource(DataSource):
     _validate_get_champion_query = Query. \
         has("platform").as_(Platform).also. \
         has("id").as_(int).or_("name").as_(str).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
         can_have("locale").also. \
         can_have("includedData")
 
@@ -95,7 +95,7 @@ class DDragonDataSource(DataSource):
 
     _validate_get_champion_list_query = Query. \
         has("platform").as_(Platform).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
         can_have("locale").also. \
         can_have("includedData")
 
@@ -172,6 +172,7 @@ class DDragonDataSource(DataSource):
         body["region"] = query["platform"].region.value
         body["locale"] = locale
         body["includedData"] = {"all"}
+        body["dataById"] = True
         result = ChampionListDto(body)
         self._cache[ChampionListDto][ahash] = result
         return result
@@ -247,7 +248,7 @@ class DDragonDataSource(DataSource):
     _validate_get_map_query = Query. \
         has("platform").as_(Platform).also. \
         has("id").as_(int).or_("name").as_(str).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
         can_have("locale")
 
     @get.register(MapDto)
@@ -283,7 +284,7 @@ class DDragonDataSource(DataSource):
 
     _validate_get_map_list_query = Query. \
         has("platform").as_(Platform).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
         can_have("locale").as_(str)
 
     @get.register(MapListDto)
@@ -323,7 +324,7 @@ class DDragonDataSource(DataSource):
 
     _validate_get_language_strings_query = Query. \
         has("platform").as_(Platform).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
         can_have("locale").as_(str)
 
     @get.register(LanguageStringsDto)
@@ -352,7 +353,7 @@ class DDragonDataSource(DataSource):
     _validate_get_mastery_query = Query. \
         has("platform").as_(Platform).also. \
         has("id").as_(int).or_("name").as_(str).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
         can_have("locale").also. \
         can_have("includedData")
 
@@ -390,7 +391,7 @@ class DDragonDataSource(DataSource):
 
     _validate_get_mastery_list_query = Query. \
         has("platform").as_(Platform).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
         can_have("locale").as_(str).also. \
         can_have("includedData")
 
@@ -449,7 +450,7 @@ class DDragonDataSource(DataSource):
     _validate_get_rune_query = Query. \
         has("platform").as_(Platform).also. \
         has("id").as_(int).or_("name").as_(str).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
         can_have("locale").also. \
         can_have("includedData")
 
@@ -487,7 +488,7 @@ class DDragonDataSource(DataSource):
 
     _validate_get_rune_list_query = Query. \
         has("platform").as_(Platform).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
         can_have("locale").as_(str).also. \
         can_have("includedData")
 
@@ -541,7 +542,7 @@ class DDragonDataSource(DataSource):
     _validate_get_item_query = Query. \
         has("platform").as_(Platform).also. \
         has("id").as_(int).or_("name").as_(str).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
         can_have("locale").also. \
         can_have("includedData")
 
@@ -579,7 +580,7 @@ class DDragonDataSource(DataSource):
 
     _validate_get_item_list_query = Query. \
         has("platform").as_(Platform).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
         can_have("locale").as_(str).also. \
         can_have("includedData")
 
@@ -640,7 +641,7 @@ class DDragonDataSource(DataSource):
     _validate_get_summoner_spell_query = Query. \
         has("platform").as_(Platform).also. \
         has("id").as_(int).or_("name").as_(str).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
         can_have("locale").also. \
         can_have("includedData")
 
@@ -678,7 +679,7 @@ class DDragonDataSource(DataSource):
 
     _validate_get_summoner_spell_list_query = Query. \
         has("platform").as_(Platform).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
         can_have("locale").as_(str).also. \
         can_have("includedData")
 
@@ -728,7 +729,7 @@ class DDragonDataSource(DataSource):
 
     _validate_get_profile_icon_query = Query. \
         has("platform").as_(Platform).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
         can_have("locale").as_(str)
 
     @get.register(ProfileIconDataDto)

@@ -19,7 +19,7 @@ from ..uniquekeys import _hash_included_data
 T = TypeVar("T")
 
 
-def _get_default_version(query: MutableMapping[str, Any], context: PipelineContext) -> str:
+def _get_latest_version(query: MutableMapping[str, Any], context: PipelineContext) -> str:
     pipeline = context[PipelineContext.Keys.PIPELINE]
     realms = pipeline.get(RealmDto, {"platform": query["platform"]})
     return realms["v"]
@@ -56,7 +56,7 @@ class StaticDataAPI(RiotAPIService):
     _validate_get_champion_query = Query. \
         has("id").as_(int).or_("name").as_(str).also. \
         has("platform").as_(Platform).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
         can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
         can_have("includedData").with_default({"all"})
 
@@ -156,7 +156,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("version").as_(str).also. \
         can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
         can_have("includedData").with_default({"all"}).also. \
-        can_have("dataById").with_default(False)
+        can_have("dataById").with_default(True)
 
     @get.register(ChampionListDto)
     def get_champion_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionListDto:
@@ -184,8 +184,10 @@ class StaticDataAPI(RiotAPIService):
             raise NotFoundError(str(error)) from error
 
         data["region"] = query["platform"].region.value
+        data["version"] = query["version"]
         data["locale"] = query["locale"]
         data["includedData"] = query["includedData"]
+        data["dataById"] = query["dataById"]
         for champion in data["data"].values():
             champion["region"] = query["platform"].region.value
             champion["version"] = query["version"]
@@ -200,7 +202,7 @@ class StaticDataAPI(RiotAPIService):
         can_have("version").as_(str).also. \
         can_have("locale").as_(str).also. \
         can_have("includedData").with_default({"all"}).also. \
-        can_have("dataById").with_default(False)
+        can_have("dataById").with_default(True)
 
     @get_many.register(ChampionListDto)
     def get_many_champion_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionListDto, None, None]:
@@ -227,8 +229,15 @@ class StaticDataAPI(RiotAPIService):
                     raise NotFoundError(str(error)) from error
 
                 data["region"] = platform.region.value
+                data["version"] = query["version"]
                 data["locale"] = query["locale"] if "locale" in query else platform.default_locale
                 data["includedData"] = query["includedData"]
+                data["dataById"] = query["dataById"]
+                for champion in data["data"].values():
+                    champion["region"] = query["platform"].region.value
+                    champion["version"] = query["version"]
+                    champion["locale"] = query["locale"]
+                    champion["includedData"] = query["includedData"]
                 yield ChampionListDto(data)
 
         return generator()
@@ -262,7 +271,7 @@ class StaticDataAPI(RiotAPIService):
     _validate_get_mastery_query = Query. \
         has("id").as_(int).or_("name").as_(str).also. \
         has("platform").as_(Platform).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
         can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
         can_have("includedData").with_default({"all"})
 
@@ -441,7 +450,7 @@ class StaticDataAPI(RiotAPIService):
     _validate_get_rune_query = Query. \
         has("id").as_(int).or_("name").as_(str).also. \
         has("platform").as_(Platform).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
         can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
         can_have("includedData").with_default({"all"})
 
@@ -620,7 +629,7 @@ class StaticDataAPI(RiotAPIService):
     _validate_get_item_query = Query. \
         has("id").as_(int).or_("name").as_(str).also. \
         has("platform").as_(Platform).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
         can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
         can_have("includedData").with_default({"all"})
 
@@ -840,7 +849,7 @@ class StaticDataAPI(RiotAPIService):
     _validate_get_map_query = Query. \
         has("id").as_(int).or_("name").as_(str).also. \
         has("platform").as_(Platform).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
         can_have("locale").with_default(_get_default_locale, supplies_type=str)
 
     @get.register(MapDto)
@@ -916,7 +925,7 @@ class StaticDataAPI(RiotAPIService):
     _validate_get_summoner_spell_query = Query. \
         has("id").as_(int).or_("name").as_(str).also. \
         has("platform").as_(Platform).also. \
-        can_have("version").with_default(_get_default_version, supplies_type=str).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
         can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
         can_have("includedData").with_default({"all"})
 

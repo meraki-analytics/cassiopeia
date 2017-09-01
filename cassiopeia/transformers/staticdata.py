@@ -302,7 +302,7 @@ class StaticDataTransformer(DataTransformer):
     def champion_list_core_to_dto(self, value: Champions, context: PipelineContext = None) -> ChampionListDto:
         # I didn't put in `keys`, `type`, or `format` keys/values that come from the API.
         return ChampionListDto({"region": value.region, "version": value.version, "locale": value.locale, "includedData": value.included_data,
-                                "data": {c.id: self.champion_core_to_dto(c) for c in value}})
+                                "data": {c.id: self.champion_core_to_dto(c) for c in value}, "dataById": True})
 
     # Mastery
 
@@ -362,7 +362,7 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(Versions, VersionListDto)
     def version_list_core_to_dto(self, value: Versions, context: PipelineContext = None) -> VersionListDto:
-        return VersionListDto({"region": value.region, "data": [v for v in value]})
+        return VersionListDto({"region": value.region.value, "versions": [v for v in value]})
 
     # Realm
 

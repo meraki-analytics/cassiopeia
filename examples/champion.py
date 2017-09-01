@@ -15,7 +15,6 @@ def get_champions():
     print({item.name: count for item, count in annie.recommended_itemsets[0].item_sets[0].items.items()})
     print(annie.free_to_play)
     print(annie._Ghost__all_loaded)
-    print(annie)
 
     # ziggs = cass.get_champion(region="NA", "Ziggs")
     ziggs = cass.get_champion("Ziggs")

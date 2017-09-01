@@ -17,10 +17,19 @@ def print_newest_match(name: str, account: int, id: int, region: str):
     match_history(seasons={Season.season_7}, queues={Queue.ranked_solo_queue})
 
     # Load the entire match history by iterating over all its elements so that we know how long it is.
+    # Unfortunately since we are iterating over the match history and accessing the summoner's champion for each match,
+    # we need to know what version of the static data the champion should have. To avoid pulling many different
+    # static data versions, we will instead create a {champion_id -> champion_name} mapping and just access the champion's
+    # ID from the match data (which it provides directly).
+    champion_id_to_name_mapping = {champion.id: champion.name for champion in cass.get_champions()}
     played_champions = Counter()
     for match in match_history:
-        played_champions[match.participants[summoner.name].champion.name] += 1
+        champion_id = match.participants[summoner.name].champion.id
+        champion_name = champion_id_to_name_mapping[champion_id]
+        played_champions[champion_name] += 1
     print("Length of match history:", len(match_history))
+
+    # Print the aggregated champion results
     print("Top 10 champions {} played:".format(summoner.name))
     for champion_name, count in played_champions.most_common(10):
         print(champion_name, count)

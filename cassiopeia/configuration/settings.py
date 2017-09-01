@@ -86,7 +86,7 @@ class Settings(object):
         self.__limiting_share = riot_api_config.get("limiting_share", 1.0)
         self.__request_handler_configs = riot_api_config.get("request_handling", {})
         self.__request_by_id = riot_api_config.get("request_by_id", True)
-        self.__version_from_match = riot_api_config.get("version_from_match", None)  # Valid json values are: "version", "patch", and null
+        self.__version_from_match = riot_api_config.get("version_from_match", "patch")  # Valid json values are: "version", "patch", and null
         self.__pipeline = None
         self.__plugins = settings.get("plugins", [])
         logging_config = settings.get("logging", {})
