@@ -26,7 +26,7 @@ class Patch(object):
         if isinstance(date, datetime.datetime):
             date = date.date()
         for patch in cls.__patches:
-            patch_end = patch.end or datetime.date.today()
+            patch_end = patch.end or datetime.date.today() + datetime.timedelta(days=1)
             if patch.start <= date < patch_end:
                 return patch
         else:
