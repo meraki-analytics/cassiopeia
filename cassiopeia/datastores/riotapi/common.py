@@ -224,7 +224,7 @@ class RiotAPIService(DataSource):
                 # Create a new handler
                 handler = self._handlers[429][rate_limiting_type]()  # type: FailedRequestHandler
             else:
-                handler = self._handlers[error.code]
+                handler = self._handlers[error.code]()
 
             try:
                 body, response_headers = handler(error=error,

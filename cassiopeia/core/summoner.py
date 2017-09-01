@@ -160,7 +160,6 @@ class Summoner(CassiopeiaGhost):
 
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on(KeyError)
-    @lazy
     def revision_date(self) -> datetime.date:
         return datetime.datetime.fromtimestamp(self._data[SummonerData].revision_date / 1000).date()
 
@@ -170,37 +169,37 @@ class Summoner(CassiopeiaGhost):
 
     # Special core methods
 
-    @lazy_property
+    @property
     def champion_masteries(self) -> "ChampionMasteries":
         from .championmastery import ChampionMasteries
         return ChampionMasteries(summoner=self, region=self.region)
 
-    @lazy_property
+    @property
     def mastery_pages(self) -> "MasteryPages":
         from .masterypage import MasteryPages
         return MasteryPages(summoner=self, region=self.region)
 
-    @lazy_property
+    @property
     def rune_pages(self) -> "RunePages":
         from .runepage import RunePages
         return RunePages(summoner=self, region=self.region)
 
-    @lazy_property
+    @property
     def match_history(self) -> "MatchHistory":
         from .match import MatchHistory
         return MatchHistory(summoner=self, region=self.region)
 
-    @lazy_property
+    @property
     def current_match(self) -> "CurrentMatch":
         from .spectator import CurrentMatch
         return CurrentMatch(summoner=self, region=self.region)
 
-    @lazy_property
+    @property
     def leagues(self) -> "Leagues":
         from .league import Leagues
         return Leagues(summoner=self, region=self.region)
 
-    @lazy_property
+    @property
     def league_positions(self) -> "LeagueEntries":
         from .league import LeagueEntries
         return LeagueEntries(summoner=self, region=self.region)
