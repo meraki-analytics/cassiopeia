@@ -545,7 +545,7 @@ class SpellVars(CassiopeiaObject):
         return self._data[SpellVarsData].key
 
 
-@searchable({str: ["name", "key", "keywords", "resource"], Resource: ["resource"]})
+@searchable({str: ["name", "key", "keywords"]})
 class ChampionSpell(CassiopeiaObject):
     _data_types = {ChampionSpellData}
 
@@ -877,7 +877,7 @@ class Info(CassiopeiaObject):
         return self._data[InfoData].magic
 
 
-@searchable({str: ["name", "key", "title", "region", "platform", "locale", "resource", "tags"], int: ["id"], Region: ["region"], Platform: ["platform"], bool: ["free_to_play"], Resource: ["resource"]})
+@searchable({str: ["name", "key", "title", "region", "platform", "locale", "tags"], int: ["id"], Region: ["region"], Platform: ["platform"], bool: ["free_to_play"]})
 class Champion(CassiopeiaGhost):
     _data_types = {ChampionData, ChampionStatusData}
 

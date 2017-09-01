@@ -251,7 +251,7 @@ class SpellVars(CassiopeiaObject):
         return self._data[SpellVarsData].key
 
 
-@searchable({str: ["name", "key", "keywords", "resource"], Resource: ["resource"]})
+@searchable({str: ["name", "key", "keywords"]})
 class SummonerSpell(CassiopeiaGhost):
     _data_types = {SummonerSpellData}
 
