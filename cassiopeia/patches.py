@@ -26,7 +26,8 @@ class Patch(object):
         if isinstance(date, datetime.datetime):
             date = date.date()
         for patch in cls.__patches:
-            if patch.start <= date < patch.end:
+            patch_end = patch.end or datetime.date.today()
+            if patch.start <= date < patch_end:
                 return patch
         else:
             raise ValueError("Unknown patch date {}".format(date))
