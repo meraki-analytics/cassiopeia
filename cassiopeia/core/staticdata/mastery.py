@@ -7,7 +7,7 @@ from merakicommons.container import searchable, SearchableList
 from ...configuration import settings
 from ...data import Region, Platform, MasteryTree
 from ..common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
-from .common import Sprite, Image
+from .common import Sprite, Image, ImageData
 from ...dto.staticdata import mastery as dto
 
 
@@ -77,7 +77,7 @@ class MasteryData(CoreData):
 
     @property
     def image_data(self) -> str:
-        return self._dto["image"]
+        return ImageData.from_dto(self._dto["image"])
 
     @property
     def id(self) -> str:
@@ -263,7 +263,7 @@ class Mastery(CassiopeiaGhost):
     @lazy
     def image(self) -> Image:
         """The image information for this mastery."""
-        image = Image.from_data(self._data[MasteryData].image)
+        image = Image.from_data(self._data[MasteryData].image_data)
         image(version=self.version)
         return image
 
