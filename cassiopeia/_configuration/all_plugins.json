@@ -7,7 +7,7 @@
     "Cache": {},
 
     "SimpleKVDiskStore": {
-      "package": "cassiopeia-datastores.diskstore"
+      "package": "diskstore.diskstore"
     },
 
     "DDragon": {},
@@ -17,7 +17,7 @@
     },
 
     "ChampionGG": {
-      "package": "cassiopeia-plugins.championgg",
+      "package": "championgg.championgg",
       "api_key": "CHAMPIONGG_KEY"
     }
   },

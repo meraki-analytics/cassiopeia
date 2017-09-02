@@ -17,7 +17,7 @@ To enable this plugin, add the following to your settings' data pipeline:
   "pipline": {
     ...,
     "ChampionGG": {
-      "package": "cassiopeia-plugins.championgg",
+      "package": "cassiopeia-plugins.championgg.championgg",
       "api_key": "CHAMPIONGG_KEY"
     },
     ...
@@ -38,7 +38,7 @@ To enable this plugin, add the following to your settings' data pipeline between
   "pipline": {
     ...,
     "SimpleKVDiskStore": {
-      "package": "cassiopeia-datastores.diskstore"
+      "package": "cassiopeia-datastores.diskstore.diskstore"
     },
     ...
   }

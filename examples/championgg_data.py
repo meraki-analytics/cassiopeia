@@ -10,7 +10,7 @@ To enable the champion.gg plugin, add it to the data pipeline in your settings f
   "pipline": {
     ...,
     "ChampionGG": {
-      "package": "cassiopeia.plugins.championgg",
+      "package": "cassiopeia-plugins.championgg.championgg",
       "api_key": "CHAMPIONGG_KEY"
     },
     ...
@@ -19,6 +19,7 @@ To enable the champion.gg plugin, add it to the data pipeline in your settings f
 where `"CHAMPIONGG_KEY"` should be replaced with your champion.gg api key or with an environment variable containing it.
 """
 
+import cassiopeia as cass
 from cassiopeia import Champion
 
 

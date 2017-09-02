@@ -88,7 +88,7 @@ Example Data Pipeline Settings
         },
 
         "ChampionGG": {
-          "package": "cassiopeia-plugins.championgg",
+          "package": "cassiopeia-plugins.championgg.championgg",
           "api_key": "CHAMPIONGG_KEY"
         }
     }
