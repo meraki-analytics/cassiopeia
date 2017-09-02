@@ -76,7 +76,6 @@ class MatchAPI(RiotAPIService):
     _validate_get_match_list_query = Query. \
         has("account.id").as_(int).also. \
         has("platform").as_(Platform).also. \
-        can_have("recent").with_default(False).also. \
         can_have("beginTime").as_(int).also. \
         can_have("endTime").as_(int).also. \
         can_have("beginIndex").with_default(0).also. \
@@ -91,61 +90,50 @@ class MatchAPI(RiotAPIService):
             query["platform"] = Region(query["region"]).platform.value
         MatchAPI._validate_get_match_list_query(query, context)
 
-        if query["recent"]:
-            url = "https://{platform}.api.riotgames.com/lol/match/v3/matchlists/by-account/{accountId}/recent".format(platform=query["platform"].value.lower(), accountId=query["account.id"])
-            try:
-                data = self._get(url, {})
-            except APINotFoundError as error:
-                raise NotFoundError(str(error)) from error
+        params = {
+            "beginIndex": query["beginIndex"],
+            "endIndex": query["endIndex"]
+        }
 
-            data["accountId"] = query["account.id"]
-            data["region"] = query["platform"].region.value
-            return MatchListDto(data)
+        if "beginIndex" in query and "endIndex" in query:
+            params["beginIndex"] = query["beginIndex"]
+            params["endIndex"] = query["endIndex"]
+
+        if "seasons" in query:
+            seasons = {Season(season) for season in query["seasons"]}
+            params["season"] = {SEASON_IDS[season] for season in seasons}
         else:
-            params = {
-                "beginIndex": query["beginIndex"],
-                "endIndex": query["endIndex"]
-            }
+            seasons = set()
 
-            if "beginIndex" in query and "endIndex" in query:
-                params["beginIndex"] = query["beginIndex"]
-                params["endIndex"] = query["endIndex"]
+        if "champion.ids" in query:
+            champions = {query["champion.ids"]}
+            params["champion"] = champions
+        else:
+            champions = set()
 
-            if "seasons" in query:
-                seasons = {Season(season) for season in query["seasons"]}
-                params["season"] = {SEASON_IDS[season] for season in seasons}
-            else:
-                seasons = set()
+        if "queues" in query:
+            queues = {Queue(queue) for queue in query["queues"]}
+            params["queue"] = {QUEUE_IDS[queue] for queue in queues}
+        else:
+            queues = set()
 
-            if "champion.ids" in query:
-                params["champion"] = {query["champion.ids"]}
+        url = "https://{platform}.api.riotgames.com/lol/match/v3/matchlists/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=query["account.id"])
+        try:
+            data = self._get(url, params, self._get_rate_limiter(query["platform"], "matchlists/by-account/accountId"))
+        except APINotFoundError as error:
+            raise NotFoundError(str(error)) from error
 
-            if "queues" in query:
-                queues = {Queue(queue) for queue in query["queues"]}
-                params["queue"] = {QUEUE_IDS[queue] for queue in queues}
-            else:
-                queues = set()
-
-            url = "https://{platform}.api.riotgames.com/lol/match/v3/matchlists/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=query["account.id"])
-            try:
-                data = self._get(url, params, self._get_rate_limiter(query["platform"], "matchlists/by-account/accountId"))
-            except APINotFoundError as error:
-                raise NotFoundError(str(error)) from error
-
-            data["accountId"] = query["account.id"]
-            data["region"] = query["platform"].region.value
-            data["beginIndex"] = query["beginIndex"]
-            data["endIndex"] = query["endIndex"]
-            if "seasons" in query:
-                data["seasons"] = seasons
-            if "champion.ids" in query:
-                data["champion"] = params["champion"]
-            if "queues" in query:
-                params["queue"] = queues
-            for match in data["matches"]:
-                match["accountId"] = query["account.id"]
-                match["region"] = data["region"]
-            return MatchListDto(data)
+        data["accountId"] = query["account.id"]
+        data["region"] = query["platform"].region.value
+        data["beginIndex"] = query["beginIndex"]
+        data["endIndex"] = query["endIndex"]
+        data["season"] = seasons
+        data["champion"] = champions
+        data["queue"] = queues
+        for match in data["matches"]:
+            match["accountId"] = query["account.id"]
+            match["region"] = data["region"]
+        return MatchListDto(data)
 
     _validate_get_many_match_list_query = Query. \
         has("account.ids").as_(Iterable).also. \
