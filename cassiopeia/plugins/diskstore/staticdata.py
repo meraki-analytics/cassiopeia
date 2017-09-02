@@ -3,18 +3,18 @@ import copy
 
 from datapipelines import DataSource, DataSink, PipelineContext, Query, NotFoundError
 
-from ...data import Platform, Region
-from ...dto.staticdata.champion import ChampionDto, ChampionListDto
-from ...dto.staticdata.mastery import MasteryDto, MasteryListDto
-from ...dto.staticdata.rune import RuneDto, RuneListDto
-from ...dto.staticdata.item import ItemDto, ItemListDto
-from ...dto.staticdata.summonerspell import SummonerSpellDto, SummonerSpellListDto
-from ...dto.staticdata.version import VersionListDto
-from ...dto.staticdata.map import MapDto, MapListDto
-from ...dto.staticdata.realm import RealmDto
-from ...dto.staticdata.language import LanguagesDto, LanguageStringsDto
-from ...dto.staticdata.profileicon import ProfileIconDataDto
-from ..riotapi.staticdata import _get_default_locale, _get_latest_version
+from cassiopeia.data import Platform, Region
+from cassiopeia.dto.staticdata.champion import ChampionDto, ChampionListDto
+from cassiopeia.dto.staticdata.mastery import MasteryDto, MasteryListDto
+from cassiopeia.dto.staticdata.rune import RuneDto, RuneListDto
+from cassiopeia.dto.staticdata.item import ItemDto, ItemListDto
+from cassiopeia.dto.staticdata.summonerspell import SummonerSpellDto, SummonerSpellListDto
+from cassiopeia.dto.staticdata.version import VersionListDto
+from cassiopeia.dto.staticdata.map import MapDto, MapListDto
+from cassiopeia.dto.staticdata.realm import RealmDto
+from cassiopeia.dto.staticdata.language import LanguagesDto, LanguageStringsDto
+from cassiopeia.dto.staticdata.profileicon import ProfileIconDataDto
+from cassiopeia.datastores.riotapi.staticdata import _get_default_locale, _get_latest_version
 from .common import SimpleKVDiskService
 
 T = TypeVar("T")

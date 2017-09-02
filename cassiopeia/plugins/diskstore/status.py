@@ -2,8 +2,8 @@ from typing import Type, TypeVar, MutableMapping, Any, Iterable
 
 from datapipelines import DataSource, DataSink, PipelineContext, Query, NotFoundError
 
-from ...data import Platform, Region
-from ...dto.status import ShardStatusDto
+from cassiopeia.data import Platform, Region
+from cassiopeia.dto.status import ShardStatusDto
 from .common import SimpleKVDiskService
 
 T = TypeVar("T")

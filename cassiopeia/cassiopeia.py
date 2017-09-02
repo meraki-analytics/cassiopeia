@@ -10,7 +10,7 @@ from . import configuration
 
 # Settings endpoints
 
-def apply_settings(config: Union[TextIO, Dict, Settings]):
+def apply_settings(config: Union[str, TextIO, Dict, Settings]):
     if not isinstance(config, (Dict, Settings)):
         config = load_config(config)
     settings = Settings(config)

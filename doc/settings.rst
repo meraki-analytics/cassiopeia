@@ -1,3 +1,5 @@
+.. _settings:
+
 Settings
 ########
 
@@ -9,18 +11,26 @@ The most important settings are the Riot API key and the default region. Both of
 
 Each setting is explained below, and should be added as separate entries to the settings file (in ``json`` format) or into a python dictionary.
 
-Riot API
---------
 
-The ``"Riot API"`` section defines variables relevant to the Riot API.
+Globals
+-------
 
-The ``"region"`` should be set to the string version of the region that the Riot API requires (in all caps), for example ``"NA"`` for North America.
-
-The ``"key"`` should be set to your Riot API key. You can instead supply an environment variable name that contains your API key (this is recommended so that you can push your settings file to version control without revealing your API key).
+The ``"default_region"`` should be set to the string version of the region that the Riot API requires (in all caps), for example ``"NA"`` for North America. This can be set programmatically using ``cass.set_default_region``.
 
 The ``"version_from_match"`` variable determines which version of the static data for matches is loaded (this includes, for example, the items for each participant). Valid values are ``"version"``, ``"patch"``, and ``null``. If set to ``"version"``, the static data for the match's version will be loaded correctly; however, this requires pulling the match data for all matches. If you only want to use match reference data (and will not pull the full data for every match), you should use either ``"patch"`` or ``null``. ``"patch"`` will make a reasonable attempt to get the match's correct version based on its creation date (which is provided in the match reference data); however, if you pull a summoner's full match history, you will pull many versions of the static data, which may take a long time. In addition, the patch dates / times may be slightly off and may depend on the region. For small applications that barely uses the static data, pulling multiple versions of the static data is likely overkill. If that is the case, you should set this variable to ``null``, in which case the static data for the most recent version will be used; this, however, could result in missing or incorrect data if parts of the static data are accessed that have changed from patch to patch. The default is to use the patch if the match hasn't yet been loaded, which is a nice compromise between ensuring you, the user, always have correct data while also preventing new users from pulling a massive amount of unnecessary match data. It's likely that the patch dates aren't perfect, so be aware of this and please report and inconsistencies.
 
-If the ``"region"`` and ``"key"`` are not set in the settings file, they should be set programmatically via ``cass.set_default_region`` and ``cass.set_riot_api_key``.
+
+Pipeline
+--------
+
+This setting is extremely important and deserves it's own page. However, our defaults will likely work for you if you're just getting started. See :ref:`datapipeline`.
+
+Riot API
+--------
+
+The Riot API variable is an attribute of the ``pipeline`` variable, but it has a variety of settings relevant to the Riot API.
+
+The ``"api_key"`` should be set to your Riot API key. You can instead supply an environment variable name that contains your API key (this is recommended so that you can push your settings file to version control without revealing your API key). This variable can be set programmatically via ``cass.set_riot_api_key``.
 
 The ``"limit_sharing"`` variable specifies what fraction of your API key should be used for your server. This is useful when you have multiple servers that you want to split your API key over. The default (if not set) is ``1.0``, and valid values are between ``0.0`` and ``1.0``.
 
@@ -40,8 +50,7 @@ Below is an example, and these settings are the default if any value is not spec
 .. code-block:: json
 
     "Riot API": {
-        "region": "NA",
-        "key": "RIOT_API_KEY",
+        "api_key": "RIOT_API_KEY",
         "limiting_share": 1.0,
         "request_handling": {
             "404": {
@@ -96,17 +105,8 @@ Example:
         "core": "WARNING"
     }
 
+
 Plugins
 -------
 
 The ``"plugins"`` section defines which plugins Cassiopeia will use. See :ref:`plugins` for specifics for each plugin.
-
-Example:
-
-.. code-block:: json
-
-    "plugins": {
-        "championgg": {
-            ...
-        }
-    }

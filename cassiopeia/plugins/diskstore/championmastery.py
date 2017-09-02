@@ -3,8 +3,8 @@ import copy
 
 from datapipelines import DataSource, DataSink, PipelineContext, Query, NotFoundError
 
-from ...data import Platform, Region
-from ...dto.championmastery import ChampionMasteryDto, ChampionMasteryListDto
+from cassiopeia.data import Platform, Region
+from cassiopeia.dto.championmastery import ChampionMasteryDto, ChampionMasteryListDto
 from .common import SimpleKVDiskService
 
 T = TypeVar("T")

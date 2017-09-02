@@ -6,6 +6,10 @@
   "pipeline": {
     "Cache": {},
 
+    "SimpleKVDiskStore": {
+      "package": "cassiopeia-datastores.diskstore"
+    },
+
     "DDragon": {},
 
     "RiotAPI": {
@@ -13,12 +17,8 @@
     },
 
     "ChampionGG": {
-      "package": "cassiopeia.plugins.championgg",
+      "package": "cassiopeia-plugins.championgg",
       "api_key": "CHAMPIONGG_KEY"
-    },
-
-    "SimpleKVDiskStore": {
-      "package": "cassiopeia.datastores.diskstore"
     }
   },
 

@@ -2,8 +2,8 @@ from typing import Type, TypeVar, MutableMapping, Any, Iterable
 
 from datapipelines import DataSource, DataSink, PipelineContext, Query
 
-from ...data import Platform, Region, Queue
-from ...dto.league import LeaguePositionsDto, LeaguesListDto, MasterLeagueListDto, ChallengerLeagueListDto
+from cassiopeia.data import Platform, Region, Queue
+from cassiopeia.dto.league import LeaguePositionsDto, LeaguesListDto, MasterLeagueListDto, ChallengerLeagueListDto
 from .common import SimpleKVDiskService
 
 T = TypeVar("T")

@@ -6,7 +6,7 @@ from simplekv.fs import FilesystemStore
 
 from datapipelines import DataSource, DataSink, PipelineContext, NotFoundError
 
-from ...dto.common import DtoObject
+from cassiopeia.dto.common import DtoObject
 
 T = TypeVar("T")
 

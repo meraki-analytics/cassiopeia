@@ -5,15 +5,18 @@ You must also enable the champion.gg plugin by putting it in your settings file.
 
 The default settings file is in `cassiopeia/configuration/default.json`, but you can create your own and pass it in as the first argument to this example to use a non-default settings file.
 
-To enable the champion.gg plugin, add it to the plugins in your settings file:
+To enable the champion.gg plugin, add it to the data pipeline in your settings file:
 
-  "plugins": {
-    "championgg": {
-      "key": "CHAMPIONGG_API_KEY"
-    }
+  "pipline": {
+    ...,
+    "ChampionGG": {
+      "package": "cassiopeia.plugins.championgg",
+      "api_key": "CHAMPIONGG_KEY"
+    },
+    ...
   }
 
-where `"CHAMPIONGG_API_KEY"` should be replaced with your champion.gg api key or with an environment variable containing it.
+where `"CHAMPIONGG_KEY"` should be replaced with your champion.gg api key or with an environment variable containing it.
 """
 
 from cassiopeia import Champion

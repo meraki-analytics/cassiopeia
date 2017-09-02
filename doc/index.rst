@@ -20,15 +20,17 @@ Together, these three pieces provide the user experience we desire. Scroll down 
 Why use Cass?
 =============
 
-* An excellent user interface (which makes working with data from the Riot API fun).
+* An excellent user interface that makes working with data from the Riot API easy and fun.
+
+* "Perfect" rate limiting.
 
 * Guaranteed optimal usage of your API key.
 
-* Built in caching and (coming) the ability to easily link a database for offline storage of data.
+* Built in caching and (coming) the ability to easily hook into a database for offline storage of data.
 
-* Extendability to non-Riot data. Because Cass is a framework and not just an API wrapper, you can integrate your own data sources into your project. We plan to include Data Dragon and the ``champion.gg`` API as additional sources of data in addition to the Riot API.
+* Extendability to non-Riot data. Because Cass is a framework and not just an API wrapper, you can integrate your own data sources into your project. Cass already supports Data Dragon and the ``champion.gg`` API in addition to the Riot API.
 
-* ...
+* Dynamic settings so you can configure Cass for your specific use case.
 
 
 An Example
