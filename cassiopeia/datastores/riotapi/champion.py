@@ -29,7 +29,7 @@ class ChampionAPI(RiotAPIService):
 
         if self._request_by_id or "id" not in query:  # Get by champion status list
             champions_query = copy.deepcopy(query)
-            champions = context[context.Keys.PIPELINE].get(ChampionListDto, query=champions_query, context=context)
+            champions = context[context.Keys.PIPELINE].get(ChampionListDto, query=champions_query)
 
             def find_matching_attribute(list_of_dtos, attrname, attrvalue):
                 for dto in list_of_dtos:
