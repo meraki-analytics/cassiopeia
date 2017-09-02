@@ -15,6 +15,7 @@ from ...dto.staticdata.realm import RealmDto
 from ...dto.staticdata.language import LanguagesDto, LanguageStringsDto
 from ...dto.staticdata.profileicon import ProfileIconDataDto
 from ..uniquekeys import _hash_included_data
+from ... import configuration
 
 T = TypeVar("T")
 
@@ -63,8 +64,7 @@ class StaticDataAPI(RiotAPIService):
     def get_champion(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionDto:
         StaticDataAPI._validate_get_champion_query(query, context)
 
-        from ...configuration.settings import settings
-        if settings.request_by_id or "id" not in query:  # Get by champion list
+        if self._request_by_id or "id" not in query:  # Get by champion list
             champions_query = copy.deepcopy(query)
             if "id" in champions_query:
                 champions_query.pop("id")
@@ -181,7 +181,9 @@ class StaticDataAPI(RiotAPIService):
         data["locale"] = query["locale"]
         data["includedData"] = query["includedData"]
         data["dataById"] = query["dataById"]
-        for champion in data["data"].values():
+        for key, champion in data["data"].items():
+            champion = ChampionDto(champion)
+            data["data"][key] = champion
             champion["region"] = query["platform"].region.value
             champion["version"] = query["version"]
             champion["locale"] = query["locale"]
@@ -225,7 +227,9 @@ class StaticDataAPI(RiotAPIService):
                 data["locale"] = query["locale"] if "locale" in query else platform.default_locale
                 data["includedData"] = query["includedData"]
                 data["dataById"] = query["dataById"]
-                for champion in data["data"].values():
+                for key, champion in data["data"].items():
+                    champion = ChampionDto(champion)
+                    data["data"][key] = champion
                     champion["region"] = query["platform"].region.value
                     champion["version"] = query["version"]
                     champion["locale"] = query["locale"]
@@ -271,8 +275,7 @@ class StaticDataAPI(RiotAPIService):
     def get_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasteryDto:
         StaticDataAPI._validate_get_mastery_query(query, context)
 
-        from ...configuration.settings import settings
-        if settings.request_by_id or "id" not in query:  # Get by mastery list
+        if self._request_by_id or "id" not in query:  # Get by mastery list
             mastery_query = copy.deepcopy(query)
             if "id" in mastery_query:
                 mastery_query.pop("id")
@@ -384,7 +387,9 @@ class StaticDataAPI(RiotAPIService):
         data["region"] = query["platform"].region.value
         data["locale"] = query["locale"]
         data["includedData"] = query["includedData"]
-        for mastery in data["data"].values():
+        for key, mastery in data["data"].items():
+            mastery = MasteryDto(mastery)
+            data["data"][key] = mastery
             mastery["region"] = query["platform"].region.value
             mastery["version"] = data["version"]
             mastery["locale"] = query["locale"]
@@ -424,6 +429,13 @@ class StaticDataAPI(RiotAPIService):
                 data["region"] = platform.region.value
                 data["locale"] = query["locale"] if "locale" in query else platform.default_locale
                 data["includedData"] = query["includedData"]
+                for key, mastery in data["data"].items():
+                    mastery = MasteryDto(mastery)
+                    data["data"][key] = mastery
+                    mastery["region"] = query["platform"].region.value
+                    mastery["version"] = data["version"]
+                    mastery["locale"] = query["locale"]
+                    mastery["includedData"] = query["includedData"]
                 yield MasteryListDto(data)
 
         return generator()
@@ -443,8 +455,7 @@ class StaticDataAPI(RiotAPIService):
     def get_rune(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> RuneDto:
         StaticDataAPI._validate_get_rune_query(query, context)
 
-        from ...configuration.settings import settings
-        if settings.request_by_id or "id" not in query:  # Get by rune list
+        if self._request_by_id or "id" not in query:  # Get by rune list
             runes_query = copy.deepcopy(query)
             if "id" in runes_query:
                 runes_query.pop("id")
@@ -556,7 +567,9 @@ class StaticDataAPI(RiotAPIService):
         data["region"] = query["platform"].region.value
         data["locale"] = query["locale"]
         data["includedData"] = query["includedData"]
-        for rune in data["data"].values():
+        for key, rune in data["data"].items():
+            rune = RuneDto(rune)
+            data["data"][key] = rune
             rune["region"] = query["platform"].region.value
             rune["version"] = query["version"]
             rune["locale"] = query["locale"]
@@ -596,6 +609,13 @@ class StaticDataAPI(RiotAPIService):
                 data["region"] = platform.region.value
                 data["locale"] = query["locale"] if "locale" in query else platform.default_locale
                 data["includedData"] = query["includedData"]
+                for key, rune in data["data"].items():
+                    rune = RuneDto(rune)
+                    data["data"][key] = rune
+                    rune["region"] = query["platform"].region.value
+                    rune["version"] = query["version"]
+                    rune["locale"] = query["locale"]
+                    rune["includedData"] = query["includedData"]
                 yield RuneListDto(data)
 
         return generator()
@@ -615,8 +635,7 @@ class StaticDataAPI(RiotAPIService):
     def get_item(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ItemDto:
         StaticDataAPI._validate_get_item_query(query, context)
 
-        from ...configuration.settings import settings
-        if settings.request_by_id or "id" not in query:  # Get by item list
+        if self._request_by_id or "id" not in query:  # Get by item list
             items_query = copy.deepcopy(query)
             if "id" in items_query:
                 items_query.pop("id")
@@ -748,7 +767,9 @@ class StaticDataAPI(RiotAPIService):
         data["region"] = query["platform"].region.value
         data["locale"] = query["locale"]
         data["includedData"] = query["includedData"]
-        for item in data["data"].values():
+        for key, item in data["data"].items():
+            item = ItemDto(item)
+            data["data"][key] = item
             if item["id"] == 3632:  # This item doesn't have a name.
                 item["name"] = ""
             if "tags" not in item:
@@ -798,7 +819,9 @@ class StaticDataAPI(RiotAPIService):
                 data["region"] = platform.region.value
                 data["locale"] = query["locale"] if "locale" in query else platform.default_locale
                 data["includedData"] = query["includedData"]
-                for item in data["data"].values():
+                for key, item in data["data"].items():
+                    item = ItemDto(item)
+                    data["data"][key] = item
                     if item["id"] == 3632:  # This item doesn't have a name.
                         item["name"] = ""
                     if "tags" not in item:
@@ -827,8 +850,7 @@ class StaticDataAPI(RiotAPIService):
     def get_map(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MapDto:
         StaticDataAPI._validate_get_map_query(query, context)
 
-        from ...configuration.settings import settings
-        if settings.request_by_id or "id" not in query:  # Get by map list
+        if self._request_by_id or "id" not in query:  # Get by map list
             maps_query = copy.deepcopy(query)
             if "id" in maps_query:
                 maps_query.pop("id")
@@ -879,6 +901,9 @@ class StaticDataAPI(RiotAPIService):
 
         data["region"] = query["platform"].region.value
         data["locale"] = query["locale"]
+        for key, map in data["data"].items():
+            map = MapDto(map)
+            data["data"][key] = map
         result = MapListDto(data)
         return result
 
@@ -897,8 +922,7 @@ class StaticDataAPI(RiotAPIService):
     def get_summoner_spell(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> SummonerSpellDto:
         StaticDataAPI._validate_get_summoner_spell_query(query, context)
 
-        from ...configuration.settings import settings
-        if settings.request_by_id or "id" not in query:  # Get by summoner spell list
+        if self._request_by_id or "id" not in query:  # Get by summoner spell list
             summoner_spells_query = copy.deepcopy(query)
             if "id" in summoner_spells_query:
                 summoner_spells_query.pop("id")
@@ -1010,7 +1034,9 @@ class StaticDataAPI(RiotAPIService):
         data["region"] = query["platform"].region.value
         data["locale"] = query["locale"]
         data["includedData"] = query["includedData"]
-        for summoner_spell in data["data"]:
+        for key, summoner_spell in data["data"].items():
+            summoner_spell = SummonerSpellDto(summoner_spell)
+            data["data"][key] = summoner_spell
             summoner_spell["region"] = query["platform"].region.value
             summoner_spell["version"] = query["version"]
             summoner_spell["locale"] = query["locale"]
@@ -1050,6 +1076,13 @@ class StaticDataAPI(RiotAPIService):
                 data["region"] = platform.region.value
                 data["locale"] = query["locale"] if "locale" in query else platform.default_locale
                 data["includedData"] = query["includedData"]
+                for key, summoner_spell in data["data"].items():
+                    summoner_spell = SummonerSpellDto(summoner_spell)
+                    data["data"][key] = summoner_spell
+                    summoner_spell["region"] = query["platform"].region.value
+                    summoner_spell["version"] = query["version"]
+                    summoner_spell["locale"] = query["locale"]
+                    summoner_spell["includedData"] = query["includedData"]
                 yield SummonerSpellListDto(data)
 
         return generator()

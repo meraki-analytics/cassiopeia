@@ -6,7 +6,7 @@ from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
-from ..configuration import settings
+from .. import configuration
 from ..data import Region, Platform
 from .common import CoreData, CassiopeiaObject, CassiopeiaGhost
 from .staticdata import ProfileIcon
@@ -81,8 +81,8 @@ class Summoner(CassiopeiaGhost):
 
     def __init__(self, *, id: int = None, account: Union[Account, int] = None, name: str = None, region: Union[Region, str] = None):
         if region is None:
-            region = settings.default_region
-        if not isinstance(region, Region):
+            region = configuration.settings.default_region
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region}
         if id is not None:
@@ -156,7 +156,7 @@ class Summoner(CassiopeiaGhost):
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on(KeyError)
     def profile_icon(self) -> ProfileIcon:
-        return ProfileIcon(id=self._data[SummonerData].profile_icon_id)
+        return ProfileIcon(id=self._data[SummonerData].profile_icon_id, region=self.region)
 
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on(KeyError)

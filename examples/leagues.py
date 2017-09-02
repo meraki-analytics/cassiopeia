@@ -37,7 +37,7 @@ def print_leagues(summoner_name: str, region: str):
 
     print()
     print("Challenger League name:")
-    challenger = cass.get_challenger_league(queue=Queue.ranked_solo)
+    challenger = cass.get_challenger_league(queue=Queue.ranked_solo, region=region)
     print(challenger.name)
 
 if __name__ == "__main__":

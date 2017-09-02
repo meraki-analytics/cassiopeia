@@ -3,7 +3,7 @@ from typing import Union
 from merakicommons.cache import lazy_property
 from merakicommons.container import SearchableList
 
-from ...configuration import settings
+from ... import configuration
 from ...data import Region, Platform
 from ..common import CoreData, DataObjectList, CassiopeiaGhostList
 from ...dto.staticdata.language import LanguagesDto
@@ -23,8 +23,8 @@ class Locales(CassiopeiaGhostList):
 
     def __init__(self, *args, region: Union[Region, str] = None):
         if region is None:
-            region = settings.default_region
-        if not isinstance(region, Region):
+            region = configuration.settings.default_region
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region}
         super().__init__(*args, **kwargs)

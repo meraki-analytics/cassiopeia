@@ -1,4 +1,5 @@
 from typing import Type, TypeVar, MutableMapping, Any, Iterable
+import os
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError
 from merakicommons.ratelimits import FixedWindowRateLimiter, MultiRateLimiter
@@ -14,8 +15,10 @@ except ImportError:
 T = TypeVar("T")
 
 
-class ChampionGGSource(DataSource):
+class ChampionGG(DataSource):
     def __init__(self, api_key: str, http_client: HTTPClient = None) -> None:
+        if not api_key.startswith("RGAPI"):
+            api_key = os.environ[api_key]
         self._key = api_key
 
         if http_client is None:
@@ -45,13 +48,15 @@ class ChampionGGSource(DataSource):
     _validate_get_gg_champion_list_query = Query. \
         has("patch").as_(str).also. \
         can_have("includedData").with_default(lambda *args, **kwargs: "kda,damage,minions,wards,overallPerformanceScore,goldEarned", supplies_type=str).also. \
-        can_have("elo").with_default(lambda *args, **kwargs: "PLATINUM,DIAMOND,MASTER,CHALLENGER", supplies_type=str).also. \
+        can_have("elo").with_default(lambda *args, **kwargs: "PLATINUM_DIAMOND_MASTER_CHALLENGER", supplies_type=str).also. \
         can_have("limit").with_default(lambda *args, **kwargs: 300, supplies_type=int)
 
     @get.register(ChampionGGListDto)
     def get_gg_champion_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionGGListDto:
         self._validate_get_gg_champion_list_query(query, context)
-        assert query["elo"] in ["BRONZE", "SILVER", "GOLD", "PLATINUM", "PLATINUM,DIAMOND,MASTER,CHALLENGER"]
+        elos = ["BRONZE", "SILVER", "GOLD", "PLATINUM", "PLATINUM_DIAMOND_MASTER_CHALLENGER"]
+        if not query["elo"] in elos:
+            raise ValueError("`elo` must be one of {}".format(elos))
 
         try:
             return self._cached_data[(self.get_gg_champion_list, query["patch"])]
@@ -60,7 +65,7 @@ class ChampionGGSource(DataSource):
                 "api_key": self._key,
                 "limit": query["limit"],
                 "skip": 0,
-                #"elo": query["elo"],  # TODO For some reason I can't get this to work properly.
+                "elo": query["elo"],  # TODO For some reason I can't get this to work properly.
                 #"champData": "kda,damage,minions,wins,wards,positions,normalized,averageGames,overallPerformanceScore,goldEarned,sprees,hashes,wins,maxMins,matchups",
                 "champData": query["includedData"],
                 "sort": "winRate-desc",
@@ -70,8 +75,10 @@ class ChampionGGSource(DataSource):
 
             url = "http://api.champion.gg/v2/champions"
             try:
-                data, response_headers = self._client.get(url, params, rate_limiter=self._rate_limiter, connection=None, encode_parameters=False)
+                data, response_headers = self._client.get(url, params, rate_limiters=[self._rate_limiter], connection=None, encode_parameters=False)
             except HTTPError as error:
+                if error.code == 403:
+                    raise HTTPError(message="Forbidden", code=error.code)
                 raise NotFoundError(str(error)) from error
 
             for datum in data:

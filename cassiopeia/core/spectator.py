@@ -6,7 +6,7 @@ from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
-from ..configuration import settings
+from .. import configuration
 from ..data import Region, Platform, GameMode, GameType, Queue, Map
 from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList
 from ..dto import spectator as dto
@@ -238,7 +238,7 @@ class Participant(CassiopeiaObject):
 
     @property
     def summoner(self) -> Summoner:
-        ProfileIcon(id=self._data[CurrentGameParticipantData].profile_icon_id)
+        ProfileIcon(id=self._data[CurrentGameParticipantData].profile_icon_id, region=self.__region)
         if "summonerId" in self._data[CurrentGameParticipantData]._dto:
             return Summoner(id=self._data[CurrentGameParticipantData].summoner_id, name=self._data[CurrentGameParticipantData].summoner_name, region=self.__region)
         else:
@@ -294,8 +294,8 @@ class CurrentMatch(CassiopeiaGhost):
 
     def __init__(self, *, summoner: Union[Summoner, int, str] = None, region: Union[Region, str] = None):
         if region is None:
-            region = settings.default_region
-        if not isinstance(region, Region):
+            region = configuration.settings.default_region
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region, "id": id}
 

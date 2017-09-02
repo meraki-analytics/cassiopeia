@@ -5,10 +5,9 @@ from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
-from ...configuration import settings
-from ...data import Resource, Region, Platform, Map, GameMode, Role, Tier, Patch
+from ... import configuration
+from ...data import Resource, Region, Platform, Map, GameMode
 from ..champion import ChampionData as ChampionStatusData
-from ..champion import ChampionListData as ChampionStatusListData
 from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
 from .common import ImageData, Image, Sprite
 from ...dto.staticdata import champion as dto
@@ -463,8 +462,8 @@ class Champions(CassiopeiaGhostList):
 
     def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if region is None:
-            region = settings.default_region
-        if not isinstance(region, Region):
+            region = configuration.settings.default_region
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         if included_data is None:
             included_data = {"all"}
@@ -639,10 +638,21 @@ class ChampionSpell(CassiopeiaObject):
 class ItemSet(CassiopeiaObject):
     _data_types = {BlockData}
 
+    def __init__(self, **kwargs):
+        if "region" in kwargs:
+            self.__region = kwargs["region"]
+        super().__init__(**kwargs)
+
+    @classmethod
+    def from_data(cls, data: CoreData, region: Region):
+        self = super().from_data(data)
+        self.__region = region
+        return self
+
     @property
     def items(self) -> Dict[Item, int]:
         """A dictionary of items mapped to how many of them are recommended."""
-        return SearchableDictionary({Item(id=item.id): item.count for item in self._data[BlockData].items})
+        return SearchableDictionary({Item(id=item.id, region=self.__region): item.count for item in self._data[BlockData].items})
 
     @property
     def rec_math(self) -> bool:
@@ -659,6 +669,17 @@ class ItemSet(CassiopeiaObject):
 class RecommendedItems(CassiopeiaObject):
     _data_types = {RecommendedData}
 
+    def __init__(self, **kwargs):
+        if "region" in kwargs:
+            self.__region = kwargs["region"]
+        super().__init__(**kwargs)
+
+    @classmethod
+    def from_data(cls, data: CoreData, region: Region):
+        self = super().from_data(data)
+        self.__region = region
+        return self
+
     @property
     def map(self) -> Map:
         """The name of the map these recommendations are for."""
@@ -667,7 +688,7 @@ class RecommendedItems(CassiopeiaObject):
     @lazy_property
     def item_sets(self) -> List[ItemSet]:
         """The recommended item sets."""
-        return SearchableList(ItemSet.from_data(itemset) for itemset in self._data[RecommendedData].item_sets)
+        return SearchableList(ItemSet.from_data(itemset, region=self.__region) for itemset in self._data[RecommendedData].item_sets)
 
     @property
     def champion(self) -> "Champion":
@@ -761,12 +782,12 @@ class Skin(CassiopeiaObject):
     @lazy_property
     def splash(self) -> PILImage:
         """The skin's splash art."""
-        return settings.pipeline.get(PILImage, query={"url": self.splash_url})
+        return configuration.settings.pipeline.get(PILImage, query={"url": self.splash_url})
 
     @lazy_property
     def loading_image(self) -> PILImage:
         """The skin's loading screen image."""
-        return settings.pipeline.get(PILImage, query={"url": self._loading_image_url})
+        return configuration.settings.pipeline.get(PILImage, query={"url": self._loading_image_url})
 
 
 class Stats(CassiopeiaObject):
@@ -883,12 +904,12 @@ class Champion(CassiopeiaGhost):
 
     def __init__(self, *, id: int = None, name: str = None, key: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if region is None:
-            region = settings.default_region
-        if not isinstance(region, Region):
+            region = configuration.settings.default_region
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         if included_data is None:
             included_data = {"all"}
-        if locale is None:
+        if locale is None and region is not None:
             locale = region.default_locale
         kwargs = {"region": region, "included_data": included_data, "locale": locale}
         if id is not None:
@@ -934,7 +955,7 @@ class Champion(CassiopeiaGhost):
     @property
     def locale(self) -> str:
         """The locale for this champion."""
-        return self._data[ChampionData].locale
+        return self._data[ChampionData].locale or self.region.default_locale
 
     @property
     def included_data(self) -> Set[str]:
@@ -1043,7 +1064,7 @@ class Champion(CassiopeiaGhost):
     @lazy
     def recommended_itemsets(self) -> List[RecommendedItems]:
         """The champion's recommended itemsets."""
-        return SearchableList(RecommendedItems.from_data(item) for item in self._data[ChampionData].recommended_itemsets)
+        return SearchableList(RecommendedItems.from_data(item, region=self.region) for item in self._data[ChampionData].recommended_itemsets)
 
     @CassiopeiaGhost.property(ChampionData)
     @ghost_load_on(KeyError)

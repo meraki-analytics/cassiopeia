@@ -90,8 +90,9 @@ def _split_rate_limit_header(header):
 
 
 class RiotAPIService(DataSource):
-    def __init__(self, api_key: str, app_rate_limiter: RiotAPIRateLimiter, handler_configs: Dict = None, http_client: HTTPClient = None):
+    def __init__(self, api_key: str, app_rate_limiter: RiotAPIRateLimiter, request_by_id: bool = True, handler_configs: Dict = None, http_client: HTTPClient = None):
         self._limiting_share = app_rate_limiter.limiting_share
+        self._request_by_id = request_by_id
 
         if http_client is None:
             self._client = HTTPClient()

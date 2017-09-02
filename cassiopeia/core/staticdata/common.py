@@ -4,7 +4,7 @@ from merakicommons.container import searchable
 from merakicommons.cache import lazy_property
 from PIL.Image import Image as PILImage
 
-from ...configuration import settings
+from ... import configuration
 from ..common import CoreData, CassiopeiaObject
 
 
@@ -106,7 +106,7 @@ class Sprite(CassiopeiaObject):
 
     @lazy_property
     def image(self) -> PILImage:
-        return settings.pipeline.get(PILImage, query={"url": self.url})
+        return configuration.settings.pipeline.get(PILImage, query={"url": self.url})
 
 
 @searchable({str: ["full", "url"]})
@@ -131,7 +131,7 @@ class Image(CassiopeiaObject):
 
     @lazy_property
     def image(self) -> PILImage:
-        return settings.pipeline.get(PILImage, query={"url": self.url})
+        return configuration.settings.pipeline.get(PILImage, query={"url": self.url})
 
     @lazy_property
     def sprite_info(self) -> Sprite:

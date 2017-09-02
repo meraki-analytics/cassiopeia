@@ -34,6 +34,7 @@ class RunePageAPI(RiotAPIService):
             raise NotFoundError(str(error)) from error
 
         data["region"] = query["platform"].region.value
+        data["summonerId"] = query["summoner.id"]
         return RunePagesDto(data)
 
     _validate_get_many_rune_pages_query = Query. \
@@ -55,6 +56,7 @@ class RunePageAPI(RiotAPIService):
                     raise NotFoundError(str(error)) from error
 
                 data["region"] = query["platform"].region.value
+                data["summonerId"] = id
                 yield RunePagesDto(data)
 
         return generator()

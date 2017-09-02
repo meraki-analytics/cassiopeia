@@ -4,7 +4,9 @@ from merakicommons.ghost import ghost_load_on
 from merakicommons.container import SearchableDictionary
 from merakicommons.cache import lazy_property
 
-from ...configuration import settings
+from datapipelines import NotFoundError
+
+from ... import configuration
 from .dto import ChampionGGDto, ChampionGGListDto
 from ...data import Region, Role, Tier, Patch
 from ...core.common import CoreData, CassiopeiaGhost, DataObjectList
@@ -118,26 +120,26 @@ class ChampionGGStats(CassiopeiaGhost):
 
     def __init__(self, *, id: int, patch: Patch, included_data: Set[str] = None, elo: Set[str] = None, region: Union[Region, str] = None):
         if region is None:
-            region = settings.default_region
-        if not isinstance(region, Region):
+            region = configuration.settings.default_region
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         if included_data is None:
             # I manually chose a selection of data to return by default; I chose this data because it's relatively small and provides some additional useful information.
             included_data = "kda,damage,minions,wards,overallPerformanceScore,goldEarned"
         if elo is None:
-            elo = "PLATINUM,DIAMOND,MASTER,CHALLENGER"
+            elo = "PLATINUM_DIAMOND_MASTER_CHALLENGER"
         kwargs = {"region": region, "id": id, "patch": patch._patch, "elo": elo, "included_data": included_data}
         super().__init__(**kwargs)
 
     def __get_query__(self):
-        return {"patch": self.patch._patch, "includedData": ",".join(self.included_data), "elo": ",".join(self.elo)}
+        return {"patch": self.patch._patch, "includedData": ",".join(self.included_data), "elo": "_".join(self.elo)}
 
     def __load_hook__(self, load_group: ChampionGGData, data: ChampionGGListData) -> None:
         def find_matching_attribute(datalist, attrname, attrvalue):
             for item in datalist:
                 if getattr(item, attrname, None) == attrvalue:
                     return item
-            raise ValueError("Could not find `{}={}` in {}".format(attrname, attrvalue, datalist))
+            raise NotFoundError("Could not find `{}={}` in {}".format(attrname, attrvalue, datalist))
         data = find_matching_attribute(data, "id", self.id)
         super().__load_hook__(load_group, data)
 

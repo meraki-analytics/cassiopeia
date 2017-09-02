@@ -32,4 +32,4 @@ class StatusTransformer(DataTransformer):
 
     @transform.register(ShardStatus, ShardStatusDto)
     def shard_status_core_to_dto(self, value: ShardStatus, context: PipelineContext = None) -> ShardStatusDto:
-        return value[ShardStatusData]._dto
+        return value._data[ShardStatusData]._dto

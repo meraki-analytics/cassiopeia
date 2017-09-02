@@ -21,7 +21,7 @@ def print_newest_match(name: str, account: int, id: int, region: str):
     # we need to know what version of the static data the champion should have. To avoid pulling many different
     # static data versions, we will instead create a {champion_id -> champion_name} mapping and just access the champion's
     # ID from the match data (which it provides directly).
-    champion_id_to_name_mapping = {champion.id: champion.name for champion in cass.get_champions()}
+    champion_id_to_name_mapping = {champion.id: champion.name for champion in cass.get_champions(region=region)}
     played_champions = Counter()
     for match in match_history:
         champion_id = match.participants[summoner.name].champion.id

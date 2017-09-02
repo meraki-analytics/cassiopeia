@@ -4,7 +4,7 @@ from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList
 
-from ...configuration import settings
+from ... import configuration
 from ...data import Region, Platform, Map
 from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
 from .common import ImageData, Sprite, Image
@@ -325,8 +325,8 @@ class Items(CassiopeiaGhostList):
 
     def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if region is None:
-            region = settings.default_region
-        if not isinstance(region, Region):
+            region = configuration.settings.default_region
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         if included_data is None:
             included_data = {"all"}
@@ -532,12 +532,12 @@ class Item(CassiopeiaGhost):
 
     def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if region is None:
-            region = settings.default_region
-        if not isinstance(region, Region):
+            region = configuration.settings.default_region
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         if included_data is None:
             included_data = {"all"}
-        if locale is None:
+        if locale is None and region is not None:
             locale = region.default_locale
         kwargs = {"region": region, "included_data": included_data, "locale": locale}
         if id is not None:
@@ -579,7 +579,7 @@ class Item(CassiopeiaGhost):
     @property
     def locale(self) -> str:
         """The locale for this item."""
-        return self._data[ItemData].locale
+        return self._data[ItemData].locale or self.region.default_locale
 
     @property
     def included_data(self) -> Set[str]:

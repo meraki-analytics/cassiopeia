@@ -1,0 +1,31 @@
+{
+  "global": {
+    "default_region": "NA"
+  },
+
+  "pipeline": {
+    "Cache": {},
+
+    "DDragon": {},
+
+    "RiotAPI": {
+      "api_key": "RIOT_API_KEY"
+    },
+
+    "ChampionGG": {
+      "package": "cassiopeia.plugins.championgg",
+      "api_key": "CHAMPIONGG_KEY"
+    },
+
+    "SimpleKVDiskStore": {
+      "package": "cassiopeia.datastores.diskstore"
+    }
+  },
+
+  "logging": {
+    "print_calls": true,
+    "print_riot_api_key": true,
+    "default": "WARNING",
+    "core": "WARNING"
+  }
+}

@@ -1,20 +1,36 @@
-from typing import List, Union, Set
+from typing import List, Union, Set, Dict, Union, TextIO
 import datetime
 
 from .data import PATCHES, Region, Queue, Season
 from .patches import Patch
 from .core import Champion, Summoner, Account, ChampionMastery, Rune, Mastery, Item, RunePage, MasteryPage, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Masteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Locales, ProfileIcons, MasteryPages, RunePages, ChallengerLeague, MasterLeague, Leagues, LeagueEntries
-from .configuration import settings as _settings
 from .datastores import common as _common_datastore
-
+from ._configuration import Settings, load_config
+from . import configuration
 
 # Settings endpoints
 
+def apply_settings(config: Union[TextIO, Dict, Settings]):
+    if not isinstance(config, (Dict, Settings)):
+        config = load_config(config)
+    settings = Settings(config)
+
+    # Load any plugins after everything else has finished importing
+    import importlib
+    for plugin in settings.plugins:
+        imported_plugin = importlib.import_module("cassiopeia.plugins.{plugin}.monkeypatch".format(plugin=plugin))
+
+    print_calls(settings._Settings__default_print_calls, settings._Settings__default_print_riot_api_key)
+
+    # Overwrite the old settings
+    configuration._settings = settings
+
+
 def set_riot_api_key(key: str):
-    _settings.set_riot_api_key(key)
+    configuration.settings.set_riot_api_key(key)
 
 def set_default_region(region: Region):
-    _settings.set_region(region)
+    configuration.settings.set_region(region)
 
 def print_calls(calls: bool, api_key: bool = False):
     _common_datastore._print_calls = calls

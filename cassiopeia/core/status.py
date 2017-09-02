@@ -4,7 +4,7 @@ from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy
 from merakicommons.container import searchable, SearchableList
 
-from ..configuration import settings
+from .. import configuration
 from ..data import Region, Platform
 from .common import CoreData, CassiopeiaObject, CassiopeiaGhost
 
@@ -234,8 +234,8 @@ class ShardStatus(CassiopeiaGhost):
 
     def __init__(self, region: Union[Region, str] = None):
         if region is None:
-            region = settings.default_region
-        if not isinstance(region, Region):
+            region = configuration.settings.default_region
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region}
         super().__init__(**kwargs)

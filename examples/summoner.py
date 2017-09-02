@@ -14,14 +14,6 @@ def print_summoner(name: str, region: str):
     print("Profile icon URL:", summoner.profile_icon.url)
     print("Profile icon image:", summoner.profile_icon.image)
 
-    # These are equivalent ways of obtaining a Summoner.
-    # Note that the region defaults to NA.
-    summoner = cass.get_summoner(name=name)
-    print(summoner.id)
-    #   summoner = cass.get_summoner(name=summoner.name)
-    #   summoner = cass.get_summoner(id=summoner.id)
-    #   summoner = cass.get_summoner(account_id=summoner.account.id)
-
 
 if __name__ == "__main__":
     print_summoner("Kalturi", "NA")
