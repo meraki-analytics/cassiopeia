@@ -16,7 +16,6 @@ To enable the champion.gg plugin, add it to the plugins in your settings file:
 where `"CHAMPIONGG_API_KEY"` should be replaced with your champion.gg api key or with an environment variable containing it.
 """
 
-
 from cassiopeia import Champion
 
 
@@ -43,7 +42,6 @@ def get_champions():
     print(annie.championgg.total_healed)
     print(annie.championgg.championgg_metadata["elo"])
     print(annie.championgg.championgg_metadata["patch"])
-
 
 
 if __name__ == "__main__":

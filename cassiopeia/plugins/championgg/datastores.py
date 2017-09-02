@@ -1,4 +1,5 @@
 from typing import Type, TypeVar, MutableMapping, Any, Iterable
+import os
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError
 from merakicommons.ratelimits import FixedWindowRateLimiter, MultiRateLimiter
@@ -14,8 +15,10 @@ except ImportError:
 T = TypeVar("T")
 
 
-class ChampionGGSource(DataSource):
+class ChampionGG(DataSource):
     def __init__(self, api_key: str, http_client: HTTPClient = None) -> None:
+        if not api_key.startswith("RGAPI"):
+            api_key = os.environ[api_key]
         self._key = api_key
 
         if http_client is None:

@@ -26,7 +26,7 @@ except ImportError:
 T = TypeVar("T")
 
 
-class DDragonDataSource(DataSource):
+class DDragon(DataSource):
     def __init__(self, http_client: HTTPClient = None) -> None:
         if http_client is None:
             self._client = HTTPClient()

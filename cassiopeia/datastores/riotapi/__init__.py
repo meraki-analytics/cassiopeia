@@ -1,10 +1,11 @@
 from typing import Iterable, Set, Dict
+import os
 
 from datapipelines import CompositeDataSource
 from .common import RiotAPIService, RiotAPIRateLimiter
 
 
-def _default_services(api_key: str, limiting_share: float = 1.0, handler_configs: Dict = None) -> Set[RiotAPIService]:
+def _default_services(api_key: str, limiting_share: float = 1.0, request_by_id: bool = True, handler_configs: Dict = None) -> Set[RiotAPIService]:
     from ..common import HTTPClient
     from ..image import ImageDataSource
     from .staticdata import StaticDataAPI
@@ -23,25 +24,28 @@ def _default_services(api_key: str, limiting_share: float = 1.0, handler_configs
     client = HTTPClient()
     services = {
         ImageDataSource(client),
-        ChampionAPI(api_key, app_rate_limiter=app_rate_limiter, handler_configs=handler_configs, http_client=client),
-        StaticDataAPI(api_key, app_rate_limiter=app_rate_limiter, handler_configs=handler_configs, http_client=client),
-        SummonerAPI(api_key, app_rate_limiter=app_rate_limiter, handler_configs=handler_configs, http_client=client),
-        ChampionMasteryAPI(api_key, app_rate_limiter=app_rate_limiter, handler_configs=handler_configs, http_client=client),
-        RunePageAPI(api_key, app_rate_limiter=app_rate_limiter, handler_configs=handler_configs, http_client=client),
-        MasteryPageAPI(api_key, app_rate_limiter=app_rate_limiter, handler_configs=handler_configs, http_client=client),
-        MatchAPI(api_key, app_rate_limiter=app_rate_limiter, handler_configs=handler_configs, http_client=client),
-        SpectatorAPI(api_key, app_rate_limiter=app_rate_limiter, handler_configs=handler_configs, http_client=client),
-        StatusAPI(api_key, app_rate_limiter=app_rate_limiter, handler_configs=handler_configs, http_client=client),
-        LeaguesAPI(api_key, app_rate_limiter=app_rate_limiter, handler_configs=handler_configs, http_client=client)
+        ChampionAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, handler_configs=handler_configs, http_client=client),
+        StaticDataAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, handler_configs=handler_configs, http_client=client),
+        SummonerAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, handler_configs=handler_configs, http_client=client),
+        ChampionMasteryAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, handler_configs=handler_configs, http_client=client),
+        RunePageAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, handler_configs=handler_configs, http_client=client),
+        MasteryPageAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, handler_configs=handler_configs, http_client=client),
+        MatchAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, handler_configs=handler_configs, http_client=client),
+        SpectatorAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, handler_configs=handler_configs, http_client=client),
+        StatusAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, handler_configs=handler_configs, http_client=client),
+        LeaguesAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, handler_configs=handler_configs, http_client=client)
     }
 
     return services
 
 
 class RiotAPI(CompositeDataSource):
-    def __init__(self, api_key: str, services: Iterable[RiotAPIService] = None, limiting_share: float = 1.0, handler_configs: Dict = None) -> None:
+    def __init__(self, api_key: str, services: Iterable[RiotAPIService] = None, limiting_share: float = 1.0, request_by_id: bool = True, handler_configs: Dict = None) -> None:
+        if not api_key.startswith("RGAPI"):
+            api_key = os.environ[api_key]
+
         if services is None:
-            services = _default_services(api_key=api_key, limiting_share=limiting_share, handler_configs=handler_configs)
+            services = _default_services(api_key=api_key, limiting_share=limiting_share, request_by_id=request_by_id, handler_configs=handler_configs)
 
         super().__init__(services)
 

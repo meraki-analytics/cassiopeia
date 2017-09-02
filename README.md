@@ -21,6 +21,7 @@ import random
 import cassiopeia as cass
 
 cass.set_riot_api_key("YOUR_KEY")  # This overrides the value set in your configuration/settings file.
+cass.set_default_region("NA")
 
 summoner = cass.get_summoner(name="Kalturi")
 print("{name} is a level {level} summoner on the {region} server.".format(name=summoner.name,

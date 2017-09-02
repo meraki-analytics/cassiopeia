@@ -27,7 +27,7 @@ class ChampionAPI(RiotAPIService):
     def get_champion_status(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionDto:
         ChampionAPI._validate_get_champion_status_query(query, context)
 
-        if configuration.settings.request_by_id or "id" not in query:  # Get by champion status list
+        if self._request_by_id or "id" not in query:  # Get by champion status list
             champions_query = copy.deepcopy(query)
             champions = context[context.Keys.PIPELINE].get(ChampionListDto, query=champions_query, context=context)
 
