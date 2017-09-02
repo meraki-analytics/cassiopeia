@@ -123,8 +123,6 @@ class Settings(object):
                                                       limiting_share=self.__limiting_share,
                                                       handler_configs=self.__request_handler_configs,
                                                       verbose=False)
-            from ..cassiopeia import print_calls
-            print_calls(self.__default_print_calls, self.__default_print_riot_api_key)
         return self.__pipeline
 
     @property

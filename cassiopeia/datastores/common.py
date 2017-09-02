@@ -74,7 +74,7 @@ class HTTPClient(object):
             _url = url
             if isinstance(_url, bytes):
                 _url = str(_url)[2:-1]
-            if _print_api_key and headers is not None and "X-Riot-Token" in headers:
+            if _print_api_key and ".api.riotgames.com/lol" in _url:
                 _url += "?api_key={}".format(headers["X-Riot-Token"])
             print("Making call: {}".format(_url))
         if rate_limiters:
