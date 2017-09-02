@@ -181,7 +181,9 @@ class StaticDataAPI(RiotAPIService):
         data["locale"] = query["locale"]
         data["includedData"] = query["includedData"]
         data["dataById"] = query["dataById"]
-        for champion in data["data"].values():
+        for key, champion in data["data"].items():
+            champion = ChampionDto(champion)
+            data["data"][key] = champion
             champion["region"] = query["platform"].region.value
             champion["version"] = query["version"]
             champion["locale"] = query["locale"]
@@ -225,7 +227,9 @@ class StaticDataAPI(RiotAPIService):
                 data["locale"] = query["locale"] if "locale" in query else platform.default_locale
                 data["includedData"] = query["includedData"]
                 data["dataById"] = query["dataById"]
-                for champion in data["data"].values():
+                for key, champion in data["data"].items():
+                    champion = ChampionDto(champion)
+                    data["data"][key] = champion
                     champion["region"] = query["platform"].region.value
                     champion["version"] = query["version"]
                     champion["locale"] = query["locale"]
@@ -384,7 +388,9 @@ class StaticDataAPI(RiotAPIService):
         data["region"] = query["platform"].region.value
         data["locale"] = query["locale"]
         data["includedData"] = query["includedData"]
-        for mastery in data["data"].values():
+        for key, mastery in data["data"].items():
+            mastery = MasteryDto(mastery)
+            data["data"][key] = mastery
             mastery["region"] = query["platform"].region.value
             mastery["version"] = data["version"]
             mastery["locale"] = query["locale"]
@@ -424,6 +430,13 @@ class StaticDataAPI(RiotAPIService):
                 data["region"] = platform.region.value
                 data["locale"] = query["locale"] if "locale" in query else platform.default_locale
                 data["includedData"] = query["includedData"]
+                for key, mastery in data["data"].items():
+                    mastery = MasteryDto(mastery)
+                    data["data"][key] = mastery
+                    mastery["region"] = query["platform"].region.value
+                    mastery["version"] = data["version"]
+                    mastery["locale"] = query["locale"]
+                    mastery["includedData"] = query["includedData"]
                 yield MasteryListDto(data)
 
         return generator()
@@ -556,7 +569,9 @@ class StaticDataAPI(RiotAPIService):
         data["region"] = query["platform"].region.value
         data["locale"] = query["locale"]
         data["includedData"] = query["includedData"]
-        for rune in data["data"].values():
+        for key, rune in data["data"].items():
+            rune = RuneDto(rune)
+            data["data"][key] = rune
             rune["region"] = query["platform"].region.value
             rune["version"] = query["version"]
             rune["locale"] = query["locale"]
@@ -596,6 +611,13 @@ class StaticDataAPI(RiotAPIService):
                 data["region"] = platform.region.value
                 data["locale"] = query["locale"] if "locale" in query else platform.default_locale
                 data["includedData"] = query["includedData"]
+                for key, rune in data["data"].items():
+                    rune = RuneDto(rune)
+                    data["data"][key] = rune
+                    rune["region"] = query["platform"].region.value
+                    rune["version"] = query["version"]
+                    rune["locale"] = query["locale"]
+                    rune["includedData"] = query["includedData"]
                 yield RuneListDto(data)
 
         return generator()
@@ -748,7 +770,9 @@ class StaticDataAPI(RiotAPIService):
         data["region"] = query["platform"].region.value
         data["locale"] = query["locale"]
         data["includedData"] = query["includedData"]
-        for item in data["data"].values():
+        for key, item in data["data"].items():
+            item = ItemDto(item)
+            data["data"][key] = item
             if item["id"] == 3632:  # This item doesn't have a name.
                 item["name"] = ""
             if "tags" not in item:
@@ -798,7 +822,9 @@ class StaticDataAPI(RiotAPIService):
                 data["region"] = platform.region.value
                 data["locale"] = query["locale"] if "locale" in query else platform.default_locale
                 data["includedData"] = query["includedData"]
-                for item in data["data"].values():
+                for key, item in data["data"].items():
+                    item = ItemDto(item)
+                    data["data"][key] = item
                     if item["id"] == 3632:  # This item doesn't have a name.
                         item["name"] = ""
                     if "tags" not in item:
@@ -879,6 +905,9 @@ class StaticDataAPI(RiotAPIService):
 
         data["region"] = query["platform"].region.value
         data["locale"] = query["locale"]
+        for key, map in data["data"].items():
+            map = MapDto(map)
+            data["data"][key] = map
         result = MapListDto(data)
         return result
 
@@ -1010,7 +1039,9 @@ class StaticDataAPI(RiotAPIService):
         data["region"] = query["platform"].region.value
         data["locale"] = query["locale"]
         data["includedData"] = query["includedData"]
-        for summoner_spell in data["data"]:
+        for key, summoner_spell in data["data"].items():
+            summoner_spell = SummonerSpellDto(summoner_spell)
+            data["data"][key] = summoner_spell
             summoner_spell["region"] = query["platform"].region.value
             summoner_spell["version"] = query["version"]
             summoner_spell["locale"] = query["locale"]
@@ -1050,6 +1081,13 @@ class StaticDataAPI(RiotAPIService):
                 data["region"] = platform.region.value
                 data["locale"] = query["locale"] if "locale" in query else platform.default_locale
                 data["includedData"] = query["includedData"]
+                for key, summoner_spell in data["data"].items():
+                    summoner_spell = SummonerSpellDto(summoner_spell)
+                    data["data"][key] = summoner_spell
+                    summoner_spell["region"] = query["platform"].region.value
+                    summoner_spell["version"] = query["version"]
+                    summoner_spell["locale"] = query["locale"]
+                    summoner_spell["includedData"] = query["includedData"]
                 yield SummonerSpellListDto(data)
 
         return generator()

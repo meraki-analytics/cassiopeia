@@ -18,7 +18,7 @@ from .staticdata.mastery import Mastery as StaticdataMastery
 
 class MasteryPagesData(DataObjectList):
     _dto_type = MasteryPagesDto
-    _renamed = {}
+    _renamed = {"summoner_id": "summonerId"}
 
     @property
     def region(self) -> str:

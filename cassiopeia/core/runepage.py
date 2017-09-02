@@ -19,7 +19,7 @@ from .staticdata.rune import Rune as StaticdataRune
 
 class RunePagesData(DataObjectList):
     _dto_type = RunePagesDto
-    _renamed = {}
+    _renamed = {"summoner_id": "summonerId"}
 
     @property
     def region(self) -> str:

@@ -50,4 +50,4 @@ class MasteriesTransformer(DataTransformer):
 
     @transform.register(MasteryPages, MasteryPagesDto)
     def mastery_pages_core_to_dto(self, value: MasteryPages, context: PipelineContext = None) -> MasteryPagesDto:
-        return MasteryPagesDto({"pages": set([self.mastery_page_core_to_dto(page) for page in value]), "summonerId": value._MasteryPages__summoner.id})
+        return MasteryPagesDto({"pages": list([self.mastery_page_core_to_dto(page) for page in value]), "summonerId": value._MasteryPages__summoner.id, "region": value.region})

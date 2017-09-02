@@ -122,6 +122,8 @@ class DDragonDataSource(DataSource):
             raise NotFoundError(str(e)) from e
 
         for champ_name, champ in body["data"].items():
+            champ = ChampionDto(champ)
+            body["data"][champ_name] = champ
             champ["region"] = query["platform"].region.value
             body["locale"] = locale
             body["includedData"] = {"all"}
@@ -311,7 +313,9 @@ class DDragonDataSource(DataSource):
 
         body["region"] = query["platform"].region.value
         body["locale"] = locale
-        for map in body["data"].values():
+        for key, map in body["data"].items():
+            map = MapDto(map)
+            body["data"][key] = map
             map["mapName"] = map.pop("MapName")
             map["mapId"] = map.pop("MapId")
         result = MapListDto(body)
@@ -431,7 +435,9 @@ class DDragonDataSource(DataSource):
                 body["tree"][tree][x] = {"masteryTreeItems": tier}
 
         # Add fields not provided by DDragon
-        for mastery in body["data"].values():
+        for key, mastery in body["data"].items():
+            mastery = MasteryDto(mastery)
+            body["data"][key] = mastery
             mastery["masteryTree"] = mastery_map[mastery["id"]]
             # TODO: Sanitizer?
             mastery["sanitizedDescription"] = mastery["description"]
@@ -517,6 +523,8 @@ class DDragonDataSource(DataSource):
         body.pop("basic")
 
         for rune_id, rune in body["data"].items():
+            rune = RuneDto(rune)
+            body["data"][rune_id] = rune
             rune["id"] = int(rune_id)
             # TODO: Sanitizer?
             rune["sanitizedDescription"] = rune["description"]
@@ -613,6 +621,8 @@ class DDragonDataSource(DataSource):
             group["key"] = group.pop("id")
 
         for item_id, item in body["data"].items():
+            item = ItemDto(item)
+            body["data"][item_id] = item
             item["id"] = int(item_id)
             # TODO: Sanitizer?
             item["sanitizedDescription"] = item["description"]
@@ -706,6 +716,8 @@ class DDragonDataSource(DataSource):
             raise NotFoundError(str(e)) from e
 
         for ss_name, ss in body["data"].items():
+            ss = SummonerSpellDto(ss)
+            body["data"][ss_name] = ss
             # key and id are switched between DDragon and static data. Also, id is of type int, instead of str.
             ss["id"], ss["key"] = int(ss["key"]), ss["id"]
             # effectBurn"s first element is an null in DDragon, but an empty string in static data..

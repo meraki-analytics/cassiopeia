@@ -34,6 +34,7 @@ class MasteryPageAPI(RiotAPIService):
             raise NotFoundError(str(error)) from error
 
         data["region"] = query["platform"].region.value
+        data["summonerId"] = query["summoner.id"]
         return MasteryPagesDto(data)
 
     _validate_get_many_mastery_pages_query = Query. \
@@ -55,6 +56,7 @@ class MasteryPageAPI(RiotAPIService):
                     raise NotFoundError(str(error)) from error
 
                 data["region"] = query["platform"].region.value
+                data["summonerId"] = id
                 yield MasteryPagesDto(data)
 
         return generator()
