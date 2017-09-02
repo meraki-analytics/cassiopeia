@@ -1,5 +1,4 @@
 from typing import Type, TypeVar, MutableMapping, Any, Iterable
-import copy
 
 from datapipelines import DataSource, DataSink, PipelineContext, Query, NotFoundError
 
@@ -36,7 +35,6 @@ class SummonerDiskService(SimpleKVDiskService):
         or_("account.id").as_(int). \
         or_("name").as_(str).also. \
         has("platform").as_(Platform)
-
 
     @get.register(SummonerDto)
     def get_summoner(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> SummonerDto:

@@ -12,18 +12,24 @@ def _default_services() -> Set[SimpleKVDiskService]:
     from .champion import ChampionDiskService
     from .summoner import SummonerDiskService
     from .championmastery import ChampionMasteryDiskService
-    #from .runepage import RunePageDiskService
-    #from .masterypage import MasteryPageDiskService
-    #from .match import MatchDiskService
-    #from .spectator import SpectatorDiskService
-    #from .status import StatusDiskService
-    #from .leagues import LeaguesDiskStore
+    from .runepage import RunePagesDiskService
+    from .masterypage import MasteryPagesDiskService
+    from .match import MatchDiskService
+    from .spectator import SpectatorDiskService
+    from .status import ShardStatusDiskService
+    from .leagues import LeaguesDiskService
 
     services = {
         StaticDataDiskService(),
         ChampionDiskService(),
         SummonerDiskService(),
-        ChampionMasteryDiskService()
+        ChampionMasteryDiskService(),
+        RunePagesDiskService(),
+        MasteryPagesDiskService(),
+        MatchDiskService(),
+        SpectatorDiskService(),
+        ShardStatusDiskService(),
+        LeaguesDiskService()
     }
 
     return services

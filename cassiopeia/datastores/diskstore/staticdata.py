@@ -128,7 +128,7 @@ class StaticDataDiskService(SimpleKVDiskService):
         platform = query["platform"].value
         version = query["version"]
         locale = query["locale"]
-        included_data = ".".join(sorted(query["includedData"]))
+        included_data = "|".join(sorted(query["includedData"]))
         data_by_id = str(query["dataById"])
         key = "{clsname}.{platform}.{version}.{locale}.{included_data}.{data_by_id}".format(clsname=ChampionListDto.__name__,
                                                                                             platform=platform,
@@ -141,7 +141,7 @@ class StaticDataDiskService(SimpleKVDiskService):
     @put.register(ChampionListDto)
     def put_champion_list(self, item: ChampionListDto, context: PipelineContext = None) -> None:
         platform = Region(item["region"]).platform.value
-        included_data = ".".join(sorted(item["includedData"]))
+        included_data = "|".join(sorted(item["includedData"]))
         key = "{clsname}.{platform}.{version}.{locale}.{included_data}.{data_by_id}".format(clsname=ChampionListDto.__name__,
                                                                                             platform=platform,
                                                                                             version=item["version"],
@@ -203,7 +203,7 @@ class StaticDataDiskService(SimpleKVDiskService):
         platform = query["platform"].value
         version = query["version"]
         locale = query["locale"]
-        included_data = ".".join(sorted(query["includedData"]))
+        included_data = "|".join(sorted(query["includedData"]))
         key = "{clsname}.{platform}.{version}.{locale}.{included_data}".format(clsname=ItemListDto.__name__,
                                                                                platform=platform,
                                                                                version=version,
@@ -218,7 +218,7 @@ class StaticDataDiskService(SimpleKVDiskService):
     @put.register(ItemListDto)
     def put_item_list(self, item: ItemListDto, context: PipelineContext = None) -> None:
         platform = Region(item["region"]).platform.value
-        included_data = ".".join(sorted(item["includedData"]))
+        included_data = "|".join(sorted(item["includedData"]))
         key = "{clsname}.{platform}.{version}.{locale}.{included_data}".format(clsname=ItemListDto.__name__,
                                                                                platform=platform,
                                                                                version=item["version"],
@@ -279,7 +279,7 @@ class StaticDataDiskService(SimpleKVDiskService):
         platform = query["platform"].value
         version = query["version"]
         locale = query["locale"]
-        included_data = ".".join(sorted(query["includedData"]))
+        included_data = "|".join(sorted(query["includedData"]))
         key = "{clsname}.{platform}.{version}.{locale}.{included_data}".format(clsname=RuneListDto.__name__,
                                                                                platform=platform,
                                                                                version=version,
@@ -290,7 +290,7 @@ class StaticDataDiskService(SimpleKVDiskService):
     @put.register(RuneListDto)
     def put_rune_list(self, item: RuneListDto, context: PipelineContext = None) -> None:
         platform = Region(item["region"]).platform.value
-        included_data = ".".join(sorted(item["includedData"]))
+        included_data = "|".join(sorted(item["includedData"]))
         key = "{clsname}.{platform}.{version}.{locale}.{included_data}".format(clsname=RuneListDto.__name__,
                                                                                platform=platform,
                                                                                version=item["version"],
@@ -351,7 +351,7 @@ class StaticDataDiskService(SimpleKVDiskService):
         platform = query["platform"].value
         version = query["version"]
         locale = query["locale"]
-        included_data = ".".join(sorted(query["includedData"]))
+        included_data = "|".join(sorted(query["includedData"]))
         key = "{clsname}.{platform}.{version}.{locale}.{included_data}".format(clsname=MasteryListDto.__name__,
                                                                                platform=platform,
                                                                                version=version,
@@ -362,7 +362,7 @@ class StaticDataDiskService(SimpleKVDiskService):
     @put.register(MasteryListDto)
     def put_mastery_list(self, item: MasteryListDto, context: PipelineContext = None) -> None:
         platform = Region(item["region"]).platform.value
-        included_data = ".".join(sorted(item["includedData"]))
+        included_data = "|".join(sorted(item["includedData"]))
         key = "{clsname}.{platform}.{version}.{locale}.{included_data}".format(clsname=MasteryListDto.__name__,
                                                                                platform=platform,
                                                                                version=item["version"],
@@ -423,7 +423,7 @@ class StaticDataDiskService(SimpleKVDiskService):
         platform = query["platform"].value
         version = query["version"]
         locale = query["locale"]
-        included_data = ".".join(sorted(query["includedData"]))
+        included_data = "|".join(sorted(query["includedData"]))
         key = "{clsname}.{platform}.{version}.{locale}.{included_data}".format(clsname=SummonerSpellListDto.__name__,
                                                                                platform=platform,
                                                                                version=version,
@@ -434,7 +434,7 @@ class StaticDataDiskService(SimpleKVDiskService):
     @put.register(SummonerSpellListDto)
     def put_summoner_spell_list(self, item: SummonerSpellListDto, context: PipelineContext = None) -> None:
         platform = Region(item["region"]).platform.value
-        included_data = ".".join(sorted(item["includedData"]))
+        included_data = "|".join(sorted(item["includedData"]))
         key = "{clsname}.{platform}.{version}.{locale}.{included_data}".format(clsname=SummonerSpellListDto.__name__,
                                                                                platform=platform,
                                                                                version=item["version"],
