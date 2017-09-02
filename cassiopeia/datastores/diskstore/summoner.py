@@ -40,13 +40,14 @@ class SummonerDiskService(SimpleKVDiskService):
     def get_summoner(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> SummonerDto:
         SummonerDiskService._validate_get_summoner_query(query, context)
         platform_str  = query["platform"].value
+        summoner_name = query.get("name", "").replace(" ", "").lower()
         for key in self._store:
             if key.startswith("SummonerDto."):
                 _, platform, id_, account_id, name = key.split(".")
                 if platform == platform_str and any([
                     id_ == str(query.get("id", None)),
                     account_id == str(query.get("account.id", None)),
-                    name == query.get("name", None)
+                    name == summoner_name
                 ]):
                     return SummonerDto(self._get(key))
         else:
@@ -59,5 +60,5 @@ class SummonerDiskService(SimpleKVDiskService):
                                                                      platform=platform,
                                                                      id=item["id"],
                                                                      account_id=item["accountId"],
-                                                                     name=item["name"])
+                                                                     name=item["name"].replace(" ", "").lower())
         self._put(key, item)

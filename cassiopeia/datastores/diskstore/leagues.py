@@ -34,7 +34,7 @@ class LeaguesDiskService(SimpleKVDiskService):
 
     @get.register(LeaguePositionsDto)
     def get_league_positions(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LeaguePositionsDto:
-        SpectatorDiskService._validate_get_league_positions_query(query, context)
+        LeaguesDiskService._validate_get_league_positions_query(query, context)
         key = "{clsname}.{platform}.{id}".format(clsname=LeaguePositionsDto.__name__,
                                                  platform=query["platform"].value,
                                                  id=query["summoner.id"])
@@ -56,7 +56,7 @@ class LeaguesDiskService(SimpleKVDiskService):
 
     @get.register(LeaguesListDto)
     def get_leagues(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LeaguesListDto:
-        SpectatorDiskService._validate_get_leagues_query(query, context)
+        LeaguesDiskService._validate_get_leagues_query(query, context)
         key = "{clsname}.{platform}.{id}".format(clsname=LeaguesListDto.__name__,
                                                  platform=query["platform"].value,
                                                  id=query["summoner.id"])
@@ -79,7 +79,7 @@ class LeaguesDiskService(SimpleKVDiskService):
 
     @get.register(ChallengerLeagueListDto)
     def get_challenger_league(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChallengerLeagueListDto:
-        SpectatorDiskService._validate_get_challenger_league_query(query, context)
+        LeaguesDiskService._validate_get_challenger_league_query(query, context)
         key = "{clsname}.{platform}.{queue}".format(clsname=ChallengerLeagueListDto.__name__,
                                                     platform=query["platform"].value,
                                                     queue=query["queue"].value)
@@ -101,7 +101,7 @@ class LeaguesDiskService(SimpleKVDiskService):
 
     @get.register(MasterLeagueListDto)
     def get_mastery_league(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasterLeagueListDto:
-        SpectatorDiskService._validate_get_master_league_query(query, context)
+        LeaguesDiskService._validate_get_master_league_query(query, context)
         key = "{clsname}.{platform}.{queue}".format(clsname=MasterLeagueListDto.__name__,
                                                     platform=query["platform"].value,
                                                     queue=query["queue"].value)

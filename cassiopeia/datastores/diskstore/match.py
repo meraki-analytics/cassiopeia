@@ -124,7 +124,7 @@ class MatchDiskService(SimpleKVDiskService):
         MatchDiskService._validate_get_timeline_query(query, context)
         key = "{clsname}.{platform}.{id}".format(clsname=TimelineDto.__name__,
                                                  platform=query["platform"].value,
-                                                 id=query["gameId"])
+                                                 id=query["matchId"])
         return TimelineDto(self._get(key))
 
     @put.register(TimelineDto)
