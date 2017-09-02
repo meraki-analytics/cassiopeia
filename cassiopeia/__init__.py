@@ -12,4 +12,4 @@ for plugin in _settings.plugins:
     imported_plugin = importlib.import_module("cassiopeia.plugins.{plugin}.monkeypatch".format(plugin=plugin))
 
 
-print_calls(_settings._Settings__default_print_calls, _settings._Settings__default_print_api_key)
+print_calls(_settings._Settings__default_print_calls, _settings._Settings__default_print_riot_api_key)
