@@ -381,7 +381,7 @@ class StaticDataTransformer(DataTransformer):
     @transform.register(LanguageStrings, LanguageStringsDto)
     def language_strings_core_to_dto(self, value: LanguageStrings, context: PipelineContext = None) -> LanguageStringsDto:
         # I left out `type`.
-        return LanguageStringsDto({"region": value.region, "version": value.version, "locale": value.locale, **value[LanguageStringsData]._dto})
+        return LanguageStringsDto({"region": value.region, "version": value.version, "locale": value.locale, **value._data[LanguageStringsData]._dto})
 
     # Profile Icon
 

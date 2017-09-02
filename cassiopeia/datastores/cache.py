@@ -14,7 +14,6 @@ from ..core.summoner import Summoner
 from ..core.status import ShardStatus
 from ..core.spectator import CurrentMatch, FeaturedMatches
 
-
 T = TypeVar("T")
 
 
@@ -84,8 +83,13 @@ class Cache(DataSource, DataSink):
             self._cache.put(type, key, item, expire_seconds)
         # TODO: Put EXPIRATION into context once cache expiration works
 
-    def clear(self, type: Type[T]):
-        self._cache._data[type].clear()
+    def clear(self, type: Type[T] = None):
+        if type is None:
+            for key in self._cache._data:
+                self._cache._data[key].clear()
+        else:
+            self._cache._data[type].clear()
+
 
     ########################
     # Champion Mastery API #

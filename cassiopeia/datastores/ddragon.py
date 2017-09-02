@@ -70,7 +70,7 @@ class DDragonDataSource(DataSource):
             champions_query.pop("id")
         if "name" in champions_query:
             champions_query.pop("name")
-        champions = self.get_champion_list(query=champions_query, context=context)
+        champions = context[context.Keys.PIPELINE].get(ChampionListDto, query=champions_query, context=context)
 
         def find_matching_attribute(list_of_dtos, attrname, attrvalue):
             for dto in list_of_dtos:
@@ -260,7 +260,7 @@ class DDragonDataSource(DataSource):
             maps_query.pop("id")
         if "name" in maps_query:
             maps_query.pop("name")
-        maps = self.get_map_list(query=maps_query, context=context)
+        maps = context[context.Keys.PIPELINE].get(MapListDto, query=maps_query, context=context)
 
         def find_matching_attribute(list_of_dtos, attrname, attrvalue):
             for dto in list_of_dtos:
@@ -366,7 +366,7 @@ class DDragonDataSource(DataSource):
             masteries_query.pop("id")
         if "name" in masteries_query:
             masteries_query.pop("name")
-        masteries = self.get_mastery_list(query=masteries_query, context=context)
+        masteries = context[context.Keys.PIPELINE].get(MasteryListDto, query=masteries_query, context=context)
 
         def find_matching_attribute(list_of_dtos, attrname, attrvalue):
             for dto in list_of_dtos:
@@ -463,7 +463,7 @@ class DDragonDataSource(DataSource):
             runes_query.pop("id")
         if "name" in runes_query:
             runes_query.pop("name")
-        runes = self.get_rune_list(query=runes_query, context=context)
+        runes = context[context.Keys.PIPELINE].get(RuneListDto, query=runes_query, context=context)
 
         def find_matching_attribute(list_of_dtos, attrname, attrvalue):
             for dto in list_of_dtos:
@@ -555,7 +555,7 @@ class DDragonDataSource(DataSource):
             items_query.pop("id")
         if "name" in items_query:
             items_query.pop("name")
-        items = self.get_item_list(query=items_query, context=context)
+        items = context[context.Keys.PIPELINE].get(ItemListDto, query=items_query, context=context)
 
         def find_matching_attribute(list_of_dtos, attrname, attrvalue):
             for dto in list_of_dtos:
@@ -654,7 +654,7 @@ class DDragonDataSource(DataSource):
             summoner_spells_query.pop("id")
         if "name" in summoner_spells_query:
             summoner_spells_query.pop("name")
-        summoner_spells = self.get_summoner_spell_list(query=summoner_spells_query, context=context)
+        summoner_spells = context[context.Keys.PIPELINE].get(SummonerSpellListDto, query=summoner_spells_query, context=context)
 
         def find_matching_attribute(list_of_dtos, attrname, attrvalue):
             for dto in list_of_dtos:

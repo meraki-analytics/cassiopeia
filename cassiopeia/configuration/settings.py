@@ -1,12 +1,13 @@
 import os
 import logging
-from typing import Dict, Union
+from typing import TypeVar, Type, Dict, Union
 
 from datapipelines import DataPipeline, CompositeDataTransformer
 
 from ..data import Region, Platform
 from .load import config
 
+T = TypeVar("T")
 
 logging.basicConfig(format='%(asctime)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.WARNING)
 
@@ -91,7 +92,7 @@ class Settings(object):
         self.__plugins = settings.get("plugins", [])
         logging_config = settings.get("logging", {})
         self.__default_print_calls = logging_config.get("print_calls", True)
-        self.__default_print_api_key = logging_config.get("print_api_key", False)
+        self.__default_print_riot_api_key = logging_config.get("print_riot_api_key", False)
         for name in ["default", "core"]:
             logger = logging.getLogger(name)
             level = logging_config.get(name, logging.WARNING)
@@ -123,7 +124,7 @@ class Settings(object):
                                                       handler_configs=self.__request_handler_configs,
                                                       verbose=False)
             from ..cassiopeia import print_calls
-            print_calls(self.__default_print_calls, self.__default_print_api_key)
+            print_calls(self.__default_print_calls, self.__default_print_riot_api_key)
         return self.__pipeline
 
     @property
@@ -154,5 +155,19 @@ class Settings(object):
                 if isinstance(source, RiotAPI):
                     source.set_api_key(key)
 
+    def clear_sinks(self, type: Type[T] = None):
+        types = {type}
+        if type is not None:
+            from ..core.common import CoreData, CassiopeiaObject
+            if issubclass(type, CassiopeiaObject):
+                for t in type._data_types:
+                    types.add(t)
+                    types.add(t._dto_type)
+            elif issubclass(type, CoreData):
+                types.add(type._dto_type)
+
+        for sink in self.pipeline._sinks:
+            for type in types:
+                sink.clear(type)
 
 settings = Settings(config)

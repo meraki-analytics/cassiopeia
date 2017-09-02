@@ -130,6 +130,7 @@ class GameMode(Enum):
     arsr = "ARSR"
     urf = "URF"
     doom_bots = "DOOMBOTSTEEMO"
+    star_guardian = "STARGUARDIAN"
 
 
 class MasteryTree(Enum):

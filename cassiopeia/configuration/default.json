@@ -5,6 +5,7 @@
   },
   "logging": {
     "print_calls": true,
+    "print_riot_api_key": true,
     "default": "WARNING",
     "core": "WARNING"
   }

@@ -4,7 +4,6 @@ from datapipelines import DataSource, PipelineContext, Query, NotFoundError, val
 from .common import RiotAPIService, APINotFoundError
 from ...data import Platform
 from ...dto.championmastery import ChampionMasteryDto, ChampionMasteryListDto, ChampionMasteryScoreDto
-from ...dto.summoner import SummonerDto
 from ..uniquekeys import convert_region_to_platform
 
 T = TypeVar("T")
@@ -21,25 +20,12 @@ class ChampionMasteryAPI(RiotAPIService):
 
     _validate_get_champion_mastery_query = Query. \
         has("platform").as_(Platform).also. \
-        has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
-        has("champion.id").as_(int).or_("champion.name").as_(str)
+        has("summoner.id").also. \
+        has("champion.id").as_(int)
 
     @get.register(ChampionMasteryDto)
     @validate_query(_validate_get_champion_mastery_query, convert_region_to_platform)
     def get_champion_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionMasteryDto:
-        # TODO Is this still what we want to do?
-        if "summoner.id" not in query:
-            for k in ["summoner.account.id", "summoner.account_id", "summoner.accountId"]:
-                if k in query:
-                    summoner_query = {"platform": query["platform"], "account.id": query[k]}
-                    break
-            for k in ["summoner.name", "summoner_name", "summonerName"]:
-                if k in query:
-                    summoner_query = {"platform": query["platform"], "name": query[k]}
-                    break
-            summoner_dto = context[PipelineContext.Keys.PIPELINE].get(SummonerDto, query=summoner_query)
-            query["summoner.id"] = summoner_dto["id"]
-
         url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/champion-masteries/by-summoner/{summonerId}/by-champion/{championId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"], championId=query["champion.id"])
         try:
             data = self._get(url, {}, self._get_rate_limiter(query["platform"], "champion-masteries/by-summoner/summonerId/by-champion/championId"))
@@ -96,6 +82,8 @@ class ChampionMasteryAPI(RiotAPIService):
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
+        for cm in data:
+            cm["region"] = query["region"]
         return ChampionMasteryListDto({
             "masteries": data,
             "summonerId": query["summoner.id"],

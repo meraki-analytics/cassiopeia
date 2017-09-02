@@ -32,7 +32,6 @@ def _get_default_locale(query: MutableMapping[str, Any], context: PipelineContex
 class StaticDataAPI(RiotAPIService):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._cache = {ChampionListDto: {}, RuneListDto: {}, MasteryListDto: {}, ItemListDto: {}, SummonerSpellListDto: {}, MapListDto: {}}
 
     @DataSource.dispatch
     def get(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> T:
@@ -71,7 +70,7 @@ class StaticDataAPI(RiotAPIService):
                 champions_query.pop("id")
             if "name" in champions_query:
                 champions_query.pop("name")
-            champions = self.get_champion_list(query=champions_query, context=context)
+            champions = context[context.Keys.PIPELINE].get(ChampionListDto, query=champions_query, context=context)
 
             def find_matching_attribute(list_of_dtos, attrname, attrvalue):
                 for dto in list_of_dtos:
@@ -162,12 +161,6 @@ class StaticDataAPI(RiotAPIService):
     def get_champion_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionListDto:
         StaticDataAPI._validate_get_champion_list_query(query, context)
 
-        ahash = self.calculate_hash(query)
-        try:
-            return self._cache[ChampionListDto][ahash]
-        except KeyError:
-            pass
-
         params = {
             "locale": query["locale"],
             "tags": ",".join(list(query["includedData"])),
@@ -194,7 +187,6 @@ class StaticDataAPI(RiotAPIService):
             champion["locale"] = query["locale"]
             champion["includedData"] = query["includedData"]
         result = ChampionListDto(data)
-        self._cache[ChampionListDto][ahash] = result
         return result
 
     _validate_get_many_champion_list_query = Query. \
@@ -286,7 +278,7 @@ class StaticDataAPI(RiotAPIService):
                 mastery_query.pop("id")
             if "name" in mastery_query:
                 mastery_query.pop("name")
-            masteries = self.get_mastery_list(query=mastery_query, context=context)
+            masteries = context[context.Keys.PIPELINE].get(MasteryListDto, query=mastery_query, context=context)
 
             def find_matching_attribute(list_of_dtos, attrname, attrvalue):
                 for dto in list_of_dtos:
@@ -375,12 +367,6 @@ class StaticDataAPI(RiotAPIService):
     def get_mastery_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasteryListDto:
         StaticDataAPI._validate_get_mastery_list_query(query, context)
 
-        ahash = self.calculate_hash(query)
-        try:
-            return self._cache[MasteryListDto][ahash]
-        except KeyError:
-            pass
-
         params = {
             "locale": query["locale"],
             "tags": ",".join(list(query["includedData"]))
@@ -404,7 +390,6 @@ class StaticDataAPI(RiotAPIService):
             mastery["locale"] = query["locale"]
             mastery["includedData"] = query["includedData"]
         result = MasteryListDto(data)
-        self._cache[MasteryListDto][ahash] = result
         return result
 
     _validate_get_many_mastery_list_query = Query. \
@@ -465,7 +450,7 @@ class StaticDataAPI(RiotAPIService):
                 runes_query.pop("id")
             if "name" in runes_query:
                 runes_query.pop("name")
-            runes = self.get_rune_list(query=runes_query, context=context)
+            runes = context[context.Keys.PIPELINE].get(RuneListDto, query=runes_query, context=context)
 
             def find_matching_attribute(list_of_dtos, attrname, attrvalue):
                 for dto in list_of_dtos:
@@ -554,12 +539,6 @@ class StaticDataAPI(RiotAPIService):
     def get_rune_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> RuneListDto:
         StaticDataAPI._validate_get_rune_list_query(query, context)
 
-        ahash = self.calculate_hash(query)
-        try:
-            return self._cache[RuneListDto][ahash]
-        except KeyError:
-            pass
-
         params = {
             "locale": query["locale"],
             "tags": ",".join(list(query["includedData"]))
@@ -583,7 +562,6 @@ class StaticDataAPI(RiotAPIService):
             rune["locale"] = query["locale"]
             rune["includedData"] = query["includedData"]
         result = RuneListDto(data)
-        self._cache[RuneListDto][ahash] = result
         return result
 
     _validate_get_many_rune_list_query = Query. \
@@ -644,7 +622,7 @@ class StaticDataAPI(RiotAPIService):
                 items_query.pop("id")
             if "name" in items_query:
                 items_query.pop("name")
-            items = self.get_item_list(query=items_query, context=context)
+            items = context[context.Keys.PIPELINE].get(ItemListDto, query=items_query, context=context)
 
             def find_matching_attribute(list_of_dtos, attrname, attrvalue):
                 for dto in list_of_dtos:
@@ -753,12 +731,6 @@ class StaticDataAPI(RiotAPIService):
     def get_item_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ItemListDto:
         StaticDataAPI._validate_get_item_list_query(query, context)
 
-        ahash = self.calculate_hash(query)
-        try:
-            return self._cache[ItemListDto][ahash]
-        except KeyError:
-            pass
-
         params = {
             "locale": query["locale"],
             "tags": ",".join(list(query["includedData"]))
@@ -792,7 +764,6 @@ class StaticDataAPI(RiotAPIService):
             item["locale"] = query["locale"]
             item["includedData"] = query["includedData"]
         result = ItemListDto(data)
-        self._cache[ItemListDto][ahash] = result
         return result
 
     _validate_get_many_item_list_query = Query. \
@@ -863,7 +834,7 @@ class StaticDataAPI(RiotAPIService):
                 maps_query.pop("id")
             if "name" in maps_query:
                 maps_query.pop("name")
-            maps = self.get_map_list(query=maps_query, context=context)
+            maps = context[context.Keys.PIPELINE].get(MapListDto, query=maps_query, context=context)
 
             def find_matching_attribute(list_of_dtos, attrname, attrvalue):
                 for dto in list_of_dtos:
@@ -893,12 +864,6 @@ class StaticDataAPI(RiotAPIService):
     def get_map_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MapListDto:
         StaticDataAPI._validate_get_map_list_query(query, context)
 
-        ahash = self.calculate_hash(query)
-        try:
-            return self._cache[MapListDto][ahash]
-        except KeyError:
-            pass
-
         params = {
             "locale": query["locale"]
         }
@@ -915,7 +880,6 @@ class StaticDataAPI(RiotAPIService):
         data["region"] = query["platform"].region.value
         data["locale"] = query["locale"]
         result = MapListDto(data)
-        self._cache[MapListDto][ahash] = result
         return result
 
     ###################
@@ -940,7 +904,7 @@ class StaticDataAPI(RiotAPIService):
                 summoner_spells_query.pop("id")
             if "name" in summoner_spells_query:
                 summoner_spells_query.pop("name")
-            summoner_spells = self.get_summoner_spell_list(query=summoner_spells_query, context=context)
+            summoner_spells = context[context.Keys.PIPELINE].get(SummonerSpellListDto, query=summoner_spells_query, context=context)
 
             def find_matching_attribute(list_of_dtos, attrname, attrvalue):
                 for dto in list_of_dtos:
@@ -1029,12 +993,6 @@ class StaticDataAPI(RiotAPIService):
     def get_summoner_spell_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> SummonerSpellListDto:
         StaticDataAPI._validate_get_summoner_spell_list_query(query, context)
 
-        ahash = self.calculate_hash(query)
-        try:
-            return self._cache[SummonerSpellListDto][ahash]
-        except KeyError:
-            pass
-
         params = {
             "locale": query["locale"],
             "tags": ",".join(list(query["includedData"]))
@@ -1058,7 +1016,6 @@ class StaticDataAPI(RiotAPIService):
             summoner_spell["locale"] = query["locale"]
             summoner_spell["includedData"] = query["includedData"]
         result = SummonerSpellListDto(data)
-        self._cache[SummonerSpellListDto][ahash] = result
         return result
 
     _validate_get_many_summoner_spell_list_query = Query. \

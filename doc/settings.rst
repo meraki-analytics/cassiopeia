@@ -79,7 +79,7 @@ Logging
 
 The ``"logging"`` section defines variables related to logging and print statements.
 
-The ``"print_calls"`` variable should be set to ``true`` or ``false`` and determines whether http calls (e.g. to the Riot API or Data Dragon) are printed. Similarly, the ``"print_api_key"`` variable will print your Riot API key if set to ``true``.
+The ``"print_calls"`` variable should be set to ``true`` or ``false`` and determines whether http calls (e.g. to the Riot API or Data Dragon) are printed. Similarly, the ``"print_riot_api_key"`` variable will print your Riot API key if set to ``true``.
 
 ``"core"`` and ``"default"`` are two loggers that are currently implemented in Cass, and you can set the logging levels using these variables. Acceptable values are the logging levels for python's logging module (e.g. ``"INFO"`` and ``"WARNING"``).
 
@@ -89,6 +89,7 @@ Example:
 
     "logging": {
         "print_calls": true,
+        "print_riot_api_key": false,
         "default": "WARNING",
         "core": "WARNING"
     }
