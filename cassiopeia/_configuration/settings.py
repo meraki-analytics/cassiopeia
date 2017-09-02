@@ -58,7 +58,7 @@ def create_pipeline(service_configs: Dict, verbose: bool = False) -> DataPipelin
 
 class Settings(object):
     def __init__(self, settings):
-        globals_ = settings.get("globals", {})
+        globals_ = settings.get("global", {})
         self.__version_from_match = globals_.get("version_from_match", "patch")  # Valid json values are: "version", "patch", and null
         self.__default_region = globals_.get("default_region", None)
         if self.__default_region is not None:

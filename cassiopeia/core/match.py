@@ -7,7 +7,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableLazyList, SearchableDictionary
 
 from .. import configuration
-from ..data import Region, Platform, Tier, Map, GameType, GameMode, Queue, Division, Side, Season, Patch
+from ..data import Region, Platform, Tier, GameType, GameMode, Queue, Division, Side, Season, Patch
 from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostLazyList
 from ..dto import match as dto
 from .summoner import Summoner
@@ -16,6 +16,7 @@ from .staticdata.rune import Rune
 from .staticdata.mastery import Mastery
 from .staticdata.summonerspell import SummonerSpell
 from .staticdata.item import Item
+from .staticdata.map import Map
 
 
 ##############
@@ -1901,7 +1902,7 @@ class Match(CassiopeiaGhost):
     @ghost_load_on(KeyError)
     @lazy
     def map(self) -> Map:
-        return Map(self._data[MatchData].map_id)
+        return Map(id=self._data[MatchData].map_id, region=self.region)
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on(KeyError)

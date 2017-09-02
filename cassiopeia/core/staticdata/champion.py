@@ -6,10 +6,11 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
 from ... import configuration
-from ...data import Resource, Region, Platform, Map, GameMode
+from ...data import Resource, Region, Platform, GameMode
 from ..champion import ChampionData as ChampionStatusData
 from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
 from .common import ImageData, Image, Sprite
+from .map import Map
 from ...dto.staticdata import champion as dto
 from .item import Item
 
@@ -680,10 +681,17 @@ class RecommendedItems(CassiopeiaObject):
         self.__region = region
         return self
 
-    @property
+    @lazy_property
     def map(self) -> Map:
         """The name of the map these recommendations are for."""
-        return Map(self._data[RecommendedData].map)
+        convert_shitty_map_name_to_id = {
+            "HA": 12,
+            "CS": 8,
+            "SR": 11,
+            "TT": 10
+        }
+        id_ = convert_shitty_map_name_to_id[self._data[RecommendedData].map]
+        return Map(id=id_, region=self.__region)
 
     @lazy_property
     def item_sets(self) -> List[ItemSet]:

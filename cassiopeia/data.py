@@ -101,20 +101,6 @@ class Side(Enum):
     red = 200
 
 
-class Map(Enum):
-    summoners_rift_summer = 1
-    summoners_rift_autumn = 2
-    the_proving_grounds = 3
-    twisted_treeline_original = 4
-    the_crystal_scar = 8
-    twisted_treeline = 10
-    summoners_rift = 11
-    howling_abyss = 12
-    butchers_bridge = 14
-    cosmic_ruins = 16
-    valoran_city_park = 18
-
-
 class GameMode(Enum):
     aram = "ARAM"
     ascension = "ASCENSION"

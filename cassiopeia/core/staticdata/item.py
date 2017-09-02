@@ -5,9 +5,10 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList
 
 from ... import configuration
-from ...data import Region, Platform, Map
+from ...data import Region, Platform
 from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
 from .common import ImageData, Sprite, Image
+from .map import Map
 from ...dto.staticdata import item as dto
 
 
@@ -258,9 +259,9 @@ class ItemData(CoreData):
         return set(kw for kw in self._dto["colloq"].split(";") if kw != "")
 
     @property
-    def maps(self) -> List[Map]:  # TODO Convert from Dict to List
+    def maps(self) -> List[int]:  # TODO Convert from Dict to List
         """List of maps where this item is available."""
-        return self._dto["maps"]
+        return [int(m) for m, tf in self._dto["maps"].items() if tf]
 
     @property
     def special_recipe(self) -> int:
@@ -636,7 +637,7 @@ class Item(CassiopeiaGhost):
     @ghost_load_on(KeyError)
     @lazy
     def maps(self) -> List[Map]:
-        return [Map(int(id)) for id, allowed in self._data[ItemData].maps.items() if allowed]
+        return [Map(id=id_, region=self.region) for id_ in self._data[ItemData].maps]
 
     @CassiopeiaGhost.property(ItemData)
     @ghost_load_on(KeyError)

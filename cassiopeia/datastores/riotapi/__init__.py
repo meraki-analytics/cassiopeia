@@ -42,7 +42,7 @@ def _default_services(api_key: str, limiting_share: float = 1.0, request_by_id: 
 class RiotAPI(CompositeDataSource):
     def __init__(self, api_key: str, services: Iterable[RiotAPIService] = None, limiting_share: float = 1.0, request_by_id: bool = True, handler_configs: Dict = None) -> None:
         if not api_key.startswith("RGAPI"):
-            api_key = os.environ[api_key]
+            api_key = os.environ.get(api_key, None)
 
         if services is None:
             services = _default_services(api_key=api_key, limiting_share=limiting_share, request_by_id=request_by_id, handler_configs=handler_configs)

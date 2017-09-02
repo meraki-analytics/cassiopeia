@@ -271,9 +271,9 @@ class DDragon(DataSource):
 
         # The `data` is a list of map data instances
         if "id" in query:
-            find = "id", query["mapId"]
+            find = "id", query["id"]
         elif "name" in query:
-            find = "name", query["mapName"]
+            find = "name", query["name"]
         else:
             raise RuntimeError("Impossible!")
         map = find_matching_attribute(maps["data"].values(), *find)
