@@ -4,7 +4,7 @@ from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList
 
-from ...configuration import settings
+from ... import configuration
 from ...data import Region, Platform, MasteryTree
 from ..common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
 from .common import Sprite, Image, ImageData
@@ -102,7 +102,7 @@ class Masteries(CassiopeiaGhostList):
 
     def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if region is None:
-            region = settings.default_region
+            region = configuration.settings.default_region
         if not isinstance(region, Region):
             region = Region(region)
         if included_data is None:
@@ -156,7 +156,7 @@ class Mastery(CassiopeiaGhost):
 
     def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if region is None:
-            region = settings.default_region
+            region = configuration.settings.default_region
         if not isinstance(region, Region):
             region = Region(region)
         if included_data is None:

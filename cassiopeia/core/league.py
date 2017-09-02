@@ -4,7 +4,7 @@ from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy_property, lazy
 from merakicommons.container import searchable, SearchableList
 
-from ..configuration import settings
+from .. import configuration
 from ..data import Region, Platform, Tier, Division, Queue
 from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList
 from ..dto.league import LeaguePositionDto, LeaguePositionsDto,  LeaguesListDto, LeagueListDto, MiniSeriesDto
@@ -200,7 +200,7 @@ class LeagueEntry(CassiopeiaGhost):
 
     def __init__(self, *, region: Union[Region, str] = None):
         if region is None:
-            region = settings.default_region
+            region = configuration.settings.default_region
         if not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region}
@@ -308,7 +308,7 @@ class LeagueEntries(CassiopeiaGhostList):
 
     def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
         if region is None:
-            region = settings.default_region
+            region = configuration.settings.default_region
         if not isinstance(region, Region):
             region = Region(region)
         super().__init__(*args, region=region)
@@ -353,7 +353,7 @@ class Leagues(CassiopeiaGhostList):
 
     def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
         if region is None:
-            region = settings.default_region
+            region = configuration.settings.default_region
         if not isinstance(region, Region):
             region = Region(region)
         super().__init__(*args, region=region)
@@ -398,7 +398,7 @@ class ChallengerLeague(League, CassiopeiaGhost):
 
     def __init__(self, *, queue: Union[Queue, str, int] = None, region: Union[Region, str] = None):
         if region is None:
-            region = settings.default_region
+            region = configuration.settings.default_region
         if not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region}
@@ -442,7 +442,7 @@ class MasterLeague(League, CassiopeiaGhost):
 
     def __init__(self, *, queue: Union[Queue, str, int] = None, region: Union[Region, str] = None):
         if region is None:
-            region = settings.default_region
+            region = configuration.settings.default_region
         if not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region}

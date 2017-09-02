@@ -5,7 +5,6 @@ from typing import TypeVar, Type, Dict, Union
 from datapipelines import DataPipeline, CompositeDataTransformer
 
 from ..data import Region, Platform
-from .load import config
 
 T = TypeVar("T")
 
@@ -46,7 +45,8 @@ def create_default_pipeline(riot_api_key: str, championgg_api_key: str = None, l
     ])
     transformers = [riotapi_transformer]
 
-    if "championgg" in settings.plugins:
+    from .. import configuration
+    if "championgg" in configuration.settings.plugins:
         from ..plugins.championgg.datastores import ChampionGGSource
         from ..plugins.championgg.transformers import ChampionGGTransformer
         transformers.append(
@@ -167,5 +167,3 @@ class Settings(object):
         for sink in self.pipeline._sinks:
             for type in types:
                 sink.clear(type)
-
-settings = Settings(config)

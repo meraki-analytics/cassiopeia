@@ -7,7 +7,7 @@ from datapipelines import NotFoundError, UnsupportedError
 from merakicommons.ghost import Ghost
 from merakicommons.container import SearchableList, SearchableLazyList, SearchError
 
-from ..configuration import settings
+from .. import configuration
 from ..data import Region, Platform
 from ..dto.common import DtoObject
 
@@ -27,7 +27,7 @@ def provide_default_region(method):
         platform = kwargs.pop("platform", None)
         if region is None:
             if platform is None:
-                region = settings.default_region
+                region = configuration.settings.default_region
             else:
                 if isinstance(platform, Platform):
                     region = platform.region
@@ -106,7 +106,7 @@ class DataObjectList(list, CoreData):
 class CheckCache(type):
     @provide_default_region
     def __call__(cls, *args, **kwargs):
-        cache = settings.pipeline._cache
+        cache = configuration.settings.pipeline._cache
         if cache is not None:
             # Try to find the obj in the cache
             from ..datastores.uniquekeys import construct_query
@@ -198,7 +198,7 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=CheckCache):
             query = self.__get_query__()
             if hasattr(self.__class__, "version") and "version" not in query and not self.__class__.__name__ == "Realms":
                 query["version"] = get_latest_version(region=query["region"], endpoint=None)
-            data = settings.pipeline.get(type=self._load_types[load_group], query=query)
+            data = configuration.settings.pipeline.get(type=self._load_types[load_group], query=query)
             self.__load_hook__(load_group, data)
 
     @property

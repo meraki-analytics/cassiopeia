@@ -6,7 +6,7 @@ from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy_property, lazy
 from merakicommons.container import searchable, SearchableList
 
-from ...configuration import settings
+from ... import configuration
 from ...data import Region, Platform
 from ...dto.staticdata.profileicon import ProfileIconDataDto, ProfileIconListDto
 from ..common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
@@ -73,7 +73,7 @@ class ProfileIcons(CassiopeiaGhostList):
 
     def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None):
         if region is None:
-            region = settings.default_region
+            region = configuration.settings.default_region
         kwargs = {"region": region}
         if version is not None:
             kwargs["version"] = version
@@ -124,7 +124,7 @@ class ProfileIcon(CassiopeiaGhost):
 
     def __init__(self, *, id: int, region: Union[Region, str] = None, version: str = None, locale: str = None):
         if region is None:
-            region = settings.default_region
+            region = configuration.settings.default_region
         kwargs = {"id": id, "region": region}
         if version is not None:
             kwargs["version"] = version
@@ -202,4 +202,4 @@ class ProfileIcon(CassiopeiaGhost):
     @ghost_load_on(KeyError)
     @lazy
     def image(self) -> PILImage:
-        return settings.pipeline.get(PILImage, query={"url": self.url})
+        return configuration.settings.pipeline.get(PILImage, query={"url": self.url})

@@ -5,10 +5,9 @@ from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
-from ...configuration import settings
-from ...data import Resource, Region, Platform, Map, GameMode, Role, Tier, Patch
+from ... import configuration
+from ...data import Resource, Region, Platform, Map, GameMode
 from ..champion import ChampionData as ChampionStatusData
-from ..champion import ChampionListData as ChampionStatusListData
 from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
 from .common import ImageData, Image, Sprite
 from ...dto.staticdata import champion as dto
@@ -463,7 +462,7 @@ class Champions(CassiopeiaGhostList):
 
     def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if region is None:
-            region = settings.default_region
+            region = configuration.settings.default_region
         if not isinstance(region, Region):
             region = Region(region)
         if included_data is None:
@@ -761,12 +760,12 @@ class Skin(CassiopeiaObject):
     @lazy_property
     def splash(self) -> PILImage:
         """The skin's splash art."""
-        return settings.pipeline.get(PILImage, query={"url": self.splash_url})
+        return configuration.settings.pipeline.get(PILImage, query={"url": self.splash_url})
 
     @lazy_property
     def loading_image(self) -> PILImage:
         """The skin's loading screen image."""
-        return settings.pipeline.get(PILImage, query={"url": self._loading_image_url})
+        return configuration.settings.pipeline.get(PILImage, query={"url": self._loading_image_url})
 
 
 class Stats(CassiopeiaObject):
@@ -883,7 +882,7 @@ class Champion(CassiopeiaGhost):
 
     def __init__(self, *, id: int = None, name: str = None, key: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if region is None:
-            region = settings.default_region
+            region = configuration.settings.default_region
         if not isinstance(region, Region):
             region = Region(region)
         if included_data is None:

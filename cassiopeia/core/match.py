@@ -6,7 +6,7 @@ from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableLazyList, SearchableDictionary
 
-from ..configuration import settings
+from .. import configuration
 from ..data import Region, Platform, Tier, Map, GameType, GameMode, Queue, Division, Side, Season, Patch
 from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostLazyList
 from ..dto import match as dto
@@ -867,7 +867,7 @@ class MatchHistory(CassiopeiaGhostLazyList):
     def __init__(self, summoner: Union[Summoner, str, int] = None, account_id: int = None, region: Union[Region, str] = None, begin_index: int = 0, end_index: int = None, begin_time: datetime.datetime = None, end_time: datetime.datetime = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
         assert end_index is None or end_index > begin_index
         if region is None:
-            region = settings.default_region
+            region = configuration.settings.default_region
         if not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region}
@@ -898,7 +898,7 @@ class MatchHistory(CassiopeiaGhostLazyList):
                 query = self.__get_query__()
                 query["beginIndex"] = begin_index
                 query["endIndex"] = end_index
-                data = settings.pipeline.get(type=MatchListData, query=query)
+                data = configuration.settings.pipeline.get(type=MatchListData, query=query)
                 for matchrefdata in data:
                     match = MatchTransformer.match_reference_data_to_core(None, matchrefdata)
                     # We have a summoner object (probably) already created, and if one was passed in then this is pretty crucial to do:
@@ -1143,7 +1143,7 @@ class Timeline(CassiopeiaGhost):
 
     def __init__(self, *, id: int = None, region: Union[Region, str] = None):
         if region is None:
-            region = settings.default_region
+            region = configuration.settings.default_region
         if not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region, "id": id}
@@ -1328,10 +1328,10 @@ class ParticipantStats(CassiopeiaObject):
         # we need to pull the entire match data.
         # On the other hand, we can probably use the creation date (which comes with a matchref) and get the patch #
         # and therefore version # from the patch.
-        if settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
+        if configuration.settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
             version = self.__match.version
             version = ".".join(version.split(".")[:2]) + ".1"
-        elif settings.version_from_match == "patch":
+        elif configuration.settings.version_from_match == "patch":
             patch = Patch.from_date(self.__match.creation)
             version = patch.majorminor + ".1"  # Just always use x.x.1
         else:
@@ -1563,10 +1563,10 @@ class Participant(CassiopeiaObject):
     @load_match_on_keyerror
     def runes(self) -> Dict["Rune", int]:
         # See ParticipantStats for info
-        if settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
+        if configuration.settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
             version = self.__match.version
             version = ".".join(version.split(".")[:2]) + ".1"
-        elif settings.version_from_match == "patch":
+        elif configuration.settings.version_from_match == "patch":
             patch = Patch.from_date(self.__match.creation)
             version = patch.majorminor + ".1"  # Just always use x.x.1
         else:
@@ -1577,10 +1577,10 @@ class Participant(CassiopeiaObject):
     @load_match_on_keyerror
     def masteries(self) -> Dict["Mastery", int]:
         # See ParticipantStats for info
-        if settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
+        if configuration.settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
             version = self.__match.version
             version = ".".join(version.split(".")[:2]) + ".1"
-        elif settings.version_from_match == "patch":
+        elif configuration.settings.version_from_match == "patch":
             patch = Patch.from_date(self.__match.creation)
             version = patch.majorminor + ".1"  # Just always use x.x.1
         else:
@@ -1601,10 +1601,10 @@ class Participant(CassiopeiaObject):
     @load_match_on_keyerror
     def summoner_spell_d(self) -> SummonerSpell:
         # See ParticipantStats for info
-        if settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
+        if configuration.settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
             version = self.__match.version
             version = ".".join(version.split(".")[:2]) + ".1"
-        elif settings.version_from_match == "patch":
+        elif configuration.settings.version_from_match == "patch":
             patch = Patch.from_date(self.__match.creation)
             version = patch.majorminor + ".1"  # Just always use x.x.1
         else:
@@ -1615,10 +1615,10 @@ class Participant(CassiopeiaObject):
     @load_match_on_keyerror
     def summoner_spell_f(self) -> SummonerSpell:
         # See ParticipantStats for info
-        if settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
+        if configuration.settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
             version = self.__match.version
             version = ".".join(version.split(".")[:2]) + ".1"
-        elif settings.version_from_match == "patch":
+        elif configuration.settings.version_from_match == "patch":
             patch = Patch.from_date(self.__match.creation)
             version = patch.majorminor + ".1"  # Just always use x.x.1
         else:
@@ -1634,10 +1634,10 @@ class Participant(CassiopeiaObject):
     @load_match_on_keyerror
     def champion(self) -> "Champion":
         # See ParticipantStats for info
-        if settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
+        if configuration.settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
             version = self.__match.version
             version = ".".join(version.split(".")[:2]) + ".1"
-        elif settings.version_from_match == "patch":
+        elif configuration.settings.version_from_match == "patch":
             patch = Patch.from_date(self.__match.creation)
             version = patch.majorminor + ".1"  # Just always use x.x.1
         else:
@@ -1762,7 +1762,7 @@ class Match(CassiopeiaGhost):
 
     def __init__(self, *, id: int = None, region: Union[Region, str] = None):
         if region is None:
-            region = settings.default_region
+            region = configuration.settings.default_region
         if not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region, "id": id}

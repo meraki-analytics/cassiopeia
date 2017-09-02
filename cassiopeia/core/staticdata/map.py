@@ -4,7 +4,7 @@ from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList
 
-from ...configuration import settings
+from ... import configuration
 from ...data import Region, Platform
 from ..common import CoreData, CassiopeiaGhost, DataObjectList, CassiopeiaGhostList, get_latest_version
 from .common import ImageData, Sprite, Image
@@ -76,7 +76,7 @@ class Maps(CassiopeiaGhostList):
 
     def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None):
         if region is None:
-            region = settings.default_region
+            region = configuration.settings.default_region
         if not isinstance(region, Region):
             region = Region(region)
         if locale is None:
@@ -123,7 +123,7 @@ class Map(CassiopeiaGhost):
 
     def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None):
         if region is None:
-            region = settings.default_region
+            region = configuration.settings.default_region
         if not isinstance(region, Region):
             region = Region(region)
         if locale is None:

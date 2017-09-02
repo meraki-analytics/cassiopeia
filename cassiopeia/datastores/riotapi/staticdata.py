@@ -15,6 +15,7 @@ from ...dto.staticdata.realm import RealmDto
 from ...dto.staticdata.language import LanguagesDto, LanguageStringsDto
 from ...dto.staticdata.profileicon import ProfileIconDataDto
 from ..uniquekeys import _hash_included_data
+from ... import configuration
 
 T = TypeVar("T")
 
@@ -63,8 +64,7 @@ class StaticDataAPI(RiotAPIService):
     def get_champion(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionDto:
         StaticDataAPI._validate_get_champion_query(query, context)
 
-        from ...configuration.settings import settings
-        if settings.request_by_id or "id" not in query:  # Get by champion list
+        if configuration.settings.request_by_id or "id" not in query:  # Get by champion list
             champions_query = copy.deepcopy(query)
             if "id" in champions_query:
                 champions_query.pop("id")
@@ -275,8 +275,7 @@ class StaticDataAPI(RiotAPIService):
     def get_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasteryDto:
         StaticDataAPI._validate_get_mastery_query(query, context)
 
-        from ...configuration.settings import settings
-        if settings.request_by_id or "id" not in query:  # Get by mastery list
+        if configuration.settings.request_by_id or "id" not in query:  # Get by mastery list
             mastery_query = copy.deepcopy(query)
             if "id" in mastery_query:
                 mastery_query.pop("id")
@@ -456,8 +455,7 @@ class StaticDataAPI(RiotAPIService):
     def get_rune(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> RuneDto:
         StaticDataAPI._validate_get_rune_query(query, context)
 
-        from ...configuration.settings import settings
-        if settings.request_by_id or "id" not in query:  # Get by rune list
+        if configuration.settings.request_by_id or "id" not in query:  # Get by rune list
             runes_query = copy.deepcopy(query)
             if "id" in runes_query:
                 runes_query.pop("id")
@@ -637,8 +635,7 @@ class StaticDataAPI(RiotAPIService):
     def get_item(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ItemDto:
         StaticDataAPI._validate_get_item_query(query, context)
 
-        from ...configuration.settings import settings
-        if settings.request_by_id or "id" not in query:  # Get by item list
+        if configuration.settings.request_by_id or "id" not in query:  # Get by item list
             items_query = copy.deepcopy(query)
             if "id" in items_query:
                 items_query.pop("id")
@@ -853,8 +850,7 @@ class StaticDataAPI(RiotAPIService):
     def get_map(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MapDto:
         StaticDataAPI._validate_get_map_query(query, context)
 
-        from ...configuration.settings import settings
-        if settings.request_by_id or "id" not in query:  # Get by map list
+        if configuration.settings.request_by_id or "id" not in query:  # Get by map list
             maps_query = copy.deepcopy(query)
             if "id" in maps_query:
                 maps_query.pop("id")
@@ -926,8 +922,7 @@ class StaticDataAPI(RiotAPIService):
     def get_summoner_spell(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> SummonerSpellDto:
         StaticDataAPI._validate_get_summoner_spell_query(query, context)
 
-        from ...configuration.settings import settings
-        if settings.request_by_id or "id" not in query:  # Get by summoner spell list
+        if configuration.settings.request_by_id or "id" not in query:  # Get by summoner spell list
             summoner_spells_query = copy.deepcopy(query)
             if "id" in summoner_spells_query:
                 summoner_spells_query.pop("id")
