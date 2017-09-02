@@ -34,7 +34,7 @@ def provide_default_region(method):
                 else:
                     region = Platform(platform).region
         else:
-            if not isinstance(region, Region):
+            if region is not None and not isinstance(region, Region):
                 region = Region(region)
         kwargs["region"] = region.value
         if self:

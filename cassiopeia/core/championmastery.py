@@ -118,7 +118,7 @@ class ChampionMastery(CassiopeiaGhost):
     def __init__(self, *, summoner: Union[Summoner, int, str] = None, champion: Union[Champion, int, str] = None, region: Union[Region, str] = None):
         if region is None:
             region = configuration.settings.default_region
-        if not isinstance(region, Region):
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region}
 
@@ -174,7 +174,7 @@ class ChampionMastery(CassiopeiaGhost):
     @lazy
     def champion(self) -> Champion:
         """Champion for this entry."""
-        return Champion(id=self._data[ChampionMasteryData].champion_id)
+        return Champion(id=self._data[ChampionMasteryData].champion_id, region=self.region)
 
     @CassiopeiaGhost.property(ChampionMasteryData)
     @lazy

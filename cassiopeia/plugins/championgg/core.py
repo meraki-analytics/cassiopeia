@@ -121,7 +121,7 @@ class ChampionGGStats(CassiopeiaGhost):
     def __init__(self, *, id: int, patch: Patch, included_data: Set[str] = None, elo: Set[str] = None, region: Union[Region, str] = None):
         if region is None:
             region = configuration.settings.default_region
-        if not isinstance(region, Region):
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         if included_data is None:
             # I manually chose a selection of data to return by default; I chose this data because it's relatively small and provides some additional useful information.

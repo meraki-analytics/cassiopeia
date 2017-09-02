@@ -82,7 +82,7 @@ class Summoner(CassiopeiaGhost):
     def __init__(self, *, id: int = None, account: Union[Account, int] = None, name: str = None, region: Union[Region, str] = None):
         if region is None:
             region = configuration.settings.default_region
-        if not isinstance(region, Region):
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region}
         if id is not None:
@@ -156,7 +156,7 @@ class Summoner(CassiopeiaGhost):
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on(KeyError)
     def profile_icon(self) -> ProfileIcon:
-        return ProfileIcon(id=self._data[SummonerData].profile_icon_id)
+        return ProfileIcon(id=self._data[SummonerData].profile_icon_id, region=self.region)
 
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on(KeyError)

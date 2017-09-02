@@ -1,5 +1,5 @@
 # Initialize the settings singleton
-from ._configuration import CassiopeiaConfiguration as _CassiopeiaConfiguration
+from ._configuration import Settings, CassiopeiaConfiguration as _CassiopeiaConfiguration
 configuration = _CassiopeiaConfiguration()
 
 from .cassiopeia import get_realms, get_challenger_league, get_champion_masteries, get_champion, get_champion_mastery, get_champions, get_current_match, get_featured_matches, get_items, get_language_strings, get_locales, get_league_positions, get_leagues, get_maps, get_master_league, get_masteries, get_mastery_pages, get_match, get_match_history, get_patch, get_profile_icons, get_rune_pages, get_runes, get_status, get_summoner, get_summoner_spells, get_version, get_versions

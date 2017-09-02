@@ -3,9 +3,11 @@ Settings
 
 That are many settings in Cassiopeia that control how the framework works, and more settings will be added as the code is expanded.
 
-The most important settings are the Riot API key and the default region. Both of these can be set programmatically, but it is often easiest to just change your settings file instead. Please see ``cassiopeia/configuration/default.json`` for an up to date example of a settings file.
+Use ``cass.apply_settings(...)`` and pass in a ``json`` filename, a dictionary, or a ``cassiopeia.Settings`` object to set Cass's parameters. A default settings file (``cassiopeia/configuration/default.json``) will be used if you do not run ``cass.apply_settings``.
 
-Each setting is explained below, and should be added as separate entries to the settings file (which is in ``json`` format).
+The most important settings are the Riot API key and the default region. Both of these can be set programmatically, and if not set they will be read from your settings file. See ``cassiopeia/configuration/default.json`` for an up to date example of a settings file.
+
+Each setting is explained below, and should be added as separate entries to the settings file (in ``json`` format) or into a python dictionary.
 
 Riot API
 --------

@@ -4,7 +4,7 @@ from cassiopeia import Champion
 
 def get_champions():
     # annie = Champion(name="Annie", region="NA")
-    annie = Champion(name="Annie")
+    annie = Champion(name="Annie", region="NA")
     print(annie.name)
     print(annie.title)
     for spell in annie.spells:
@@ -17,7 +17,7 @@ def get_champions():
     print(annie._Ghost__all_loaded)
 
     # ziggs = cass.get_champion(region="NA", "Ziggs")
-    ziggs = cass.get_champion("Ziggs")
+    ziggs = cass.get_champion("Ziggs", region="NA")
     print(ziggs.name)
     print(ziggs.region)
     print({item.name: count for item, count in ziggs.recommended_itemsets[0].item_sets[0].items.items()})

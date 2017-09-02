@@ -41,7 +41,7 @@ class SpectatorTransformer(DataTransformer):
         from ..core.summoner import Summoner
         matches = []
         for match in value:
-            summoner = Summoner(name=match.teams[0].participants[0].summoner_name)
+            summoner = Summoner(name=match.teams[0].participants[0].summoner_name, region=value.region)
             match = CurrentMatch.from_data(match, summoner=summoner)
             matches.append(match)
         return FeaturedMatches(matches, region=value.region, client_refresh_interval=value.client_refresh_interval)

@@ -868,7 +868,7 @@ class MatchHistory(CassiopeiaGhostLazyList):
         assert end_index is None or end_index > begin_index
         if region is None:
             region = configuration.settings.default_region
-        if not isinstance(region, Region):
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region}
         kwargs["queues"] = queues or []
@@ -1144,7 +1144,7 @@ class Timeline(CassiopeiaGhost):
     def __init__(self, *, id: int = None, region: Union[Region, str] = None):
         if region is None:
             region = configuration.settings.default_region
-        if not isinstance(region, Region):
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region, "id": id}
         super().__init__(**kwargs)
@@ -1643,7 +1643,7 @@ class Participant(CassiopeiaObject):
         else:
             version = None
         from .staticdata.champion import Champion
-        return Champion(id=self._data[ParticipantData].champion_id, version=version)
+        return Champion(id=self._data[ParticipantData].champion_id, version=version, region=self.__match.region)
 
     # All the Player data from ParticipantIdentities.player is contained in the Summoner class.
     # The non-current accountId and platformId should never be relevant/used, and can be deleted from our type system.
@@ -1763,7 +1763,7 @@ class Match(CassiopeiaGhost):
     def __init__(self, *, id: int = None, region: Union[Region, str] = None):
         if region is None:
             region = configuration.settings.default_region
-        if not isinstance(region, Region):
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region, "id": id}
         super().__init__(**kwargs)

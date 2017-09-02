@@ -77,7 +77,7 @@ class Maps(CassiopeiaGhostList):
     def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None):
         if region is None:
             region = configuration.settings.default_region
-        if not isinstance(region, Region):
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         if locale is None:
             locale = region.default_locale
@@ -124,9 +124,9 @@ class Map(CassiopeiaGhost):
     def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None):
         if region is None:
             region = configuration.settings.default_region
-        if not isinstance(region, Region):
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
-        if locale is None:
+        if locale is None and region is not None:
             locale = region.default_locale
         kwargs = {"region": region, "locale": locale}
         if version is not None:
@@ -166,7 +166,7 @@ class Map(CassiopeiaGhost):
     @property
     def locale(self) -> str:
         """The locale for this map."""
-        return self._data[MapData].locale
+        return self._data[MapData].locale or region.default_locale
 
     @CassiopeiaGhost.property(MapData)
     @ghost_load_on(KeyError)

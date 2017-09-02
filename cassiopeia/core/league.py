@@ -201,7 +201,7 @@ class LeagueEntry(CassiopeiaGhost):
     def __init__(self, *, region: Union[Region, str] = None):
         if region is None:
             region = configuration.settings.default_region
-        if not isinstance(region, Region):
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region}
         super().__init__(**kwargs)
@@ -309,7 +309,7 @@ class LeagueEntries(CassiopeiaGhostList):
     def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
         if region is None:
             region = configuration.settings.default_region
-        if not isinstance(region, Region):
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         super().__init__(*args, region=region)
         if isinstance(summoner, str):
@@ -354,7 +354,7 @@ class Leagues(CassiopeiaGhostList):
     def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
         if region is None:
             region = configuration.settings.default_region
-        if not isinstance(region, Region):
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         super().__init__(*args, region=region)
         if isinstance(summoner, str):
@@ -399,7 +399,7 @@ class ChallengerLeague(League, CassiopeiaGhost):
     def __init__(self, *, queue: Union[Queue, str, int] = None, region: Union[Region, str] = None):
         if region is None:
             region = configuration.settings.default_region
-        if not isinstance(region, Region):
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region}
         if isinstance(queue, int):
@@ -443,7 +443,7 @@ class MasterLeague(League, CassiopeiaGhost):
     def __init__(self, *, queue: Union[Queue, str, int] = None, region: Union[Region, str] = None):
         if region is None:
             region = configuration.settings.default_region
-        if not isinstance(region, Region):
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region}
         if isinstance(queue, int):

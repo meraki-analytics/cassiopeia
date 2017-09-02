@@ -235,7 +235,7 @@ class ShardStatus(CassiopeiaGhost):
     def __init__(self, region: Union[Region, str] = None):
         if region is None:
             region = configuration.settings.default_region
-        if not isinstance(region, Region):
+        if region is not None and not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region}
         super().__init__(**kwargs)
