@@ -1,4 +1,4 @@
-from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
+from typing import Type, TypeVar, MutableMapping, Any, Iterable
 import copy
 
 from datapipelines import DataSource, DataSink, PipelineContext, Query, NotFoundError
@@ -14,7 +14,7 @@ from ...dto.staticdata.map import MapDto, MapListDto
 from ...dto.staticdata.realm import RealmDto
 from ...dto.staticdata.language import LanguagesDto, LanguageStringsDto
 from ...dto.staticdata.profileicon import ProfileIconDataDto
-from ..riotapi.staticdata import StaticDataAPI, _get_default_locale, _get_latest_version
+from ..riotapi.staticdata import _get_default_locale, _get_latest_version
 from .common import SimpleKVDiskService
 
 T = TypeVar("T")
@@ -42,9 +42,12 @@ class StaticDataDiskService(SimpleKVDiskService):
     # Versions #
     ############
 
+    _validate_get_versions_query = Query. \
+        has("platform").as_(Platform)
+
     @get.register(VersionListDto)
     def get_versions(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> VersionListDto:
-        StaticDataAPI._validate_get_versions_query(query, context)
+        StaticDataDiskService._validate_get_versions_query(query, context)
         key = "{clsname}.{platform}".format(clsname=VersionListDto.__name__, platform=query["platform"].value)
         return VersionListDto(self._get(key))
 
@@ -57,9 +60,12 @@ class StaticDataDiskService(SimpleKVDiskService):
     # Realms #
     ##########
 
+    _validate_get_realms_query = Query. \
+        has("platform").as_(Platform)
+
     @get.register(RealmDto)
     def get_realms(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> RealmDto:
-        StaticDataAPI._validate_get_realms_query(query, context)
+        StaticDataDiskService._validate_get_realms_query(query, context)
         key = "{clsname}.{platform}".format(clsname=RealmDto.__name__, platform=query["platform"].value)
         return RealmDto(self._get(key))
 
