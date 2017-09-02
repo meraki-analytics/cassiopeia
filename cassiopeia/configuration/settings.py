@@ -14,6 +14,7 @@ logging.basicConfig(format='%(asctime)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%
 
 def create_default_pipeline(riot_api_key: str, championgg_api_key: str = None, limiting_share: float = 1.0, handler_configs: Dict = None, verbose: bool = False) -> DataPipeline:
     from ..datastores.cache import Cache
+    from ..datastores.diskstore import SimpleKVDiskStore
     from ..datastores.riotapi import RiotAPI
     from ..datastores.ddragon import DDragonDataSource
     from ..transformers.staticdata import StaticDataTransformer
@@ -29,6 +30,7 @@ def create_default_pipeline(riot_api_key: str, championgg_api_key: str = None, l
 
     services = [
         Cache(),  # TODO Add expirations from file
+        SimpleKVDiskStore(),
         DDragonDataSource(),
         RiotAPI(api_key=riot_api_key, limiting_share=limiting_share, handler_configs=handler_configs),
     ]
