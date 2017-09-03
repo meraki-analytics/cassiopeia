@@ -3,7 +3,7 @@ from cassiopeia import Runes, Rune
 
 
 def print_t3_runes():
-    for rune in cass.get_runes():
+    for rune in cass.get_runes(region="NA"):
         if rune.tier == 3:
             print(rune.name)
 

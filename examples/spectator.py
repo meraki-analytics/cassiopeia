@@ -3,7 +3,7 @@ from cassiopeia import Summoner, FeaturedMatches
 
 
 def get_spectator_matches():
-    featured_matches = cass.get_featured_matches("NA")
+    featured_matches = cass.get_featured_matches(region="NA")
     for match in featured_matches:
         print(match.region, match.id)
 

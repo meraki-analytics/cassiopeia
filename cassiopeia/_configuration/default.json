@@ -1,6 +1,6 @@
 {
   "global": {
-    "default_region": "NA"
+    "default_region": null
   },
 
   "pipeline": {
@@ -15,7 +15,7 @@
 
   "logging": {
     "print_calls": true,
-    "print_riot_api_key": true,
+    "print_riot_api_key": false,
     "default": "WARNING",
     "core": "WARNING"
   }

@@ -2,9 +2,7 @@ import cassiopeia as cass
 from cassiopeia import Summoner
 
 def get_cass():
-    name = "Kalturi"
-
-    me = Summoner(name=name, id=21359666)
+    me = Summoner(name="Kalturi", id=21359666, region="NA")
     print("Name:", me.name)
     print("Id:", me.id)
 

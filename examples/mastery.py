@@ -3,7 +3,7 @@ from cassiopeia import Masteries, Mastery
 
 
 def print_masteries():
-    for mastery in cass.get_masteries():
+    for mastery in cass.get_masteries(region="NA"):
         print(mastery.name)
 
 
