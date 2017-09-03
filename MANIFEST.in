@@ -1,3 +1,5 @@
-include cassiopeia/configuration/default.json
+include cassiopeia/_configuration/default.json
+include cassiopeia/_configuration/all_plugins.json
 include cassiopeia/profile_icon_names.json
 include cassiopeia/transformers/*.py
+include cassiopeia/patches.json
