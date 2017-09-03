@@ -23,7 +23,7 @@ The components of the data pipeline are defined explicitly below, and you can ch
 
 Each component has it's own set of parameters, also described below.
 
-At the end of this page is an example data pipeline you can use in your settings if you want to modify the defaults.
+:ref:`settings` has an example data pipeline you can use in your settings if you want to modify the defaults.
 
 Components
 ==========
@@ -66,29 +66,3 @@ ChampionGG
 """"""""""
 
 The ChampionGG plugin has its own data source if it is included. See :ref:`plugins`.
-
-
-Example Data Pipeline Settings
-==============================
-
-.. code-block:: json
-
-    {
-      "pipeline": {
-        "Cache": {},
-
-        "SimpleKVDiskStore": {
-          "package": "cassiopeia-datastores.diskstore"
-        },
-
-        "DDragon": {},
-
-        "RiotAPI": {
-          "api_key": "RIOT_API_KEY"
-        },
-
-        "ChampionGG": {
-          "package": "cassiopeia-plugins.championgg.championgg",
-          "api_key": "CHAMPIONGG_KEY"
-        }
-    }

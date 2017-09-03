@@ -53,6 +53,8 @@ A data pipeline containing an in-memory cache and the Riot API is created by def
 
 (Not yet implemented) Expiration times for objects are allowed. If an object in a data sink expires, it will be removed from the data sink. This happens periodically when data is queried. Users can force all expired objects in data sinks to be removed using ``settings.pipeline.expire()``.
 
+See :ref:`datapipeline` for more details.
+
 
 .. _searchable:
 

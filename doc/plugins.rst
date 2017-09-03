@@ -5,8 +5,13 @@ Plugins
 
 Plugins monkeypatch Cass to provide modified or additional functionality. They are listed below.
 
-Champion GG
------------
+The plugins for Cass are stored in two different repositories: `cassiopeia-plugins <https://github.com/meraki-analytics/cassiopeia-plugins>`_ and `cassiopeia-datastores <https://github.com/meraki-analytics/cassiopeia-datastores>`_. ``cassiopeia-plugins`` contains functionality that modify the behavior of Cass's objects, while ``cassiopeia-datastores`` provides additional datastores (such as databases). Both of these are called "plugins" in this documentation.
+
+Plugins can be added to Cass by downloading the appropriate plugin and putting it on your ``PYTHONPATH`` environment variable. Then, in your settings file, you specify the relative path to that plugin (using the ``package`` keyword) as if you were directly importing it into your project. The name of the package specifies the data store that that will be loaded from that package and put on the pipeline.
+
+
+ChampionGG
+----------
 
 The ChampionGG plugin pulls data from the `champion.gg api <http://api.champion.gg>`_ . This data is accessible via the ``Champion.championgg`` attribute.
 
@@ -38,7 +43,8 @@ To enable this plugin, add the following to your settings' data pipeline between
   "pipline": {
     ...,
     "SimpleKVDiskStore": {
-      "package": "cassiopeia-datastores.diskstore.diskstore"
+      "package": "cassiopeia-datastores.diskstore.diskstore",
+      "path": "/absolute/path/to/store/data/"
     },
     ...
   }

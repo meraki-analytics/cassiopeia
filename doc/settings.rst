@@ -25,6 +25,31 @@ Pipeline
 
 This setting is extremely important and deserves it's own page. However, our defaults will likely work for you if you're just getting started. See :ref:`datapipeline`.
 
+Example (note that the ``SimpleKVDiskStore`` and ``ChampionGG`` are not included by default):
+
+.. code-block:: json
+
+    {
+      "pipeline": {
+        "Cache": {},
+
+        "SimpleKVDiskStore": {
+          "package": "cassiopeia-datastores.diskstore.diskstore"
+        },
+
+        "DDragon": {},
+
+        "RiotAPI": {
+          "api_key": "RIOT_API_KEY"
+        },
+
+        "ChampionGG": {
+          "package": "cassiopeia-plugins.championgg.championgg",
+          "api_key": "CHAMPIONGG_KEY"
+        }
+    }
+
+
 Riot API
 --------
 

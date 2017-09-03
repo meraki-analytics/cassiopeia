@@ -24,18 +24,12 @@ Things we need help with!
 
 * Add ``get_many_*`` functions to the ddragon data source, similar to the riotapi data source.
 
-* Have the ddragon data source cache it's data (since its data is independent of region) and return the cached data for different regions if multiple are requested (rather than send an http request to ddragon for each region).
-
-* We have some tests in place, but a thorough testing of all attributes of all objects would be extremely helpful.
+* We have some very basic tests in place, but a thorough testing of all attributes of all objects would be extremely helpful.
 
 * Some data from the `champion.gg api <http://api.champion.gg>`_ is available through Cass (via the ``Champion`` object). The remaining data should be added as well. You can find the relevant code in the ``plugins/championgg`` directory.
 
-* Add functionality for setting ``version="latest"`` for all objects.
+* The patch dates are approximate and are the same for all regions. Instead, the patches should be set per-region and should be as precise of a timestamp as we can get. We can figure this out by pulling matches near when patches change, and carefully checking the creation date of the match and it's patch / version. If someone can help us get precise patch values or even write us a script for doing that, it would be a huge help.
 
 * Currently, the patches file needs to be updated with the correct start date every time a new patch is released. There must be some way to automate this.
 
-* Allow a patch to be given as a ``version`` rather than a string, and therefore allow ``MatchHistory`` objects to be indexable by patch number. Version numbers (e.g. ``"7.14.2"``) are more strict than patch numbers (e.g. ``"7.14"``).
-
-* ``Map`` and locales are approximately duplicated in two different ways. The ``Map`` class is implemented as both ``Enum`` and ``CassiopeiaGhost``, and this functionality can likely be combined in some way. Similarly, locales can be pulled using the ``Locales`` ``CassiopeiaGhost`` type, and locales should also probably be ``Enum`` s that get passed in during initialization (similarly to ``Region``). This will require a bit of thought before implementing, and please talk to us about your ideas.
-
-* Expiration times need to be added for all data types so that they can be cleared from the data sinks in the datapipeline when their data is no longer valid. This is serious undertaking and one we would like to work closely with you if you want to try this.
+* Allow ``MatchHistory`` objects to be indexable by patch number. Note that version numbers (e.g. ``"7.14.2"``) are more strict than patch numbers (e.g. ``"7.14"``) if that matters.

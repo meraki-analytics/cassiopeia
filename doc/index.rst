@@ -96,6 +96,7 @@ Overview
     setup
     settings
     inner_workings
+    datapipeline
     plugins
     contributing
 
