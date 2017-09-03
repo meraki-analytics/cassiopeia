@@ -8,7 +8,7 @@ from merakicommons.container import searchable, SearchableList, SearchableDictio
 
 from .. import configuration
 from ..data import Region, Platform, GameMode, GameType, Queue
-from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList
+from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
 from ..dto import spectator as dto
 from .staticdata.profileicon import ProfileIcon
 from .staticdata.champion import Champion
@@ -235,7 +235,7 @@ class Participant(CassiopeiaObject):
 
     @property
     def champion(self) -> Champion:
-        return Champion(id=self._data[CurrentGameParticipantData].champion_id)
+        return Champion(id=self._data[CurrentGameParticipantData].champion_id, region=self.__region, version=get_latest_version(self.__region, endpoint="champion"))
 
     @property
     def summoner(self) -> Summoner:
@@ -247,11 +247,11 @@ class Participant(CassiopeiaObject):
 
     @property
     def runes(self) -> Dict[Rune, int]:
-        return SearchableDictionary({Rune(id=rune.id): rune.count for rune in self._data[CurrentGameParticipantData].runes})
+        return SearchableDictionary({Rune(id=rune.id, region=self.__region, version=get_latest_version(self.__region, endpoint="rune")): rune.count for rune in self._data[CurrentGameParticipantData].runes})
 
     @property
     def masteries(self) -> Dict[Mastery, int]:
-        return SearchableDictionary({Mastery(id=mastery.id): mastery.points for mastery in self._data[CurrentGameParticipantData].masteries})
+        return SearchableDictionary({Mastery(id=mastery.id, region=self.__region, version=get_latest_version(self.__region, endpoint="mastery")): mastery.points for mastery in self._data[CurrentGameParticipantData].masteries})
 
     @property
     def is_bot(self) -> bool:
@@ -263,11 +263,11 @@ class Participant(CassiopeiaObject):
 
     @property
     def summoner_spell_d(self) -> SummonerSpell:
-        return SummonerSpell(id=self._data[CurrentGameParticipantData].summoner_spell_d)
+        return SummonerSpell(id=self._data[CurrentGameParticipantData].summoner_spell_d, region=self.__region, version=get_latest_version(self.__region, endpoint="summoner"))
 
     @property
     def summoner_spell_f(self) -> SummonerSpell:
-        return SummonerSpell(id=self._data[CurrentGameParticipantData].summoner_spell_f)
+        return SummonerSpell(id=self._data[CurrentGameParticipantData].summoner_spell_f, region=self.__region, version=get_latest_version(self.__region, endpoint="summoner"))
 
 
 @searchable({})
@@ -286,7 +286,7 @@ class Team(CassiopeiaObject):
 
     @lazy_property
     def bans(self) -> Dict[int, Champion]:
-        return {pick: Champion(id=champion_id) for pick, champion_id in self._data[TeamData].bans.items()}
+        return {pick: Champion(id=champion_id, region=self.__region, version=get_latest_version(self.__region, endpoint="champion")) for pick, champion_id in self._data[TeamData].bans.items()}
 
 
 @searchable({})
@@ -368,7 +368,7 @@ class CurrentMatch(CassiopeiaGhost):
     @CassiopeiaGhost.property(CurrentGameInfoData)
     @ghost_load_on(KeyError)
     def map(self) -> Map:
-        return Map(id=self._data[CurrentGameInfoData].map, region=self.region)
+        return Map(id=self._data[CurrentGameInfoData].map, region=self.region, version=get_latest_version(self.region, endpoint="map"))
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
     @ghost_load_on(KeyError)

@@ -214,7 +214,7 @@ class Mastery(CassiopeiaGhost):
     @ghost_load_on(KeyError)
     def prerequisite(self) -> "Mastery":
         """The prerequisite masteries."""
-        return Mastery(id=self._data[MasteryData].prerequisite)
+        return Mastery(id=self._data[MasteryData].prerequisite, region=self.region, version=self.version)
 
     @CassiopeiaGhost.property(MasteryData)
     @ghost_load_on(KeyError)

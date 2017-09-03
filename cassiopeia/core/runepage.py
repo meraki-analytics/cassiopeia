@@ -6,7 +6,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
 from ..data import Region, Platform
-from .common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList
+from .common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
 from .summoner import Summoner
 from ..dto.runepage import RuneSlotDto, RunePageDto, RunePagesDto
 from .staticdata.rune import Rune as StaticdataRune
@@ -137,7 +137,7 @@ class RunePage(CassiopeiaGhost):
     @lazy_property
     def summoner(self) -> "Summoner":
         from .summoner import Summoner
-        return Summoner(id=self._data[RunePageData].summoner_id)
+        return Summoner(id=self._data[RunePageData].summoner_id, region=self.region)
 
     @CassiopeiaGhost.property(RunePageData)
     @ghost_load_on(KeyError)
@@ -149,7 +149,7 @@ class RunePage(CassiopeiaGhost):
     @lazy
     def runes(self) -> Mapping[StaticdataRune, int]:
         counter = Counter(slot.id for slot in self._data[RunePageData].runes)
-        return SearchableDictionary({StaticdataRune(id=id, region=self.region.value): count for id, count in counter.items()})
+        return SearchableDictionary({StaticdataRune(id=id, region=self.region, version=get_latest_version(self.region, endpoint="rune")): count for id, count in counter.items()})
 
     @CassiopeiaGhost.property(RunePageData)
     @ghost_load_on(KeyError)

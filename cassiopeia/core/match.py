@@ -19,6 +19,22 @@ from .staticdata.item import Item
 from .staticdata.map import Map
 
 
+def _choose_staticdata_version(match):
+    # If we want to pull the data for the correct version, we need to pull the entire match data.
+    # However, we can use the creation date (which comes with a matchref) and get the ~ patch and therefore extract the version from the patch.
+    if configuration.settings.version_from_match is "latest":
+        version = None  # Rather than pick the latest version here, let the obj handle it so it knows which endpoint within the realms data to use
+    elif configuration.settings.version_from_match == "version" or "version" in match._data[MatchData]._dto:
+        version = match.version
+        version = ".".join(version.split(".")[:2]) + ".1"
+    elif configuration.settings.version_from_match == "patch":
+        patch = Patch.from_date(match.creation)
+        version = patch.majorminor + ".1"  # Just always use x.x.1
+    else:
+        raise ValueError("Unknown value for setting `version_from_match`:", configuration.settings.version_from_match)
+    return version
+
+
 ##############
 # Data Types #
 ##############
@@ -950,7 +966,7 @@ class MatchHistory(CassiopeiaGhostLazyList):
 
     @lazy_property
     def champions(self) -> Set[Champion]:
-        return {Champion(id=cid) for cid in self._data[MatchListData].champion_ids}
+        return {Champion(id=cid, region=self.region) for cid in self._data[MatchListData].champion_ids}
 
     @property
     def begin_index(self) -> int:
@@ -1325,19 +1341,8 @@ class ParticipantStats(CassiopeiaObject):
                self._data[ParticipantStatsData].item5,
                self._data[ParticipantStatsData].item6
         ]
-        # Maybe make this a setting. This is awkward because if we want to pull the data for the correct version,
-        # we need to pull the entire match data.
-        # On the other hand, we can probably use the creation date (which comes with a matchref) and get the patch #
-        # and therefore version # from the patch.
-        if configuration.settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
-            version = self.__match.version
-            version = ".".join(version.split(".")[:2]) + ".1"
-        elif configuration.settings.version_from_match == "patch":
-            patch = Patch.from_date(self.__match.creation)
-            version = patch.majorminor + ".1"  # Just always use x.x.1
-        else:
-            version = None
-        return SearchableList([Item(id=id, version=version) for id in ids if id])
+        version = _choose_staticdata_version(self.__match)
+        return SearchableList([Item(id=id, version=version, region=self.__match.region) for id in ids if id])
 
     @property
     def first_blood_assist(self) -> bool:
@@ -1563,30 +1568,14 @@ class Participant(CassiopeiaObject):
     @lazy_property
     @load_match_on_keyerror
     def runes(self) -> Dict["Rune", int]:
-        # See ParticipantStats for info
-        if configuration.settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
-            version = self.__match.version
-            version = ".".join(version.split(".")[:2]) + ".1"
-        elif configuration.settings.version_from_match == "patch":
-            patch = Patch.from_date(self.__match.creation)
-            version = patch.majorminor + ".1"  # Just always use x.x.1
-        else:
-            version = None
-        return SearchableDictionary({Rune(id=rune["runeId"], version=version): rune["rank"] for rune in self._data[ParticipantData].runes})
+        version = _choose_staticdata_version(self.__match)
+        return SearchableDictionary({Rune(id=rune["runeId"], version=version, region=self.__match.region): rune["rank"] for rune in self._data[ParticipantData].runes})
 
     @lazy_property
     @load_match_on_keyerror
     def masteries(self) -> Dict["Mastery", int]:
-        # See ParticipantStats for info
-        if configuration.settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
-            version = self.__match.version
-            version = ".".join(version.split(".")[:2]) + ".1"
-        elif configuration.settings.version_from_match == "patch":
-            patch = Patch.from_date(self.__match.creation)
-            version = patch.majorminor + ".1"  # Just always use x.x.1
-        else:
-            version = None
-        return SearchableDictionary({Mastery(id=mastery["masteryId"], version=version): mastery["rank"] for mastery in self._data[ParticipantData].masteries})
+        version = _choose_staticdata_version(self.__match)
+        return SearchableDictionary({Mastery(id=mastery["masteryId"], version=version, region=self.__match.region): mastery["rank"] for mastery in self._data[ParticipantData].masteries})
 
     @lazy_property
     @load_match_on_keyerror
@@ -1601,30 +1590,14 @@ class Participant(CassiopeiaObject):
     @lazy_property
     @load_match_on_keyerror
     def summoner_spell_d(self) -> SummonerSpell:
-        # See ParticipantStats for info
-        if configuration.settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
-            version = self.__match.version
-            version = ".".join(version.split(".")[:2]) + ".1"
-        elif configuration.settings.version_from_match == "patch":
-            patch = Patch.from_date(self.__match.creation)
-            version = patch.majorminor + ".1"  # Just always use x.x.1
-        else:
-            version = None
-        return SummonerSpell(id=self._data[ParticipantData].summoner_spell_d_id, version=version)
+        version = _choose_staticdata_version(self.__match)
+        return SummonerSpell(id=self._data[ParticipantData].summoner_spell_d_id, version=version, region=self.__match.region)
 
     @lazy_property
     @load_match_on_keyerror
     def summoner_spell_f(self) -> SummonerSpell:
-        # See ParticipantStats for info
-        if configuration.settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
-            version = self.__match.version
-            version = ".".join(version.split(".")[:2]) + ".1"
-        elif configuration.settings.version_from_match == "patch":
-            patch = Patch.from_date(self.__match.creation)
-            version = patch.majorminor + ".1"  # Just always use x.x.1
-        else:
-            version = None
-        return SummonerSpell(id=self._data[ParticipantData].summoner_spell_f_id, version=version)
+        version = _choose_staticdata_version(self.__match)
+        return SummonerSpell(id=self._data[ParticipantData].summoner_spell_f_id, version=version, region=self.__match.region)
 
     @lazy_property
     @load_match_on_keyerror
@@ -1635,15 +1608,7 @@ class Participant(CassiopeiaObject):
     @load_match_on_keyerror
     def champion(self) -> "Champion":
         # See ParticipantStats for info
-        if configuration.settings.version_from_match == "version" or "version" in self.__match._data[MatchData]._dto:
-            version = self.__match.version
-            version = ".".join(version.split(".")[:2]) + ".1"
-        elif configuration.settings.version_from_match == "patch":
-            patch = Patch.from_date(self.__match.creation)
-            version = patch.majorminor + ".1"  # Just always use x.x.1
-        else:
-            version = None
-        from .staticdata.champion import Champion
+        version = _choose_staticdata_version(self.__match)
         return Champion(id=self._data[ParticipantData].champion_id, version=version, region=self.__match.region)
 
     # All the Player data from ParticipantIdentities.player is contained in the Summoner class.
@@ -1714,7 +1679,7 @@ class Team(CassiopeiaObject):
 
     @property
     def bans(self) -> List["Champion"]:
-        return [Champion(id=champion_id, version=self.__participants[0].version) for champion_id in self._data[TeamData].bans]
+        return [Champion(id=champion_id, version=self.__participants[0].version, region=self.__participants[0].__match.region) for champion_id in self._data[TeamData].bans]
 
     @property
     def baron_kills(self) -> int:
@@ -1902,7 +1867,8 @@ class Match(CassiopeiaGhost):
     @ghost_load_on(KeyError)
     @lazy
     def map(self) -> Map:
-        return Map(id=self._data[MatchData].map_id, region=self.region)
+        version = _choose_staticdata_version(self)
+        return Map(id=self._data[MatchData].map_id, region=self.region, version=version)
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on(KeyError)

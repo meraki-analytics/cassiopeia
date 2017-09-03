@@ -653,7 +653,7 @@ class ItemSet(CassiopeiaObject):
     @property
     def items(self) -> Dict[Item, int]:
         """A dictionary of items mapped to how many of them are recommended."""
-        return SearchableDictionary({Item(id=item.id, region=self.__region): item.count for item in self._data[BlockData].items})
+        return SearchableDictionary({Item(id=item.id, region=self.__region): item.count for item in self._data[BlockData].items})  # TODO Add version; low priority and hopefully it's just never an issue
 
     @property
     def rec_math(self) -> bool:
@@ -691,17 +691,12 @@ class RecommendedItems(CassiopeiaObject):
             "TT": 10
         }
         id_ = convert_shitty_map_name_to_id[self._data[RecommendedData].map]
-        return Map(id=id_, region=self.__region)
+        return Map(id=id_, region=self.__region)  # TODO Add version; low priority and hopefully it's just never an issue
 
     @lazy_property
     def item_sets(self) -> List[ItemSet]:
         """The recommended item sets."""
         return SearchableList(ItemSet.from_data(itemset, region=self.__region) for itemset in self._data[RecommendedData].item_sets)
-
-    @property
-    def champion(self) -> "Champion":
-        """The name of the champion to whom this set of recommendations belongs."""
-        return Champion(name=self._data[RecommendedData].champion)
 
     @property
     def title(self) -> str:

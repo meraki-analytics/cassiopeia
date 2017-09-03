@@ -637,7 +637,7 @@ class Item(CassiopeiaGhost):
     @ghost_load_on(KeyError)
     @lazy
     def maps(self) -> List[Map]:
-        return [Map(id=id_, region=self.region) for id_ in self._data[ItemData].maps]
+        return [Map(id=id_, region=self.region, version=self.version) for id_ in self._data[ItemData].maps]
 
     @CassiopeiaGhost.property(ItemData)
     @ghost_load_on(KeyError)
@@ -658,7 +658,7 @@ class Item(CassiopeiaGhost):
     @ghost_load_on(KeyError)
     def champion(self) -> "Champion":
         from .champion import Champion
-        return Champion(name=self._data[ItemData].champion)
+        return Champion(name=self._data[ItemData].champion, region=self.region, version=self.verion)
 
     @CassiopeiaGhost.property(ItemData)
     @ghost_load_on(KeyError)

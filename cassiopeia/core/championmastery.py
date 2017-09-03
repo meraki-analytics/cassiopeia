@@ -7,7 +7,7 @@ from merakicommons.container import searchable, SearchableList
 
 from .. import configuration
 from ..data import Region, Platform
-from .common import CoreData, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList
+from .common import CoreData, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
 from ..dto.championmastery import ChampionMasteryDto
 from .staticdata.champion import Champion
 from .summoner import Summoner
@@ -135,7 +135,7 @@ class ChampionMastery(CassiopeiaGhost):
             if isinstance(champion, Champion):
                 self.__class__.champion.fget._lazy_set(self, champion)
             elif isinstance(champion, str):
-                champion = Champion(name=champion)
+                champion = Champion(name=champion, region=self.region, version=get_latest_version(self.region, endpoint="champion"))
                 self.__class__.champion.fget._lazy_set(self, champion)
             else:  # int
                 kwargs["champion_id"] = champion
@@ -174,7 +174,7 @@ class ChampionMastery(CassiopeiaGhost):
     @lazy
     def champion(self) -> Champion:
         """Champion for this entry."""
-        return Champion(id=self._data[ChampionMasteryData].champion_id, region=self.region)
+        return Champion(id=self._data[ChampionMasteryData].champion_id, region=self.region, version=get_latest_version(self.region, endpoint="champion"))
 
     @CassiopeiaGhost.property(ChampionMasteryData)
     @lazy

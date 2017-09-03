@@ -5,7 +5,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
 from ..data import Region, Platform
-from .common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList
+from .common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
 from .summoner import Summoner
 from ..dto.masterypage import MasteryDto, MasteryPageDto, MasteryPagesDto
 from .staticdata.mastery import Mastery as StaticdataMastery
@@ -141,7 +141,7 @@ class MasteryPage(CassiopeiaGhost):
     @ghost_load_on(KeyError)
     @lazy
     def masteries(self) -> Mapping[StaticdataMastery, int]:
-        return SearchableDictionary({StaticdataMastery(id=mastery.id, region=self.region.value): mastery.points for mastery in self._data[MasteryPageData].masteries})
+        return SearchableDictionary({StaticdataMastery(id=mastery.id, region=self.region, version=get_latest_version(self.region, endpoint="mastery")): mastery.points for mastery in self._data[MasteryPageData].masteries})
 
     @CassiopeiaGhost.property(MasteryPageData)
     @ghost_load_on(KeyError)

@@ -59,6 +59,8 @@ The ``"api_key"`` should be set to your Riot API key. You can instead supply an 
 
 The ``"limit_sharing"`` variable specifies what fraction of your API key should be used for your server. This is useful when you have multiple servers that you want to split your API key over. The default (if not set) is ``1.0``, and valid values are between ``0.0`` and ``1.0``.
 
+The ``request_by_id`` variable determines whether the Riot API will request static data and champion statuses by id when a single piece of data is accessed, or whether it will request all the champions/items/etc when one is asked for. The default is ``True``, meaning that individual elements will be requested one at a time. Be aware that you may quickly hit your rate limit if you aren't careful.
+
 Request Handling
 """"""""""""""""
 
