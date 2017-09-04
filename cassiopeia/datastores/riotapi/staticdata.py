@@ -864,9 +864,9 @@ class StaticDataAPI(RiotAPIService):
                         return dto
 
             if "id" in query:
-                map = find_matching_attribute(maps["data"].values(), "id", query["id"])
+                map = find_matching_attribute(maps["data"].values(), "mapId", query["id"])
             elif "name" in query:
-                map = find_matching_attribute(maps["data"].values(), "name", query["name"])
+                map = find_matching_attribute(maps["data"].values(), "mapName", query["name"])
             else:
                 raise ValueError("Impossible!")
             if map is None:
