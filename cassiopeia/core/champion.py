@@ -1,9 +1,18 @@
-from .common import CoreData
+from .common import CoreData, DataObjectList
 from ..dto import champion as dto
 
 
-class ChampionListData(list):
+class ChampionListData(DataObjectList):
     _dto_type = dto.ChampionListDto
+    _renamed = {"free_to_play": "freeToPlay"}
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
+
+    @property
+    def free_to_play(self) -> bool:
+        return self._dto["freeToPlay"]
 
 
 class ChampionData(CoreData):

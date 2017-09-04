@@ -15,6 +15,8 @@ from ..dto.runepage import RunePagesDto, RunePageDto
 from ..dto.spectator import CurrentGameInfoDto, FeaturedGamesDto
 from ..dto.summoner import SummonerDto
 
+from ..core.champion import ChampionData as ChampionStatusData, ChampionListData as ChampionStatusListData
+
 from ..core.common import provide_default_region
 from ..core.championmastery import ChampionMastery
 from ..core.league import LeagueEntries, Leagues, ChallengerLeague, MasterLeague
@@ -1308,6 +1310,68 @@ def for_many_summoner_dto_query(query: Query) -> Generator[Tuple[str, Union[int,
         except ValueError as e:
             raise QueryValidationError from e
 
+########
+# Data #
+########
+
+
+################
+# Champion API #
+################
+
+validate_champion_status_data_query = Query. \
+    has("platform").as_(Platform).also. \
+    has("id").as_(int)
+
+
+validate_many_champion_status_data_query = Query. \
+    has("platform").as_(Platform).also. \
+    has("ids").as_(Iterable)
+
+
+def for_champion_status_data(champion_status: ChampionStatusData) -> Tuple[str, int]:
+    return Region(champion_status.region).platform.value, champion_status.id
+
+
+def for_champion_status_data_query(query: Query) -> Tuple[str, int]:
+    return query["platform"].value, query["id"]
+
+
+def for_many_champion_status_data_query(query: Query) -> Generator[Tuple[str, int], None, None]:
+    for id in query["ids"]:
+        try:
+            id = int(id)
+            yield query["platform"].value, id
+        except ValueError as e:
+            raise QueryValidationError from e
+
+
+validate_champion_status_list_data_query = Query. \
+    has("platform").as_(Platform).also. \
+    can_have("free_to_play").with_default(False)
+
+
+validate_many_champion_status_list_data_query = Query. \
+    has("platforms").as_(Iterable).also. \
+    can_have("free_to_play").with_default(False)
+
+
+def for_champion_status_list_data(champion_status_list: ChampionStatusListData, identifier: str = "id") -> Tuple[str, bool]:
+    return Region(champion_status_list.region).platform.value, champion_status_list.free_to_play
+
+
+def for_champion_status_list_data_query(query: Query) -> Tuple[str, bool]:
+    return query["platform"].value, query["free_to_play"]
+
+
+def for_many_champion_status_list_data_query(query: Query) -> Generator[Tuple[str, bool], None, None]:
+    for platform in query["platforms"]:
+        try:
+            platform = Platform(platform)
+            yield platform.value, query["free_to_play"]
+        except ValueError as e:
+            raise QueryValidationError from e
+
 
 ########
 # Core #
@@ -1503,7 +1567,7 @@ validate_champion_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("includedData").as_(set).or_("included_data").with_default({"all"}).also. \
+    can_have("included_data").with_default({"all"}).also. \
     has("id").as_(int).or_("name").as_(str)
 
 
@@ -1521,7 +1585,7 @@ def for_champion(champion: Champion, identifier: str = "id") -> Tuple[str, str, 
 
 def for_champion_query(query: Query) -> Tuple[str, str, str, int, Union[int, str]]:
     identifier = "id" if "id" in query else "name"
-    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
+    included_data_hash = _hash_included_data(query["included_data"])
     return query["platform"].value, query["version"], query["locale"], included_data_hash, query[identifier]
 
 
@@ -1540,30 +1604,32 @@ validate_champions_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("includedData").as_(set).or_("included_data").with_default({"all"})
+    can_have("included_data").with_default({"all"}).also. \
+    can_have("free_to_play").with_default(False)
 
 
 validate_many_champions_query = Query. \
     has("platforms").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("included_data").with_default({"all"})
+    can_have("included_data").with_default({"all"}).also. \
+    can_have("free_to_play").with_default(False)
 
 
-def for_champions(champions: Champions, identifier: str = None) -> Tuple[str, str, str, int]:
-    return champions.platform.value, champions.version, champions.locale, _hash_included_data(champions.included_data)
+def for_champions(champions: Champions, identifier: str = None) -> Tuple[str, str, str, int, bool]:
+    return champions.platform.value, champions.version, champions.locale, _hash_included_data(champions.included_data)#, champions.free_to_play
 
 
-def for_champions_query(query: Query) -> Tuple[str, str, str, int]:
-    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
-    return query["platform"].value, query["version"], query["locale"], included_data_hash
+def for_champions_query(query: Query) -> Tuple[str, str, str, int, bool]:
+    included_data_hash = _hash_included_data(query["included_data"])
+    return query["platform"].value, query["version"], query["locale"], included_data_hash#, query["free_to_play"]
 
 
-def for_many_champions_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
+def for_many_champions_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str], bool], None, None]:
     included_data_hash = _hash_included_data(query["included_data"])
     for platform in query["platforms"]:
         try:
-            yield platform.value, query["version"], query["locale"], included_data_hash
+            yield platform.value, query["version"], query["locale"], included_data_hash#, query["free_to_play"]
         except ValueError as e:
             raise QueryValidationError from e
 

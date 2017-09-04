@@ -6,4 +6,26 @@ from .cassiopeia import get_realms, get_challenger_league, get_champion_masterie
 from .cassiopeia import apply_settings, set_riot_api_key, set_default_region, print_calls
 from .core import Champion, Champions, Rune, Runes, Mastery, Masteries, Item, Items, SummonerSpell, SummonerSpells, ProfileIcon, ProfileIcons, Versions, Maps, Summoner, Account, ChampionMastery, ChampionMasteries, Match, FeaturedMatches, ShardStatus, ChallengerLeague, MasterLeague, Map, Realms, LanguageStrings, Locales, LeagueEntries, Leagues
 
-apply_settings(configuration.settings)
+#apply_settings(configuration.settings)
+config = {
+  "pipeline": {
+    "Cache": {},
+
+    "SimpleKVDiskStore": {
+      "package": "diskstore.diskstore",
+      "path": "/Users/jjmaldonis/repo/cassiopeia/simplekv_store"
+    },
+
+    "DDragon": {},
+
+    "RiotAPI": {
+      "api_key": "RIOT_API_KEY"
+    }
+  },
+
+  "logging": {
+    "print_calls": True,
+    "print_riot_api_key": True,
+  }
+}
+apply_settings(config)

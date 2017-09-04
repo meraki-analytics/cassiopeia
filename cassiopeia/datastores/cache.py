@@ -13,6 +13,7 @@ from ..core.runepage import RunePage
 from ..core.summoner import Summoner
 from ..core.status import ShardStatus
 from ..core.spectator import CurrentMatch, FeaturedMatches
+from ..core.champion import ChampionData as ChampionStatusData, ChampionListData as ChampionStatusListData
 
 T = TypeVar("T")
 
@@ -66,11 +67,13 @@ class Cache(DataSource, DataSink):
 
         if not key_function_arg_lists:
             key = key_function(item)
-            self._cache.put(type, key, item, expire_seconds)
+            if not self._cache.contains(type, key):
+                self._cache.put(type, key, item, expire_seconds)
         else:
             for key_function_args in key_function_arg_lists:
                 key = key_function(item, *key_function_args)
-                self._cache.put(type, key, item, expire_seconds)
+                if not self._cache.contains(type, key):
+                    self._cache.put(type, key, item, expire_seconds)
         # TODO: Put EXPIRATION into context once cache expiration works
 
     def _put_many(self, type: Type[T], items: Iterable[T], key_function: Callable[[T], Any], *key_function_arg_lists: tuple, context: PipelineContext = None) -> None:
@@ -90,6 +93,28 @@ class Cache(DataSource, DataSink):
         else:
             self._cache._data[type].clear()
 
+
+    #####################################
+    # Champion Status Data -- NOT Core! #
+    #####################################
+
+    @get.register(ChampionStatusListData)
+    @validate_query(uniquekeys.validate_champion_status_list_data_query, uniquekeys.convert_region_to_platform)
+    def get_champion_status_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> Champion:
+        return self._get(ChampionStatusListData, query, uniquekeys.for_champion_status_list_data_query, context)
+
+    @get_many.register(ChampionStatusListData)
+    @validate_query(uniquekeys.validate_many_champion_status_list_data_query, uniquekeys.convert_region_to_platform)
+    def get_many_champion_status_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[Champion, None, None]:
+        return self._get_many(ChampionStatusListData, query, uniquekeys.for_many_champion_status_list_data_query, context)
+
+    @put.register(ChampionStatusListData)
+    def put_champion_status_list(self, item: ChampionStatusListData, context: PipelineContext = None) -> None:
+        self._put(ChampionStatusListData, item, uniquekeys.for_champion_status_list_data, ("id",), ("name",), context=context)
+
+    @put_many.register(ChampionStatusListData)
+    def put_many_champion_status_list(self, items: Iterable[ChampionStatusListData], context: PipelineContext = None) -> None:
+        self._put_many(ChampionStatusListData, items, uniquekeys.for_champion_status_list_data, ("id",), ("name",), context=context)
 
     ########################
     # Champion Mastery API #

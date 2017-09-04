@@ -198,6 +198,7 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=CheckCache):
             query = self.__get_query__()
             if hasattr(self.__class__, "version") and "version" not in query and not self.__class__.__name__ == "Realms":
                 query["version"] = get_latest_version(region=query["region"], endpoint=None)
+            print("LOADING", type(self), id(self), load_group.__name__, query)
             data = configuration.settings.pipeline.get(type=self._load_types[load_group], query=query)
             self.__load_hook__(load_group, data)
 
@@ -228,47 +229,41 @@ class CassiopeiaGhostList(SearchableList, CassiopeiaGhost):
         SearchableList.__init__(self, *args)
         CassiopeiaGhost.__init__(self, **kwargs)
         self.__triggered_load = False
+        if super().__len__() > 0:  # Assume we have all our data...
+            for load_group in self._Ghost__load_groups:
+                self._Ghost__set_loaded(load_group)
+            self.__triggered_load = True
+            print("HERE SET LOADED TO TRUE FOR", id(self))
 
     @classmethod
     def from_data(cls, data: Union[list, CoreData]):
         raise NotImplemented
 
-    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
-        super().__load_hook__(load_group=load_group, data=data)
-        # Since @Ghost.property isn't set, the ghost's __property won't set itself as loaded because it never gets called.
-        # Therefore we manually set it as loaded here.
-        self._Ghost__set_loaded(load_group)
-
-    def __len__(self):
-        if not self._Ghost__all_loaded and not self.__triggered_load:
-            # See the below explanation in __iter__.
+    def __maybe_load(self) -> None:
+        # This seems like a weird hack, but it also seems required. The issue is that within the Cache I call a .put
+        #  on all the items in this object after putting this object itself in the cache.
+        #  To do that, I iterate over this object, calling this __iter__ method, which triggers a __load__ (two
+        #  lines down). That load triggers a transformer (Core to Dto; idk what that's called but it's irrelevant
+        #  because there are situations where it should be called, e.g. with a database). So the load triggers a
+        #  transformer, which has a for loop, which triggers this __iter__.
+        #  The process is therefore:  __iter__ -> __load__ -> transformer -> __iter__ ...
+        #  and we have a recursion depth error. To circumvent it, I added this __triggered_load boolean. It fixes
+        #  that issue and everything works as-expected.
+        if not self.__triggered_load:
             self.__triggered_load = True
             self.__load__()
+            # Since @Ghost.property isn't set, the ghost's __property won't set itself as loaded because it never gets called.
+            # Therefore we manually set it as loaded here.
+            for load_group in self._Ghost__load_groups:
+                self._Ghost__set_loaded(load_group)
+
+    def __len__(self):
+        self.__maybe_load()
         return super().__len__()
 
     def __iter__(self):
-        if not self._Ghost__all_loaded and not self.__triggered_load:
-            # This seems like a weird hack, but it also seems required. The issue is that within the Cache I call a .put
-            #  on all the items in this object after putting this object itself in the cache.
-            #  To do that, I iterate over this object, calling this __iter__ method, which triggers a __load__ (two
-            #  lines down). That load triggers a transformer (Core to Dto; idk what that's called but it's irrelevant
-            #  because there are situations where it should be called, e.g. with a database). So the load triggers a
-            #  transformer, which has a for loop, which triggers this __iter__.
-            #  The process is therefore:  __iter__ -> __load__ -> transformer -> __iter__ ...
-            #  and we have a recursion depth error. To circumvent it, I added this __triggered_load boolean. It fixes
-            #  that issue and everything works as-expected.
-            self.__triggered_load = True
-            self.__load__()
+        self.__maybe_load()
         return super().__iter__()
-
-    def __getitem__(self, item):
-        try:
-            return super().__getitem__(item)
-        except (IndexError, SearchError):
-            if not self._Ghost__all_loaded:
-                self.__triggered_load = True
-                self.__load__()
-            return super().__getitem__(item)
 
 
 class CassiopeiaGhostLazyList(SearchableLazyList, CassiopeiaGhost):

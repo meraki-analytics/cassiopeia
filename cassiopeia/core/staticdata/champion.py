@@ -7,7 +7,7 @@ from merakicommons.container import searchable, SearchableList, SearchableDictio
 
 from ... import configuration
 from ...data import Resource, Region, Platform, GameMode
-from ..champion import ChampionData as ChampionStatusData
+from ..champion import ChampionData as ChampionStatusData, ChampionListData as ChampionStatusListData
 from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
 from .common import ImageData, Image, Sprite
 from .map import Map
@@ -459,9 +459,9 @@ class ChampionData(CoreData):
 
 
 class Champions(CassiopeiaGhostList):
-    _data_types = {ChampionListData}
+    _data_types = {ChampionListData, ChampionStatusListData}
 
-    def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+    def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None, free_to_play: bool = False):
         if region is None:
             region = configuration.settings.default_region
         if region is not None and not isinstance(region, Region):
@@ -470,13 +470,13 @@ class Champions(CassiopeiaGhostList):
             included_data = {"all"}
         if locale is None:
             locale = region.default_locale
-        kwargs = {"region": region, "included_data": included_data, "locale": locale}
+        kwargs = {"region": region, "included_data": included_data, "locale": locale, "free_to_play": free_to_play}
         if version:
             kwargs["version"] = version
         super().__init__(*args, **kwargs)
 
     def __get_query__(self):
-        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
+        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}  #, "free_to_play": self.free_to_play}
 
     def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         self.clear()
@@ -506,13 +506,18 @@ class Champions(CassiopeiaGhostList):
 
     @property
     def locale(self) -> str:
-        """The locale for this champion."""
         return self._data[ChampionListData].locale
 
     @property
     def included_data(self) -> Set[str]:
-        """A set of tags to return additonal information for this champion when it's loaded."""
+        """A set of tags to return additional information for champions when they are loaded."""
         return self._data[ChampionListData].included_data
+
+    @property
+    def free_to_play(self) -> bool:
+        """Whether or not to request only free to play champions."""
+        return False
+        return self._data[ChampionStatusListData].free_to_play
 
 
 @searchable({str: ["key"]})
@@ -925,6 +930,15 @@ class Champion(CassiopeiaGhost):
             kwargs["version"] = version
         super().__init__(**kwargs)
 
+    @classmethod
+    def from_data(cls, data: Union[ChampionData, ChampionStatusData]):
+        self = super().from_data(data)
+        if isinstance(data, ChampionStatusData):  # Fill in the required args for ChampionData
+            if self.region is not None:
+                self._data[ChampionData]._dto["locale"] = self.region.default_locale
+            self._data[ChampionData]._dto["includedData"] = {"all"}
+        return self
+
     def __get_query__(self):
         query = {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
         if "id" in self._data[ChampionData]._dto:
@@ -958,7 +972,7 @@ class Champion(CassiopeiaGhost):
     @property
     def locale(self) -> str:
         """The locale for this champion."""
-        return self._data[ChampionData].locale or self.region.default_locale
+        return self._data[ChampionData].locale
 
     @property
     def included_data(self) -> Set[str]:

@@ -20,7 +20,7 @@ class ChampionAPI(RiotAPIService):
         pass
 
     _validate_get_champion_status_query = Query. \
-        has("id").as_(int).or_("name").as_(str).also. \
+        has("id").as_(int).also. \
         has("platform").as_(Platform)
 
     @get.register(ChampionDto)
@@ -36,12 +36,11 @@ class ChampionAPI(RiotAPIService):
                     if dto.get(attrname, None) == attrvalue:
                         return dto
 
-            if "id" in query:
-                champion = find_matching_attribute(champions["champions"], "id", query["id"])
-            elif "name" in query:
-                champion = find_matching_attribute(champions["champions"], "name", query["name"])
-            else:
-                raise ValueError("Impossible!")
+            champion = find_matching_attribute(champions["champions"], "id", query["id"])
+            if champion is None:
+                print(query)
+                print(champions["champions"][0])
+                raise RuntimeError
             return ChampionDto(champion)
         else:
             url = "https://{platform}.api.riotgames.com/lol/platform/v3/champions/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
@@ -107,6 +106,9 @@ class ChampionAPI(RiotAPIService):
 
         data["region"] = query["platform"].region.value
         data["freeToPlay"] = query["freeToPlay"]
+        for i, champion in enumerate(data["champions"]):
+            champion = ChampionDto(champion)
+            data["champions"][i] = champion
         return ChampionListDto(data)
 
     _validate_get_many_champion_status_list_query = Query. \
@@ -132,6 +134,9 @@ class ChampionAPI(RiotAPIService):
 
                 data["region"] = platform.region.value
                 data["freeToPlay"] = query["freeToPlay"]
+                for i, champion in enumerate(data["champions"]):
+                    champion = ChampionDto(champion)
+                    data["champions"][i] = champion
                 yield ChampionListDto(data)
 
         return generator()
