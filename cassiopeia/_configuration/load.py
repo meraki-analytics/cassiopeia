@@ -9,16 +9,14 @@ except ImportError:
 
 def load_config(filename = None) -> Dict:
     head, tail = os.path.split(__file__)
-    default_filename = os.path.normpath(os.path.join(head, "default.json"))
 
-    if filename is None:
-        filename = default_filename
-
-    if not os.path.exists(filename):
-        filename = os.path.normpath(os.path.join(head, filename))
+    if filename is not None:
         if not os.path.exists(filename):
-            print("WARNING! Could not find settings file {}, using default.".format(filename))
-            filename = os.path.normpath(os.path.join(head, "default.json"))
+            filename = os.path.normpath(os.path.join(head, filename))
+            if not os.path.exists(filename):
+                print("WARNING! Could not find settings file {}, using default.".format(filename))
 
-    config = json.loads(open(filename).read())
+        config = json.loads(open(filename).read())
+    else:
+        config = {}
     return config

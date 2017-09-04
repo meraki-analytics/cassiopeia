@@ -1,4 +1,4 @@
-from typing import TypeVar, Type, Dict, Union
+from typing import TypeVar, Type, Dict, Union, Optional
 import logging
 import importlib
 
@@ -113,7 +113,7 @@ class Settings(object):
                 if isinstance(source, RiotAPI):
                     source.set_api_key(key)
 
-    def clear_sinks(self, type: Type[T] = None):
+    def clear_sinks(self, name: Optional[str] = None, type: Type[T] = None):
         types = {type}
         if type is not None:
             from ..core.common import CoreData, CassiopeiaObject
@@ -125,5 +125,6 @@ class Settings(object):
                 types.add(type._dto_type)
 
         for sink in self.pipeline._sinks:
-            for type in types:
-                sink.clear(type)
+            if name is None or sink.__class__.__name__ == name:
+                for type in types:
+                    sink.clear(type)

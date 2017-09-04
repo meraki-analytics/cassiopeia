@@ -13,7 +13,10 @@ from . import configuration
 def apply_settings(config: Union[str, TextIO, Dict, Settings]):
     if not isinstance(config, (Dict, Settings)):
         config = load_config(config)
-    settings = Settings(config)
+    if not isinstance(config, Settings):
+        settings = Settings(config)
+    else:
+        settings = config
 
     # Load any plugins after everything else has finished importing
     import importlib
