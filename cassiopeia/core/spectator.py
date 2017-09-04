@@ -298,7 +298,7 @@ class CurrentMatch(CassiopeiaGhost):
             region = configuration.settings.default_region
         if region is not None and not isinstance(region, Region):
             region = Region(region)
-        kwargs = {"region": region, "id": id}
+        kwargs = {"region": region}
 
         if summoner is not None:
             if isinstance(summoner, str):

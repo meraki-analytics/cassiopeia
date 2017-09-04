@@ -64,9 +64,9 @@ class Settings(object):
         if self.__default_region is not None:
             self.__default_region = Region(self.__default_region.upper())
 
-        self.__plugins = settings.get("plugins", [])
+        self.__plugins = settings.get("plugins", {})
 
-        self.__pipeline_args = settings.get("pipeline", ["Cache", "DDragon", "RiotAPI"])
+        self.__pipeline_args = settings.get("pipeline", {"Cache": {}, "DDragon": {}, "RiotAPI": {"api_key": "RIOT_API_KEY"}})
         self.__pipeline = None  # type: DataPipeline
 
         logging_config = settings.get("logging", {})

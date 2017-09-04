@@ -22,7 +22,7 @@ from .staticdata.map import Map
 def _choose_staticdata_version(match):
     # If we want to pull the data for the correct version, we need to pull the entire match data.
     # However, we can use the creation date (which comes with a matchref) and get the ~ patch and therefore extract the version from the patch.
-    if configuration.settings.version_from_match is "latest":
+    if configuration.settings.version_from_match == "latest":
         version = None  # Rather than pick the latest version here, let the obj handle it so it knows which endpoint within the realms data to use
     elif configuration.settings.version_from_match == "version" or "version" in match._data[MatchData]._dto:
         version = match.version
