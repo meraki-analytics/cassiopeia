@@ -11,10 +11,10 @@ config = {
   "pipeline": {
     "Cache": {},
 
-    "SimpleKVDiskStore": {
-      "package": "diskstore.diskstore",
-      "path": "/Users/jjmaldonis/repo/cassiopeia/simplekv_store"
-    },
+#    "SimpleKVDiskStore": {
+#      "package": "diskstore.diskstore",
+#      "path": "/Users/jjmaldonis/repo/cassiopeia/simplekv_store"
+#    },
 
     "DDragon": {},
 

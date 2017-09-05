@@ -476,7 +476,7 @@ class Champions(CassiopeiaGhostList):
         super().__init__(*args, **kwargs)
 
     def __get_query__(self):
-        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}  #, "free_to_play": self.free_to_play}
+        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data, "free_to_play": self.free_to_play}
 
     def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         self.clear()
@@ -516,7 +516,6 @@ class Champions(CassiopeiaGhostList):
     @property
     def free_to_play(self) -> bool:
         """Whether or not to request only free to play champions."""
-        return False
         return self._data[ChampionStatusListData].free_to_play
 
 
@@ -935,8 +934,11 @@ class Champion(CassiopeiaGhost):
         self = super().from_data(data)
         if isinstance(data, ChampionStatusData):  # Fill in the required args for ChampionData
             if self.region is not None:
+                self._data[ChampionData]._dto["region"] = self.region.value
                 self._data[ChampionData]._dto["locale"] = self.region.default_locale
             self._data[ChampionData]._dto["includedData"] = {"all"}
+        else:
+            self._data[ChampionStatusData]._dto["region"] = self.region
         return self
 
     def __get_query__(self):

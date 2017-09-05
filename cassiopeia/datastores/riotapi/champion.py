@@ -5,7 +5,6 @@ from datapipelines import DataSource, PipelineContext, Query, NotFoundError
 from .common import RiotAPIService, APINotFoundError
 from ...data import Platform
 from ...dto.champion import ChampionDto, ChampionListDto
-from ... import configuration
 
 T = TypeVar("T")
 
@@ -38,9 +37,8 @@ class ChampionAPI(RiotAPIService):
 
             champion = find_matching_attribute(champions["champions"], "id", query["id"])
             if champion is None:
-                print(query)
-                print(champions["champions"][0])
-                raise RuntimeError
+                raise NotFoundError
+            champion["region"] = query["platform"].region.value
             return ChampionDto(champion)
         else:
             url = "https://{platform}.api.riotgames.com/lol/platform/v3/champions/{id}".format(platform=query["platform"].value.lower(), id=query["id"])

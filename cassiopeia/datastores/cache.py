@@ -98,22 +98,33 @@ class Cache(DataSource, DataSink):
     # Champion Status Data -- NOT Core! #
     #####################################
 
+    @get.register(ChampionStatusData)
+    @validate_query(uniquekeys.validate_champion_status_data_query, uniquekeys.convert_region_to_platform)
+    def get_champion_status_data(self, query: Mapping[str, Any], context: PipelineContext = None) -> ChampionStatusData:
+        return self._get(ChampionStatusData, query, uniquekeys.for_champion_status_data_query, context)
+
     @get.register(ChampionStatusListData)
     @validate_query(uniquekeys.validate_champion_status_list_data_query, uniquekeys.convert_region_to_platform)
-    def get_champion_status_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> Champion:
+    def get_champion_status_list_data(self, query: Mapping[str, Any], context: PipelineContext = None) -> ChampionStatusListData:
         return self._get(ChampionStatusListData, query, uniquekeys.for_champion_status_list_data_query, context)
 
     @get_many.register(ChampionStatusListData)
     @validate_query(uniquekeys.validate_many_champion_status_list_data_query, uniquekeys.convert_region_to_platform)
-    def get_many_champion_status_list(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[Champion, None, None]:
+    def get_many_champion_status_list_data(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[ChampionStatusListData, None, None]:
         return self._get_many(ChampionStatusListData, query, uniquekeys.for_many_champion_status_list_data_query, context)
 
+    @put.register(ChampionStatusData)
+    def put_champion_status_data(self, item: ChampionStatusData, context: PipelineContext = None) -> None:
+        self._put(ChampionStatusData, item, uniquekeys.for_champion_status_data, context=context)
+
     @put.register(ChampionStatusListData)
-    def put_champion_status_list(self, item: ChampionStatusListData, context: PipelineContext = None) -> None:
+    def put_champion_status_list_data(self, item: ChampionStatusListData, context: PipelineContext = None) -> None:
         self._put(ChampionStatusListData, item, uniquekeys.for_champion_status_list_data, ("id",), ("name",), context=context)
+        for champion in item:
+            self._put(ChampionStatusData, champion, uniquekeys.for_champion_status_data, context=context)
 
     @put_many.register(ChampionStatusListData)
-    def put_many_champion_status_list(self, items: Iterable[ChampionStatusListData], context: PipelineContext = None) -> None:
+    def put_many_champion_status_list_data(self, items: Iterable[ChampionStatusListData], context: PipelineContext = None) -> None:
         self._put_many(ChampionStatusListData, items, uniquekeys.for_champion_status_list_data, ("id",), ("name",), context=context)
 
     ########################

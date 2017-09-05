@@ -1617,19 +1617,19 @@ validate_many_champions_query = Query. \
 
 
 def for_champions(champions: Champions, identifier: str = None) -> Tuple[str, str, str, int, bool]:
-    return champions.platform.value, champions.version, champions.locale, _hash_included_data(champions.included_data)#, champions.free_to_play
+    return champions.platform.value, champions.version, champions.locale, _hash_included_data(champions.included_data), champions.free_to_play
 
 
 def for_champions_query(query: Query) -> Tuple[str, str, str, int, bool]:
     included_data_hash = _hash_included_data(query["included_data"])
-    return query["platform"].value, query["version"], query["locale"], included_data_hash#, query["free_to_play"]
+    return query["platform"].value, query["version"], query["locale"], included_data_hash, query["free_to_play"]
 
 
 def for_many_champions_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str], bool], None, None]:
     included_data_hash = _hash_included_data(query["included_data"])
     for platform in query["platforms"]:
         try:
-            yield platform.value, query["version"], query["locale"], included_data_hash#, query["free_to_play"]
+            yield platform.value, query["version"], query["locale"], included_data_hash, query["free_to_play"]
         except ValueError as e:
             raise QueryValidationError from e
 

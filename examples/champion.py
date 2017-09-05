@@ -3,9 +3,6 @@ from cassiopeia import Champion
 
 
 def get_champions():
-    ziggs = cass.get_champion("Ziggs", region="NA")
-    print(ziggs.id)
-    return
     # annie = Champion(name="Annie", region="NA")
     annie = Champion(name="Annie", region="NA", id=1)
     print(annie.name)

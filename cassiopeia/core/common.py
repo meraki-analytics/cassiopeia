@@ -198,7 +198,7 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=CheckCache):
             query = self.__get_query__()
             if hasattr(self.__class__, "version") and "version" not in query and not self.__class__.__name__ == "Realms":
                 query["version"] = get_latest_version(region=query["region"], endpoint=None)
-            print("LOADING", type(self), id(self), load_group.__name__, query)
+            print("LOADING", type(self), id(self), load_group, query)
             data = configuration.settings.pipeline.get(type=self._load_types[load_group], query=query)
             self.__load_hook__(load_group, data)
 
@@ -233,7 +233,6 @@ class CassiopeiaGhostList(SearchableList, CassiopeiaGhost):
             for load_group in self._Ghost__load_groups:
                 self._Ghost__set_loaded(load_group)
             self.__triggered_load = True
-            print("HERE SET LOADED TO TRUE FOR", id(self))
 
     @classmethod
     def from_data(cls, data: Union[list, CoreData]):
