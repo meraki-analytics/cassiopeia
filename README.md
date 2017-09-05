@@ -8,7 +8,7 @@ Cassiopeia is the sister library to [Orianna](https://github.com/robrua/Orianna)
 
 
 ## Documentation and Examples
-Cassiopeia has detailed [documentation](http://cassiopeia.readthedocs.org/en/latest/) and [examples](https://github.com/meraki-analytics/cassiopeia/tree/latest/examples).
+Cassiopeia has detailed [documentation](http://cassiopeia.readthedocs.org/en/latest/) and [examples](https://github.com/meraki-analytics/cassiopeia/tree/master/examples).
 
 
 ## Installation
