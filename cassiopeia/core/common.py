@@ -290,4 +290,15 @@ class CassiopeiaGhostLazyList(SearchableLazyList, CassiopeiaGhost):
         raise NotImplemented
 
     def __load__(self, load_group: CoreData = None) -> None:
-        raise RuntimeError("A SearchableLazyList object should never be loaded. Instead, it's generator handles the loading.")
+        while not self._empty:
+            try:
+                next(self)
+            except StopIteration:
+                pass
+
+    def __len__(self):
+        if self._empty:
+            return super().__len__()
+        else:
+            self.__load__()
+            return super().__len__()
