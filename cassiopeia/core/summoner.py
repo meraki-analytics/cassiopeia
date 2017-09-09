@@ -203,3 +203,8 @@ class Summoner(CassiopeiaGhost):
     def league_positions(self) -> "LeagueEntries":
         from .league import LeagueEntries
         return LeagueEntries(summoner=self, region=self.region)
+
+    @lazy_property
+    def rank_last_season(self):
+        most_recent_match = self.match_history[0]
+        return most_recent_match.participants[self.name].rank_last_season
