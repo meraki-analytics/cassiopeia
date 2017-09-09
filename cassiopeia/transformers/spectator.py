@@ -45,13 +45,3 @@ class SpectatorTransformer(DataTransformer):
             match = CurrentMatch.from_data(match, summoner=summoner)
             matches.append(match)
         return FeaturedMatches(matches, region=value.region, client_refresh_interval=value.client_refresh_interval)
-
-    # Core to Dto
-
-    @transform.register(CurrentMatch, CurrentGameInfoDto)
-    def current_game_core_to_dto(self, value: CurrentMatch, context: PipelineContext = None) -> CurrentGameInfoDto:
-        return value._data[CurrentGameInfoData]._dto
-
-    @transform.register(FeaturedMatches, FeaturedMatches)
-    def featured_games_core_to_dto(self, value: FeaturedGamesData, context: PipelineContext = None) -> FeaturedGamesDto:
-        return FeaturedGamesDto({"clientRefreshInterval": value.client_refresh_interval, "gameList": [self.current_game_core_to_dto(game) for game in value], "region": value.region})

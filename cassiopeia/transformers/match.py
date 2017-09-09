@@ -58,17 +58,3 @@ class MatchTransformer(DataTransformer):
     @transform.register(TimelineData, Timeline)
     def timeline_data_to_core(self, value: TimelineData, context: PipelineContext = None) -> Timeline:
         return Timeline.from_data(value)
-
-    # Core to Dto
-
-    @transform.register(Match, MatchDto)
-    def match_core_to_dto(self, value: Match, context: PipelineContext = None) -> MatchDto:
-        return value._data[MatchData]._dto
-
-    @transform.register(MatchHistory, MatchListDto)
-    def matchlist_core_to_dto(self, value: MatchHistory, context: PipelineContext = None) -> MatchListDto:
-        return MatchListDto([self.match_core_to_dto(ref) for ref in value])  # It is very unlikely that this will work. Not going to debug it right now and just hope it isn't necessary / used.
-
-    @transform.register(Timeline, TimelineDto)
-    def timeline_core_to_dto(self, value: Timeline, context: PipelineContext = None) -> TimelineDto:
-        return value._data[TimelineData]._dto

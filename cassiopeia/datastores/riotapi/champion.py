@@ -1,11 +1,11 @@
 import copy
 from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
 
-from datapipelines import DataSource, PipelineContext, Query, NotFoundError
+from datapipelines import DataSource, PipelineContext, Query, NotFoundError, validate_query
 from .common import RiotAPIService, APINotFoundError
 from ...data import Platform
 from ...dto.champion import ChampionDto, ChampionListDto
-from ... import configuration
+from ..uniquekeys import convert_region_to_platform
 
 T = TypeVar("T")
 
@@ -24,9 +24,8 @@ class ChampionAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get.register(ChampionDto)
+    @validate_query(_validate_get_champion_status_query, convert_region_to_platform)
     def get_champion_status(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionDto:
-        ChampionAPI._validate_get_champion_status_query(query, context)
-
         if self._request_by_id or "id" not in query:  # Get by champion status list
             champions_query = copy.deepcopy(query)
             champions = context[context.Keys.PIPELINE].get(ChampionListDto, query=champions_query)
@@ -58,9 +57,8 @@ class ChampionAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get_many.register(ChampionDto)
+    @validate_query(_validate_get_many_champion_status_query, convert_region_to_platform)
     def get_many_champion_status(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionDto, None, None]:
-        ChampionAPI._validate_get_many_champion_status_query(query, context)
-
         params = {
             "freeToPlay": False
         }
@@ -92,9 +90,8 @@ class ChampionAPI(RiotAPIService):
         can_have("freeToPlay").with_default(False)
 
     @get.register(ChampionListDto)
+    @validate_query(_validate_get_champion_status_list_query, convert_region_to_platform)
     def get_champion_status_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionListDto:
-        ChampionAPI._validate_get_champion_status_list_query(query, context)
-
         params = {
             "freeToPlay": query["freeToPlay"]
         }
@@ -114,9 +111,8 @@ class ChampionAPI(RiotAPIService):
         can_have("freeToPlay").with_default(False)
 
     @get_many.register(ChampionListDto)
+    @validate_query(_validate_get_many_champion_status_list_query, convert_region_to_platform)
     def get_many_champion_status_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionListDto, None, None]:
-        ChampionAPI._validate_get_many_champion_status_list_query(query, context)
-
         params = {
             "freeToPlay": query["freeToPlay"]
         }

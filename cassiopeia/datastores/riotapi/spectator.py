@@ -1,10 +1,11 @@
 from typing import Type, TypeVar, MutableMapping, Any, Iterable
 
-from datapipelines import DataSource, PipelineContext, Query, NotFoundError
+from datapipelines import DataSource, PipelineContext, Query, NotFoundError, validate_query
 from .common import RiotAPIService, APINotFoundError
 from ...data import Platform, Region
 from ...dto.staticdata.version import VersionListDto
 from ...dto.spectator import CurrentGameInfoDto, FeaturedGamesDto
+from ..uniquekeys import convert_region_to_platform
 
 T = TypeVar("T")
 
@@ -37,11 +38,8 @@ class SpectatorAPI(RiotAPIService):
         has("summoner.id").as_(int)
 
     @get.register(CurrentGameInfoDto)
+    @validate_query(_validate_get_current_game_query, convert_region_to_platform)
     def get_current_game(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> CurrentGameInfoDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
-        SpectatorAPI._validate_get_current_game_query(query, context)
-
         url = "https://{platform}.api.riotgames.com/lol/spectator/v3/active-games/by-summoner/{id}".format(platform=query["platform"].value.lower(), id=query["summoner.id"])
         try:
             data = self._get(url, {}, self._get_rate_limiter(query["platform"], "spectator/active-games/by-summoner"))
@@ -60,11 +58,8 @@ class SpectatorAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get.register(FeaturedGamesDto)
+    @validate_query(_validate_get_featured_game_query, convert_region_to_platform)
     def get_featured_games(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> FeaturedGamesDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
-        SpectatorAPI._validate_get_featured_game_query(query, context)
-
         url = "https://{platform}.api.riotgames.com/lol/spectator/v3/featured-games".format(platform=query["platform"].value.lower())
         try:
             data = self._get(url, {}, self._get_rate_limiter(query["platform"], "featured-games"))

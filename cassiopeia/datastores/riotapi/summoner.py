@@ -1,9 +1,10 @@
 from typing import Type, TypeVar, MutableMapping, Any, Iterable
 
-from datapipelines import DataSource, PipelineContext, Query, NotFoundError
+from datapipelines import DataSource, PipelineContext, Query, NotFoundError, validate_query
 from .common import RiotAPIService, APINotFoundError
-from ...data import Region, Platform
+from ...data import Platform
 from ...dto.summoner import SummonerDto
+from ..uniquekeys import convert_region_to_platform
 
 T = TypeVar("T")
 
@@ -24,11 +25,8 @@ class SummonerAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get.register(SummonerDto)
+    @validate_query(_validate_get_summoner_query, convert_region_to_platform)
     def get_summoner(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> SummonerDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
-        SummonerAPI._validate_get_summoner_query(query, context)
-
         if "id" in query:
             url = "https://{platform}.api.riotgames.com/lol/summoner/v3/summoners/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["id"])
             endpoint = "summoners/summonerId"
