@@ -1,4 +1,4 @@
-from typing import TypeVar, Type, Dict, Union, Optional
+from typing import TypeVar, Type, Dict, Union
 import logging
 import importlib
 
@@ -56,25 +56,52 @@ def create_pipeline(service_configs: Dict, verbose: bool = False) -> DataPipelin
     return pipeline
 
 
+_defaults = {
+    "global": {
+        "version_from_match": "patch",
+        "default_region": None
+    },
+    "plugins": {},
+    "pipeline": {
+        "Cache": {},
+        "UnloadedGhostStore": {},
+        "DDragon": {},
+        "RiotAPI": {
+            "api_key": "RIOT_API_KEY"
+        },
+        "ChampionGG": {
+            "package": "championgg.championgg",
+            "api_key": "CHAMPIONGG_KEY"
+        }
+    },
+    "logging": {
+        "print_calls": True,
+        "print_riot_api_key": False,
+        "default": "WARNING",
+        "core": "WARNING"
+    }
+}
+
+
 class Settings(object):
     def __init__(self, settings):
-        globals_ = settings.get("global", {})
-        self.__version_from_match = globals_.get("version_from_match", "patch")  # Valid json values are: "version", "patch", and null
-        self.__default_region = globals_.get("default_region", None)
+        globals_ = settings.get("global", _defaults["global"])
+        self.__version_from_match = globals_.get("version_from_match", _defaults["global"]["version_from_match"])  # Valid json values are: "version", "patch", and null
+        self.__default_region = globals_.get("default_region", _defaults["global"]["default_region"])
         if self.__default_region is not None:
             self.__default_region = Region(self.__default_region.upper())
 
-        self.__plugins = settings.get("plugins", {})
+        self.__plugins = settings.get("plugins", _defaults["plugins"])
 
-        self.__pipeline_args = settings.get("pipeline", {"Cache": {}, "DDragon": {}, "RiotAPI": {"api_key": "RIOT_API_KEY"}})
+        self.__pipeline_args = settings.get("pipeline", _defaults["pipeline"])
         self.__pipeline = None  # type: DataPipeline
 
-        logging_config = settings.get("logging", {})
-        self.__default_print_calls = logging_config.get("print_calls", True)
-        self.__default_print_riot_api_key = logging_config.get("print_riot_api_key", False)
+        logging_config = settings.get("logging", _defaults["logging"])
+        self.__default_print_calls = logging_config.get("print_calls", _defaults["logging"]["print_calls"])
+        self.__default_print_riot_api_key = logging_config.get("print_riot_api_key", _defaults["logging"]["print_riot_api_key"])
         for name in ["default", "core"]:
             logger = logging.getLogger(name)
-            level = logging_config.get(name, logging.WARNING)
+            level = logging_config.get(name, _defaults["logging"][name])
             logger.setLevel(level)
             for handler in logger.handlers:
                 handler.setLevel(level)
@@ -113,7 +140,7 @@ class Settings(object):
                 if isinstance(source, RiotAPI):
                     source.set_api_key(key)
 
-    def clear_sinks(self, name: Optional[str] = None, type: Type[T] = None):
+    def clear_sinks(self, type: Type[T] = None):
         types = {type}
         if type is not None:
             from ..core.common import CoreData, CassiopeiaObject
@@ -125,6 +152,5 @@ class Settings(object):
                 types.add(type._dto_type)
 
         for sink in self.pipeline._sinks:
-            if name is None or sink.__class__.__name__ == name:
-                for type in types:
-                    sink.clear(type)
+            for type in types:
+                sink.clear(type)
