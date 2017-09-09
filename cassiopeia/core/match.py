@@ -1167,7 +1167,7 @@ class Timeline(CassiopeiaGhost):
         super().__init__(**kwargs)
 
     def __get_query__(self):
-        return {"region": self.region, "platform": self.platform, "matchId": self.id}
+        return {"region": self.region, "platform": self.platform, "id": self.id}
 
     @property
     def id(self):
@@ -1736,7 +1736,7 @@ class Match(CassiopeiaGhost):
         self.__participants = []  # For lazy-loading the participants in a special way
 
     def __get_query__(self):
-        return {"region": self.region, "platform": self.platform, "gameId": self.id}
+        return {"region": self.region, "platform": self.platform, "id": self.id}
 
     @classmethod
     def from_match_reference(cls, ref):

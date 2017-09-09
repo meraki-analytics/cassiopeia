@@ -1,10 +1,11 @@
 from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
 
-from datapipelines import DataSource, PipelineContext, Query, NotFoundError
+from datapipelines import DataSource, PipelineContext, Query, NotFoundError, validate_query
 from .common import RiotAPIService, APINotFoundError
 from ...data import Platform, Region
 from ...dto.staticdata.version import VersionListDto
 from ...dto.status import ShardStatusDto
+from ..uniquekeys import convert_region_to_platform
 
 T = TypeVar("T")
 
@@ -36,11 +37,8 @@ class StatusAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get.register(ShardStatusDto)
+    @validate_query(_validate_get_status_query, convert_region_to_platform)
     def get_status(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ShardStatusDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
-        StatusAPI._validate_get_status_query(query, context)
-
         url = "https://{platform}.api.riotgames.com/lol/status/v3/shard-data".format(platform=query["platform"].value.lower())
         try:
             data = self._get(url, {}, self._get_rate_limiter(query["platform"], "status"))
@@ -54,11 +52,8 @@ class StatusAPI(RiotAPIService):
         has("platforms").as_(Iterable)
 
     @get_many.register(ShardStatusDto)
+    @validate_query(_validate_get_many_status_query, convert_region_to_platform)
     def get_many_status(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ShardStatusDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
-        StatusAPI._validate_get_many_status_query(query, context)
-
         def generator():
             for platform in query["platforms"]:
                 platform = Platform(platform.upper())

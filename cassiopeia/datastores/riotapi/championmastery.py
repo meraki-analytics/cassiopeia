@@ -42,9 +42,8 @@ class ChampionMasteryAPI(RiotAPIService):
         has("championIds").as_(Iterable)
 
     @get_many.register(ChampionMasteryDto)
+    @validate_query(_validate_get_many_champion_mastery_query, convert_region_to_platform)
     def get_many_champion_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionMasteryDto, None, None]:
-        ChampionMasteryAPI._validate_get_many_champion_mastery_query(query, context)
-
         url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/champion-masteries/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summonerId"])
         try:
             data = self._get(url, {}, self._get_rate_limiter(query["platform"], "champion-masteries/by-summoner/summonerId"))
@@ -73,9 +72,8 @@ class ChampionMasteryAPI(RiotAPIService):
         has("summoner.id").as_(int)
 
     @get.register(ChampionMasteryListDto)
+    @validate_query(_validate_get_champion_mastery_list_query, convert_region_to_platform)
     def get_champion_mastery_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionMasteryListDto:
-        ChampionMasteryAPI._validate_get_champion_mastery_list_query(query, context)
-
         url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/champion-masteries/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
         try:
             data = self._get(url, {}, self._get_rate_limiter(query["platform"], "champion-masteries/by-summoner/summonerId"))
@@ -95,9 +93,8 @@ class ChampionMasteryAPI(RiotAPIService):
         has("summoner.ids").as_(Iterable)
 
     @get_many.register(ChampionMasteryListDto)
+    @validate_query(_validate_get_many_champion_mastery_list_query, convert_region_to_platform)
     def get_many_champion_mastery_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionMasteryListDto, None, None]:
-        ChampionMasteryAPI._validate_get_many_champion_mastery_list_query(query, context)
-
         def generator():
             for summoner_id in query["summoner.ids"]:
                 url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/champion-masteries/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=summoner_id)
@@ -119,9 +116,8 @@ class ChampionMasteryAPI(RiotAPIService):
         has("summoner.id").as_(int)
 
     @get.register(ChampionMasteryScoreDto)
+    @validate_query(_validate_get_champion_mastery_score_query, convert_region_to_platform)
     def get_champion_mastery_score(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionMasteryScoreDto:
-        ChampionMasteryAPI._validate_get_champion_mastery_score_query(query, context)
-
         url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/scores/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
         try:
             data = self._get(url, {}, self._get_rate_limiter(query["platform"], "scores/by-summoner/summonerId"))
@@ -134,14 +130,13 @@ class ChampionMasteryAPI(RiotAPIService):
             "score": data
         })
 
-    _validate_get_many_champion_mastery_score = Query. \
+    _validate_get_many_champion_mastery_score_query = Query. \
         has("platform").as_(Platform).also. \
         has("summoner.ids").as_(Iterable)
 
     @get_many.register(ChampionMasteryScoreDto)
+    @validate_query(_validate_get_many_champion_mastery_score_query, convert_region_to_platform)
     def get_many_champion_mastery_score(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionMasteryScoreDto, None, None]:
-        ChampionMasteryAPI._validate_get_many_champion_mastery_score(query, context)
-
         def generator():
             for summoner_id in query["summoner.ids"]:
                 url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/scores/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=summoner_id)

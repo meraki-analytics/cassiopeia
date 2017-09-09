@@ -1,9 +1,10 @@
 from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
 
-from datapipelines import DataSource, PipelineContext, Query, NotFoundError
+from datapipelines import DataSource, PipelineContext, Query, NotFoundError, validate_query
 from .common import RiotAPIService, APINotFoundError
 from ...data import Platform, Region, Queue
 from ...dto.league import LeaguesListDto, ChallengerLeagueListDto, MasterLeagueListDto, LeaguePositionsDto
+from ..uniquekeys import convert_region_to_platform
 
 T = TypeVar("T")
 
@@ -24,11 +25,8 @@ class LeaguesAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get.register(LeaguePositionsDto)
+    @validate_query(_validate_get_league_positions_query, convert_region_to_platform)
     def get_league_position(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LeaguePositionsDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
-        LeaguesAPI._validate_get_league_positions_query(query, context)
-
         url = "https://{platform}.api.riotgames.com/lol/league/v3/positions/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
         try:
             print("positions/by-summoner/summonerId {}".format(query["platform"].value))
@@ -48,11 +46,8 @@ class LeaguesAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get_many.register(LeaguePositionsDto)
+    @validate_query(_validate_get_many_league_positions_query, convert_region_to_platform)
     def get_leagues(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[LeaguePositionsDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
-        LeaguesAPI._validate_get_many_league_positions_query(query, context)
-
         def generator():
             for id in query["summoner.ids"]:
                 url = "https://{platform}.api.riotgames.com/lol/league/v3/positions/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=id)
@@ -77,11 +72,8 @@ class LeaguesAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get.register(LeaguesListDto)
+    @validate_query(_validate_get_leagues_query, convert_region_to_platform)
     def get_league_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LeaguesListDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
-        LeaguesAPI._validate_get_leagues_query(query, context)
-
         url = "https://{platform}.api.riotgames.com/lol/league/v3/leagues/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
         try:
             data = self._get(url, {}, self._get_rate_limiter(query["platform"], "leagues/by-summoner/summonerId {}".format(query["platform"].value)))
@@ -102,11 +94,8 @@ class LeaguesAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get_many.register(LeaguesListDto)
+    @validate_query(_validate_get_many_leagues_query, convert_region_to_platform)
     def get_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[LeaguesListDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
-        LeaguesAPI._validate_get_many_leagues_query(query, context)
-
         def generator():
             for id in query["summoner.ids"]:
                 url = "https://{platform}.api.riotgames.com/lol/league/v3/leagues/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=id)
@@ -132,11 +121,8 @@ class LeaguesAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get.register(ChallengerLeagueListDto)
+    @validate_query(_validate_get_challenger_league_query, convert_region_to_platform)
     def get_challenger_league_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChallengerLeagueListDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
-        LeaguesAPI._validate_get_challenger_league_query(query, context)
-
         url = "https://{platform}.api.riotgames.com/lol/league/v3/challengerleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=query["queue"].value)
         try:
             data = self._get(url, {}, self._get_rate_limiter(query["platform"], "challengerleagues/by-queue {}".format(query["platform"].value)))
@@ -154,11 +140,8 @@ class LeaguesAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get_many.register(ChallengerLeagueListDto)
+    @validate_query(_validate_get_many_challenger_league_query, convert_region_to_platform)
     def get_challenger_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChallengerLeagueListDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
-        LeaguesAPI._validate_get_many_master_league_query(query, context)
-
         def generator():
             for queue in query["queues"]:
                 url = "https://{platform}.api.riotgames.com/lol/league/v3/challengerleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=queue.value)
@@ -182,11 +165,8 @@ class LeaguesAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get.register(MasterLeagueListDto)
+    @validate_query(_validate_get_master_league_query, convert_region_to_platform)
     def get_master_league_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasterLeagueListDto:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
-        LeaguesAPI._validate_get_master_league_query(query, context)
-
         url = "https://{platform}.api.riotgames.com/lol/league/v3/masterleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=query["queue"].value)
         try:
             data = self._get(url, {}, self._get_rate_limiter(query["platform"], "masterleagues/by-queue {}".format(query["platform"].value)))
@@ -204,11 +184,8 @@ class LeaguesAPI(RiotAPIService):
         has("platform").as_(Platform)
 
     @get_many.register(MasterLeagueListDto)
+    @validate_query(_validate_get_many_master_league_query, convert_region_to_platform)
     def get_master_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[MasterLeagueListDto, None, None]:
-        if "region" in query and "platform" not in query:
-            query["platform"] = Region(query["region"]).platform.value
-        LeaguesAPI._validate_get_many_master_league_query(query, context)
-
         def generator():
             for queue in query["queues"]:
                 url = "https://{platform}.api.riotgames.com/lol/league/v3/masterleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=queue.value)

@@ -10,7 +10,7 @@ def get_summoner_spells():
             print("Description:", sspell.description)
             print()
 
-    sspell = SummonerSpell(name="Ghost")
+    sspell = SummonerSpell(name="Ghost", region="NA")
     print(sspell.description)
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 import copy
 from typing import Type, TypeVar, MutableMapping, Any, Iterable
 
-from datapipelines import DataSource, PipelineContext, Query, NotFoundError
+from datapipelines import DataSource, PipelineContext, Query, NotFoundError, validate_query
 
 from ..data import Platform
 from ..dto.staticdata.champion import ChampionDto, ChampionListDto
@@ -16,7 +16,7 @@ from ..dto.staticdata.realm import RealmDto
 from ..dto.staticdata.map import MapDto, MapListDto
 from .common import HTTPClient, HTTPError
 from .riotapi.staticdata import _get_latest_version
-from .uniquekeys import _hash_included_data
+from .uniquekeys import _hash_included_data, convert_region_to_platform
 
 try:
     import ujson as json
@@ -62,9 +62,8 @@ class DDragon(DataSource):
         can_have("includedData")
 
     @get.register(ChampionDto)
+    @validate_query(_validate_get_champion_query, convert_region_to_platform)
     def get_champion(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionDto:
-        self._validate_get_champion_query(query, context)
-
         champions_query = copy.deepcopy(query)
         if "id" in champions_query:
             champions_query.pop("id")
@@ -100,9 +99,8 @@ class DDragon(DataSource):
         can_have("includedData")
 
     @get.register(ChampionListDto)
+    @validate_query(_validate_get_champion_list_query, convert_region_to_platform)
     def get_champion_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionListDto:
-        self._validate_get_champion_list_query(query, context)
-
         locale = query["locale"] if "locale" in query else query["platform"].default_locale
         query["locale"] = locale
 
@@ -187,9 +185,8 @@ class DDragon(DataSource):
         has("platform").as_(Platform)
 
     @get.register(VersionListDto)
+    @validate_query(_validate_get_versions_query, convert_region_to_platform)
     def get_versions(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> VersionListDto:
-        self._validate_get_versions_query(query, context)
-
         url = "https://ddragon.leagueoflegends.com/api/versions.json"
         try:
             body = json.loads(self._client.get(url)[0])
@@ -209,9 +206,8 @@ class DDragon(DataSource):
         has("platform").as_(Platform)
 
     @get.register(RealmDto)
+    @validate_query(_validate_get_realms_query, convert_region_to_platform)
     def get_realms(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> RealmDto:
-        self._validate_get_realms_query(query, context)
-
         region = query["platform"].region
         url = "https://ddragon.leagueoflegends.com/realms/{region}.json".format(region=region.value.lower())
         try:
@@ -231,9 +227,8 @@ class DDragon(DataSource):
         has("platform").as_(Platform)
 
     @get.register(LanguagesDto)
+    @validate_query(_validate_get_languages_query, convert_region_to_platform)
     def get_languages(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LanguagesDto:
-        self._validate_get_languages_query(query, context)
-
         url = "https://ddragon.leagueoflegends.com/cdn/languages.json"
         try:
             body = json.loads(self._client.get(url)[0])
@@ -254,9 +249,8 @@ class DDragon(DataSource):
         can_have("locale")
 
     @get.register(MapDto)
+    @validate_query(_validate_get_map_query, convert_region_to_platform)
     def get_map(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MapDto:
-        self._validate_get_map_query(query, context)
-
         maps_query = copy.deepcopy(query)
         if "id" in maps_query:
             maps_query.pop("id")
@@ -290,9 +284,8 @@ class DDragon(DataSource):
         can_have("locale").as_(str)
 
     @get.register(MapListDto)
+    @validate_query(_validate_get_map_list_query, convert_region_to_platform)
     def get_map_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MapListDto:
-        self._validate_get_map_list_query(query, context)
-
         locale = query["locale"] if "locale" in query else query["platform"].default_locale
         query["locale"] = locale
 
@@ -332,9 +325,8 @@ class DDragon(DataSource):
         can_have("locale").as_(str)
 
     @get.register(LanguageStringsDto)
+    @validate_query(_validate_get_language_strings_query, convert_region_to_platform)
     def get_language_strings(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LanguageStringsDto:
-        self._validate_get_language_strings_query(query, context)
-
         locale = query["locale"] if "locale" in query else query["platform"].default_locale
 
         url = "http://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/language.json".format(
@@ -362,9 +354,8 @@ class DDragon(DataSource):
         can_have("includedData")
 
     @get.register(MasteryDto)
+    @validate_query(_validate_get_mastery_query, convert_region_to_platform)
     def get_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasteryDto:
-        self._validate_get_mastery_query(query, context)
-
         masteries_query = copy.deepcopy(query)
         if "id" in masteries_query:
             masteries_query.pop("id")
@@ -400,9 +391,8 @@ class DDragon(DataSource):
         can_have("includedData")
 
     @get.register(MasteryListDto)
+    @validate_query(_validate_get_mastery_list_query, convert_region_to_platform)
     def get_mastery_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasteryListDto:
-        self._validate_get_mastery_list_query(query,  context)
-
         locale = query["locale"] if "locale" in query else query["platform"].default_locale
         query["locale"] = locale
 
@@ -461,9 +451,8 @@ class DDragon(DataSource):
         can_have("includedData")
 
     @get.register(RuneDto)
+    @validate_query(_validate_get_rune_query, convert_region_to_platform)
     def get_rune(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> RuneDto:
-        self._validate_get_rune_query(query, context)
-
         runes_query = copy.deepcopy(query)
         if "id" in runes_query:
             runes_query.pop("id")
@@ -499,9 +488,8 @@ class DDragon(DataSource):
         can_have("includedData")
 
     @get.register(RuneListDto)
+    @validate_query(_validate_get_rune_list_query, convert_region_to_platform)
     def get_rune_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> RuneListDto:
-        self._validate_get_rune_list_query(query, context)
-
         locale = query["locale"] if "locale" in query else query["platform"].default_locale
         query["locale"] = locale
 
@@ -555,9 +543,8 @@ class DDragon(DataSource):
         can_have("includedData")
 
     @get.register(ItemDto)
+    @validate_query(_validate_get_item_query, convert_region_to_platform)
     def get_item(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ItemDto:
-        self._validate_get_item_query(query, context)
-
         items_query = copy.deepcopy(query)
         if "id" in items_query:
             items_query.pop("id")
@@ -593,9 +580,8 @@ class DDragon(DataSource):
         can_have("includedData")
 
     @get.register(ItemListDto)
+    @validate_query(_validate_get_item_list_query, convert_region_to_platform)
     def get_item_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ItemListDto:
-        self._validate_get_item_list_query(query, context)
-
         locale = query["locale"] if "locale" in query else query["platform"].default_locale
         query["locale"] = locale
 
@@ -656,9 +642,8 @@ class DDragon(DataSource):
         can_have("includedData")
 
     @get.register(SummonerSpellDto)
+    @validate_query(_validate_get_summoner_spell_query, convert_region_to_platform)
     def get_summoner_spell(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> SummonerSpellDto:
-        self._validate_get_summoner_spell_query(query, context)
-
         summoner_spells_query = copy.deepcopy(query)
         if "id" in summoner_spells_query:
             summoner_spells_query.pop("id")
@@ -694,9 +679,8 @@ class DDragon(DataSource):
         can_have("includedData")
 
     @get.register(SummonerSpellListDto)
+    @validate_query(_validate_get_summoner_spell_list_query, convert_region_to_platform)
     def get_summoner_spell_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> SummonerSpellListDto:
-        self._validate_get_summoner_spell_list_query(query, context)
-
         locale = query["locale"] if "locale" in query else query["platform"].default_locale
         query["locale"] = locale
 
@@ -745,9 +729,8 @@ class DDragon(DataSource):
         can_have("locale").as_(str)
 
     @get.register(ProfileIconDataDto)
+    @validate_query(_validate_get_profile_icon_query, convert_region_to_platform)
     def get_profile_icon(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ProfileIconDataDto:
-        self._validate_get_profile_icon_query(query, context)
-
         locale = query["locale"] if "locale" in query else query["platform"].default_locale
 
         url = "http://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/profileicon.json".format(

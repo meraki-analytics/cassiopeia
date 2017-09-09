@@ -103,26 +103,6 @@ class DataObjectList(list, CoreData):
         SearchableList.__init__(self, dto)
 
 
-class CheckCache(type):
-    @provide_default_region
-    def __call__(cls, *args, **kwargs):
-        cache = configuration.settings.pipeline._cache
-        if cache is not None:
-            # Try to find the obj in the cache
-            from ..datastores.uniquekeys import construct_query
-            query = construct_query(cls, **kwargs)
-            if hasattr(cls, "version") and query.get("version", None) is None and not cls.__name__ == "Realms":
-                query["version"] = get_latest_version(region=query["region"], endpoint=None)
-            try:
-                return cache.get(cls, query=query)
-            except (NotFoundError, UnsupportedError):
-                pass
-
-        # If the obj was not found in the cache (or if there is no cache), create a new instance
-        LOGGER.debug("Creating new {} from {}".format(cls.__name__, set(kwargs.keys())))
-        return super().__call__(*args, **kwargs)
-
-
 class CassiopeiaObject(object):
     _renamed = {}
 
@@ -184,7 +164,18 @@ class CassiopeiaObject(object):
         return self
 
 
-class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=CheckCache):
+class GetFromPipeline(type):
+    @provide_default_region
+    def __call__(cls, *args, **kwargs):
+        pipeline = configuration.settings.pipeline
+        from ..datastores.uniquekeys import construct_query
+        query = construct_query(cls, **kwargs)
+        if hasattr(cls, "version") and query.get("version", None) is None and cls.__name__ not in ["Realms", "Match"]:
+            query["version"] = get_latest_version(region=query["region"], endpoint=None)
+        return pipeline.get(cls, query=query)
+
+
+class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=GetFromPipeline):
     def __load__(self, load_group: CoreData = None) -> None:
         if load_group is None:  # Load all groups
             if self._Ghost__all_loaded:

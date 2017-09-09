@@ -1,8 +1,9 @@
-from typing import Tuple, Set, Union, MutableMapping, Any, Mapping, Iterable, Generator
+from typing import Tuple, Set, Union, MutableMapping, Any, Mapping, Iterable, Generator, List
+import datetime
 
 from datapipelines import Query, PipelineContext, QueryValidationError
 
-from ..data import Region, Platform, Queue, Tier
+from ..data import Region, Platform, Queue, Tier, Season
 
 from ..dto.champion import ChampionListDto as ChampionStatusListDto, ChampionDto as ChampionStatusDto
 from ..dto.championmastery import ChampionMasteryDto, ChampionMasteryListDto, ChampionMasteryScoreDto
@@ -16,17 +17,22 @@ from ..dto.spectator import CurrentGameInfoDto, FeaturedGamesDto
 from ..dto.summoner import SummonerDto
 
 from ..core.common import provide_default_region
-from ..core.championmastery import ChampionMastery
+from ..core.championmastery import ChampionMastery, ChampionMasteries
 from ..core.league import LeagueEntries, Leagues, ChallengerLeague, MasterLeague
 from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Locales, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions, Items, Champions, Maps, SummonerSpells, Masteries, Runes
 from ..core.status import ShardStatus
-from ..core.masterypage import MasteryPage
-from ..core.match import Match
-from ..core.runepage import RunePage
+from ..core.masterypage import MasteryPage, MasteryPages
+from ..core.match import Match, MatchHistory, Timeline
+from ..core.runepage import RunePage, RunePages
 from ..core.summoner import Summoner
 from ..core.spectator import CurrentMatch, FeaturedMatches
 
 from ..core.staticdata.champion import ChampionData
+from ..core.staticdata.item import ItemData
+from ..core.staticdata.summonerspell import SummonerSpellData
+from ..core.staticdata.rune import RuneData
+from ..core.staticdata.mastery import MasteryData
+from ..core.staticdata.map import MapData
 from ..core.summoner import Account, SummonerData
 
 #############
@@ -84,12 +90,18 @@ def convert_region_to_platform(query: MutableMapping[str, Any]) -> None:
 def construct_query(cls, **kwargs) -> dict:
     if cls is ChampionMastery:
         return construct_champion_mastery_query(**kwargs)
+    if cls is ChampionMasteries:
+        return construct_champion_masteries_query(**kwargs)
     if cls is Summoner:
         return construct_summoner_query(**kwargs)
     if cls is CurrentMatch:
         return construct_current_match_query(**kwargs)
     if cls is Leagues or cls is LeagueEntries:
         return construct_leagues_query(**kwargs)
+    if cls is MasteryPages or cls is RunePages:
+        return construct_pages_query(**kwargs)
+    if cls is MatchHistory:
+        return construct_match_history_query(**kwargs)
     else:
         return kwargs
 
@@ -139,6 +151,44 @@ def construct_champion_mastery_query(*, summoner: Union[Summoner, int, str], cha
 
 
 @provide_default_region
+def construct_champion_masteries_query(*, summoner: Union[Summoner, int, str], region: Union[Region, str]) -> dict:
+    query = {"region": region}
+    if isinstance(summoner, Summoner):
+        summoner_data = summoner._data[SummonerData]
+        try:
+            query["summoner.id"] = summoner_data.id
+        except KeyError:
+            try:
+                query["summoner.account.id"] = summoner_data.account_id
+            except KeyError:
+                query["summoner.name"] = summoner_data.name
+    elif isinstance(summoner, str):
+        query["summoner.name"] = summoner
+    else:  # int
+        query["summoner.id"] = summoner
+    return query
+
+
+@provide_default_region
+def construct_pages_query(*args, summoner: Union[Summoner, int, str], region: Union[Region, str]) -> dict:
+    query = {"region": region}
+    if isinstance(summoner, Summoner):
+        summoner_data = summoner._data[SummonerData]
+        try:
+            query["summoner.id"] = summoner_data.id
+        except KeyError:
+            try:
+                query["summoner.account.id"] = summoner_data.account_id
+            except KeyError:
+                query["summoner.name"] = summoner_data.name
+    elif isinstance(summoner, str):
+        query["summoner.name"] = summoner
+    else:  # int
+        query["summoner.id"] = summoner
+    return query
+
+
+@provide_default_region
 def construct_current_match_query(*, summoner: Union[Summoner, int, str], region: Union[Region, str]) -> dict:
     query = {"region": region}
     if isinstance(summoner, Summoner):
@@ -146,7 +196,7 @@ def construct_current_match_query(*, summoner: Union[Summoner, int, str], region
     elif isinstance(summoner, int):  # int
         query["summoner.id"] = summoner
     elif isinstance(summoner, str):
-        query["summoner.id"] = Summoner(name=summoner).id
+        query["summoner.id"] = Summoner(name=summoner, region=region).id
     assert "summoner.id" in query
     return query
 
@@ -159,8 +209,43 @@ def construct_leagues_query(*, summoner: Union[Summoner, int, str], region: Unio
     elif isinstance(summoner, int):  # int
         query["summoner.id"] = summoner
     elif isinstance(summoner, str):
-        query["summoner.id"] = Summoner(name=summoner).id
+        query["summoner.id"] = Summoner(name=summoner, region=region).id
     assert "summoner.id" in query
+    return query
+
+@provide_default_region
+def construct_match_history_query(*, summoner: Union[Summoner, str, int] = None, account_id: int = None, region: Union[Region, str] = None, begin_index: int = 0, end_index: int = None, begin_time: datetime.datetime = None, end_time: datetime.datetime = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
+    query = {"region": region, "beginIndex": begin_index}
+    if account_id is not None:
+        query["account.id"] = account_id
+    else:
+        if isinstance(summoner, Summoner):
+            query["account.id"] = summoner.account.id
+        elif isinstance(summoner, str):
+            summoner = Summoner(name=summoner, region=region)
+            query["account.id"] = summoner.account.id
+        else:  # int
+            summoner = Summoner(id=summoner, region=region)
+            query["account.id"] = summoner.account.id
+
+    if end_index is not None:
+        query["endIndex"] = end_index
+
+    if begin_time is not None:
+        query["beginTime"] = begin_time
+
+    if end_time is not None:
+        query["endTime"] = end_time
+
+    if queues is not None:
+        query["queues"] = queues
+
+    if seasons is not None:
+        query["seasons"] = seasons
+
+    if champions is not None:
+        query["champions"] = champions
+
     return query
 
 
@@ -1326,8 +1411,8 @@ def for_many_summoner_dto_query(query: Query) -> Generator[Tuple[str, Union[int,
 
 validate_champion_mastery_query = Query. \
     has("platform").as_(Platform).also. \
-    has("summonerId").as_(int).or_("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
-    has("championId").as_(int).or_("champion.id").as_(int).or_("champion.name").as_(str)
+    has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
+    has("champion.id").as_(int).or_("champion.name").as_(str)
 
 
 validate_many_champion_mastery_query = Query. \
@@ -1336,46 +1421,74 @@ validate_many_champion_mastery_query = Query. \
     has("champions.id").as_(Iterable).or_("champions.name").as_(Iterable)
 
 
-def for_champion_mastery(champion_mastery: ChampionMastery, summoner_identifier: str = "id", champion_identifier: str = "id") -> Tuple[str, Union[int, str], Union[int, str]]:
-    return champion_mastery.platform.value, _rgetattr(champion_mastery.summoner, summoner_identifier), _rgetattr(champion_mastery.champion, champion_identifier)
+def for_champion_mastery(champion_mastery: ChampionMastery) -> List[Tuple]:
+    keys = []
+    try:
+        keys.append((champion_mastery.platform.value, champion_mastery.summoner._data[SummonerData].id, champion_mastery.champion._data[ChampionData].id))
+    except KeyError:
+        pass
+    try:
+        keys.append((champion_mastery.platform.value, champion_mastery.summoner._data[SummonerData].id, champion_mastery.champion._data[ChampionData].name))
+    except KeyError:
+        pass
+    try:
+        keys.append((champion_mastery.platform.value, champion_mastery.summoner._data[SummonerData].name, champion_mastery.champion._data[ChampionData].id))
+    except KeyError:
+        pass
+    try:
+        keys.append((champion_mastery.platform.value, champion_mastery.summoner._data[SummonerData].name, champion_mastery.champion._data[ChampionData].name))
+    except KeyError:
+        pass
+    try:
+        keys.append((champion_mastery.platform.value, champion_mastery.summoner._data[SummonerData].account_id, champion_mastery.champion._data[ChampionData].id))
+    except KeyError:
+        pass
+    try:
+        keys.append((champion_mastery.platform.value, champion_mastery.summoner._data[SummonerData].account_id, champion_mastery.champion._data[ChampionData].name))
+    except KeyError:
+        pass
+    return keys
 
 
-def for_champion_mastery_query(query: Query) -> Tuple[str, Union[int, str], Union[int, str]]:
-    if "playerId" in query:
-        summoner_identifier = "playerId"
-    elif "summoner.id" in query:
-        summoner_identifier = "summoner.id"
-    elif "summoner.account.id" in query:
-        summoner_identifier = "summoner.account.id"
-    else:
-        summoner_identifier = "summoner.name"
-
-    if "championId" in query:
-        champion_identifier = "championId"
-    elif "champion.id" in query:
-        champion_identifier = "champion.id"
-    else:
-        champion_identifier = "champion.name"
-
-    return query["platform"].value, query[summoner_identifier], query[champion_identifier]
+def for_champion_mastery_query(query: Query) -> List[Tuple]:
+    keys = []
+    if "summoner.id" in query and "champion.id" in query:
+        keys.append((query["platform"].value, query["summoner.id"], query["champion.id"]))
+    if "summoner.id" in query and "champion.name" in query:
+        keys.append((query["platform"].value, query["summoner.id"], query["champion.name"]))
+    if "summoner.name" in query and "champion.id" in query:
+        keys.append((query["platform"].value, query["summoner.name"], query["champion.id"]))
+    if "summoner.name" in query and "champion.name" in query:
+        keys.append((query["platform"].value, query["summoner.name"], query["champion.name"]))
+    if "summoner.account.id" in query and "champion.id" in query:
+        keys.append((query["platform"].value, query["summoner.account.id"], query["champion.id"]))
+    if "summoner.account.id" in query and "champion.name" in query:
+        keys.append((query["platform"].value, query["summoner.account.id"], query["champion.name"]))
+    return keys
 
 
-def for_many_champion_mastery_query(query: Query) -> Generator[Tuple[str, Union[int, str], Union[int, str]], None, None]:
-    if "summoner.id" in query:
-        summoner_identifier = "summoner.id"
-    elif "summoner.account.id" in query:
-        summoner_identifier = "summoner.account.id"
-    else:
-        summoner_identifier = "summoner.name"
-
-    champion_identifiers, champion_identifier_type = (query["champions.id"], int) if "champions.id" in query else (query["champions.name"], str)
-
-    for champion_identifier in champion_identifiers:
-        try:
-            champion_identifier = champion_identifier_type(champion_identifier)
-            yield query["platform"].value, query[summoner_identifier], champion_identifier
-        except ValueError as e:
-            raise QueryValidationError from e
+def for_many_champion_mastery_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
+    grouped_identifiers = []
+    identifier_types = []
+    if "champions.id" in query:
+        grouped_identifiers.append(query["ids"])
+        identifier_types.append(int)
+    if "champions.name" in query:
+        grouped_identifiers.append(query["names"])
+        identifier_types.append(str)
+    for identifiers in zip(*grouped_identifiers):
+        keys = []
+        for identifier, identifier_type in zip(identifiers, identifier_types):
+            identifier = identifier_type(identifier)
+            if "summoner.id" in query:
+                keys.append((query["platform"].value, query["summoner.id"], identifier))
+            if "summoner.name" in query:
+                keys.append((query["platform"].value, query["summoner.name"], identifier))
+            if "summoner.account.id" in query:
+                keys.append((query["platform"].value, query["summoner.account.id"], identifier))
+        if len(keys) == 0:
+            raise QueryValidationError
+        yield keys
 
 
 ##############
@@ -1383,7 +1496,7 @@ def for_many_champion_mastery_query(query: Query) -> Generator[Tuple[str, Union[
 ##############
 
 
-# League Entriess
+# League Entries
 
 validate_league_entries_query = Query. \
     has("platform").as_(Platform).also. \
@@ -1395,18 +1508,18 @@ validate_many_league_entries_query = Query. \
     has("summoners.id").as_(Iterable)
 
 
-def for_league_entries(leagues: Leagues, summoner_identifier: str = "summoner.id") -> Tuple[str, int]:
-    return leagues.platform.value, leagues._LeagueEntries__summoner.id
+def for_league_entries(leagues: Leagues) -> List[Tuple[str, int]]:
+    return [(leagues.platform.value, leagues._LeagueEntries__summoner.id)]
 
 
-def for_league_entries_query(query: Query) -> Tuple[str, int]:
-    return query["platform"].value, query["summoner.id"]
+def for_league_entries_query(query: Query) -> List[Tuple[str, int]]:
+    return [(query["platform"].value, query["summoner.id"])]
 
 
-def for_many_league_entries_query(query: Query) -> Generator[Tuple[str, int], None, None]:
+def for_many_league_entries_query(query: Query) -> Generator[List[Tuple[str, int]], None, None]:
     for id in query["summoners.id"]:
         try:
-            yield query["platform"].value, id
+            yield [(query["platform"].value, id)]
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -1422,18 +1535,18 @@ validate_many_leagues_query = Query. \
     has("summoners.id").as_(Iterable)
 
 
-def for_leagues(leagues: Leagues, summoner_identifier: str = "summoner.id") -> Tuple[str, int]:
-    return leagues.platform.value, leagues._Leagues__summoner.id
+def for_leagues(leagues: Leagues) -> List[Tuple[str, int]]:
+    return [(leagues.platform.value, leagues._Leagues__summoner.id)]
 
 
-def for_leagues_query(query: Query) -> Tuple[str, int]:
-    return query["platform"].value, query["summoner.id"]
+def for_leagues_query(query: Query) -> List[Tuple[str, int]]:
+    return [(query["platform"].value, query["summoner.id"])]
 
 
-def for_many_leagues_query(query: Query) -> Generator[Tuple[str, int], None, None]:
+def for_many_leagues_query(query: Query) -> Generator[List[Tuple[str, int]], None, None]:
     for id in query["summoners.id"]:
         try:
-            yield query["platform"].value, id
+            yield [(query["platform"].value, id)]
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -1449,18 +1562,18 @@ validate_many_challenger_league_query = Query. \
     has("queues").as_(Iterable)
 
 
-def for_challenger_league(league: ChallengerLeague, queue_identifier: str = "value") -> Tuple[str, str]:
-    return league.platform.value, league.queue.value
+def for_challenger_league(league: ChallengerLeague) -> List[Tuple[str, str]]:
+    return [(league.platform.value, league.queue.value)]
 
 
-def for_challenger_league_query(query: Query) -> Tuple[str, str]:
-    return query["platform"].value, query["queue"].value
+def for_challenger_league_query(query: Query) -> List[Tuple[str, str]]:
+    return [(query["platform"].value, query["queue"].value)]
 
 
-def for_many_challenger_league_query(query: Query) -> Generator[Tuple[str, str], None, None]:
+def for_many_challenger_league_query(query: Query) -> Generator[List[Tuple[str, str]], None, None]:
     for queue in query["queues"]:
         try:
-            yield query["platform"].value, queue.value
+            yield [(query["platform"].value, queue.value)]
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -1476,18 +1589,18 @@ validate_many_master_league_query = Query. \
     has("queues").as_(Iterable)
 
 
-def for_master_league(league: MasterLeague, queue_identifier: str = "value") -> Tuple[str, str]:
-    return league.platform.value, league.queue.value
+def for_master_league(league: MasterLeague) -> List[Tuple[str, str]]:
+    return [(league.platform.value, league.queue.value)]
 
 
-def for_master_league_query(query: Query) -> Tuple[str, str]:
-    return query["platform"].value, query["queue"].value
+def for_master_league_query(query: Query) -> List[Tuple[str, str]]:
+    return [(query["platform"].value, query["queue"].value)]
 
 
-def for_many_master_league_query(query: Query) -> Generator[Tuple[str, str], None, None]:
+def for_many_master_league_query(query: Query) -> Generator[List[Tuple[str, str]], None, None]:
     for queue in query["queues"]:
         try:
-            yield query["platform"].value, queue.value
+            yield [(query["platform"].value, queue.value)]
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -1503,7 +1616,7 @@ validate_champion_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("includedData").as_(set).or_("included_data").with_default({"all"}).also. \
+    can_have("includedData").with_default({"all"}).also. \
     has("id").as_(int).or_("name").as_(str)
 
 
@@ -1511,59 +1624,82 @@ validate_many_champion_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("included_data").with_default({"all"}).also. \
+    can_have("includedData").with_default({"all"}).also. \
     has("ids").as_(Iterable).or_("names").as_(Iterable)
 
 
-def for_champion(champion: Champion, identifier: str = "id") -> Tuple[str, str, str, int, Union[int, str]]:
-    return champion.platform.value, champion.version, champion.locale, _hash_included_data(champion.included_data), _rgetattr(champion, identifier)
+def for_champion(champion: Champion) -> List[Tuple]:
+    keys = []
+    try:
+        keys.append((champion.platform.value, champion.version, champion.locale, _hash_included_data(champion.included_data), champion._data[ChampionData].id))
+    except KeyError:
+        pass
+    try:
+        keys.append((champion.platform.value, champion.version, champion.locale, _hash_included_data(champion.included_data), champion._data[ChampionData].name))
+    except KeyError:
+        pass
+    return keys
 
 
-def for_champion_query(query: Query) -> Tuple[str, str, str, int, Union[int, str]]:
-    identifier = "id" if "id" in query else "name"
-    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
-    return query["platform"].value, query["version"], query["locale"], included_data_hash, query[identifier]
+def for_champion_query(query: Query) -> List[Tuple]:
+    keys = []
+    included_data_hash = _hash_included_data(query["includedData"])
+    if "id" in query:
+        keys.append((query["platform"].value, query["version"], query["locale"], included_data_hash, query["id"]))
+    if "name" in query:
+        keys.append((query["platform"].value, query["version"], query["locale"], included_data_hash, query["name"]))
+    return keys
 
 
 def for_many_champion_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
-    identifiers, identifier_type = (query["ids"], int) if "ids" in query else (query["names"], str)
-    included_data_hash = _hash_included_data(query["included_data"])
-    for identifier in identifiers:
-        try:
-            identifier = identifier_type(identifier)
-            yield query["platform"].value, query["version"], query["locale"], included_data_hash, identifier
-        except ValueError as e:
-            raise QueryValidationError from e
+    included_data_hash = _hash_included_data(query["includedData"])
+    grouped_identifiers = []
+    identifier_types = []
+    if "ids" in query:
+        grouped_identifiers.append(query["ids"])
+        identifier_types.append(int)
+    if "names" in query:
+        grouped_identifiers.append(query["names"])
+        identifier_types.append(str)
+    for identifiers in zip(*grouped_identifiers):
+        keys = []
+        for identifier, identifier_type in zip(identifiers, identifier_types):
+            try:
+                identifier = identifier_type(identifier)
+                keys.append((query["platform"].value, query["version"], query["locale"], included_data_hash, identifier))
+            except ValueError as e:
+                raise QueryValidationError from e
+        yield keys
 
 
 validate_champions_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("includedData").as_(set).or_("included_data").with_default({"all"})
+    can_have("includedData").with_default({"all"})
 
 
 validate_many_champions_query = Query. \
     has("platforms").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("included_data").with_default({"all"})
+    can_have("includedData").with_default({"all"})
 
 
-def for_champions(champions: Champions, identifier: str = None) -> Tuple[str, str, str, int]:
-    return champions.platform.value, champions.version, champions.locale, _hash_included_data(champions.included_data)
+def for_champions(champions: Champions) -> List[Tuple[str, str, str, int]]:
+    return [(champions.platform.value, champions.version, champions.locale, _hash_included_data(champions.included_data))]
 
 
-def for_champions_query(query: Query) -> Tuple[str, str, str, int]:
-    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
-    return query["platform"].value, query["version"], query["locale"], included_data_hash
+def for_champions_query(query: Query) -> List[Tuple[str, str, str, int]]:
+    included_data_hash = _hash_included_data(query["includedData"])
+    return [(query["platform"].value, query["version"], query["locale"], included_data_hash)]
 
 
-def for_many_champions_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
-    included_data_hash = _hash_included_data(query["included_data"])
+def for_many_champions_query(query: Query) -> Generator[List[Tuple[str, str, str, int, Union[int, str]]], None, None]:
+    included_data_hash = _hash_included_data(query["includedData"])
     for platform in query["platforms"]:
         try:
-            yield platform.value, query["version"], query["locale"], included_data_hash
+            yield [(platform.value, query["version"], query["locale"], included_data_hash)]
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -1574,7 +1710,7 @@ validate_item_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("includedData").as_(set).or_("included_data").with_default({"all"}).also. \
+    can_have("includedData").with_default({"all"}).also. \
     has("id").as_(int).or_("name").as_(str)
 
 
@@ -1582,58 +1718,82 @@ validate_many_item_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("included_data").with_default({"all"}).also. \
+    can_have("includedData").with_default({"all"}).also. \
     has("ids").as_(Iterable).or_("names").as_(Iterable)
 
 
-def for_item(item: Item, identifier: str = "id") -> Tuple[str, str, str, int, Union[int, str]]:
-    return item.platform.value, item.version, item.locale, _hash_included_data(item.included_data), _rgetattr(item, identifier)
+def for_item(item: Item) -> List[Tuple]:
+    keys = []
+    try:
+        keys.append((item.platform.value, item.version, item.locale, _hash_included_data(item.included_data), item._data[ItemData].id))
+    except KeyError:
+        pass
+    try:
+        keys.append((item.platform.value, item.version, item.locale, _hash_included_data(item.included_data), item._data[ItemData].name))
+    except KeyError:
+        pass
+    return keys
 
 
-def for_item_query(query: Query) -> Tuple[str, str, str, int, Union[int, str]]:
-    identifier = "id" if "id" in query else "name"
-    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
-    return query["platform"].value, query["version"], query["locale"], included_data_hash, query[identifier]
+def for_item_query(query: Query) -> List[Tuple]:
+    keys = []
+    included_data_hash = _hash_included_data(query["includedData"])
+    if "id" in query:
+        keys.append((query["platform"].value, query["version"], query["locale"], included_data_hash, query["id"]))
+    if "name" in query:
+        keys.append((query["platform"].value, query["version"], query["locale"], included_data_hash, query["name"]))
+    return keys
 
 
 def for_many_item_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
-    identifiers, identifier_type = (query["ids"], int) if "ids" in query else (query["names"], str)
-    included_data_hash = _hash_included_data(query["included_data"])
-    for identifier in identifiers:
-        try:
-            identifier = identifier_type(identifier)
-            yield query["platform"].value, query["version"], query["locale"], included_data_hash, identifier
-        except ValueError as e:
-            raise QueryValidationError from e
+    included_data_hash = _hash_included_data(query["includedData"])
+    grouped_identifiers = []
+    identifier_types = []
+    if "ids" in query:
+        grouped_identifiers.append(query["ids"])
+        identifier_types.append(int)
+    if "names" in query:
+        grouped_identifiers.append(query["names"])
+        identifier_types.append(str)
+    for identifiers in zip(*grouped_identifiers):
+        keys = []
+        for identifier, identifier_type in zip(identifiers, identifier_types):
+            try:
+                identifier = identifier_type(identifier)
+                keys.append((query["platform"].value, query["version"], query["locale"], included_data_hash, identifier))
+            except ValueError as e:
+                raise QueryValidationError from e
+        yield keys
+
 
 validate_items_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("includedData").as_(set).or_("included_data").with_default({"all"})
+    can_have("includedData").with_default({"all"})
 
 
 validate_many_items_query = Query. \
     has("platforms").as_(Iterable).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("included_data").with_default({"all"})
+    can_have("includedData").with_default({"all"})
 
 
-def for_items(items: Items, identifier: str = "platform") -> Tuple[str, str, str, int]:
-    return items.platform.value, items.version, items.locale, _hash_included_data(items.included_data)
+def for_items(items: Items) -> List[Tuple[str, str, str, int]]:
+    return [(items.platform.value, items.version, items.locale, _hash_included_data(items.included_data))]
 
 
-def for_items_query(query: Query) -> Tuple[str, str, str, int]:
-    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
-    return query["platform"].value, query["version"], query["locale"], included_data_hash
+def for_items_query(query: Query) -> List[Tuple[str, str, str, int]]:
+    included_data_hash = _hash_included_data(query["includedData"])
+    return [(query["platform"].value, query["version"], query["locale"], included_data_hash)]
 
 
-def for_many_items_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
-    included_data_hash = _hash_included_data(query["included_data"])
+def for_many_items_query(query: Query) -> Generator[List[Tuple[str, str, str, int, Union[int, str]]], None, None]:
+    included_data_hash = _hash_included_data(query["includedData"])
     for platform in query["platforms"]:
         try:
-            yield platform.value, query["version"], query["locale"], included_data_hash
+            yield [(platform.value, query["version"], query["locale"], included_data_hash)]
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -1648,16 +1808,17 @@ validate_many_languages_query = Query. \
     has("platforms").as_(Iterable)
 
 
-def for_languages(languages: Locales) -> str:
-    return languages.platform.value
+def for_languages(languages: Locales) -> List[str]:
+    return [languages.platform.value]
 
 
-def for_languages_query(query: Query) -> str:
-    return query["platform"].value
+def for_languages_query(query: Query) -> List[str]:
+    return [query["platform"].value]
 
 
-def for_many_languages_query(query: Query) -> Generator[str, None, None]:
-    return query["platform"].value
+def for_many_languages_query(query: Query) -> Generator[List[str], None, None]:
+    for platform in query["platforms"]:
+        yield [platform.value]
 
 
 validate_language_strings_query = Query. \
@@ -1668,16 +1829,17 @@ validate_many_language_strings_query = Query. \
     has("platforms").as_(Iterable)
 
 
-def for_language_strings(languages: LanguageStrings) -> str:
-    return languages.platform.value
+def for_language_strings(languages: LanguageStrings) -> List[str]:
+    return [languages.platform.value]
 
 
-def for_language_strings_query(query: Query) -> str:
-    return query["platform"].value
+def for_language_strings_query(query: Query) -> List[str]:
+    return [query["platform"].value]
 
 
-def for_many_language_strings_query(query: Query) -> Generator[str, None, None]:
-    return query["platform"].value
+def for_many_language_strings_query(query: Query) -> Generator[List[str], None, None]:
+    for platform in query["platforms"]:
+        yield [platform.value]
 
 
 # Map
@@ -1686,7 +1848,7 @@ validate_map_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    has("mapId").as_(int).or_("id").as_(int).or_("name").as_(str)
+    has("id").as_(int).or_("name").as_(str)
 
 
 validate_many_map_query = Query. \
@@ -1696,28 +1858,46 @@ validate_many_map_query = Query. \
     has("ids").as_(Iterable).or_("names").as_(Iterable)
 
 
-def for_map(map: Map, identifier: str = "id") -> Tuple[str, str, str, Union[int, str]]:
-    return map.platform.value, map.version, map.locale, _rgetattr(map, identifier)
+def for_map(map: Map) -> List[Tuple]:
+    keys = []
+    try:
+        keys.append((map.platform.value, map.version, map.locale, map._data[MapData].id))
+    except KeyError:
+        pass
+    try:
+        keys.append((map.platform.value, map.version, map.locale, map._data[MapData].name))
+    except KeyError:
+        pass
+    return keys
 
 
-def for_map_query(query: Query) -> Tuple[str, str, str, Union[int, str]]:
-    if "mapId" in query:
-        identifier = "mapId"
-    elif "id" in query:
-        identifier = "id"
-    else:
-        identifier = "name"
-    return query["platform"].value, query["version"], query["locale"], query[identifier]
+def for_map_query(query: Query) -> List[Tuple]:
+    keys = []
+    if "id" in query:
+        keys.append((query["platform"].value, query["version"], query["locale"], query["id"]))
+    if "name" in query:
+        keys.append((query["platform"].value, query["version"], query["locale"], query["name"]))
+    return keys
 
 
-def for_many_map_query(query: Query) -> Generator[Tuple[str, str, str, Union[int, str]], None, None]:
-    identifiers, identifier_type = (query["ids"], int) if "ids" in query else (query["names"], str)
-    for identifier in identifiers:
-        try:
-            identifier = identifier_type(identifier)
-            yield query["platform"].value, query["version"], query["locale"], identifier
-        except ValueError as e:
-            raise QueryValidationError from e
+def for_many_map_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
+    grouped_identifiers = []
+    identifier_types = []
+    if "ids" in query:
+        grouped_identifiers.append(query["ids"])
+        identifier_types.append(int)
+    if "names" in query:
+        grouped_identifiers.append(query["names"])
+        identifier_types.append(str)
+    for identifiers in zip(*grouped_identifiers):
+        keys = []
+        for identifier, identifier_type in zip(identifiers, identifier_types):
+            try:
+                identifier = identifier_type(identifier)
+                keys.append((query["platform"].value, query["version"], query["locale"], identifier))
+            except ValueError as e:
+                raise QueryValidationError from e
+        yield keys
 
 
 validate_maps_query = Query. \
@@ -1732,17 +1912,17 @@ validate_many_maps_query = Query. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str)
 
 
-def for_maps(maps: Maps, identifier: str = "id") -> Tuple[str, str, str]:
-    return maps.platform.value, maps.version, maps.locale
+def for_maps(maps: Maps) -> List[Tuple[str, str, str]]:
+    return [(maps.platform.value, maps.version, maps.locale)]
 
 
-def for_maps_query(query: Query) -> Tuple[str, str, str]:
-    return query["platform"].value, query["version"], query["locale"]
+def for_maps_query(query: Query) -> List[Tuple[str, str, str]]:
+    return [(query["platform"].value, query["version"], query["locale"])]
 
 
-def for_many_maps_query(query: Query) -> Generator[Tuple[str, str, str], None, None]:
+def for_many_maps_query(query: Query) -> Generator[List[Tuple[str, str, str]], None, None]:
     for platform in query["platforms"]:
-        yield platform.value, query["version"], query["locale"]
+        yield [(platform.value, query["version"], query["locale"])]
 
 
 # Mastery
@@ -1751,7 +1931,7 @@ validate_mastery_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("includedData").as_(set).or_("included_data").with_default({"all"}).also. \
+    can_have("includedData").with_default({"all"}).also. \
     has("id").as_(int).or_("name").as_(str)
 
 
@@ -1759,59 +1939,82 @@ validate_many_mastery_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("included_data").with_default({"all"}).also. \
+    can_have("includedData").with_default({"all"}).also. \
     has("ids").as_(Iterable).or_("names").as_(Iterable)
 
 
-def for_mastery(mastery: Mastery, identifier: str = "id") -> Tuple[str, str, str, int, Union[int, str]]:
-    return mastery.platform.value, mastery.version, mastery.locale, _hash_included_data(mastery.included_data), _rgetattr(mastery, identifier)
+def for_mastery(mastery: Mastery) -> List[Tuple]:
+    keys = []
+    try:
+        keys.append((mastery.platform.value, mastery.version, mastery.locale, _hash_included_data(mastery.included_data), mastery._data[MasteryData].id))
+    except KeyError:
+        pass
+    try:
+        keys.append((mastery.platform.value, mastery.version, mastery.locale, _hash_included_data(mastery.included_data), mastery._data[MasteryData].name))
+    except KeyError:
+        pass
+    return keys
 
 
-def for_mastery_query(query: Query) -> Tuple[str, str, str, int, Union[int, str]]:
-    identifier = "id" if "id" in query else "name"
-    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
-    return query["platform"].value, query["version"], query["locale"], included_data_hash, query[identifier]
+def for_mastery_query(query: Query) -> List[Tuple]:
+    keys = []
+    included_data_hash = _hash_included_data(query["includedData"])
+    if "id" in query:
+        keys.append((query["platform"].value, query["version"], query["locale"], included_data_hash, query["id"]))
+    if "name" in query:
+        keys.append((query["platform"].value, query["version"], query["locale"], included_data_hash, query["name"]))
+    return keys
 
 
 def for_many_mastery_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
-    identifiers, identifier_type = (query["ids"], int) if "ids" in query else (query["names"], str)
-    included_data_hash = _hash_included_data(query["included_data"])
-    for identifier in identifiers:
-        try:
-            identifier = identifier_type(identifier)
-            yield query["platform"].value, query["version"], query["locale"], included_data_hash, identifier
-        except ValueError as e:
-            raise QueryValidationError from e
+    included_data_hash = _hash_included_data(query["includedData"])
+    grouped_identifiers = []
+    identifier_types = []
+    if "ids" in query:
+        grouped_identifiers.append(query["ids"])
+        identifier_types.append(int)
+    if "names" in query:
+        grouped_identifiers.append(query["names"])
+        identifier_types.append(str)
+    for identifiers in zip(*grouped_identifiers):
+        keys = []
+        for identifier, identifier_type in zip(identifiers, identifier_types):
+            try:
+                identifier = identifier_type(identifier)
+                keys.append((query["platform"].value, query["version"], query["locale"], included_data_hash, identifier))
+            except ValueError as e:
+                raise QueryValidationError from e
+        yield keys
 
 
 validate_masteries_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("includedData").as_(set).or_("included_data").with_default({"all"})
+    can_have("includedData").with_default({"all"})
 
 
 validate_many_masteries_query = Query. \
     has("platforms").as_(Iterable).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("included_data").with_default({"all"})
+    can_have("includedData").with_default({"all"})
 
 
-def for_masteries(masteries: Masteries, identifier: str = "platform") -> Tuple[str, str, str, int]:
-    return masteries.platform.value, masteries.version, masteries.locale, _hash_included_data(masteries.included_data)
+def for_masteries(masteries: Masteries) -> List[Tuple[str, str, str, int]]:
+    return [(masteries.platform.value, masteries.version, masteries.locale, _hash_included_data(masteries.included_data))]
 
 
-def for_masteries_query(query: Query) -> Tuple[str, str, str, int]:
-    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
-    return query["platform"].value, query["version"], query["locale"], included_data_hash
+def for_masteries_query(query: Query) -> List[Tuple[str, str, str, int]]:
+    included_data_hash = _hash_included_data(query["includedData"])
+    return [(query["platform"].value, query["version"], query["locale"], included_data_hash)]
 
 
-def for_many_masteries_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
-    included_data_hash = _hash_included_data(query["included_data"])
+def for_many_masteries_query(query: Query) -> Generator[List[Tuple[str, str, str, int, Union[int, str]]], None, None]:
+    included_data_hash = _hash_included_data(query["includedData"])
     for platform in query["platforms"]:
         try:
-            yield platform.value, query["version"], query["locale"], included_data_hash
+            yield [(platform.value, query["version"], query["locale"], included_data_hash)]
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -1830,19 +2033,19 @@ validate_many_profile_icons_query = Query. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str)
 
 
-def for_profile_icons(profile_icon: ProfileIcons) -> Tuple[str, str, str]:
-    return profile_icon["platform"], profile_icon["version"], profile_icon["locale"]
+def for_profile_icons(profile_icon: ProfileIcons) -> List[Tuple[str, str, str]]:
+    return [(profile_icon["platform"], profile_icon["version"], profile_icon["locale"])]
 
 
-def for_profile_icons_query(query: Query) -> Tuple[str, str, str]:
-    return query["platform"].value, query["version"], query["locale"]
+def for_profile_icons_query(query: Query) -> List[Tuple[str, str, str]]:
+    return [(query["platform"].value, query["version"], query["locale"])]
 
 
-def for_many_profile_icons_query(query: Query) -> Generator[Tuple[str, str, str], None, None]:
+def for_many_profile_icons_query(query: Query) -> Generator[List[Tuple[str, str, str]], None, None]:
     for platform in query["platforms"]:
         try:
             platform = Platform(platform)
-            yield platform.value, query["version"], query["locale"]
+            yield [(platform.value, query["version"], query["locale"])]
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -1861,19 +2064,19 @@ validate_many_profile_icon_query = Query. \
     has("ids").as_(Iterable)
 
 
-def for_profile_icon(profile_icon: ProfileIcon) -> Tuple[str, str, str, int]:
-    return profile_icon["platform"], profile_icon["version"], profile_icon["locale"], profile_icon["id"]
+def for_profile_icon(profile_icon: ProfileIcon) -> List[Tuple[str, str, str, int]]:
+    return [(profile_icon.platform.value, profile_icon.version, profile_icon.locale, profile_icon.id)]
 
 
-def for_profile_icon_query(query: Query) -> Tuple[str, str, str, int]:
-    return query["platform"].value, query["version"], query["locale"], query["id"]
+def for_profile_icon_query(query: Query) -> List[Tuple[str, str, str, int]]:
+    return [(query["platform"].value, query["version"], query["locale"], query["id"])]
 
 
-def for_many_profile_icon_query(query: Query) -> Generator[Tuple[str, str, str, int], None, None]:
+def for_many_profile_icon_query(query: Query) -> Generator[List[Tuple[str, str, str, int]], None, None]:
     for id in query["ids"]:
         try:
             id = int(id)
-            yield query["platform"].value, query["version"], query["locale"], id
+            yield [(query["platform"].value, query["version"], query["locale"], id)]
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -1888,16 +2091,17 @@ validate_many_realms_query = Query. \
     has("platforms").as_(Iterable)
 
 
-def for_realms(realm: Realms) -> str:
-    return realm.platform.value
+def for_realms(realm: Realms) -> List[str]:
+    return [(realm.platform.value)]
 
 
-def for_realms_query(query: Query) -> str:
-    return query["platform"].value
+def for_realms_query(query: Query) -> List[str]:
+    return [(query["platform"].value)]
 
 
-def for_many_realms_query(query: Query) -> Generator[str, None, None]:
-    return query["platform"].value
+def for_many_realms_query(query: Query) -> Generator[List[str], None, None]:
+    for platform in query["platforms"]:
+        yield [(platform.value)]
 
 
 # Rune
@@ -1906,7 +2110,7 @@ validate_rune_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("includedData").as_(set).or_("included_data").with_default({"all"}).also. \
+    can_have("includedData").with_default({"all"}).also. \
     has("id").as_(int).or_("name").as_(str)
 
 
@@ -1914,59 +2118,82 @@ validate_many_rune_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("included_data").with_default({"all"}).also. \
+    can_have("includedData").with_default({"all"}).also. \
     has("ids").as_(Iterable).or_("names").as_(Iterable)
 
 
-def for_rune(rune: Rune, identifier: str = "id") -> Tuple[str, str, str, int, Union[int, str]]:
-    return rune.platform.value, rune.version, rune.locale, _hash_included_data(rune.included_data), _rgetattr(rune, identifier)
+def for_rune(rune: Rune) -> List[Tuple]:
+    keys = []
+    try:
+        keys.append((rune.platform.value, rune.version, rune.locale, _hash_included_data(rune.included_data), rune._data[RuneData].id))
+    except KeyError:
+        pass
+    try:
+        keys.append((rune.platform.value, rune.version, rune.locale, _hash_included_data(rune.included_data), rune._data[RuneData].name))
+    except KeyError:
+        pass
+    return keys
 
 
-def for_rune_query(query: Query) -> Tuple[str, str, str, int, Union[int, str]]:
-    identifier = "id" if "id" in query else "name"
-    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
-    return query["platform"].value, query["version"], query["locale"], included_data_hash, query[identifier]
+def for_rune_query(query: Query) -> List[Tuple]:
+    keys = []
+    included_data_hash = _hash_included_data(query["includedData"])
+    if "id" in query:
+        keys.append((query["platform"].value, query["version"], query["locale"], included_data_hash, query["id"]))
+    if "name" in query:
+        keys.append((query["platform"].value, query["version"], query["locale"], included_data_hash, query["name"]))
+    return keys
 
 
 def for_many_rune_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
-    identifiers, identifier_type = (query["ids"], int) if "ids" in query else (query["names"], str)
-    included_data_hash = _hash_included_data(query["included_data"])
-    for identifier in identifiers:
-        try:
-            identifier = identifier_type(identifier)
-            yield query["platform"].value, query["version"], query["locale"], included_data_hash, identifier
-        except ValueError as e:
-            raise QueryValidationError from e
+    included_data_hash = _hash_included_data(query["includedData"])
+    grouped_identifiers = []
+    identifier_types = []
+    if "ids" in query:
+        grouped_identifiers.append(query["ids"])
+        identifier_types.append(int)
+    if "names" in query:
+        grouped_identifiers.append(query["names"])
+        identifier_types.append(str)
+    for identifiers in zip(*grouped_identifiers):
+        keys = []
+        for identifier, identifier_type in zip(identifiers, identifier_types):
+            try:
+                identifier = identifier_type(identifier)
+                keys.append((query["platform"].value, query["version"], query["locale"], included_data_hash, identifier))
+            except ValueError as e:
+                raise QueryValidationError from e
+        yield keys
 
 
 validate_runes_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("includedData").as_(set).or_("included_data").with_default({"all"})
+    can_have("includedData").with_default({"all"})
 
 
 validate_many_runes_query = Query. \
     has("platforms").as_(Iterable).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("included_data").with_default({"all"})
+    can_have("includedData").with_default({"all"})
 
 
-def for_runes(runes: Runes, identifier: str = "platform") -> Tuple[str, str, str, int]:
-    return runes.platform.value, runes.version, runes.locale, _hash_included_data(runes.included_data)
+def for_runes(runes: Runes) -> List[Tuple[str, str, str, int]]:
+    return [(runes.platform.value, runes.version, runes.locale, _hash_included_data(runes.included_data))]
 
 
-def for_runes_query(query: Query) -> Tuple[str, str, str, int]:
-    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
-    return query["platform"].value, query["version"], query["locale"], included_data_hash
+def for_runes_query(query: Query) -> List[Tuple[str, str, str, int]]:
+    included_data_hash = _hash_included_data(query["includedData"])
+    return [(query["platform"].value, query["version"], query["locale"], included_data_hash)]
 
 
-def for_many_runes_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
-    included_data_hash = _hash_included_data(query["included_data"])
+def for_many_runes_query(query: Query) -> Generator[List[Tuple[str, str, str, int, Union[int, str]]], None, None]:
+    included_data_hash = _hash_included_data(query["includedData"])
     for platform in query["platforms"]:
         try:
-            yield platform.value, query["version"], query["locale"], included_data_hash
+            yield [(platform.value, query["version"], query["locale"], included_data_hash)]
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -1977,7 +2204,7 @@ validate_summoner_spell_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("includedData").as_(set).or_("included_data").with_default({"all"}).also. \
+    can_have("includedData").with_default({"all"}).also. \
     has("id").as_(int).or_("name").as_(str)
 
 
@@ -1985,59 +2212,82 @@ validate_many_summoner_spell_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("included_data").with_default({"all"}).also. \
+    can_have("includedData").with_default({"all"}).also. \
     has("ids").as_(Iterable).or_("names").as_(Iterable)
 
 
-def for_summoner_spell(summoner_spell: SummonerSpell, identifier: str = "id") -> Tuple[str, str, str, int, Union[int, str]]:
-    return summoner_spell.platform.value, summoner_spell.version, summoner_spell.locale, _hash_included_data(summoner_spell.included_data), _rgetattr(summoner_spell, identifier)
+def for_summoner_spell(summoner_spell: SummonerSpell) -> List[Tuple]:
+    keys = []
+    try:
+        keys.append((summoner_spell.platform.value, summoner_spell.version, summoner_spell.locale, _hash_included_data(summoner_spell.included_data), summoner_spell._data[SummonerSpellData].id))
+    except KeyError:
+        pass
+    try:
+        keys.append((summoner_spell.platform.value, summoner_spell.version, summoner_spell.locale, _hash_included_data(summoner_spell.included_data), summoner_spell._data[SummonerSpellData].name))
+    except KeyError:
+        pass
+    return keys
 
 
-def for_summoner_spell_query(query: Query) -> Tuple[str, str, str, int, Union[int, str]]:
-    identifier = "id" if "id" in query else "name"
-    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
-    return query["platform"].value, query["version"], query["locale"], included_data_hash, query[identifier]
+def for_summoner_spell_query(query: Query) -> List[Tuple]:
+    keys = []
+    included_data_hash = _hash_included_data(query["includedData"])
+    if "id" in query:
+        keys.append((query["platform"].value, query["version"], query["locale"], included_data_hash, query["id"]))
+    if "name" in query:
+        keys.append((query["platform"].value, query["version"], query["locale"], included_data_hash, query["name"]))
+    return keys
 
 
 def for_many_summoner_spell_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
-    identifiers, identifier_type = (query["ids"], int) if "ids" in query else (query["names"], str)
-    included_data_hash = _hash_included_data(query["included_data"])
-    for identifier in identifiers:
-        try:
-            identifier = identifier_type(identifier)
-            yield query["platform"].value, query["version"], query["locale"], included_data_hash, identifier
-        except ValueError as e:
-            raise QueryValidationError from e
+    included_data_hash = _hash_included_data(query["includedData"])
+    grouped_identifiers = []
+    identifier_types = []
+    if "ids" in query:
+        grouped_identifiers.append(query["ids"])
+        identifier_types.append(int)
+    if "names" in query:
+        grouped_identifiers.append(query["names"])
+        identifier_types.append(str)
+    for identifiers in zip(*grouped_identifiers):
+        keys = []
+        for identifier, identifier_type in zip(identifiers, identifier_types):
+            try:
+                identifier = identifier_type(identifier)
+                keys.append((query["platform"].value, query["version"], query["locale"], included_data_hash, identifier))
+            except ValueError as e:
+                raise QueryValidationError from e
+        yield keys
 
 
 validate_summoner_spells_query = Query. \
     has("platform").as_(Platform).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("includedData").as_(set).or_("included_data").with_default({"all"})
+    can_have("includedData").with_default({"all"})
 
 
 validate_many_summoner_spells_query = Query. \
     has("platforms").as_(Iterable).also. \
     can_have("version").with_default(_get_default_version, supplies_type=str).also. \
     can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("included_data").with_default({"all"})
+    can_have("includedData").with_default({"all"})
 
 
-def for_summoner_spells(summoner_spells: SummonerSpells, identifier: str = "platform") -> Tuple[str, str, str, int]:
-    return summoner_spells.platform.value, summoner_spells.version, summoner_spells.locale, _hash_included_data(summoner_spells.included_data)
+def for_summoner_spells(summoner_spells: SummonerSpells) -> List[Tuple[str, str, str, int]]:
+    return [(summoner_spells.platform.value, summoner_spells.version, summoner_spells.locale, _hash_included_data(summoner_spells.included_data))]
 
 
-def for_summoner_spells_query(query: Query) -> Tuple[str, str, str, int]:
-    included_data_hash = _hash_included_data(query["includedData"]) if "includedData" in query else _hash_included_data(query["included_data"])
-    return query["platform"].value, query["version"], query["locale"], included_data_hash
+def for_summoner_spells_query(query: Query) -> List[Tuple[str, str, str, int]]:
+    included_data_hash = _hash_included_data(query["includedData"])
+    return [(query["platform"].value, query["version"], query["locale"], included_data_hash)]
 
 
-def for_many_summoner_spells_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
-    included_data_hash = _hash_included_data(query["included_data"])
+def for_many_summoner_spells_query(query: Query) -> Generator[List[Tuple[str, str, str, int, Union[int, str]]], None, None]:
+    included_data_hash = _hash_included_data(query["includedData"])
     for platform in query["platforms"]:
         try:
-            yield platform.value, query["version"], query["locale"], included_data_hash
+            yield [(platform.value, query["version"], query["locale"], included_data_hash)]
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -2052,19 +2302,19 @@ validate_many_versions_query = Query. \
     has("platforms").as_(Iterable)
 
 
-def for_versions(versions: Versions) -> str:
-    return versions.platform.value
+def for_versions(versions: Versions) -> List[str]:
+    return [versions.platform.value]
 
 
-def for_versions_query(query: Query) -> str:
-    return query["platform"].value
+def for_versions_query(query: Query) -> List[str]:
+    return [query["platform"].value]
 
 
-def for_many_versions_query(query: Query) -> Generator[str, None, None]:
+def for_many_versions_query(query: Query) -> Generator[List[str], None, None]:
     for platform in query["platforms"]:
         try:
             platform = Platform(platform)
-            yield platform.value
+            yield [platform.value]
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -2081,19 +2331,19 @@ validate_many_shard_status_query = Query. \
     has("platforms").as_(Iterable)
 
 
-def for_shard_status(shard_status: ShardStatus) -> str:
-    return shard_status.platform.value
+def for_shard_status(shard_status: ShardStatus) -> List[str]:
+    return [shard_status.platform.value]
 
 
-def for_shard_status_query(query: Query) -> str:
-    return query["platform"].value
+def for_shard_status_query(query: Query) -> List[str]:
+    return [query["platform"].value]
 
 
-def for_many_shard_status_query(query: Query) -> Generator[str, None, None]:
+def for_many_shard_status_query(query: Query) -> Generator[List[str], None, None]:
     for platform in query["platforms"]:
         try:
             platform = Platform(platform)
-            yield platform.value
+            yield [platform.value]
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -2105,7 +2355,7 @@ def for_many_shard_status_query(query: Query) -> Generator[str, None, None]:
 
 validate_mastery_page_query = Query. \
     has("platform").as_(Platform).also. \
-    has("summonerId").as_(int).or_("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
+    has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
     has("id").as_(int)
 
 
@@ -2115,36 +2365,47 @@ validate_many_mastery_page_query = Query. \
     has("ids").as_(Iterable)
 
 
-def for_mastery_page(mastery_page: MasteryPage, summoner_identifier: str = "id") -> Tuple[str, Union[int, str], int]:
-    return mastery_page.platform.value, _rgetattr(mastery_page.summoner, summoner_identifier), mastery_page.id
+def for_mastery_page(mastery_page: MasteryPage) -> List[Tuple]:
+    keys = []
+    try:
+        keys.append((mastery_page.platform.value, mastery_page.summoner[SummonerData].id, mastery_page.id))
+    except KeyError:
+        pass
+    try:
+        keys.append((mastery_page.platform.value, mastery_page.summoner[SummonerData].name, mastery_page.id))
+    except KeyError:
+        pass
+    try:
+        keys.append((mastery_page.platform.value, mastery_page.summoner[SummonerData].account_id, mastery_page.id))
+    except KeyError:
+        pass
+    return keys
 
 
-def for_mastery_page_query(query: Query) -> Tuple[str, Union[int, str], int]:
-    if "summonerId" in query:
-        summoner_identifier = "summonerId"
-    elif "summoner.id" in query:
-        summoner_identifier = "summoner.id"
-    elif "summoner.account.id" in query:
-        summoner_identifier = "summoner.account.id"
-    else:
-        summoner_identifier = "summoner.name"
-    return query["platform"].value, query[summoner_identifier], query["id"]
+def for_mastery_page_query(query: Query) -> List[Tuple]:
+    keys = []
+    if "summoner.id" in query:
+        keys.append((query["platform"].value, query["summoner.id"], query["id"]))
+    if "summoner.account.id" in query:
+        keys.append((query["platform"].value, query["summoner.account.id"], query["id"]))
+    if "summoner.name" in query:
+        keys.append((query["platform"].value, query["summoner.name"], query["id"]))
+    return keys
 
 
 def for_many_mastery_page_query(query: Query) -> Generator[Tuple[str, Union[int, str], int], None, None]:
-    if "summoner.id" in query:
-        summoner_identifier = "summoner.id"
-    elif "summoner.account.id" in query:
-        summoner_identifier = "summoner.account.id"
-    else:
-        summoner_identifier = "summoner.name"
-
-    for id in query["ids"]:
-        try:
-            id = int(id)
-            yield query["platform"].value, query[summoner_identifier], id
-        except ValueError as e:
-            raise QueryValidationError from e
+    for id_ in query["ids"]:
+        id_ = int(id_)
+        keys = []
+        if "summoner.id" in query:
+            keys.append((query["platform"].value, query["summoner.id"], id_))
+        if "summoner.account.id" in query:
+            keys.append((query["platform"].value, query["summoner.account.id"], id_))
+        if "summoner.name" in query:
+            keys.append((query["platform"].value, query["summoner.name"], id_))
+        if len(keys) == 0:
+            raise QueryValidationError
+        yield keys
 
 
 #############
@@ -2154,7 +2415,7 @@ def for_many_mastery_page_query(query: Query) -> Generator[Tuple[str, Union[int,
 
 validate_match_query = Query. \
     has("platform").as_(Platform).also. \
-    has("gameId").as_(int).or_("id").as_(int)
+    has("id").as_(int)
 
 
 validate_many_match_query = Query. \
@@ -2162,20 +2423,45 @@ validate_many_match_query = Query. \
     has("ids").as_(Iterable)
 
 
-def for_match(match: Match) -> Tuple[str, int]:
-    return match.platform.value, match.id
+def for_match(match: Match) -> List[Tuple[str, int]]:
+    return [(match.platform.value, match.id)]
 
 
-def for_match_query(query: Query) -> Tuple[str, int]:
-    identifier = "gameId" if "gameId" in query else "id"
-    return query["platform"].value, query[identifier]
+def for_match_query(query: Query) -> List[Tuple[str, int]]:
+    return [(query["platform"].value, query["id"])]
 
 
-def for_many_match_query(query: Query) -> Generator[Tuple[str, int], None, None]:
+def for_many_match_query(query: Query) -> Generator[List[Tuple[str, int]], None, None]:
     for id in query["ids"]:
         try:
             id = int(id)
-            yield query["platform"].value, id
+            yield [(query["platform"].value, id)]
+        except ValueError as e:
+            raise QueryValidationError from e
+
+validate_match_timeline_query = Query. \
+    has("platform").as_(Platform).also. \
+    has("id").as_(int)
+
+
+validate_many_match_timeline_query = Query. \
+    has("platform").as_(Platform).also. \
+    has("ids").as_(Iterable)
+
+
+def for_match_timeline(timeline: Timeline) -> List[Tuple[str, int]]:
+    return [(timeline.platform.value, timeline.id)]
+
+
+def for_match_timeline_query(query: Query) -> List[Tuple[str, int]]:
+    return [(query["platform"].value, query["id"])]
+
+
+def for_many_match_timeline_query(query: Query) -> Generator[List[Tuple[str, int]], None, None]:
+    for id in query["ids"]:
+        try:
+            id = int(id)
+            yield [(query["platform"].value, id)]
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -2187,7 +2473,7 @@ def for_many_match_query(query: Query) -> Generator[Tuple[str, int], None, None]
 
 validate_rune_page_query = Query. \
     has("platform").as_(Platform).also. \
-    has("summonerId").as_(int).or_("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
+    has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
     has("id").as_(int)
 
 
@@ -2197,36 +2483,47 @@ validate_many_rune_page_query = Query. \
     has("ids").as_(Iterable)
 
 
-def for_rune_page(rune_page: RunePage, summoner_identifier: str = "id") -> Tuple[str, int, int]:
-    return rune_page.platform.value, _rgetattr(rune_page.summoner, summoner_identifier), rune_page.id
+def for_rune_page(rune_page: RunePage) -> List[Tuple]:
+    keys = []
+    try:
+        keys.append((rune_page.platform.value, rune_page.summoner[SummonerData].id, rune_page.id))
+    except KeyError:
+        pass
+    try:
+        keys.append((rune_page.platform.value, rune_page.summoner[SummonerData].name, rune_page.id))
+    except KeyError:
+        pass
+    try:
+        keys.append((rune_page.platform.value, rune_page.summoner[SummonerData].account_id, rune_page.id))
+    except KeyError:
+        pass
+    return keys
 
 
-def for_rune_page_query(query: Query) -> Tuple[str, Union[int, str], int]:
-    if "summonerId" in query:
-        summoner_identifier = "summonerId"
-    elif "summoner.id" in query:
-        summoner_identifier = "summoner.id"
-    elif "summoner.account.id" in query:
-        summoner_identifier = "summoner.account.id"
-    else:
-        summoner_identifier = "summoner.name"
-    return query["platform"].value, query[summoner_identifier], query["id"]
+def for_rune_page_query(query: Query) -> List[Tuple]:
+    keys = []
+    if "summoner.id" in query:
+        keys.append((query["platform"].value, query["summoner.id"], query["id"]))
+    if "summoner.account.id" in query:
+        keys.append((query["platform"].value, query["summoner.account.id"], query["id"]))
+    if "summoner.name" in query:
+        keys.append((query["platform"].value, query["summoner.name"], query["id"]))
+    return keys
 
 
 def for_many_rune_page_query(query: Query) -> Generator[Tuple[str, Union[int, str], int], None, None]:
-    if "summoner.id" in query:
-        summoner_identifier = "summoner.id"
-    elif "summoner.account.id" in query:
-        summoner_identifier = "summoner.account.id"
-    else:
-        summoner_identifier = "summoner.name"
-
-    for id in query["ids"]:
-        try:
-            id = int(id)
-            yield query["platform"].value, query[summoner_identifier], id
-        except ValueError as e:
-            raise QueryValidationError from e
+    for id_ in query["ids"]:
+        id_ = int(id_)
+        keys = []
+        if "summoner.id" in query:
+            keys.append((query["platform"].value, query["summoner.id"], id_))
+        if "summoner.account.id" in query:
+            keys.append((query["platform"].value, query["summoner.account.id"], id_))
+        if "summoner.name" in query:
+            keys.append((query["platform"].value, query["summoner.name"], id_))
+        if len(keys) == 0:
+            raise QueryValidationError
+        yield keys
 
 
 #################
@@ -2243,19 +2540,19 @@ validate_many_current_match_query = Query. \
     has("summoner.ids").as_(Iterable)
 
 
-def for_current_match(current_match_info: CurrentMatch) -> Tuple[str, int]:
-    return current_match_info.platform, current_match_info._CurrentMatch__summoner.id
+def for_current_match(current_match_info: CurrentMatch) -> List[Tuple[str, int]]:
+    return [(current_match_info.platform, current_match_info._CurrentMatch__summoner.id)]
 
 
-def for_current_match_query(query: Query) -> Tuple[str, int]:
-    return query["platform"].value, query["summoner.id"]
+def for_current_match_query(query: Query) -> List[Tuple[str, int]]:
+    return [(query["platform"].value, query["summoner.id"])]
 
 
-def for_many_current_match_query(query: Query) -> Generator[Tuple[str, int], None, None]:
+def for_many_current_match_query(query: Query) -> Generator[List[Tuple[str, int]], None, None]:
     for summoner_id in query["summoner.ids"]:
         try:
             summoner_id = int(summoner_id)
-            yield query["platform"].value, summoner_id
+            yield [(query["platform"].value, summoner_id)]
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -2268,19 +2565,19 @@ validate_many_featured_matches_query = Query. \
     has("platforms").as_(Iterable)
 
 
-def for_featured_matches(featured_matches: FeaturedMatches) -> str:
-    return featured_matches.platform
+def for_featured_matches(featured_matches: FeaturedMatches) -> List[str]:
+    return [featured_matches.platform]
 
 
-def for_featured_matches_query(query: Query) -> str:
-    return query["platform"].value
+def for_featured_matches_query(query: Query) -> List[str]:
+    return [query["platform"].value]
 
 
-def for_many_featured_matches_query(query: Query) -> Generator[str, None, None]:
+def for_many_featured_matches_query(query: Query) -> Generator[List[str], None, None]:
     for platform in query["platforms"]:
         try:
             platform = Platform(platform)
-            yield platform.value
+            yield [platform.value]
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -2292,41 +2589,60 @@ def for_many_featured_matches_query(query: Query) -> Generator[str, None, None]:
 
 validate_summoner_query = Query. \
     has("platform").as_(Platform).also. \
-    has("id").as_(int).or_("account.id").as_(int).or_("name").as_(str).or_("accountId").as_(int)
+    has("id").as_(int).or_("account.id").as_(int).or_("name").as_(str)
 
 
 validate_many_summoner_query = Query. \
     has("platform").as_(Platform).also. \
-    has("ids").as_(Iterable).or_("account.id").as_(Iterable).or_("names").as_(Iterable)
+    has("ids").as_(Iterable).or_("accounts.id").as_(Iterable).or_("names").as_(Iterable)
 
 
-def for_summoner(summoner: Summoner, identifier: str = "id") -> Tuple[str, Union[int, str]]:
-    return summoner.platform.value, _rgetattr(summoner, identifier)
+def for_summoner(summoner: Summoner) -> List[Tuple]:
+    keys = []
+    try:
+        keys.append((summoner.platform.value, summoner._data[SummonerData].id))
+    except KeyError:
+        pass
+    try:
+        keys.append((summoner.platform.value, summoner._data[SummonerData].name))
+    except KeyError:
+        pass
+    try:
+        keys.append((summoner.platform.value, summoner._data[SummonerData].account_id))
+    except KeyError:
+        pass
+    return keys
 
 
-def for_summoner_query(query: Query) -> Tuple[str, Union[int, str]]:
+def for_summoner_query(query: Query) -> List[Tuple]:
+    keys = []
     if "id" in query:
-        identifier = "id"
-    elif "account.id" in query:
-        identifier = "account.id"
-    elif "name" in query:
-        identifier = "name"
-    else:
-        identifier = "accountId"
-    return query["platform"].value, query[identifier]
+        keys.append((query["platform"].value, query["id"]))
+    if "name" in query:
+        keys.append((query["platform"].value, query["name"]))
+    if "account.id" in query:
+        keys.append((query["platform"].value, query["account.id"]))
+    return keys
 
 
-def for_many_summoner_query(query: Query) -> Generator[Tuple[str, Union[int, str]], None, None]:
+def for_many_summoner_query(query: Query) -> Generator[List[Tuple], None, None]:
+    grouped_identifiers = []
+    identifier_types = []
     if "ids" in query:
-        identifiers, identifier_type = query["ids"], int
-    elif "account.id" in query:
-        identifiers, identifier_type = query["account.id"], int
-    else:
-        identifiers, identifier_type = query["names"], str
-
-    for identifier in identifiers:
-        try:
-            identifier = identifier_type(identifier)
-            yield query["platform"].value, identifier
-        except ValueError as e:
-            raise QueryValidationError from e
+        grouped_identifiers.append(query["ids"])
+        identifier_types.append(int)
+    elif "accounts.id" in query:
+        grouped_identifiers.append(query["accounts.id"])
+        identifier_types.append(int)
+    elif "names" in query:
+        grouped_identifiers.append(query["names"])
+        identifier_types.append(str)
+    for identifiers in zip(*grouped_identifiers):
+        keys = []
+        for identifier, identifier_type in zip(identifiers, identifier_types):
+            try:
+                identifier = identifier_type(identifier)
+                keys.append((query["platform"].value, identifier))
+            except ValueError as e:
+                raise QueryValidationError from e
+        yield keys

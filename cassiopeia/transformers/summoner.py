@@ -28,9 +28,3 @@ class SummonerTransformer(DataTransformer):
     @transform.register(SummonerData, Summoner)
     def summoner_data_to_core(self, value: SummonerData, context: PipelineContext = None) -> Summoner:
         return Summoner.from_data(value)
-
-    # Core to Dto
-
-    @transform.register(Summoner, SummonerDto)
-    def champion_mastery_core_to_dto(self, value: Summoner, context: PipelineContext = None) -> SummonerDto:
-        return value._data[SummonerData]._dto
