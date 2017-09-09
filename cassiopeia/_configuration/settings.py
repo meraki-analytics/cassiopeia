@@ -66,7 +66,7 @@ class Settings(object):
 
         self.__plugins = settings.get("plugins", {})
 
-        self.__pipeline_args = settings.get("pipeline", {"Cache": {}, "DDragon": {}, "RiotAPI": {"api_key": "RIOT_API_KEY"}})
+        self.__pipeline_args = settings.get("pipeline", {"Cache": {}, "UnloadedGhostStore": {}, "DDragon": {}, "RiotAPI": {"api_key": "RIOT_API_KEY"}})
         self.__pipeline = None  # type: DataPipeline
 
         logging_config = settings.get("logging", {})

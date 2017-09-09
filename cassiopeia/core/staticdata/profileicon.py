@@ -122,10 +122,12 @@ class ProfileIcon(CassiopeiaGhost):
     _data_types = {ProfileIconData}
     _load_types = {ProfileIconData: ProfileIconListData}
 
-    def __init__(self, *, id: int, region: Union[Region, str] = None, version: str = None, locale: str = None):
+    def __init__(self, *, id: int = None, region: Union[Region, str] = None, version: str = None, locale: str = None):
         if region is None:
             region = configuration.settings.default_region
-        kwargs = {"id": id, "region": region}
+        kwargs = {"region": region}
+        if id is not None:
+            kwargs["id"] = id
         if version is not None:
             kwargs["version"] = version
         if locale is not None:

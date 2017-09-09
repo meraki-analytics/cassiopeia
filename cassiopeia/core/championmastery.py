@@ -81,9 +81,11 @@ class ChampionMasteryData(CoreData):
 class ChampionMasteries(CassiopeiaGhostList):
     _data_types = {ChampionMasteryListData}
 
-    def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
+    def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None, _account_id: int = None):
         super().__init__(*args, region=region)
-        if isinstance(summoner, str):
+        if _account_id is not None:
+            summoner = Summoner(account=_account_id, region=region)
+        elif isinstance(summoner, str):
             summoner = Summoner(name=summoner, region=region)
         elif isinstance(summoner, int):
             summoner = Summoner(id=summoner, region=region)
@@ -115,12 +117,15 @@ class ChampionMasteries(CassiopeiaGhostList):
 class ChampionMastery(CassiopeiaGhost):
     _data_types = {ChampionMasteryData}
 
-    def __init__(self, *, summoner: Union[Summoner, int, str] = None, champion: Union[Champion, int, str] = None, region: Union[Region, str] = None):
+    def __init__(self, *, summoner: Union[Summoner, int, str] = None, champion: Union[Champion, int, str] = None, region: Union[Region, str] = None, _account_id: int = None):
         if region is None:
             region = configuration.settings.default_region
         if region is not None and not isinstance(region, Region):
             region = Region(region)
         kwargs = {"region": region}
+
+        if _account_id is not None:
+            summoner = Summoner(account=_account_id, region=region)
 
         if summoner is not None:
             if isinstance(summoner, Summoner):
