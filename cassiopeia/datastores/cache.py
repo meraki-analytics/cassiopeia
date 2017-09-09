@@ -1,15 +1,16 @@
 from typing import Type, Mapping, Any, Iterable, TypeVar, Tuple, Callable, Generator
+import datetime
 
 from datapipelines import DataSource, DataSink, PipelineContext, validate_query, NotFoundError
 from merakicommons.cache import Cache as CommonsCache
 
 from . import uniquekeys
-from ..core.championmastery import ChampionMastery
+from ..core.championmastery import ChampionMastery, ChampionMasteries
 from ..core.league import LeagueEntries, Leagues, ChallengerLeague, MasterLeague
 from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Realms, ProfileIcon, Locales, LanguageStrings, Versions, SummonerSpells, Items, Champions, Masteries, Runes, Maps, ProfileIcons
-from ..core.masterypage import MasteryPage
 from ..core.match import Match, Timeline
-from ..core.runepage import RunePage
+from ..core.masterypage import MasteryPage, MasteryPages
+from ..core.runepage import RunePage, RunePages
 from ..core.summoner import Summoner
 from ..core.status import ShardStatus
 from ..core.spectator import CurrentMatch, FeaturedMatches
@@ -17,10 +18,51 @@ from ..core.spectator import CurrentMatch, FeaturedMatches
 T = TypeVar("T")
 
 
+default_expirations = {
+    Realms: datetime.timedelta(hours=6),
+    Versions: datetime.timedelta(hours=6),
+    Champion: datetime.timedelta(days=20),
+    Mastery: datetime.timedelta(days=20),
+    Rune: datetime.timedelta(days=20),
+    Item: datetime.timedelta(days=20),
+    SummonerSpell: datetime.timedelta(days=20),
+    Map: datetime.timedelta(days=20),
+    ProfileIcon: datetime.timedelta(days=20),
+    Locales: datetime.timedelta(days=20),
+    LanguageStrings: datetime.timedelta(days=20),
+    SummonerSpells: datetime.timedelta(days=20),
+    Items: datetime.timedelta(days=20),
+    Champions: datetime.timedelta(days=20),
+    Masteries: datetime.timedelta(days=20),
+    Runes: datetime.timedelta(days=20),
+    Maps: datetime.timedelta(days=20),
+    ProfileIcons: datetime.timedelta(days=20),
+    ChampionMastery: datetime.timedelta(days=7),
+    ChampionMasteries: datetime.timedelta(days=7),
+    LeagueEntries: datetime.timedelta(hours=6),
+    Leagues: datetime.timedelta(hours=6),
+    ChallengerLeague: datetime.timedelta(hours=6),
+    MasterLeague: datetime.timedelta(hours=6),
+    Match: datetime.timedelta(days=3),
+    Timeline: datetime.timedelta(days=1),
+    MasteryPage: datetime.timedelta(days=1),
+    MasteryPages: datetime.timedelta(days=1),
+    RunePage: datetime.timedelta(days=1),
+    RunePages: datetime.timedelta(days=1),
+    Summoner: datetime.timedelta(days=1),
+    ShardStatus: datetime.timedelta(hours=1),
+    CurrentMatch: datetime.timedelta(hours=0.5),
+    FeaturedMatches: datetime.timedelta(hours=0.5),
+}
+
+
 class Cache(DataSource, DataSink):
-    def __init__(self, expiration: Mapping[type, float] = None) -> None:
+    def __init__(self, expirations: Mapping[type, float] = None) -> None:
         self._cache = CommonsCache()
-        self._expiration = dict(expiration) if expiration is not None else {}
+        self._expirations = dict(expirations) if expirations is not None else default_expirations
+        for key, value in self._expirations.items():
+            if value != -1 and isinstance(value, datetime.timedelta):
+                self._expirations[key] = value.seconds + 24 * 60 * 60 * value.days
 
     @DataSource.dispatch
     def get(self, type: Type[T], query: Mapping[str, Any], context: PipelineContext = None) -> T:
@@ -37,6 +79,9 @@ class Cache(DataSource, DataSink):
     @DataSink.dispatch
     def put_many(self, type: Type[T], items: Iterable[T], context: PipelineContext = None) -> None:
         pass
+
+    def expire(self, type: Type[T] = None):
+        self._cache.expire(type)
 
     def _get(self, type: Type[T], query: Mapping[str, Any], key_function: Callable[[Mapping[str, Any]], Any], context: PipelineContext = None) -> T:
         keys = key_function(query)
@@ -66,7 +111,7 @@ class Cache(DataSource, DataSink):
 
     def _put(self, type: Type[T], item: T, key_function: Callable[[T], Any], context: PipelineContext = None) -> None:
         try:
-            expire_seconds = self._expiration[type]
+            expire_seconds = self._expirations[type]
         except KeyError:
             expire_seconds = -1
 
@@ -76,14 +121,10 @@ class Cache(DataSource, DataSink):
         # TODO: Put EXPIRATION into context once cache expiration works
 
     def _put_many(self, type: Type[T], items: Iterable[T], key_function: Callable[[T], Any], context: PipelineContext = None) -> None:
-        try:
-            expire_seconds = self._expiration[type]
-        except KeyError:
-            expire_seconds = -1
+        expire_seconds = self._expirations[type]
 
         for key, item in Cache._put_many_generator(items, key_function):
             self._cache.put(type, key, item, expire_seconds)
-        # TODO: Put EXPIRATION into context once cache expiration works
 
     def clear(self, type: Type[T] = None):
         if type is None:
@@ -236,14 +277,13 @@ class Cache(DataSource, DataSink):
     @put.register(Champions)
     def put_champions(self, champions: Champions, context: PipelineContext = None) -> None:
         self._put(Champions, champions, uniquekeys.for_champions, context=context)
-        for champion in champions:
-            self._put(Champion, champion, uniquekeys.for_champion, context=context)
+        if list.__len__(champions) > 0:
+            for champion in champions:
+                self._put(Champion, champion, uniquekeys.for_champion, context=context)
 
     @put_many.register(Champions)
     def put_many_champions(self, champions: Iterable[Champions], context: PipelineContext = None) -> None:
         self._put_many(Champions, champions, uniquekeys.for_champions, context=context)
-        for champion in champions:
-            self._put(Champion, champion, uniquekeys.for_champion, context=context)
 
     # Item
 
@@ -278,14 +318,13 @@ class Cache(DataSource, DataSink):
     @put.register(Items)
     def put_items(self, items: Items, context: PipelineContext = None) -> None:
         self._put(Items, items, uniquekeys.for_items, context=context)
-        for item in items:
-            self._put(Item, item, uniquekeys.for_item, context=context)
+        if list.__len__(items) > 0:
+            for item in items:
+                self._put(Item, item, uniquekeys.for_item, context=context)
 
     @put_many.register(Items)
-    def put_many_items(self, items: Iterable[Items], context: PipelineContext = None) -> None:
-        self._put_many(Items, items, uniquekeys.for_items, context=context)
-        for item in items:
-            self._put(Item, item, uniquekeys.for_item, context=context)
+    def put_many_items(self, many_items: Iterable[Items], context: PipelineContext = None) -> None:
+        self._put_many(Items, many_items, uniquekeys.for_items, context=context)
 
     # Language
 
@@ -358,14 +397,13 @@ class Cache(DataSource, DataSink):
     @put.register(Maps)
     def put_maps(self, item: Maps, context: PipelineContext = None) -> None:
         self._put(Maps, item, uniquekeys.for_maps, context=context)
-        for map in item:
-            self._put(Map, map, uniquekeys.for_map, context=context)
+        if list.__len__(item) > 0:
+            for map in item:
+                self._put(Map, map, uniquekeys.for_map, context=context)
 
     @put_many.register(Maps)
     def put_many_maps(self, items: Iterable[Maps], context: PipelineContext = None) -> None:
         self._put_many(Maps, items, uniquekeys.for_maps, context=context)
-        for maps in items:
-            self._put_many(Map, maps, uniquekeys.for_map, context=context)
 
     # Mastery
 
@@ -400,14 +438,13 @@ class Cache(DataSource, DataSink):
     @put.register(Masteries)
     def put_masteries(self, item: Masteries, context: PipelineContext = None) -> None:
         self._put(Masteries, item, uniquekeys.for_masteries, context=context)
-        for mastery in item:
-            self._put(Mastery, mastery, uniquekeys.for_mastery, context=context)
+        if list.__len__(item) > 0:
+            for mastery in item:
+                self._put(Mastery, mastery, uniquekeys.for_mastery, context=context)
 
     @put_many.register(Masteries)
     def put_many_masteries(self, items: Iterable[Masteries], context: PipelineContext = None) -> None:
         self._put_many(Masteries, items, uniquekeys.for_masteries, context=context)
-        for mastery in items:
-            self._put(Mastery, mastery, uniquekeys.for_mastery, context=context)
 
     # Profile Icon
 
@@ -442,14 +479,13 @@ class Cache(DataSource, DataSink):
     @put.register(ProfileIcons)
     def put_profile_icons(self, item: ProfileIcons, context: PipelineContext = None) -> None:
         self._put(ProfileIcons, item, uniquekeys.for_profile_icons, context=context)
-        for profile_icon in item:
-            self._put(ProfileIcon, profile_icon, uniquekeys.for_profile_icon, context=context)
+        if list.__len__(item) > 0:
+            for profile_icon in item:
+                self._put(ProfileIcon, profile_icon, uniquekeys.for_profile_icon, context=context)
 
     @put_many.register(ProfileIcons)
     def put_many_profile_icons(self, items: Iterable[ProfileIcons], context: PipelineContext = None) -> None:
         self._put_many(ProfileIcons, items, uniquekeys.for_profile_icons, context=context)
-        for profile_icon in items:
-            self._put(ProfileIcon, profile_icon, uniquekeys.for_profile_icon, context=context)
 
     # Realm
 
@@ -504,14 +540,13 @@ class Cache(DataSource, DataSink):
     @put.register(Runes)
     def put_runes(self, item: Runes, context: PipelineContext = None) -> None:
         self._put(Runes, item, uniquekeys.for_runes, context=context)
-        for rune in item:
-            self._put(Mastery, rune, uniquekeys.for_rune, context=context)
+        if list.__len__(item) > 0:
+            for rune in item:
+                self._put(Mastery, rune, uniquekeys.for_rune, context=context)
 
     @put_many.register(Runes)
     def put_many_runes(self, items: Iterable[Runes], context: PipelineContext = None) -> None:
         self._put_many(Runes, items, uniquekeys.for_runes, context=context)
-        for rune in items:
-            self._put(Mastery, rune, uniquekeys.for_rune, context=context)
 
     # Summoner Spell
 
@@ -546,14 +581,13 @@ class Cache(DataSource, DataSink):
     @put.register(SummonerSpells)
     def put_summoner_spells(self, item: SummonerSpells, context: PipelineContext = None) -> None:
         self._put(SummonerSpells, item, uniquekeys.for_summoner_spells, context=context)
-        for summoner_spell in item:
-            self._put(Mastery, summoner_spell, uniquekeys.for_summoner_spell, context=context)
+        if list.__len__(item) > 0:
+            for summoner_spell in item:
+                self._put(Mastery, summoner_spell, uniquekeys.for_summoner_spell, context=context)
 
     @put_many.register(SummonerSpells)
     def put_many_summoner_spells(self, items: Iterable[SummonerSpells], context: PipelineContext = None) -> None:
         self._put_many(SummonerSpells, items, uniquekeys.for_summoner_spells, context=context)
-        for summoner_spell in items:
-            self._put(Mastery, summoner_spell, uniquekeys.for_summoner_spell, context=context)
 
     # Versions
 

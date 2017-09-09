@@ -19,7 +19,6 @@ def create_pipeline(service_configs: Dict, verbose: bool = False) -> DataPipelin
     transformers.extend(riotapi_transformer)
 
     # Add sources / sinks by name from config
-    # TODO Add expirations
     services = []
     for store_name, config in service_configs.items():
         package = config.pop("package", None)
