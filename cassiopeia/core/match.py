@@ -1601,8 +1601,8 @@ class Participant(CassiopeiaObject):
 
     @lazy_property
     @load_match_on_keyerror
-    def rank_last_season(self) -> Tuple[Tier, Division]:
-        return Tier(self._data[ParticipantData].rank_last_season[0]), Division(self._data[ParticipantData].rank_last_season[1])
+    def rank_last_season(self) -> Tier:
+        return Tier(self._data[ParticipantData].rank_last_season)
 
     @lazy_property
     @load_match_on_keyerror
