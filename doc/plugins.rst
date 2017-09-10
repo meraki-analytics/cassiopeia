@@ -48,3 +48,44 @@ To enable this plugin, add the following to your settings' data pipeline between
     },
     ...
   }
+
+The ``"path"`` parameter specifies a directory path where the data will be stored. There is also another optional ``"expirations"`` parameter that is left out of the above example for clarity. The ``"expirations"`` parameter is a mapping of type names to expiration periods analogous to those for the cache. The allowed type names and default values are below (a value of ``-1`` means "do not expire" and ``0`` means "do not store in the data sink):
+
+.. code-block:: python
+
+    RealmDto: datetime.timedelta(hours=6)
+    VersionListDto: datetime.timedelta(hours=6)
+    ChampionDto: -1
+    ChampionListDto: -1
+    MasteryDto: -1
+    MasteryListDto: -1
+    RuneDto: -1
+    RuneListDto: -1
+    ItemDto: -1
+    ItemListDto: -1
+    SummonerSpellDto: -1
+    SummonerSpellListDto: -1
+    MapDto: -1
+    MapListDto: -1
+    ProfileIconDetailsDto: -1
+    ProfileIconDataDto: -1
+    LanguagesDto: -1
+    LanguageStringsDto: -1
+    ChampionStatusDto: datetime.timedelta(days=1)
+    ChampionStatusListDto: datetime.timedelta(days=1)
+    ChampionMasteryDto: datetime.timedelta(days=7)
+    ChampionMasteryListDto: datetime.timedelta(days=7)
+    LeaguePositionsDto: datetime.timedelta(hours=6)
+    LeaguesListDto: datetime.timedelta(hours=6)
+    ChallengerLeagueListDto: datetime.timedelta(hours=6)
+    MasterLeagueListDto: datetime.timedelta(hours=6)
+    MatchDto: -1
+    TimelineDto: -1
+    MasteryPageDto: datetime.timedelta(days=1)
+    MasteryPagesDto: datetime.timedelta(days=1)
+    RunePageDto: datetime.timedelta(days=1)
+    RunePagesDto: datetime.timedelta(days=1)
+    SummonerDto: datetime.timedelta(days=1)
+    ShardStatusDto: datetime.timedelta(hours=1)
+    CurrentGameInfoDto: datetime.timedelta(hours=0.5)
+    FeaturedGamesDto: datetime.timedelta(hours=0.5)

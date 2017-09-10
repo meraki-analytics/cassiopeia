@@ -8,7 +8,7 @@ from merakicommons.container import searchable, SearchableList
 
 from ... import configuration
 from ...data import Region, Platform
-from ...dto.staticdata.profileicon import ProfileIconDataDto, ProfileIconListDto
+from ...dto.staticdata.profileicon import ProfileIconDetailsDto, ProfileIconDataDto
 from ..common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
 
 
@@ -26,7 +26,7 @@ _profile_icon_names = None
 
 
 class ProfileIconListData(DataObjectList):
-    _dto_type = ProfileIconListDto
+    _dto_type = ProfileIconDataDto
     _renamed = {}
 
     @property
@@ -43,7 +43,7 @@ class ProfileIconListData(DataObjectList):
 
 
 class ProfileIconData(CoreData):
-    _dto_type = ProfileIconDataDto
+    _dto_type = ProfileIconDetailsDto
     _renamed = {"id": "profileIconId"}
 
     @property

@@ -35,7 +35,44 @@ The in-memory cache, simply called the cache, is a data store and provides fast 
 
 The cache should be the first element in your pipeline.
 
-It takes no parameters (i.e. ``{}``).
+It takes one optional parameter, which is a mapping of expiration times (in seconds or ``datetime.timedelta`` if set programmatically) for each data type stored in the cache. Valid type names and their defaults are below (a value of ``-1`` means "do not expire" and ``0`` means "do not store in the data sink):
+
+.. code-block:: python
+
+    Realms: datetime.timedelta(hours=6)
+    Versions: datetime.timedelta(hours=6)
+    Champion: datetime.timedelta(days=20)
+    Mastery: datetime.timedelta(days=20)
+    Rune: datetime.timedelta(days=20)
+    Item: datetime.timedelta(days=20)
+    SummonerSpell: datetime.timedelta(days=20)
+    Map: datetime.timedelta(days=20)
+    ProfileIcon: datetime.timedelta(days=20)
+    Locales: datetime.timedelta(days=20)
+    LanguageStrings: datetime.timedelta(days=20)
+    SummonerSpells: datetime.timedelta(days=20)
+    Items: datetime.timedelta(days=20)
+    Champions: datetime.timedelta(days=20)
+    Masteries: datetime.timedelta(days=20)
+    Runes: datetime.timedelta(days=20)
+    Maps: datetime.timedelta(days=20)
+    ProfileIcons: datetime.timedelta(days=20)
+    ChampionMastery: datetime.timedelta(days=7)
+    ChampionMasteries: datetime.timedelta(days=7)
+    LeagueEntries: datetime.timedelta(hours=6)
+    Leagues: datetime.timedelta(hours=6)
+    ChallengerLeague: datetime.timedelta(hours=6)
+    MasterLeague: datetime.timedelta(hours=6)
+    Match: datetime.timedelta(days=3)
+    Timeline: datetime.timedelta(days=1)
+    MasteryPage: datetime.timedelta(days=1)
+    MasteryPages: datetime.timedelta(days=1)
+    RunePage: datetime.timedelta(days=1)
+    RunePages: datetime.timedelta(days=1)
+    Summoner: datetime.timedelta(days=1)
+    ShardStatus: datetime.timedelta(hours=1)
+    CurrentMatch: datetime.timedelta(hours=0.5)
+    FeaturedMatches: datetime.timedelta(hours=0.5)
 
 
 Data Dragon

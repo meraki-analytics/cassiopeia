@@ -7,7 +7,3 @@ class ProfileIconDataDto(DtoObject):
 
 class ProfileIconDetailsDto(DtoObject):
     pass
-
-
-class ProfileIconListDto(DtoObject):
-    pass

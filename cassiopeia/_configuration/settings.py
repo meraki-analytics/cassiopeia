@@ -153,3 +153,18 @@ class Settings(object):
         for sink in self.pipeline._sinks:
             for type in types:
                 sink.clear(type)
+
+    def expire_sinks(self, type: Type[T] = None):
+        types = {type}
+        if type is not None:
+            from ..core.common import CoreData, CassiopeiaObject
+            if issubclass(type, CassiopeiaObject):
+                for t in type._data_types:
+                    types.add(t)
+                    types.add(t._dto_type)
+            elif issubclass(type, CoreData):
+                types.add(type._dto_type)
+
+        for sink in self.pipeline._sinks:
+            for type in types:
+                sink.expire(type)

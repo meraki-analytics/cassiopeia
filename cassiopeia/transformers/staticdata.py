@@ -24,7 +24,7 @@ from ..dto.staticdata import VersionListDto
 from ..dto.staticdata import MapDto, MapListDto
 from ..dto.staticdata.realm import RealmDto
 from ..dto.staticdata.language import LanguagesDto, LanguageStringsDto
-from ..dto.staticdata.profileicon import ProfileIconDataDto, ProfileIconListDto
+from ..dto.staticdata.profileicon import ProfileIconDetailsDto, ProfileIconDataDto
 
 T = TypeVar("T")
 F = TypeVar("F")
@@ -177,13 +177,13 @@ class StaticDataTransformer(DataTransformer):
 
     # Profile Icons
 
-    @transform.register(ProfileIconDataDto, ProfileIconData)
-    def profile_icon_dto_to_data(self, value: ProfileIconDataDto, context: PipelineContext = None) -> ProfileIconData:
+    @transform.register(ProfileIconDetailsDto, ProfileIconData)
+    def profile_icon_dto_to_data(self, value: ProfileIconDetailsDto, context: PipelineContext = None) -> ProfileIconData:
         data = deepcopy(value)
         return ProfileIconData.from_dto(data)
 
-    @transform.register(ProfileIconListDto, ProfileIconListData)
-    def profile_icon_dto_to_data(self, value: ProfileIconListDto, context: PipelineContext = None) -> ProfileIconListData:
+    @transform.register(ProfileIconDataDto, ProfileIconListData)
+    def profile_icon_dto_to_data(self, value: ProfileIconDataDto, context: PipelineContext = None) -> ProfileIconListData:
         data = deepcopy(value)
         return ProfileIconListData([self.profile_icon_dto_to_data(p) for p in data["data"]], region=value["region"], version=value["version"], locale=value["locale"])
 

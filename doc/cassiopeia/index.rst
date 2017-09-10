@@ -34,6 +34,8 @@ See on the links below for the method and class names for each type.
 
 .. toctree::
 
+    settings.rst
+    data.rst
     champion.rst
     championmastery.rst
     item.rst
@@ -51,22 +53,3 @@ See on the links below for the method and class names for each type.
     summoner.rst
     summonerspell.rst
     versions.rst
-
-
-Data and Enums
---------------
-
-These data are available as enums (constants) and can be used to interact with many of the objects and methods in Cass.
-
-.. currentmodule:: cassiopeia
-
-.. automodule:: cassiopeia.data
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-.. automodule:: cassiopeia.patches
-    :members:
-    :undoc-members:
-    :show-inheritance:

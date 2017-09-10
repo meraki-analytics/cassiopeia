@@ -7,7 +7,7 @@ from merakicommons.container import searchable, SearchableList, SearchableDictio
 
 from ... import configuration
 from ...data import Resource, Region, Platform, GameMode
-from ..champion import ChampionData as ChampionStatusData
+from ..champion import ChampionStatusData
 from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
 from .common import ImageData, Image, Sprite
 from .map import Map

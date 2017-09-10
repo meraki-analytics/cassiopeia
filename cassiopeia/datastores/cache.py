@@ -61,6 +61,10 @@ class Cache(DataSource, DataSink):
         self._cache = CommonsCache()
         self._expirations = dict(expirations) if expirations is not None else default_expirations
         for key, value in self._expirations.items():
+            if isinstance(key, str):
+                new_key = globals()[key]
+                self._expirations[new_key] = self._expirations.pop(key)
+                key = new_key
             if value != -1 and isinstance(value, datetime.timedelta):
                 self._expirations[key] = value.seconds + 24 * 60 * 60 * value.days
 
@@ -79,9 +83,6 @@ class Cache(DataSource, DataSink):
     @DataSink.dispatch
     def put_many(self, type: Type[T], items: Iterable[T], context: PipelineContext = None) -> None:
         pass
-
-    def expire(self, type: Type[T] = None):
-        self._cache.expire(type)
 
     def _get(self, type: Type[T], query: Mapping[str, Any], key_function: Callable[[Mapping[str, Any]], Any], context: PipelineContext = None) -> T:
         keys = key_function(query)
@@ -118,11 +119,9 @@ class Cache(DataSource, DataSink):
         keys = key_function(item)
         for key in keys:
             self._cache.put(type, key, item, expire_seconds)
-        # TODO: Put EXPIRATION into context once cache expiration works
 
     def _put_many(self, type: Type[T], items: Iterable[T], key_function: Callable[[T], Any], context: PipelineContext = None) -> None:
-        expire_seconds = self._expirations[type]
-
+        expire_seconds = self._expirations.get(type, default_expirations[type])
         for key, item in Cache._put_many_generator(items, key_function):
             self._cache.put(type, key, item, expire_seconds)
 
@@ -132,6 +131,9 @@ class Cache(DataSource, DataSink):
                 self._cache._data[key].clear()
         else:
             self._cache._data[type].clear()
+
+    def expire(self, type: Type[T] = None):
+        self._cache.expire(type)
 
 
     ########################

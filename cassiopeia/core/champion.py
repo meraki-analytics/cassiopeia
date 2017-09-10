@@ -2,11 +2,11 @@ from .common import CoreData
 from ..dto import champion as dto
 
 
-class ChampionListData(list):
+class ChampionStatusListData(list):
     _dto_type = dto.ChampionListDto
 
 
-class ChampionData(CoreData):
+class ChampionStatusData(CoreData):
     _dto_type = dto.ChampionDto
     _renamed = {"ranked_enabled": "rankedPlayEnabled", "custom_enabled": "botEnabled", "coop_ai_enabled": "botMmEnabled",
                 "enabled": "active", "free_to_play": "freeToPlay", "champ_data": "champData"}
