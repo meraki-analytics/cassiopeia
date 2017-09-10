@@ -10,15 +10,16 @@ def print_leagues(summoner_name: str, region: str):
 
     # positions = cass.get_league_positions(summoner, region=region)
     positions = summoner.league_positions
-    try:
+    if positions.fives.promos is not None:
         # If the summoner is in their promos, print some info
-        print("Promos progess:", positions.fives.promos.progress)
+        print("Promos progress:", positions.fives.promos.progress)
         print("Promos wins", positions.fives.promos.wins)
         print("Promos losses:", positions.fives.promos.losses)
         print("Games not yet played in promos:", positions.fives.promos.not_played)
         print("Number of wins required to win promos:", positions.fives.promos.wins_required)
-    except KeyError:
-        pass
+    else:
+        print("The summoner is not in their promos.")
+
     print("Name of leagues this summoner is in:")
     for league in positions:
         print(league.name)
@@ -41,4 +42,4 @@ def print_leagues(summoner_name: str, region: str):
     print(challenger.name)
 
 if __name__ == "__main__":
-    print_leagues("chinalolkings", "NA")
+    print_leagues("Kalturi", "NA")

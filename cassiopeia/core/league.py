@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Optional
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy_property, lazy
@@ -240,8 +240,15 @@ class LeagueEntry(CassiopeiaGhost):
         return self._data[LeaguePositionData].hot_streak
 
     @lazy_property
-    def promos(self) -> MiniSeries:
-        return MiniSeries.from_data(self._data[LeaguePositionData].promos)
+    def promos(self) -> Optional[MiniSeries]:
+        try:
+            return MiniSeries.from_data(self._data[LeaguePositionData].promos)
+        except KeyError as error:
+            # Return None if the summoner isn't in their promos
+            if "leagueName" in self._data[LeaguePositionData]._dto:
+                return None
+            else:
+                raise error
 
     @property
     def wins(self) -> int:

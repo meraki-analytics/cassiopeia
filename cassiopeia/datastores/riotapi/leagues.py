@@ -29,7 +29,6 @@ class LeaguesAPI(RiotAPIService):
     def get_league_position(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LeaguePositionsDto:
         url = "https://{platform}.api.riotgames.com/lol/league/v3/positions/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
         try:
-            print("positions/by-summoner/summonerId {}".format(query["platform"].value))
             data = self._get(url, {}, self._get_rate_limiter(query["platform"], "positions/by-summoner/summonerId {}".format(query["platform"].value)))
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error

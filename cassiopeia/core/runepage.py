@@ -148,8 +148,15 @@ class RunePage(CassiopeiaGhost):
     @ghost_load_on(KeyError)
     @lazy
     def runes(self) -> Mapping[StaticdataRune, int]:
-        counter = Counter(slot.id for slot in self._data[RunePageData].runes)
-        return SearchableDictionary({StaticdataRune(id=id, region=self.region, version=get_latest_version(self.region, endpoint="rune")): count for id, count in counter.items()})
+        try:
+            counter = Counter(slot.id for slot in self._data[RunePageData].runes)
+            return SearchableDictionary({StaticdataRune(id=id, region=self.region, version=get_latest_version(self.region, endpoint="rune")): count for id, count in counter.items()})
+        except KeyError as error:
+            # Return an empty dict if the rune page has no runes set
+            if "current" in self._data[RunePageData]._dto:
+                return {}
+            else:
+                raise error
 
     @CassiopeiaGhost.property(RunePageData)
     @ghost_load_on(KeyError)

@@ -141,7 +141,14 @@ class MasteryPage(CassiopeiaGhost):
     @ghost_load_on(KeyError)
     @lazy
     def masteries(self) -> Mapping[StaticdataMastery, int]:
-        return SearchableDictionary({StaticdataMastery(id=mastery.id, region=self.region, version=get_latest_version(self.region, endpoint="mastery")): mastery.points for mastery in self._data[MasteryPageData].masteries})
+        try:
+            return SearchableDictionary({StaticdataMastery(id=mastery.id, region=self.region, version=get_latest_version(self.region, endpoint="mastery")): mastery.points for mastery in self._data[MasteryPageData].masteries})
+        except KeyError as error:
+            # Return an empty dict if the mastery page has no masteries set
+            if "current" in self._data[MasteryPageData]._dto:
+                return {}
+            else:
+                raise error
 
     @CassiopeiaGhost.property(MasteryPageData)
     @ghost_load_on(KeyError)

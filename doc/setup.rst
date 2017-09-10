@@ -8,6 +8,18 @@ Install using pip
 Simply ``pip install cassiopeia`` to get the latest release. (See the `pip <https://pip.pypa.io/en/stable/installing/>`_ install page if you do not have ``pip`` installed.) If you want to pull the most recent version, you can install directly from GitHub using ``pip install git+https://github.com/meraki-analytics/cassiopeia.git`` instead. We may not make a PyPy release (which ``pip`` usually pulls from) for small changes to the code.
 
 
+PyCurl Issues
+=============
+
+You may have some issues during installation due to PyCurl. Try the installation first, and if you have issues with pycurl come back and read this section. If Cass installed properly but is throwing certificate errors, skip to the 3rd paragraph.
+
+At the moment PyCurl does not fully support installation with Python 3.6 and many people have had issues. The easiest thing to do (and what we *highly* recommend) is to install Python 3.6 via `Anaconda <https://www.anaconda.com/download/>`_. Anaconda is a package manager for Python and provides many packages that are difficult to install without Anaconda. If you do not or can't use Anaconda, you'll need download and install Curl, then use ``easy_install`` to install PyCurl and link it to the proper Curl libraries. This isn't much fun, and again we recommend Anaconda to ease the process.
+
+If you successfully installed Cass but it's throwing a certificate error, you probably just need to ``pip install certifi``. This should solve any certificate errors.
+
+If you are having more problems, let us know via the Riot API discord server or our Meraki discord server.
+
+
 Install from Source
 ===================
 If you would like to get Cassiopeia with the most recent updates (even before they have been pushed in an official release), you can clone the repository. Go to `Cassiopeia's Github page <https://github.com/meraki-analytics/cassiopeia>`_ and either download the zip or ``git clone https://github.com/meraki-analytics/cassiopeia`` into a directory of your choice.
