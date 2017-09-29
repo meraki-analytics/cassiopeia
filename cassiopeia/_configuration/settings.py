@@ -67,10 +67,6 @@ _defaults = {
         "DDragon": {},
         "RiotAPI": {
             "api_key": "RIOT_API_KEY"
-        },
-        "ChampionGG": {
-            "package": "championgg.championgg",
-            "api_key": "CHAMPIONGG_KEY"
         }
     },
     "logging": {
