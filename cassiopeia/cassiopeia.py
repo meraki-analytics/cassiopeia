@@ -32,7 +32,7 @@ def apply_settings(config: Union[str, TextIO, Dict, Settings]):
 def set_riot_api_key(key: str):
     configuration.settings.set_riot_api_key(key)
 
-def set_default_region(region: Region):
+def set_default_region(region: Union[Region, str]):
     configuration.settings.set_region(region)
 
 def print_calls(calls: bool, api_key: bool = False):
