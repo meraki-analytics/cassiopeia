@@ -299,7 +299,18 @@ QUEUE_IDS = {
     Queue.ranked_solo_queue: 420,
     Queue.flex: 440,
     Queue.blood_hunt: 600,
-    Queue.darkstar: 610
+    Queue.darkstar: 610,
+    Queue.normal_blind_threes: 460,
+    Queue.normal_blind_fives: 430,
+    Queue.normal_draft_fives: 400,
+    Queue.ranked_solo: 420,
+    Queue.flex_threes: 470,
+    Queue.bot_dominion: 25,
+    Queue.bot_intro_fives: 830,
+    Queue.bot_beginner_fives: 840,
+    Queue.bot_intermediate_fives: 850,
+    Queue.bot_threes: 800,
+    Queue.aram: 450,
 }
 
 RANKED_QUEUES = {
