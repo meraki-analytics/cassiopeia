@@ -13,6 +13,8 @@ Plugins can be added to Cass by downloading the appropriate plugin and putting i
 ChampionGG
 ----------
 
+Install by running ``pip install cassiopeia-championgg``.
+
 The ChampionGG plugin pulls data from the `champion.gg api <http://api.champion.gg>`_ . This data is accessible via the ``Champion.championgg`` attribute.
 
 To enable this plugin, add the following to your settings' data pipeline:
@@ -33,6 +35,8 @@ where ``"CHAMPIONGG_KEY"`` is your champion.gg API key or an environment variabl
 
 Simple KV Disk Store
 --------------------
+
+Install by running ``pip install cassiopeia-diskstore``.
 
 This plugin provides a disk-database. It is especially useful for staticdata, which never changes. It works for all data types except ``MatchHistory``.
 
