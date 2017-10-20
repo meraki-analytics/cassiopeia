@@ -2,7 +2,7 @@ from typing import TypeVar, Type, Dict, Union
 import logging
 import importlib
 
-from datapipelines import DataPipeline
+from datapipelines import DataPipeline, DataSink, DataSource
 
 from ..data import Region, Platform
 
@@ -45,8 +45,12 @@ def create_pipeline(service_configs: Dict, verbose: bool = False) -> DataPipelin
     if verbose:
         for service in services:
             print("Service:", service)
-            for p in service.provides:
-                print("  Provides:", p)
+            if isinstance(service, DataSource):
+                for p in service.provides:
+                    print("  Provides:", p)
+            if isinstance(service, DataSink):
+                for p in service.accepts:
+                    print("  Accepts:", p)
         for transformer in transformers:
             for t in transformer.transforms.items():
                 print("Transformer:", t)

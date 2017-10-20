@@ -13,7 +13,37 @@ For example, if your data pipeline consists of a cache, a database, and the Riot
 
 After data is found in a data source, the data propagates back down the data pipeline from whence it came. Any data sink encountered along the way will store that data. So, continuing the above example, if you asked for a ``Champion`` and it was provided by the Riot API, the champion data would be stored in your database, then stored in the cache. A data sink will only store data that it "accepts". Cass's built-in data sinks accept all of Cass's data types.
 
-(Not yet implemented) Each data sink has expiration periods defined for each type of data it accepts. When data is put into a data sink, a clock starts ticking (metaphorically, programmatically this is handled differently). When that clock finishes, the data is expelled from the data sink. Static data should have an infinite expiration period (because it is stored per-version, and the static data for a given version never changes). Other types like ``CurrentMatch`` might have very short expiration periods. Each data sink defines the default expiration periods below.
+Each data sink has expiration periods defined for each type of data it accepts. When data is put into a data sink, a clock starts ticking (metaphorically, programmatically this is handled differently). When that clock finishes, the data is expelled from the data sink. Static data should have an infinite expiration period (because it is stored per-version, and the static data for a given version never changes). Other types like ``CurrentMatch`` might have very short expiration periods. Each data sink defines its own default expiration periods, which are documented under the specific data sinks below.
+
+A few notes: 1) Users can force all expired objects in data sinks to be removed using ``settings.pipeline.expire()``. 2) Individual data sinks handle their own expirations, so if you write a database, you must decide how to handle expirations for data in your database.
+
+Below is an example (which tuses more data stores than Cass uses by default):
+
+.. code-block:: json
+
+    {
+      "pipeline": {
+        "Cache": {},
+
+        "UnloadedGhostStore": {},
+
+        "SimpleKVDiskStore": {
+          "package": "cassiopeia-datastores.diskstore.diskstore"
+        },
+
+        "DDragon": {},
+
+        "RiotAPI": {
+          "api_key": "RIOT_API_KEY"
+        },
+
+        "ChampionGG": {
+          "package": "cassiopeia-plugins.championgg.championgg",
+          "api_key": "CHAMPIONGG_KEY"
+        }
+    }
+
+In brief, this means that the sequence for looking for data will be:  1) Look in the cache, 2) look in our disk-based database, 3) if it's static data, get it from data dragon, 4) pull the data from the Riot API, 5) pull the data from ChampionGG.
 
 
 Defining Components in your Settings
@@ -24,6 +54,7 @@ The components of the data pipeline are defined explicitly below, and you can ch
 Each component has it's own set of parameters, also described below.
 
 :ref:`settings` has an example data pipeline you can use in your settings if you want to modify the defaults.
+
 
 Components
 ==========
@@ -74,6 +105,8 @@ It takes one optional parameter, which is a mapping of expiration times (in seco
     CurrentMatch: datetime.timedelta(hours=0.5)
     FeaturedMatches: datetime.timedelta(hours=0.5)
 
+TODO: The cache currently does not automatically expire its data, so it's possible to run out of memory. To prevent this, users can trigger an expiration of all data or all data of one type by using the method ``settings.pipeline.expire``. We will fix this so that the cache does automatically expire it's data, but we haven't gotten to it yet. Using the ``expire`` method is a temporary workaround.
+
 
 Data Dragon
 """""""""""
@@ -83,6 +116,7 @@ Data Dragon is a data source and provides all of Cass's static data. This is lar
 Data Dragon should therefore come before the Riot API in your pipeline, but likely after your databases.
 
 It takes no parameters (i.e. ``{}``).
+
 
 Riot API
 """"""""
@@ -96,10 +130,16 @@ Simple Disk Database
 
 This is a simple filesystem database, and is therefore both a data source and data sink. It is not provided by Cass by default, and needs to be installed separately. See :ref:`plugins` for more information.
 
-The simple disk store takes no parameters except it's package location, which is ``cassiopeia-datastores.diskstore``.
-
 
 ChampionGG
 """"""""""
 
 The ChampionGG plugin has its own data source if it is included. See :ref:`plugins`.
+
+
+Unloaded Ghost Store
+""""""""""""""""""""
+
+As a user, it's very likely that you don't need to worry about what this store does as long as you include it in your data pipeline (it is included by default). It should go immediately after the cache, and if you are not using a cache, it should be the first element in the data pipeline.
+
+The ``UnloadedGhostStore`` provides unloaded ghost objects to the rest of Cass when a new ghost object is created. This allows us to have a single location where all top-level objects are created, which alleviates some complicated issues when requesting new objects from the data pipeline. In general, it should always be in your pipeline.

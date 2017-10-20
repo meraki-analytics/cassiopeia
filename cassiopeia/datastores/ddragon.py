@@ -110,7 +110,7 @@ class DDragon(DataSource):
         except KeyError:
             pass
 
-        url = "http://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/championFull.json".format(
+        url = "https://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/championFull.json".format(
             version=query["version"],
             locale=locale
         )
@@ -295,7 +295,7 @@ class DDragon(DataSource):
         except KeyError:
             pass
 
-        url = "http://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/map.json".format(
+        url = "https://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/map.json".format(
             version=query["version"],
             locale=locale
         )
@@ -329,7 +329,7 @@ class DDragon(DataSource):
     def get_language_strings(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LanguageStringsDto:
         locale = query["locale"] if "locale" in query else query["platform"].default_locale
 
-        url = "http://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/language.json".format(
+        url = "https://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/language.json".format(
             version=query["version"],
             locale=locale
         )
@@ -402,7 +402,7 @@ class DDragon(DataSource):
         except KeyError:
             pass
 
-        url = "http://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/mastery.json".format(
+        url = "https://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/mastery.json".format(
             version=query["version"],
             locale=locale
         )
@@ -499,7 +499,7 @@ class DDragon(DataSource):
         except KeyError:
             pass
 
-        url = "http://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/rune.json".format(
+        url = "https://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/rune.json".format(
             version=query["version"],
             locale=locale
         )
@@ -591,7 +591,7 @@ class DDragon(DataSource):
         except KeyError:
             pass
 
-        url = "http://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/item.json".format(
+        url = "https://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/item.json".format(
             version=query["version"],
             locale=locale
         )
@@ -690,7 +690,7 @@ class DDragon(DataSource):
         except KeyError:
             pass
 
-        url = "http://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/summoner.json".format(
+        url = "https://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/summoner.json".format(
             version=query["version"],
             locale=locale
         )
@@ -733,7 +733,7 @@ class DDragon(DataSource):
     def get_profile_icon(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ProfileIconDataDto:
         locale = query["locale"] if "locale" in query else query["platform"].default_locale
 
-        url = "http://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/profileicon.json".format(
+        url = "https://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/profileicon.json".format(
             version=query["version"],
             locale=locale
         )

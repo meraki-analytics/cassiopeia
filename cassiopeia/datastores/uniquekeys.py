@@ -232,9 +232,13 @@ def construct_match_history_query(*, summoner: Union[Summoner, str, int] = None,
         query["endIndex"] = end_index
 
     if begin_time is not None:
+        if isinstance(begin_time, datetime.datetime):
+            begin_time = int(begin_time.timestamp() * 1000)
         query["beginTime"] = begin_time
 
     if end_time is not None:
+        if isinstance(end_time, datetime.datetime):
+            end_time = int(end_time.timestamp() * 1000)
         query["endTime"] = end_time
 
     if queues is not None:

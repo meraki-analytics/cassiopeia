@@ -775,12 +775,12 @@ class Skin(CassiopeiaObject):
     @property
     def splash_url(self) -> str:
         """The skin's splash art url."""
-        return "http://ddragon.leagueoflegends.com/cdn/img/champion/splash/{}_{}.jpg".format(self.champion_key, self.number)
+        return "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/{}_{}.jpg".format(self.champion_key, self.number)
 
     @property
     def loading_image_url(self) -> str:
         """The skin's loading screen image url."""
-        return "http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{}_{}.jpg".format(self.champion_key, self.number)
+        return "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/{}_{}.jpg".format(self.champion_key, self.number)
 
     @lazy_property
     def splash(self) -> PILImage:

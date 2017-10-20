@@ -87,9 +87,17 @@ class MatchAPI(RiotAPIService):
             "endIndex": query["endIndex"]
         }
 
-        if "beginIndex" in query and "endIndex" in query:
+        if "beginIndex" in query:
             params["beginIndex"] = query["beginIndex"]
+
+        if "endIndex" in query:
             params["endIndex"] = query["endIndex"]
+
+        if "beginTime" in query:
+            params["beginTime"] = query["beginTime"]
+
+        if "endTime" in query:
+            params["endTime"] = query["endTime"]
 
         if "seasons" in query:
             seasons = {Season(season) for season in query["seasons"]}

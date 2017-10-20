@@ -198,7 +198,7 @@ class ProfileIcon(CassiopeiaGhost):
     @ghost_load_on(KeyError)
     def url(self) -> str:
         version = get_latest_version(region=self.region, endpoint="profileicon")
-        return "http://ddragon.leagueoflegends.com/cdn/{version}/img/profileicon/{id}.png".format(version=version, id=self.id)
+        return "https://ddragon.leagueoflegends.com/cdn/{version}/img/profileicon/{id}.png".format(version=version, id=self.id)
 
     @CassiopeiaGhost.property(ProfileIconData)
     @ghost_load_on(KeyError)

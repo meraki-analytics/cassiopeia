@@ -7,7 +7,7 @@ Plugins monkeypatch Cass to provide modified or additional functionality. They a
 
 The plugins for Cass are stored in two different repositories: `cassiopeia-plugins <https://github.com/meraki-analytics/cassiopeia-plugins>`_ and `cassiopeia-datastores <https://github.com/meraki-analytics/cassiopeia-datastores>`_. ``cassiopeia-plugins`` contains functionality that modify the behavior of Cass's objects, while ``cassiopeia-datastores`` provides additional datastores (such as databases). Both of these are called "plugins" in this documentation.
 
-Plugins can be added to Cass by downloading the appropriate plugin and putting it on your ``PYTHONPATH`` environment variable. Then, in your settings file, you specify the relative path to that plugin (using the ``package`` keyword) as if you were directly importing it into your project. The name of the package specifies the data store that that will be loaded from that package and put on the pipeline.
+Plugins can be added to Cass by downloading the appropriate plugin and putting it on your ``PYTHONPATH`` environment variable. Then, in your settings file, you specify the name of the module for that plugin (using the ``package`` keyword) as if you were directly importing it into your project. The name of the package specifies the data store that that will be loaded from that package and put on the pipeline.
 
 
 ChampionGG
@@ -22,7 +22,7 @@ To enable this plugin, add the following to your settings' data pipeline:
   "pipline": {
     ...,
     "ChampionGG": {
-      "package": "cassiopeia-plugins.championgg.championgg",
+      "package": "cassiopeia_championgg",
       "api_key": "CHAMPIONGG_KEY"
     },
     ...
@@ -43,7 +43,7 @@ To enable this plugin, add the following to your settings' data pipeline between
   "pipline": {
     ...,
     "SimpleKVDiskStore": {
-      "package": "cassiopeia-datastores.diskstore.diskstore",
+      "package": "cassiopeia_diskstore",
       "path": "/absolute/path/to/store/data/"
     },
     ...
@@ -89,3 +89,5 @@ The ``"path"`` parameter specifies a directory path where the data will be store
     ShardStatusDto: datetime.timedelta(hours=1)
     CurrentGameInfoDto: datetime.timedelta(hours=0.5)
     FeaturedGamesDto: datetime.timedelta(hours=0.5)
+
+TODO: The diskstore currently does not automatically expire its data, so it's possible to use more disk space than necessary. To prevent this, users can trigger an expiration of all data or all data of one type by using the method ``settings.pipeline.expire``. We will fix this so that the diskstore does automatically expire it's data, but we haven't gotten to it yet. Using the ``expire`` method is a temporary workaround.

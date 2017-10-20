@@ -90,7 +90,7 @@ def _split_rate_limit_header(header):
 
 
 class RiotAPIService(DataSource):
-    def __init__(self, api_key: str, app_rate_limiter: RiotAPIRateLimiter, request_by_id: bool = True, handler_configs: Dict = None, http_client: HTTPClient = None):
+    def __init__(self, api_key: str, app_rate_limiter: RiotAPIRateLimiter, request_by_id: bool = True, request_error_handling: Dict = None, http_client: HTTPClient = None):
         self._limiting_share = app_rate_limiter.limiting_share
         self._request_by_id = request_by_id
 
@@ -108,7 +108,7 @@ class RiotAPIService(DataSource):
             "application": app_rate_limiter
         }
 
-        default_handler_configs = {
+        default_request_error_handling = {
             "404": {
                 "strategy": "throw"
             },
@@ -141,8 +141,8 @@ class RiotAPIService(DataSource):
                 "strategy": "throw"
             }
         }
-        if handler_configs is None:
-            handler_configs = default_handler_configs
+        if request_error_handling is None:
+            request_error_handling = default_request_error_handling
         else:
             def recursive_update(d, u):
                 for k, v in u.items():
@@ -152,7 +152,7 @@ class RiotAPIService(DataSource):
                     else:
                         d[k] = u[k]
                 return d
-            recursive_update(handler_configs, default_handler_configs)
+            recursive_update(request_error_handling, default_request_error_handling)
 
         new_handler_instance = {
             "throw": lambda **init_args: ThrowException(),
@@ -160,7 +160,7 @@ class RiotAPIService(DataSource):
             "retry_from_headers": lambda **init_args: RetryFromHeaders(**init_args)
         }
         self._handlers = {429: {}}  # type: Dict[Union[str, int], Union[Dict[Union[str, int], Callable], Callable]]
-        for code, config in handler_configs.items():
+        for code, config in request_error_handling.items():
             config = copy.deepcopy(config)
             if code != "timeout":
                 code = int(code)

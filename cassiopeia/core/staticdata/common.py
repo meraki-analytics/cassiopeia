@@ -102,7 +102,7 @@ class Sprite(CassiopeiaObject):
 
     @property
     def url(self) -> str:
-        return "http://ddragon.leagueoflegends.com/cdn/{version}/img/sprite/{sprite}".format(version=self.version, sprite=self.sprite)
+        return "https://ddragon.leagueoflegends.com/cdn/{version}/img/sprite/{sprite}".format(version=self.version, sprite=self.sprite)
 
     @lazy_property
     def image(self) -> PILImage:
@@ -127,7 +127,7 @@ class Image(CassiopeiaObject):
 
     @property
     def url(self) -> str:
-        return "http://ddragon.leagueoflegends.com/cdn/{version}/img/{group}/{full}".format(version=self.version, group=self.group, full=self.full)
+        return "https://ddragon.leagueoflegends.com/cdn/{version}/img/{group}/{full}".format(version=self.version, group=self.group, full=self.full)
 
     @lazy_property
     def image(self) -> PILImage:

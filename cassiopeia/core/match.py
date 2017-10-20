@@ -894,7 +894,11 @@ class MatchHistory(CassiopeiaGhostLazyList):
         kwargs["champion_ids"] = [champion.id for champion in champions]
         kwargs["begin_index"] = begin_index
         kwargs["end_index"] = end_index
+        if begin_time is not None and not isinstance(begin_time, (int, float)):
+            begin_time = begin_time.timestamp() * 1000
         kwargs["begin_time"] = begin_time
+        if end_time is not None and not isinstance(end_time, (int, float)):
+            end_time = end_time.timestamp() * 1000
         kwargs["end_time"] = end_time
         if account_id is not None and summoner is None:
             summoner = Summoner(account=account_id, region=region)
@@ -942,6 +946,10 @@ class MatchHistory(CassiopeiaGhostLazyList):
             query["seasons"] = self.seasons
         if self.champions is not None:
             query["champions"] = self.champions
+        if self.begin_time is not None:
+            query["beginTime"] = int(self.begin_time.timestamp() * 1000)
+        if self.end_time is not None:
+            query["endTime"] = int(self.end_time.timestamp() * 1000)
         return query
 
     @lazy_property
