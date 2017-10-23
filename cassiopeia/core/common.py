@@ -278,7 +278,14 @@ class CassiopeiaGhostLazyList(SearchableLazyList, CassiopeiaGhost):
 
     @classmethod
     def from_data(cls, data: Union[list, CoreData]):
-        raise NotImplemented
+        assert data is not None
+        self = cls.__new__(cls)
+        self._data = {_type: _type() for _type in self._data_types}
+        def gen(data):
+            for item in data:
+                yield item
+        SearchableLazyList.__init__(self, generator=gen(data))
+        return self
 
     def __load__(self, load_group: CoreData = None) -> None:
         while not self._empty:

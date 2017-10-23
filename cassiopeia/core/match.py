@@ -986,11 +986,15 @@ class MatchHistory(CassiopeiaGhostLazyList):
 
     @property
     def begin_time(self) -> datetime.datetime:
-        return datetime.datetime.fromtimestamp(self._data[MatchListData].begin_time / 1000)
+        time = self._data[MatchListData].begin_time
+        if time is not None:
+            return datetime.datetime.fromtimestamp(time / 1000)
 
     @property
     def end_time(self) -> datetime.datetime:
-        return datetime.datetime.fromtimestamp(self._data[MatchListData].end_time / 1000)
+        time = self._data[MatchListData].end_time
+        if time is not None:
+            return datetime.datetime.fromtimestamp(time / 1000)
 
 
 class Position(CassiopeiaObject):

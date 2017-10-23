@@ -6,12 +6,10 @@ from cassiopeia.data import Queue, Patch
 
 
 def filter_match_history(summoner, patch):
-    #match_history = MatchHistory(summoner=summoner, begin_time=patch.start, end_time=patch.end, queue=Queue.ranked_solo.value)
-    match_history = MatchHistory(summoner=summoner)
+    match_history = MatchHistory(summoner=summoner, queues={Queue.ranked_solo})
     match_history.filter(
         lambda match: match.creation > patch.start and
-                      match.creation < patch.end and
-                      match.queue is Queue.ranked_solo
+                      match.creation < patch.end
     )
     return match_history
 
