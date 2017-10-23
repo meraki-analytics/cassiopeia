@@ -51,10 +51,6 @@ class MatchTransformer(DataTransformer):
     def match_reference_data_to_core(self, value: MatchReferenceData, context: PipelineContext = None) -> Match:
         return Match.from_match_reference(value)
 
-    @transform.register(MatchListData, MatchHistory)
-    def matchlist_data_to_core(self, value: MatchListData, context: PipelineContext = None) -> MatchHistory:
-        return MatchHistory.from_data([Match.from_match_reference(ref) for ref in value])
-
     @transform.register(TimelineData, Timeline)
     def timeline_data_to_core(self, value: TimelineData, context: PipelineContext = None) -> Timeline:
         return Timeline.from_data(value)
