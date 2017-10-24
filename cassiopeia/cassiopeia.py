@@ -1,12 +1,13 @@
-from typing import List, Union, Set, Dict, Union, TextIO
+from typing import List, Set, Dict, Union, TextIO
 import datetime
 
 from .data import PATCHES, Region, Queue, Season
 from .patches import Patch
-from .core import Champion, Summoner, Account, ChampionMastery, Rune, Mastery, Item, RunePage, MasteryPage, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Masteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Locales, ProfileIcons, MasteryPages, RunePages, ChallengerLeague, MasterLeague, Leagues, LeagueEntries
+from .core import Champion, Summoner, Account, ChampionMastery, Rune, Mastery, Item, RunePage, MasteryPage, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Masteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Locales, ProfileIcons, MasteryPages, RunePages, ChallengerLeague, MasterLeague, SummonerLeagues, LeagueEntries
 from .datastores import common as _common_datastore
 from ._configuration import Settings, load_config
 from . import configuration
+
 
 # Settings endpoints
 
@@ -32,21 +33,34 @@ def apply_settings(config: Union[str, TextIO, Dict, Settings]):
 def set_riot_api_key(key: str):
     configuration.settings.set_riot_api_key(key)
 
+
 def set_default_region(region: Union[Region, str]):
     configuration.settings.set_region(region)
+
 
 def print_calls(calls: bool, api_key: bool = False):
     _common_datastore._print_calls = calls
     _common_datastore._print_api_key = api_key
 
+
 # Data endpoints
 
-def get_league_positions(summoner: Union[Summoner, int, str], region: Union[Region, str] = None) -> Leagues:
-    return LeagueEntries(summoner=summoner, region=region)
+def get_league_positions(summoner: Union[Summoner, int, str], region: Union[Region, str] = None) -> LeagueEntries:
+    if not isinstance(summoner, Summoner):
+        if isinstance(summoner, int):
+            summoner = Summoner(id=summoner, region=region)
+        else:
+            summoner = Summoner(name=summoner, region=region)
+    return summoner.league_positions
 
 
-def get_leagues(summoner: Union[Summoner, int, str], region: Union[Region, str] = None) -> Leagues:
-    return Leagues(summoner=summoner, region=region)
+def get_leagues(summoner: Union[Summoner, int, str], region: Union[Region, str] = None) -> SummonerLeagues:
+    if not isinstance(summoner, Summoner):
+        if isinstance(summoner, int):
+            summoner = Summoner(id=summoner, region=region)
+        else:
+            summoner = Summoner(name=summoner, region=region)
+    return summoner.leagues
 
 
 def get_master_league(queue: Union[Queue, int, str], region: Union[Region, str] = None) -> MasterLeague:

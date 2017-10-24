@@ -1,13 +1,13 @@
 import datetime
-from typing import Union
+from typing import Union, List
 
 from datapipelines import NotFoundError
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable
+from merakicommons.container import searchable, SearchableList
 
 from .. import configuration
-from ..data import Region, Platform
+from ..data import Region, Platform, Queue
 from .common import CoreData, CassiopeiaObject, CassiopeiaGhost
 from .staticdata import ProfileIcon
 from ..dto.summoner import SummonerDto
@@ -195,9 +195,11 @@ class Summoner(CassiopeiaGhost):
         return CurrentMatch(summoner=self, region=self.region)
 
     @property
-    def leagues(self) -> "Leagues":
-        from .league import Leagues
-        return Leagues(summoner=self, region=self.region)
+    def leagues(self) -> "SummonerLeagues":
+        from .league import League, SummonerLeagues
+        positions = self.league_positions
+        ids = {position.league_id for position in positions}
+        return SummonerLeagues([League(id=id_, region=self.region) for id_ in ids])
 
     @property
     def league_positions(self) -> "LeagueEntries":
@@ -208,3 +210,8 @@ class Summoner(CassiopeiaGhost):
     def rank_last_season(self):
         most_recent_match = self.match_history[0]
         return most_recent_match.participants[self.name].rank_last_season
+
+
+def _summoner_league(summoner: Summoner, queue: Queue) -> "League":
+    from .league import League
+    return League(id=summoner.league_positions[queue].id, region=summoner.region, queue=queue)

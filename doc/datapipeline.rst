@@ -91,7 +91,7 @@ It takes one optional parameter, which is a mapping of expiration times (in seco
     ChampionMastery: datetime.timedelta(days=7)
     ChampionMasteries: datetime.timedelta(days=7)
     LeagueEntries: datetime.timedelta(hours=6)
-    Leagues: datetime.timedelta(hours=6)
+    League: datetime.timedelta(hours=6)
     ChallengerLeague: datetime.timedelta(hours=6)
     MasterLeague: datetime.timedelta(hours=6)
     Match: datetime.timedelta(days=3)

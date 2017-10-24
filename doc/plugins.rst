@@ -80,7 +80,7 @@ The ``"path"`` parameter specifies a directory path where the data will be store
     ChampionMasteryDto: datetime.timedelta(days=7)
     ChampionMasteryListDto: datetime.timedelta(days=7)
     LeaguePositionsDto: datetime.timedelta(hours=6)
-    LeaguesListDto: datetime.timedelta(hours=6)
+    LeagueListDto: datetime.timedelta(hours=6)
     ChallengerLeagueListDto: datetime.timedelta(hours=6)
     MasterLeagueListDto: datetime.timedelta(hours=6)
     MatchDto: -1

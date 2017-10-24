@@ -18,7 +18,7 @@ from ..dto.summoner import SummonerDto
 
 from ..core.common import provide_default_region
 from ..core.championmastery import ChampionMastery, ChampionMasteries
-from ..core.league import LeagueEntries, Leagues, ChallengerLeague, MasterLeague
+from ..core.league import LeagueEntries, ChallengerLeague, MasterLeague, League
 from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Locales, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions, Items, Champions, Maps, SummonerSpells, Masteries, Runes
 from ..core.status import ShardStatus
 from ..core.masterypage import MasteryPage, MasteryPages
@@ -96,7 +96,7 @@ def construct_query(cls, **kwargs) -> dict:
         return construct_summoner_query(**kwargs)
     if cls is CurrentMatch:
         return construct_current_match_query(**kwargs)
-    if cls is Leagues or cls is LeagueEntries:
+    if cls is LeagueEntries:
         return construct_leagues_query(**kwargs)
     if cls is MasteryPages or cls is RunePages:
         return construct_pages_query(**kwargs)
@@ -1512,8 +1512,8 @@ validate_many_league_entries_query = Query. \
     has("summoners.id").as_(Iterable)
 
 
-def for_league_entries(leagues: Leagues) -> List[Tuple[str, int]]:
-    return [(leagues.platform.value, leagues._LeagueEntries__summoner.id)]
+def for_league_entries(entries: LeagueEntries) -> List[Tuple[str, int]]:
+    return [(entries.platform.value, entries._LeagueEntries__summoner.id)]
 
 
 def for_league_entries_query(query: Query) -> List[Tuple[str, int]]:
@@ -1529,26 +1529,26 @@ def for_many_league_entries_query(query: Query) -> Generator[List[Tuple[str, int
 
 # Leagues
 
-validate_leagues_query = Query. \
+validate_league_query = Query. \
     has("platform").as_(Platform).also. \
-    has("summoner.id").as_(int)
+    has("id").as_(str)
 
 
-validate_many_leagues_query = Query. \
+validate_many_league_query = Query. \
     has("platform").as_(Platform).also. \
-    has("summoners.id").as_(Iterable)
+    has("ids").as_(Iterable)
 
 
-def for_leagues(leagues: Leagues) -> List[Tuple[str, int]]:
-    return [(leagues.platform.value, leagues._Leagues__summoner.id)]
+def for_league(league: League) -> List[Tuple[str, int]]:
+    return [(league.platform.value, league.id)]
 
 
-def for_leagues_query(query: Query) -> List[Tuple[str, int]]:
-    return [(query["platform"].value, query["summoner.id"])]
+def for_league_query(query: Query) -> List[Tuple[str, int]]:
+    return [(query["platform"].value, query["id"])]
 
 
-def for_many_leagues_query(query: Query) -> Generator[List[Tuple[str, int]], None, None]:
-    for id in query["summoners.id"]:
+def for_many_league_query(query: Query) -> Generator[List[Tuple[str, int]], None, None]:
+    for id in query["ids"]:
         try:
             yield [(query["platform"].value, id)]
         except ValueError as e:

@@ -34,7 +34,7 @@ def print_leagues(summoner_name: str, region: str):
 
     print(f"Listing all summoners in {leagues.fives.name}")
     for entry in leagues.fives:
-        print(entry.summoner.name, entry.league_points, entry.tier, entry.division)
+        print(entry.summoner.name, entry.league_points, leagues.fives.tier, entry.division)
 
     print()
     print("Challenger League name:")

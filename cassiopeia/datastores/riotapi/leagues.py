@@ -2,8 +2,8 @@ from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError, validate_query
 from .common import RiotAPIService, APINotFoundError
-from ...data import Platform, Region, Queue
-from ...dto.league import LeaguesListDto, ChallengerLeagueListDto, MasterLeagueListDto, LeaguePositionsDto
+from ...data import Platform, Queue
+from ...dto.league import LeaguesListDto, ChallengerLeagueListDto, MasterLeagueListDto, LeaguePositionsDto, LeagueListDto
 from ..uniquekeys import convert_region_to_platform
 
 T = TypeVar("T")
@@ -66,13 +66,13 @@ class LeaguesAPI(RiotAPIService):
 
     # Leagues
 
-    _validate_get_leagues_query = Query. \
+    _validate_get_leagues_query_by_summoner = Query. \
         has("summoner.id").as_(int).also. \
         has("platform").as_(Platform)
 
     @get.register(LeaguesListDto)
-    @validate_query(_validate_get_leagues_query, convert_region_to_platform)
-    def get_league_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LeaguesListDto:
+    @validate_query(_validate_get_leagues_query_by_summoner, convert_region_to_platform)
+    def get_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LeaguesListDto:
         url = "https://{platform}.api.riotgames.com/lol/league/v3/leagues/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
         try:
             data = self._get(url, {}, self._get_rate_limiter(query["platform"], "leagues/by-summoner/summonerId {}".format(query["platform"].value)))
@@ -88,13 +88,31 @@ class LeaguesAPI(RiotAPIService):
                 entry["region"] = data["region"]
         return LeaguesListDto(data)
 
-    _validate_get_many_leagues_query = Query. \
+    _validate_get_leagues_query = Query. \
+        has("id").as_(str).also. \
+        has("platform").as_(Platform)
+
+    @get.register(LeagueListDto)
+    @validate_query(_validate_get_leagues_query, convert_region_to_platform)
+    def get_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LeagueListDto:
+        url = "https://{platform}.api.riotgames.com/lol/league/v3/leagues/{leagueId}".format(platform=query["platform"].value.lower(), leagueId=query["id"])
+        try:
+            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "leagues/leagueId {}".format(query["platform"].value)))
+        except APINotFoundError as error:
+            raise NotFoundError(str(error)) from error
+
+        data["region"] = query["platform"].region.value
+        for entry in data["entries"]:
+            entry["region"] = data["region"]
+        return LeagueListDto(data)
+
+    _validate_get_many_leagues_by_summoner_query = Query. \
         has("summoner.ids").as_(Iterable).also. \
         has("platform").as_(Platform)
 
     @get_many.register(LeaguesListDto)
-    @validate_query(_validate_get_many_leagues_query, convert_region_to_platform)
-    def get_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[LeaguesListDto, None, None]:
+    @validate_query(_validate_get_many_leagues_by_summoner_query, convert_region_to_platform)
+    def get_many_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[LeaguesListDto, None, None]:
         def generator():
             for id in query["summoner.ids"]:
                 url = "https://{platform}.api.riotgames.com/lol/league/v3/leagues/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=id)
@@ -103,14 +121,36 @@ class LeaguesAPI(RiotAPIService):
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
-                data = {"leagues": data}
                 data["region"] = query["platform"].region.value
                 data["summonerId"] = id
+                for entry in data["entries"]:
+                    entry["region"] = data["region"]
+                yield LeaguesListDto(data)
+
+        return generator()
+
+    _validate_get_many_leagues_query = Query. \
+        has("ids").as_(Iterable).also. \
+        has("platform").as_(Platform)
+
+    @get_many.register(LeagueListDto)
+    @validate_query(_validate_get_many_leagues_query, convert_region_to_platform)
+    def get_many_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[LeagueListDto, None, None]:
+        def generator():
+            for id in query["ids"]:
+                url = "https://{platform}.api.riotgames.com/lol/league/v3/leagues/{leagueId}".format(platform=query["platform"].value.lower(), leagueId=id)
+                try:
+                    data = self._get(url, {}, self._get_rate_limiter(query["platform"], "leagues/leagueId {}".format(query["platform"].value)))
+                except APINotFoundError as error:
+                    raise NotFoundError(str(error)) from error
+
+                data = {"leagues": data}
+                data["region"] = query["platform"].region.value
                 for league in data["leagues"]:
                     league["region"] = data["region"]
                     for entry in league["entries"]:
                         entry["region"] = data["region"]
-                yield LeaguesListDto(data)
+                yield LeagueListDto(data)
 
         return generator()
 

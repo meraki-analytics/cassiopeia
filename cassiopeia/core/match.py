@@ -921,7 +921,7 @@ class MatchHistory(CassiopeiaGhostLazyList):
                 query["endIndex"] = end_index
                 data = configuration.settings.pipeline.get(type=MatchListData, query=query)
                 for matchrefdata in data:
-                    match = MatchTransformer.match_reference_data_to_core(None, matchrefdata)
+                    match = Match.from_match_reference(matchrefdata)
                     # We have a summoner object (probably) already created, and if one was passed in then this is pretty crucial to do:
                     # Put the summoner object that this match history was instantiated with into the participant[0] so that searchable
                     # list syntax on e.g. the name will work without loading the summoner.
