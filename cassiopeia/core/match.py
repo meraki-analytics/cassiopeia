@@ -2,6 +2,7 @@ import functools
 import datetime
 from typing import List, Tuple, Dict, Set, Union
 
+from datapipelines import NotFoundError
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableLazyList, SearchableDictionary
@@ -881,8 +882,14 @@ class MatchHistory(CassiopeiaGhostLazyList):
     """The match history for a summoner. By default, this will return the entire match history."""
     _data_types = {MatchListData}
 
-    def __init__(self, summoner: Union[Summoner, str, int] = None, account_id: int = None, region: Union[Region, str] = None, begin_index: int = 0, end_index: int = None, begin_time: datetime.datetime = None, end_time: datetime.datetime = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
+    def __init__(self, summoner: Union[Summoner, str, int] = None, account_id: int = None, region: Union[Region, str] = None, begin_index: int = None, end_index: int = None, begin_time: datetime.datetime = None, end_time: datetime.datetime = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
         assert end_index is None or end_index > begin_index
+        if begin_time is not None and end_time is None:
+            raise ValueError("Both `begin_time` and `end_time` must be specified, or neither.")
+        if begin_time is not None and end_time is not None and begin_time > end_time:
+            raise ValueError("`end_time` should be greater than `begin_time`")
+        #if begin_time is not None and end_index is not None:
+        #    raise ValueError("Only one of `*_time` or `*_index` can be specified. If you wish to use a truncated match history within a specific timeframe, specify the timeframe then only use the number of matches you need.")
         if region is None:
             region = configuration.settings.default_region
         if region is not None and not isinstance(region, Region):
@@ -909,17 +916,59 @@ class MatchHistory(CassiopeiaGhostLazyList):
         assert isinstance(summoner, Summoner)
         self.__class__.summoner.fget._lazy_set(self, summoner)
 
-        def generate_matchlists(begin_index: int, end_index: int):
-            from ..transformers.match import MatchTransformer
-            final_end = end_index
-            begin_index = begin_index
-            end_index = end_index or begin_index + 100
-            while final_end is None or begin_index < final_end:
-                # Get another matchlist page and yield by entry
+        now = datetime.datetime.now() - datetime.timedelta(seconds=30)
+        def generate_matchlists(begin_index: Union[int, None] = None, end_index: Union[int, None] = None, begin_time: Union[datetime.datetime, None] = None, end_time: Union[datetime.datetime, None] = None):
+            # Shouldn't this be done in the Riot API data source? No, because it doesn't supply convenience data like this.
+
+            assert (begin_time is None and end_time is None) or (begin_time is not None and end_time is not None)
+            assert (begin_index is None and end_index is None) or (begin_index is not None and end_index is not None)
+            if begin_time is None and begin_index is None:
+                begin_index = 0
+
+            number_of_requested_matches = float("inf") if end_index is None else end_index - begin_index
+            number_of_initial_matches_to_skip = 0
+
+            index_interval_size = 100
+            datetime_interval_size = datetime.timedelta(days=7)
+
+            # There is one weird special case that occurs when all of these are true:
+            # 1) beginTime is after the summoner's most recent match
+            # 2) beginIndex > 0
+            # 3) the endTime - beginTime range is more than one week
+            if begin_time is not None and end_time is not None and begin_index is not None and \
+                begin_time < now and \
+                begin_index > 0 and \
+                end_time - begin_time > datetime_interval_size:
+                number_of_initial_matches_to_skip = begin_index
+                begin_index = 0
+
+            # Now we need to potentially break up the time interval into one-week periods, and the indexes into intervals of 100.
+            # We stop looking for matches when we have the number of requested matches, or when the date interval is complete.
+            pulled_matches = 0 - number_of_initial_matches_to_skip
+            _begin_time = begin_time
+            _end_time = end_time
+            _begin_index = begin_index
+            _end_index = end_index
+            while pulled_matches < number_of_requested_matches and \
+                (begin_time is None or end_time - _begin_time > datetime.timedelta(days=0)):
+                if begin_time is not None and end_time is not None and _end_time - _begin_time > datetime_interval_size:
+                    _end_time = _begin_time + datetime_interval_size
+                if begin_index is not None and end_index is not None and _end_index - _begin_index > index_interval_size:
+                    _end_index = _begin_index + index_interval_size
                 query = self.__get_query__()
-                query["beginIndex"] = begin_index
-                query["endIndex"] = end_index
-                data = configuration.settings.pipeline.get(type=MatchListData, query=query)
+                if begin_time is not None and end_time is not None:
+                    query["beginTime"] = int(_begin_time.timestamp() * 1000)
+                    query["endTime"] = int(_end_time.timestamp() * 1000)
+                elif begin_index is not None:
+                    query["beginIndex"] = _begin_index
+                    if end_index is not None:
+                        query["endIndex"] = _end_index
+                    else:
+                        query["endIndex"] = _begin_index + index_interval_size
+                try:
+                    data = configuration.settings.pipeline.get(type=MatchListData, query=query)
+                except NotFoundError:
+                    data = []
                 for matchrefdata in data:
                     match = Match.from_match_reference(matchrefdata)
                     # We have a summoner object (probably) already created, and if one was passed in then this is pretty crucial to do:
@@ -930,13 +979,26 @@ class MatchHistory(CassiopeiaGhostLazyList):
                     #    match = summoner.match_history[0]
                     #    p = match.participants[name]  # This will work without loading the summoner because the name was prvided
                     match.participants[0].__class__.summoner.fget._lazy_set(match.participants[0], self.summoner)
-                    yield match
-                if len(data) < end_index - begin_index:
-                    break
-                begin_index += len(data)
-                end_index = begin_index + 100
+                    pulled_matches += 1
+                    if pulled_matches > 0:
+                        yield match
+                    if pulled_matches == number_of_requested_matches:
+                        break
 
-        super().__init__(generate_matchlists(begin_index, end_index), **kwargs)
+                _begin_time = _end_time
+                _end_time = end_time
+                if _begin_index is not None:
+                    _begin_index = _begin_index + len(data)
+                _end_index = end_index
+                if number_of_requested_matches == float("inf") and begin_time is None and len(data) == 0:
+                    # Stop because we ran out of data
+                    break
+
+        if begin_time is not None:
+            begin_time = datetime.datetime.fromtimestamp(begin_time / 1000)
+        if end_time is not None:
+            end_time = datetime.datetime.fromtimestamp(end_time / 1000)
+        super().__init__(generate_matchlists(begin_index, end_index, begin_time, end_time), **kwargs)
 
     def __get_query__(self):
         query = {"platform": self.platform, "account.id": self.summoner.account.id}
@@ -977,12 +1039,18 @@ class MatchHistory(CassiopeiaGhostLazyList):
         return {Champion(id=cid, region=self.region) for cid in self._data[MatchListData].champion_ids}
 
     @property
-    def begin_index(self) -> int:
-        return self._data[MatchListData].begin_index
+    def begin_index(self) -> Union[int, None]:
+        try:
+            return self._data[MatchListData].begin_index
+        except KeyError:
+            return None
 
     @property
-    def end_index(self) -> int:
-        return self._data[MatchListData].end_index
+    def end_index(self) -> Union[int, None]:
+        try:
+            return self._data[MatchListData].end_index
+        except KeyError:
+            return None
 
     @property
     def begin_time(self) -> datetime.datetime:

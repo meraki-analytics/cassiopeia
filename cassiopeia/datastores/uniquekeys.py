@@ -215,7 +215,7 @@ def construct_leagues_query(*, summoner: Union[Summoner, int, str], region: Unio
 
 @provide_default_region
 def construct_match_history_query(*, summoner: Union[Summoner, str, int] = None, account_id: int = None, region: Union[Region, str] = None, begin_index: int = 0, end_index: int = None, begin_time: datetime.datetime = None, end_time: datetime.datetime = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
-    query = {"region": region, "beginIndex": begin_index}
+    query = {"region": region}
     if account_id is not None:
         query["account.id"] = account_id
     else:
@@ -227,6 +227,9 @@ def construct_match_history_query(*, summoner: Union[Summoner, str, int] = None,
         else:  # int
             summoner = Summoner(id=summoner, region=region)
             query["account.id"] = summoner.account.id
+
+    if begin_index is not None:
+        query["beginIndex"] = begin_index
 
     if end_index is not None:
         query["endIndex"] = end_index

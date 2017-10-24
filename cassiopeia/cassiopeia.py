@@ -71,7 +71,7 @@ def get_challenger_league(queue: Union[Queue, int, str], region: Union[Region, s
     return ChallengerLeague(queue=queue, region=region)
 
 
-def get_match_history(summoner: Union[Summoner, str, int] = None, region: Union[Region, str] = None, begin_index: int = 0, end_index: int = None, begin_time: datetime.datetime = None, end_time: datetime.datetime = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
+def get_match_history(summoner: Union[Summoner, str, int] = None, region: Union[Region, str] = None, begin_index: int = None, end_index: int = None, begin_time: datetime.datetime = None, end_time: datetime.datetime = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
     return MatchHistory(summoner=summoner, region=region, begin_index=begin_index, end_index=end_index, begin_time=begin_time, end_time=end_time, queues=queues, seasons=seasons, champions=champions)
 
 def get_match(id, region: Union[Region, str] = None) -> Match:

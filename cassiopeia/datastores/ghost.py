@@ -178,8 +178,8 @@ class UnloadedGhostStore(DataSource):
         has("platform").as_(Platform).also. \
         can_have("beginTime").as_(int).also. \
         can_have("endTime").as_(int).also. \
-        can_have("beginIndex").with_default(0).also. \
-        can_have("endIndex").with_default(100).also. \
+        can_have("beginIndex").as_(int).also. \
+        can_have("endIndex").as_(int).also. \
         can_have("seasons").as_(Iterable).also. \
         can_have("champion.ids").as_(Iterable).also. \
         can_have("queues").as_(Iterable)
@@ -382,8 +382,10 @@ class UnloadedGhostStore(DataSource):
     def get_match_history(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MatchHistory:
         query["region"] = query.pop("platform").region
         query["account_id"] = query.pop("account.id")
-        query["begin_index"] = query.pop("beginIndex")
-        query["end_index"] = query.pop("endIndex")
+        if "beginIndex" in query:
+            query["begin_index"] = query.pop("beginIndex")
+        if "endIndex" in query:
+            query["end_index"] = query.pop("endIndex")
         if "beginTime" in query:
             query["begin_time"] = query.pop("beginTime")
         if "endTime" in query:
