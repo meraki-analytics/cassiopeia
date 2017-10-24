@@ -3,7 +3,7 @@ from copy import deepcopy
 
 from datapipelines import DataTransformer, PipelineContext
 
-from ..core.league import Leagues, LeaguePositionData, LeaguePositionsData, LeagueEntry, LeagueEntries, LeaguesListData, LeagueListData, League, ChallengerLeagueListData, ChallengerLeague, MasterLeagueListData, MasterLeague
+from ..core.league import LeaguePositionData, LeaguePositionsData, LeagueEntry, LeagueEntries, LeaguesListData, LeagueListData, SummonerLeagues, League, ChallengerLeagueListData, ChallengerLeague, MasterLeagueListData, MasterLeague
 
 from ..dto.league import LeaguesListDto, LeagueListDto, ChallengerLeagueListDto, MasterLeagueListDto, LeaguePositionDto, LeaguePositionsDto
 
@@ -75,9 +75,9 @@ class LeagueTransformer(DataTransformer):
         data = deepcopy(value)
         return League.from_data(data)
 
-    @transform.register(LeaguesListData, Leagues)
-    def leagues_list_data_to_core(self, value: LeaguesListData, context: PipelineContext = None) -> Leagues:
-        return Leagues([LeagueTransformer.league_list_data_to_core(self, league) for league in value], summoner=value.summoner_id, region=value.region)
+    @transform.register(LeaguesListData, SummonerLeagues)
+    def leagues_list_data_to_core(self, value: LeaguesListData, context: PipelineContext = None) -> SummonerLeagues:
+        return SummonerLeagues(iter([LeagueTransformer.league_list_data_to_core(self, league) for league in value]))
 
     @transform.register(ChallengerLeagueListData, ChallengerLeague)
     def challenger_league_list_data_to_core(self, value: ChallengerLeagueListData, context: PipelineContext = None) -> ChallengerLeague:
