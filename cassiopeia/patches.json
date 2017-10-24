@@ -1065,6 +1065,24 @@
     "season": "Season 7",
     "name": "7.17",
     "start": 1503460800.0,
+    "end": 1505260800.0
+  },
+  {
+    "season": "Season 7",
+    "name": "7.18",
+    "start": 1505260800.0,
+    "end": 1506470400.0
+  },
+  {
+    "season": "Season 7",
+    "name": "7.19",
+    "start": 1506470400.0,
+    "end": 1507680000.0
+  },
+  {
+    "season": "Season 7",
+    "name": "7.20",
+    "start": 1507680000.0,
     "end": null
   }
 ]
