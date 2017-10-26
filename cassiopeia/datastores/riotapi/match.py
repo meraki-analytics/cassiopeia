@@ -41,6 +41,10 @@ class MatchAPI(RiotAPIService):
         for participant in data["participants"]:
             participant.setdefault("runes", [])
             participant.setdefault("masteries", [])
+        for p in data["participantIdentities"]:
+            aid = p.get("player", {}).get("currentAccountId", None)
+            if aid == 0:
+                p["player"]["bot"] = True
         return MatchDto(data)
 
     _validate_get_many_match_query = Query. \
@@ -61,7 +65,11 @@ class MatchAPI(RiotAPIService):
                 for participant in data["participants"]:
                     participant.setdefault("runes", [])
                     participant.setdefault("masteries", [])
- 
+                for p in data["participantIdentities"]:
+                    aid = p.get("player", {}).get("currentAccountId", None)
+                    if aid == 0:
+                        p["player"]["bot"] = True
+
                 data["gameId"] = id
                 data["region"] = query["platform"].region.value
                 yield MatchDto(data)

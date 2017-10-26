@@ -653,7 +653,7 @@ class ParticipantData(CoreData):
 
 
 class PlayerData(CoreData):
-    _renamed = {"current_platform_id": "currentPlatformId", "summoner_name": "summonerName", "summoner_id": "summonerId", "match_history_uri": "matchHistoryUri", "platform_id": "platformId", "current_account_id": "currentAccountId", "profile_icon_id": "profileIcon", "account_id": "accountId"}
+    _renamed = {"current_platform_id": "currentPlatformId", "summoner_name": "summonerName", "summoner_id": "summonerId", "match_history_uri": "matchHistoryUri", "platform_id": "platformId", "current_account_id": "currentAccountId", "profile_icon_id": "profileIcon", "account_id": "accountId", "is_bot": "bot"}
 
     @property
     def current_platform_id(self) -> int:
@@ -686,6 +686,10 @@ class PlayerData(CoreData):
     @property
     def account_id(self) -> int:
         return self._dto["accountId"]
+
+    @property
+    def is_bot(self) -> bool:
+        return self._dto.get("bot", False)
 
 
 class ParticipantIdentityData(CoreData):
@@ -1647,6 +1651,11 @@ class Participant(CassiopeiaObject):
 
     @lazy_property
     @load_match_on_keyerror
+    def is_bot(self) -> bool:
+        return self._data[PlayerData].is_bot
+
+    @lazy_property
+    @load_match_on_keyerror
     def runes(self) -> Dict["Rune", int]:
         version = _choose_staticdata_version(self.__match)
         return SearchableDictionary({Rune(id=rune["runeId"], version=version, region=self.__match.region): rune["rank"] for rune in self._data[ParticipantData].runes})
@@ -1829,7 +1838,7 @@ class Match(CassiopeiaGhost):
             player = {"participantId": 0, "accountId": ref.account_id, "currentPlatformId": ref.platform_id}
             instance(season_id=ref.season_id, queue_id=ref.queue_id, creation=ref.creation)
             instance._data[MatchData]._dto["participants"] = [participant]
-            instance._data[MatchData]._dto["participantIdentities"] = [{"participantId": 0, "player": player}]
+            instance._data[MatchData]._dto["participantIdentities"] = [{"participantId": 0, "player": player, "bot": False}]
         return instance
 
     @lazy_property
