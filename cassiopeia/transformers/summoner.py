@@ -25,6 +25,6 @@ class SummonerTransformer(DataTransformer):
 
     # Data to Core
 
-    @transform.register(SummonerData, Summoner)
+    #@transform.register(SummonerData, Summoner)
     def summoner_data_to_core(self, value: SummonerData, context: PipelineContext = None) -> Summoner:
         return Summoner.from_data(value)

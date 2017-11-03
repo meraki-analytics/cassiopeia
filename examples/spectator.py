@@ -12,7 +12,7 @@ def get_spectator_matches():
     print(match.queue)
     summoner = Summoner(name=a_summoner_name, region=match.region)
     current_match = summoner.current_match
-    print(current_match.map)
+    print(current_match.map.name)
 
     for participant in current_match.blue_team.participants:
         print(participant.summoner.name)

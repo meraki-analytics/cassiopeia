@@ -1,10 +1,10 @@
 import datetime
-from typing import Union, List
+from typing import Union
 
 from datapipelines import NotFoundError
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable, SearchableList
+from merakicommons.container import searchable
 
 from .. import configuration
 from ..data import Region, Platform, Queue

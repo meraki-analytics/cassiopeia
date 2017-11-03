@@ -3,7 +3,7 @@ from typing import Type, TypeVar, MutableMapping, Any, Iterable
 from datapipelines import DataSource, PipelineContext, Query, validate_query
 
 from ..data import Platform, Queue
-from ..core import Champion, Champions, Rune, Mastery, Item, Map, SummonerSpell, Realms, ProfileIcon, ProfileIcons, LanguageStrings, Locales, Versions, Masteries, Runes, SummonerSpells, Maps, Items, Summoner, ChampionMastery, ChampionMasteries, RunePages, MasteryPages, Match, MatchHistory, CurrentMatch, FeaturedMatches, ShardStatus, ChallengerLeague, MasterLeague, League, LeagueEntries
+from ..core import Champion, Rune, Mastery, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, MatchHistory, CurrentMatch, ShardStatus, ChallengerLeague, MasterLeague, League
 from ..core.match import Timeline
 from .riotapi.staticdata import _get_latest_version, _get_default_locale
 from .uniquekeys import convert_region_to_platform
@@ -203,14 +203,6 @@ class UnloadedGhostStore(DataSource):
         query["region"] = query.pop("platform").region
         return UnloadedGhostStore.create_ghost(Champion, query)
 
-    @get.register(Champions)
-    @validate_query(_validate_get_champions_query, convert_region_to_platform)
-    def get_champions(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Champions:
-        query["region"] = query.pop("platform").region
-        query["included_data"] = query.pop("includedData")
-        query.pop("dataById")
-        return UnloadedGhostStore.create_ghost(Champions, query)
-
     @get.register(Rune)
     @validate_query(_validate_get_rune_query, convert_region_to_platform)
     def get_rune(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Rune:
@@ -257,63 +249,11 @@ class UnloadedGhostStore(DataSource):
         query["region"] = query.pop("platform").region
         return UnloadedGhostStore.create_ghost(ProfileIcon, query)
 
-    @get.register(ProfileIcons)
-    @validate_query(_validate_get_profile_icons_query, convert_region_to_platform)
-    def get_profile_icons(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ProfileIcons:
-        query["region"] = query.pop("platform").region
-        return UnloadedGhostStore.create_ghost(ProfileIcons, query)
-
     @get.register(LanguageStrings)
     @validate_query(_validate_get_language_strings_query, convert_region_to_platform)
     def get_language_strings(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LanguageStrings:
         query["region"] = query.pop("platform").region
         return UnloadedGhostStore.create_ghost(LanguageStrings, query)
-
-    @get.register(Locales)
-    @validate_query(_validate_get_languages_query, convert_region_to_platform)
-    def get_locales(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Locales:
-        query["region"] = query.pop("platform").region
-        return UnloadedGhostStore.create_ghost(Locales, query)
-
-    @get.register(Versions)
-    @validate_query(_validate_get_versions_query, convert_region_to_platform)
-    def get_versions(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Versions:
-        query["region"] = query.pop("platform").region
-        return UnloadedGhostStore.create_ghost(Versions, query)
-
-    @get.register(Runes)
-    @validate_query(_validate_get_runes_query, convert_region_to_platform)
-    def get_runes(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Runes:
-        query["region"] = query.pop("platform").region
-        query["included_data"] = query.pop("includedData")
-        return UnloadedGhostStore.create_ghost(Runes, query)
-
-    @get.register(Masteries)
-    @validate_query(_validate_get_masteries_query, convert_region_to_platform)
-    def get_masteries(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Masteries:
-        query["region"] = query.pop("platform").region
-        query["included_data"] = query.pop("includedData")
-        return UnloadedGhostStore.create_ghost(Masteries, query)
-
-    @get.register(SummonerSpells)
-    @validate_query(_validate_get_summoner_spells_query, convert_region_to_platform)
-    def get_summoner_spells(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> SummonerSpells:
-        query["region"] = query.pop("platform").region
-        query["included_data"] = query.pop("includedData")
-        return UnloadedGhostStore.create_ghost(SummonerSpells, query)
-
-    @get.register(Maps)
-    @validate_query(_validate_get_maps_query, convert_region_to_platform)
-    def get_maps(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Maps:
-        query["region"] = query.pop("platform").region
-        return UnloadedGhostStore.create_ghost(Maps, query)
-
-    @get.register(Items)
-    @validate_query(_validate_get_items_query, convert_region_to_platform)
-    def get_items(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Items:
-        query["region"] = query.pop("platform").region
-        query["included_data"] = query.pop("includedData")
-        return UnloadedGhostStore.create_ghost(Items, query)
 
     @get.register(Summoner)
     @validate_query(_validate_get_summoner_query, convert_region_to_platform)
@@ -338,32 +278,6 @@ class UnloadedGhostStore(DataSource):
         if "champion.id" in query:
             query["champion"] = query.pop("champion.name")
         return UnloadedGhostStore.create_ghost(ChampionMastery, query)
-
-    @get.register(ChampionMasteries)
-    @validate_query(_validate_get_champion_masteries_query, convert_region_to_platform)
-    def get_champion_masteries(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionMasteries:
-        query["region"] = query.pop("platform").region
-        if "summoner.id" in query:
-            query["summoner"] = query.pop("summoner.id")
-        if "summoner.name" in query:
-            query["summoner"] = query.pop("summoner.name")
-        if "summoner.account.id" in query:
-            query["_account_id"] = query.pop("summoner.account.id")
-        return UnloadedGhostStore.create_ghost(ChampionMasteries, query)
-
-    @get.register(RunePages)
-    @validate_query(_validate_get_rune_pages_query, convert_region_to_platform)
-    def get_rune_pages(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> RunePages:
-        query["region"] = query.pop("platform").region
-        query["summoner"] = query.pop("summoner.id")
-        return UnloadedGhostStore.create_ghost(RunePages, query)
-
-    @get.register(MasteryPages)
-    @validate_query(_validate_get_mastery_pages_query, convert_region_to_platform)
-    def get_mastery_pages(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasteryPages:
-        query["region"] = query.pop("platform").region
-        query["summoner"] = query.pop("summoner.id")
-        return UnloadedGhostStore.create_ghost(MasteryPages, query)
 
     @get.register(Match)
     @validate_query(_validate_get_match_query, convert_region_to_platform)
@@ -401,12 +315,6 @@ class UnloadedGhostStore(DataSource):
         query["summoner"] = query.pop("summoner.id")
         return UnloadedGhostStore.create_ghost(CurrentMatch, query)
 
-    @get.register(FeaturedMatches)
-    @validate_query(_validate_get_featured_matches_query, convert_region_to_platform)
-    def get_featured_matches(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> FeaturedMatches:
-        query["region"] = query.pop("platform").region
-        return UnloadedGhostStore.create_ghost(FeaturedMatches, query)
-
     @get.register(ShardStatus)
     @validate_query(_validate_get_shard_status_query, convert_region_to_platform)
     def get_shard_status(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ShardStatus:
@@ -428,14 +336,7 @@ class UnloadedGhostStore(DataSource):
 
     @get.register(League)
     @validate_query(_validate_get_league_query, convert_region_to_platform)
-    def get_leagues(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> League:
+    def get_league(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> League:
         query["region"] = query.pop("platform").region
         query["id"] = query.pop("id")
         return UnloadedGhostStore.create_ghost(League, query)
-
-    @get.register(LeagueEntries)
-    @validate_query(_validate_get_league_entries_query, convert_region_to_platform)
-    def get_league_entries(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LeagueEntries:
-        query["region"] = query.pop("platform").region
-        query["summoner"] = query.pop("summoner.id")
-        return UnloadedGhostStore.create_ghost(LeagueEntries, query)

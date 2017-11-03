@@ -8,7 +8,7 @@ from merakicommons.container import searchable, SearchableList, SearchableDictio
 
 from .. import configuration
 from ..data import Region, Platform, GameMode, GameType, Queue
-from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
+from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, get_latest_version
 from ..dto import spectator as dto
 from .staticdata.profileicon import ProfileIcon
 from .staticdata.champion import Champion
@@ -197,18 +197,8 @@ class CurrentGameInfoData(CoreData):
 ##############
 
 
-class FeaturedMatches(CassiopeiaGhostList):
+class FeaturedMatches(CassiopeiaList):
     _data_types = {FeaturedGamesData}
-
-    def __get_query__(self):
-        query = {"platform": self.platform}
-        return query
-
-    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
-        self.clear()
-        from ..transformers.spectator import SpectatorTransformer
-        SearchableList.__init__(self, [SpectatorTransformer.current_game_data_to_core(None, i) for i in data])
-        super().__load_hook__(load_group, data)
 
     @lazy_property
     def region(self) -> Region:
@@ -223,7 +213,7 @@ class FeaturedMatches(CassiopeiaGhostList):
         return self._data[FeaturedGamesData].client_refresh_interval
 
 
-@searchable({})
+@searchable({str: ["summoner", "champion"], Summoner: ["summoner"], Champion: ["champion"]})
 class Participant(CassiopeiaObject):
     _data_types = {CurrentGameParticipantData}
 
@@ -359,6 +349,10 @@ class CurrentMatch(CassiopeiaGhost):
     @ghost_load_on(KeyError)
     def red_team(self) -> Team:
         return self.teams[1]
+
+    @property
+    def participants(self) -> List[Participant]:
+        return SearchableList([*self.blue_team.participants, *self.red_team.participants])
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
     @ghost_load_on(KeyError)

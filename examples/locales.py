@@ -3,10 +3,10 @@ from cassiopeia import Locales
 
 
 def get_locales():
-    languages = cass.get_locales(region="NA")
-    print(languages)
-    print(languages[0])
-    print(languages)
+    locales = cass.get_locales(region="NA")
+    print(locales)
+    for locale in locales:
+        print(locale)
 
 
 if __name__ == "__main__":

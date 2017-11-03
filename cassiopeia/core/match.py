@@ -9,7 +9,7 @@ from merakicommons.container import searchable, SearchableList, SearchableLazyLi
 
 from .. import configuration
 from ..data import Region, Platform, Tier, GameType, GameMode, Queue, Division, Side, Season, Patch
-from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostLazyList
+from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList
 from ..dto import match as dto
 from .summoner import Summoner
 from .staticdata.champion import Champion
@@ -29,7 +29,7 @@ def _choose_staticdata_version(match):
         version = match.version
         version = ".".join(version.split(".")[:2]) + ".1"
     elif configuration.settings.version_from_match == "patch":
-        patch = Patch.from_date(match.creation)
+        patch = Patch.from_date(match.creation, region=match.region)
         version = patch.majorminor + ".1"  # Just always use x.x.1
     else:
         raise ValueError("Unknown value for setting `version_from_match`:", configuration.settings.version_from_match)
@@ -882,11 +882,11 @@ class MatchData(CoreData):
 ##############
 
 
-class MatchHistory(CassiopeiaGhostLazyList):
+class MatchHistory(CassiopeiaLazyList):
     """The match history for a summoner. By default, this will return the entire match history."""
     _data_types = {MatchListData}
 
-    def __init__(self, summoner: Union[Summoner, str, int] = None, account_id: int = None, region: Union[Region, str] = None, begin_index: int = None, end_index: int = None, begin_time: datetime.datetime = None, end_time: datetime.datetime = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
+    def __init__(self, *, summoner: Union[Summoner, str, int] = None, account_id: int = None, region: Union[Region, str] = None, begin_index: int = None, end_index: int = None, begin_time: datetime.datetime = None, end_time: datetime.datetime = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
         assert end_index is None or end_index > begin_index
         if begin_time is not None and end_time is None:
             raise ValueError("Both `begin_time` and `end_time` must be specified, or neither.")
@@ -989,6 +989,9 @@ class MatchHistory(CassiopeiaGhostLazyList):
                     if pulled_matches == number_of_requested_matches:
                         break
 
+                if _begin_index is not None and len(data) < index_interval_size:
+                    # Stop because the API returned less data than we asked for, and so there isn't any more left
+                    break
                 _begin_time = _end_time
                 _end_time = end_time
                 if _begin_index is not None:

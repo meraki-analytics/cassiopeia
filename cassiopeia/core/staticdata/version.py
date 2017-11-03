@@ -1,12 +1,11 @@
 from typing import Union
 
-from merakicommons.container import SearchableList
 from merakicommons.cache import lazy_property
 
 from ... import configuration
 from ...data import Region, Platform
 from ...dto.staticdata.version import VersionListDto
-from ..common import CoreData, DataObjectList, CassiopeiaGhostList
+from ..common import DataObjectList, CassiopeiaList
 
 
 class VersionListData(DataObjectList):
@@ -18,7 +17,7 @@ class VersionListData(DataObjectList):
         return self._dto["region"]
 
 
-class Versions(CassiopeiaGhostList):
+class Versions(CassiopeiaList):
     _data_types = {VersionListData}
 
     def __init__(self, *args, region: Union[Region, str] = None):
@@ -28,14 +27,6 @@ class Versions(CassiopeiaGhostList):
             region = Region(region)
         kwargs = {"region": region}
         super().__init__(*args, **kwargs)
-
-    def __get_query__(self):
-        return {"region": self.region, "platform": self.platform}
-
-    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
-        self.clear()
-        SearchableList.__init__(self, [v for v in data])
-        super().__load_hook__(load_group, data)
 
     @lazy_property
     def region(self) -> Region:

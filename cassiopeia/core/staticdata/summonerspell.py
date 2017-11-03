@@ -6,7 +6,7 @@ from merakicommons.container import searchable, SearchableList
 
 from ... import configuration
 from ...data import Resource, Region, Platform, GameMode
-from ..common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
+from ..common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, get_latest_version
 from .common import ImageData, Image, Sprite
 from ...dto.staticdata import summonerspell as dto
 
@@ -167,7 +167,7 @@ class SummonerSpellData(CoreData):
 ##############
 
 
-class SummonerSpells(CassiopeiaGhostList):
+class SummonerSpells(CassiopeiaList):
     _data_types = {SummonerSpellListData}
 
     def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
@@ -183,15 +183,6 @@ class SummonerSpells(CassiopeiaGhostList):
         if version:
             kwargs["version"] = version
         super().__init__(*args, **kwargs)
-
-    def __get_query__(self):
-        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
-
-    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
-        self.clear()
-        from ...transformers.staticdata import StaticDataTransformer
-        SearchableList.__init__(self, [StaticDataTransformer.summoner_spell_data_to_core(None, ss) for ss in data])
-        super().__load_hook__(load_group, data)
 
     @lazy_property
     def region(self) -> Region:

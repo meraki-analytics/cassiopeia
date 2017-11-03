@@ -15,9 +15,11 @@ Each setting is explained below, and should be added as separate entries to your
 Globals
 -------
 
-The ``"default_region"`` should be set to the string version of the region that the Riot API requires (in all caps), for example ``"NA"`` for North America. This can be set programmatically using ``cass.set_default_region``.
+The ``"default_region"`` setting should be set to the string version of the region that the Riot API requires (in all caps), for example ``"NA"`` for North America. This can be set programmatically using ``cass.set_default_region``.
 
 The ``"version_from_match"`` variable determines which version of the static data for matches is loaded (this includes, for example, the items for each participant). Valid values are ``"version"``, ``"patch"``, and ``null``. If set to ``"version"``, the static data for the match's version will be loaded correctly; however, this requires pulling the match data for all matches. If you only want to use match reference data (and will not pull the full data for every match), you should use either ``"patch"`` or ``null``. ``"patch"`` will make a reasonable attempt to get the match's correct version based on its creation date (which is provided in the match reference data); however, if you pull a summoner's full match history, you will pull many versions of the static data, which may take a long time. In addition, the patch dates / times may be slightly off and may depend on the region. For small applications that barely uses the static data, pulling multiple versions of the static data is likely overkill. If that is the case, you should set this variable to ``null``, in which case the static data for the most recent version will be used; this, however, could result in missing or incorrect data if parts of the static data are accessed that have changed from patch to patch. The default is to use the patch if the match hasn't yet been loaded, which is a nice compromise between ensuring you, the user, always have correct data while also preventing new users from pulling a massive amount of unnecessary match data. It's likely that the patch dates aren't perfect, so be aware of this and please report and inconsistencies.
+
+The ``"enable_ghost_loading"`` setting should be set to ``true`` if you want to enable ghost loading (highly recommended). The default is ``true``. See :ref:`ghost_loading` for information about ghost loading.
 
 
 Data Pipeline

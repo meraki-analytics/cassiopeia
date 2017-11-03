@@ -33,10 +33,10 @@ class ChampionMasteryTransformer(DataTransformer):
 
     # Data to Core
 
-    @transform.register(ChampionMasteryData, ChampionMastery)
+    #@transform.register(ChampionMasteryData, ChampionMastery)
     def champion_mastery_data_to_core(self, value: ChampionMasteryData, context: PipelineContext = None) -> ChampionMastery:
         return ChampionMastery.from_data(value)
 
     @transform.register(ChampionMasteryListData, ChampionMasteries)
     def champion_mastery_list_data_to_core(self, value: ChampionMasteryListData, context: PipelineContext = None) -> ChampionMasteries:
-        return ChampionMasteries([self.champion_mastery_data_to_core(cm) for cm in value], region=value.region, summoner=value.summoner_id)
+        return ChampionMasteries.from_data(*[self.champion_mastery_data_to_core(cm) for cm in value], region=value.region, summoner=value.summoner_id)

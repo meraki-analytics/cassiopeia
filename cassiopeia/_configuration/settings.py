@@ -11,7 +11,7 @@ T = TypeVar("T")
 logging.basicConfig(format='%(asctime)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.WARNING)
 
 
-def create_pipeline(service_configs: Dict, verbose: bool = False) -> DataPipeline:
+def create_pipeline(service_configs: Dict, enable_ghost_loading: bool, verbose: int = 0) -> DataPipeline:
     transformers = []
 
     # Always use the Riot API transformers
@@ -31,10 +31,30 @@ def create_pipeline(service_configs: Dict, verbose: bool = False) -> DataPipelin
         service_transformers = getattr(module, "__transformers__", [])
         transformers.extend(service_transformers)
 
+    from ..datastores import Cache
+
+    # Automatically insert the ghost store if it isn't there (and if the setting for ghost loading is on)
+    if enable_ghost_loading:
+        from ..datastores import UnloadedGhostStore
+        found = False
+        for datastore in services:
+            if isinstance(datastore, UnloadedGhostStore):
+                found = True
+                break
+        if not found:
+            if any(isinstance(service, Cache) for service in services):
+                # Find the cache and insert the ghost store directly after it
+                for i, datastore in enumerate(services):
+                    if isinstance(datastore, Cache):
+                        services.insert(i+1, UnloadedGhostStore())
+                        break
+            else:
+                # Insert the ghost store at the beginning of the pipeline
+                services.insert(0, UnloadedGhostStore())
+
     pipeline = DataPipeline(services, transformers)
 
     # Manually put the cache on the pipeline.
-    from ..datastores import Cache
     for datastore in services:
         if isinstance(datastore, Cache):
             pipeline._cache = datastore
@@ -42,19 +62,21 @@ def create_pipeline(service_configs: Dict, verbose: bool = False) -> DataPipelin
     else:
         pipeline._cache = None
 
-    if verbose:
+    if verbose > 0:
         for service in services:
             print("Service:", service)
-            if isinstance(service, DataSource):
-                for p in service.provides:
-                    print("  Provides:", p)
-            if isinstance(service, DataSink):
-                for p in service.accepts:
-                    print("  Accepts:", p)
-        for transformer in transformers:
-            for t in transformer.transforms.items():
-                print("Transformer:", t)
-        print()
+            if verbose > 1:
+                if isinstance(service, DataSource):
+                    for p in service.provides:
+                        print("  Provides:", p)
+                if isinstance(service, DataSink):
+                    for p in service.accepts:
+                        print("  Accepts:", p)
+        if verbose > 2:
+            for transformer in transformers:
+                for t in transformer.transforms.items():
+                    print("Transformer:", t)
+            print()
 
     return pipeline
 
@@ -62,12 +84,12 @@ def create_pipeline(service_configs: Dict, verbose: bool = False) -> DataPipelin
 _defaults = {
     "global": {
         "version_from_match": "patch",
-        "default_region": None
+        "default_region": None,
+        "enable_ghost_loading": True
     },
     "plugins": {},
     "pipeline": {
         "Cache": {},
-        "UnloadedGhostStore": {},
         "DDragon": {},
         "RiotAPI": {
             "api_key": "RIOT_API_KEY"
@@ -89,6 +111,7 @@ class Settings(object):
         self.__default_region = globals_.get("default_region", _defaults["global"]["default_region"])
         if self.__default_region is not None:
             self.__default_region = Region(self.__default_region.upper())
+        self.__enable_ghost_loading = globals_.get("enable_ghost_loading", _defaults["global"]["enable_ghost_loading"])
 
         self.__plugins = settings.get("plugins", _defaults["plugins"])
 
@@ -113,7 +136,9 @@ class Settings(object):
     @property
     def pipeline(self) -> DataPipeline:
         if self.__pipeline is None:
-            self.__pipeline = create_pipeline(verbose=False, service_configs=self.__pipeline_args)
+            self.__pipeline = create_pipeline(service_configs=self.__pipeline_args,
+                                              enable_ghost_loading=self.__enable_ghost_loading,
+                                              verbose=0)
         return self.__pipeline
 
     @property

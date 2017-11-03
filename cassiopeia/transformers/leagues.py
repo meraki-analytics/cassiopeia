@@ -68,23 +68,23 @@ class LeagueTransformer(DataTransformer):
     @transform.register(LeaguePositionsData, LeagueEntries)
     def league_positions_data_to_core(self, value: LeaguePositionsData, context: PipelineContext = None) -> LeagueEntries:
         data = deepcopy(value)
-        return LeagueEntries([LeagueTransformer.league_position_data_to_core(self, position) for position in data], summoner=value.summoner_id, region=value.region)
+        return LeagueEntries.from_data(*[LeagueTransformer.league_position_data_to_core(self, position) for position in data], summoner=value.summoner_id, region=value.region)
 
-    @transform.register(LeagueListData, League)
+    #@transform.register(LeagueListData, League)
     def league_list_data_to_core(self, value: LeagueListData, context: PipelineContext = None) -> League:
         data = deepcopy(value)
         return League.from_data(data)
 
     @transform.register(LeaguesListData, SummonerLeagues)
     def leagues_list_data_to_core(self, value: LeaguesListData, context: PipelineContext = None) -> SummonerLeagues:
-        return SummonerLeagues(iter([LeagueTransformer.league_list_data_to_core(self, league) for league in value]))
+        return SummonerLeagues(*[LeagueTransformer.league_list_data_to_core(self, league) for league in value])
 
-    @transform.register(ChallengerLeagueListData, ChallengerLeague)
+    #@transform.register(ChallengerLeagueListData, ChallengerLeague)
     def challenger_league_list_data_to_core(self, value: ChallengerLeagueListData, context: PipelineContext = None) -> ChallengerLeague:
         data = deepcopy(value)
         return ChallengerLeague.from_data(data)
 
-    @transform.register(MasterLeagueListData, MasterLeague)
+    #@transform.register(MasterLeagueListData, MasterLeague)
     def master_league_list_data_to_core(self, value: MasterLeagueListData, context: PipelineContext = None) -> MasterLeague:
         data = deepcopy(value)
         return MasterLeague.from_data(data)

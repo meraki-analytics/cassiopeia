@@ -19,7 +19,7 @@ def collect_matches():
     region = "EUW"
 
     summoner = Summoner(name=initial_summoner_name, region=region)
-    patch_720 = Patch.from_str("7.20")
+    patch_720 = Patch.from_str("7.20", region=region)
 
     unpulled_summoner_ids = SortedList([summoner.id])
     pulled_summoner_ids = SortedList()

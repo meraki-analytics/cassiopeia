@@ -192,22 +192,63 @@ class RiotAPIService(DataSource):
             rate_limiter.adjust_rate_limits_if_necessary(limits)
 
     def _get(self, url: str, parameters: MutableMapping[str, Any] = None, rate_limiter: RiotAPIRateLimiter = None, connection: Curl = None) -> Union[dict, list, Any]:
+        # Make a new RiotAPIRequest and run it until it returns or fails.
+        # If it returns, return the result.
+        # If it fails, throw an appropriate error.
+        request = RiotAPIRequest(service=self, url=url, parameters=parameters, rate_limiter=rate_limiter, connection=connection)
         try:
-            body, response_headers = self._client.get(url=url,
-                                                      parameters=parameters,
-                                                      headers=self._headers,
-                                                      rate_limiters=[self._rate_limiters["application"], rate_limiter],
-                                                      connection=connection)
-            self._adjust_rate_limiters_from_headers(rate_limiter, response_headers)
-            return body
-
-        # Retry with the handler
+            return request()
         except HTTPError as error:
-            try:
-                new_error_type = _ERROR_CODES[error.code]
-            except KeyError:
-                raise RuntimeError("Encountered unexpected HTTP error code {code} with message \"{message}\". Report this to the Cassiopeia team.".format(code=error.code, message=str(error)))
+            # The error handlers didn't work, so raise an appropriate error.
+            new_error_type = _ERROR_CODES[error.code]
+            if new_error_type is RuntimeError:
+                new_error = RuntimeError("Encountered an HTTP error code {code} with message \"{message}\" which should have already been handled. Report this to the Cassiopeia team.".format(code=error.code, message=str(error)))
+            elif new_error_type is APIError:
+                new_error = APIError("The Riot API experienced an internal error on the request. You may want to retry the request after a short wait or continue without the result. The received error was {code}: \"{message}\"".format(code=error.code, message=str(error)), error.code)
+            elif new_error_type is APINotFoundError:
+                new_error = APINotFoundError("The Riot API returned a NOT FOUND error for the request. The received error was {code}: \"{message}\"".format(code=error.code, message=str(error)), error.code)
+            elif new_error_type is APIRequestError:
+                new_error = APIRequestError("The Riot API returned an error on the request. The received error was {code}: \"{message}\"".format(code=error.code, message=str(error)), error.code)
+            elif new_error_type is APIForbiddenError:
+                new_error = APIForbiddenError("The Riot API returned a FORBIDDEN error for the request. The received error was {code}: \"{message}\"".format(code=error.code, message=str(error)), error.code)
+            else:
+                new_error = new_error_type(str(error))
 
+            raise new_error from error
+
+    @abstractmethod
+    def get(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> T:
+        pass
+
+    @abstractmethod
+    def get_many(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> Iterable[T]:
+        pass
+
+
+
+class RiotAPIRequest(object):
+    def __init__(self, service: RiotAPIService, url: str, parameters: MutableMapping[str, Any], rate_limiter: RiotAPIRateLimiter, connection: Curl):
+        self.service = service
+        self.url = url
+        self.parameters = parameters
+        self.rate_limiter = rate_limiter
+        self.connection = connection
+
+    def __call__(self):
+        try:
+            body, response_headers = self.service._client.get(url=self.url,
+                                                      parameters=self.parameters,
+                                                      headers=self.service._headers,
+                                                      rate_limiters=[self.service._rate_limiters["application"], self.rate_limiter],
+                                                      connection=self.connection)
+            self.service._adjust_rate_limiters_from_headers(self.rate_limiter, response_headers)
+            return body
+        except HTTPError as error:
+            return self._retry_request_by_handling_error(error)
+
+    def _retry_request_by_handling_error(self, error: HTTPError, handlers=None):
+            if handlers is None:
+                handlers = []
             # Try to properly handling the 429 and retry the call after the appropriate time limit.
             if error.code == 429:
                 # Identify which rate limit was hit (application, method, or service)
@@ -223,46 +264,34 @@ class RiotAPIService(DataSource):
                     raise ValueError("Unknown cause of rate limit; aborting. Headers were: {}".format(error.response_headers))
 
                 # Create a new handler
-                handler = self._handlers[429][rate_limiting_type]()  # type: FailedRequestHandler
+                new_handler = self.service._handlers[429][rate_limiting_type]()  # type: FailedRequestHandler
             else:
-                handler = self._handlers[error.code]()
+                new_handler = self.service._handlers[error.code]()
 
-            try:
-                body, response_headers = handler(error=error,
-                                                 requester=self._client.get,
-                                                 url=url,
-                                                 parameters=parameters,
-                                                 headers=self._headers,
-                                                 rate_limiters=[self._rate_limiters["application"], rate_limiter],
-                                                 connection=connection
-                                                 )
-                self._adjust_rate_limiters_from_headers(rate_limiter, response_headers)
-                return body
+            # If we will handle the new error in the same way as we did previously, don't use a new instance
+            for handler in handlers:
+                if isinstance(new_handler, handler.__class__):
+                    new_handler = handler
+                    break
 
-            except HTTPError as error:
-                # The above error handling didn't work, so raise an appropriate error.
-                if new_error_type is RuntimeError:
-                    new_error = RuntimeError("Encountered an HTTP error code {code} with message \"{message}\" which should have already been handled. Report this to the Cassiopeia team.".format(code=error.code, message=str(error)))
-                elif new_error_type is APIError:
-                    new_error = APIError("The Riot API experienced an internal error on the request. You may want to retry the request after a short wait or continue without the result. The received error was {code}: \"{message}\"".format(code=error.code, message=str(error)), error.code)
-                elif new_error_type is APINotFoundError:
-                    new_error = APINotFoundError("The Riot API returned a NOT FOUND error for the request. The received error was {code}: \"{message}\"".format(code=error.code, message=str(error)), error.code)
-                elif new_error_type is APIRequestError:
-                    new_error = APIRequestError("The Riot API returned an error on the request. The received error was {code}: \"{message}\"".format(code=error.code, message=str(error)), error.code)
-                elif new_error_type is APIForbiddenError:
-                    new_error = APIForbiddenError("The Riot API returned a FORBIDDEN error for the request. The received error was {code}: \"{message}\"".format(code=error.code, message=str(error)), error.code)
-                else:
-                    new_error = new_error_type(str(error))
-
-                raise new_error from error
-
-    @abstractmethod
-    def get(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> T:
-        pass
-
-    @abstractmethod
-    def get_many(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> Iterable[T]:
-        pass
+            if new_handler.stop:
+                raise error
+            else:
+                try:
+                    body, response_headers = new_handler(error=error,
+                                                     requester=self.service._client.get,
+                                                     url=self.url,
+                                                     parameters=self.parameters,
+                                                     headers=self.service._headers,
+                                                     rate_limiters=[self.service._rate_limiters["application"], self.rate_limiter],
+                                                     connection=self.connection
+                                                     )
+                    self.service._adjust_rate_limiters_from_headers(self.rate_limiter, response_headers)
+                    return body
+                except HTTPError as error:
+                    if new_handler not in handlers:
+                        handlers.append(new_handler)
+                    return self._retry_request_by_handling_error(error, handlers=handlers)
 
 
 class FailedRequestHandler(ABC):
@@ -276,36 +305,42 @@ class ExponentialBackoff(FailedRequestHandler):
         self.backoff = initial_backoff
         self.factor = backoff_factor
         self.max_attempts = max_attempts
+        self.attempts = 0
+        self.stop = False
 
     def __call__(self, error, requester, url, parameters, headers, rate_limiters, connection) ->  Tuple[Union[dict, list, str, bytes], dict]:
-        backoff = self.backoff
-        for _ in range(self.max_attempts):
-            try:
-                print("INFO: Unexpected service rate limit, backing off for {} seconds.".format(backoff))
-                time.sleep(backoff)
-                backoff = self.backoff * self.factor
-                return requester(url, parameters, headers, rate_limiters, connection)
-            except error.__class__ as error:
-                pass
+        if self.attempts >= self.max_attempts:
+            self.stop = True
+            raise error
+        print("INFO: Unexpected {} rate limit, backing off for {} seconds.".format(headers.get('X-Rate-Limit-Type', 'service'), self.backoff))
+        time.sleep(self.backoff)
+        self.backoff = self.backoff * self.factor
+        self.attempts += 1
+        return requester(url, parameters, headers, rate_limiters, connection)
 
 
 class RetryFromHeaders(object):
     def __init__(self, max_attempts: int):
         self.max_attempts = int(max_attempts)
+        self.attempts = 0
+        self.stop = False
 
     def __call__(self, error, requester, url, parameters, headers, rate_limiters, connection) -> Tuple[Union[dict, list, str, bytes], dict]:
-        for _ in range(self.max_attempts):
-            try:
-                backoff = int(error.response_headers["Retry-After"])
-                print("INFO: Unexpected service rate limit, backing off for {} seconds.".format(backoff))
-                time.sleep(backoff)
-                for rate_limiter in rate_limiters:
-                    rate_limiter.restrict_for(backoff)
-                return requester(url, parameters, headers, rate_limiters, connection)
-            except error.__class__ as error:
-                pass
+        if self.attempts >= self.max_attempts:
+            self.stop = True
+            raise error
+        backoff = int(error.response_headers["Retry-After"])
+        print("INFO: Unexpected {} rate limit, backing off for {} seconds (from headers).".format(headers.get('X-Rate-Limit-Type', 'service'), backoff))
+        time.sleep(backoff)
+        for rate_limiter in rate_limiters:
+            rate_limiter.restrict_for(backoff)
+        self.attempts += 1
+        return requester(url, parameters, headers, rate_limiters, connection)
 
 
 class ThrowException(FailedRequestHandler):
+    def __init__(self):
+        self.stop  = True
+
     def __call__(self, error, requester, url, parameters, headers, rate_limiters, connection) -> Tuple[Union[dict, list, str, bytes], dict]:
         raise error

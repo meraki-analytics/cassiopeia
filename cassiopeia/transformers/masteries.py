@@ -41,4 +41,4 @@ class MasteriesTransformer(DataTransformer):
 
     @transform.register(MasteryPagesData, MasteryPages)
     def mastery_pages_data_to_core(self, value: MasteryPagesData, context: PipelineContext = None) -> MasteryPages:
-        return MasteryPages([self.mastery_page_data_to_core(page) for page in value], summoner=value.summoner_id, region=value.region)
+        return MasteryPages.from_data(*[self.mastery_page_data_to_core(page) for page in value], summoner=value.summoner_id, region=value.region)

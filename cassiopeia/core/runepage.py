@@ -6,7 +6,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
 from ..data import Region, Platform
-from .common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
+from .common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaList, get_latest_version
 from .summoner import Summoner
 from ..dto.runepage import RuneSlotDto, RunePageDto, RunePagesDto
 from .staticdata.rune import Rune as StaticdataRune
@@ -85,7 +85,7 @@ class RunePageData(CoreData):
 ##############
 
 
-class RunePages(CassiopeiaGhostList):
+class RunePages(CassiopeiaList):
     _data_types = {RunePagesData}
 
     def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
@@ -95,15 +95,6 @@ class RunePages(CassiopeiaGhostList):
         elif isinstance(summoner, int):
             summoner = Summoner(id=summoner, region=region)
         self.__summoner = summoner
-
-    def __get_query__(self):
-        return {"summoner.id": self.__summoner.id, "region": self.region, "platform": self.platform}
-
-    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
-        self.clear()
-        from ..transformers.runes import RunesTransformer
-        SearchableList.__init__(self, [RunesTransformer.rune_page_data_to_core(None, i) for i in data])
-        super().__load_hook__(load_group, data)
 
     @lazy_property
     def region(self) -> Region:

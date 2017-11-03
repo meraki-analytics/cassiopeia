@@ -193,69 +193,69 @@ class StaticDataTransformer(DataTransformer):
 
     # Champion
 
-    @transform.register(ChampionData, Champion)
+    #@transform.register(ChampionData, Champion)
     def champion_data_to_core(self, value: ChampionData, context: PipelineContext = None) -> Champion:
-        return Champion.from_data(value)
+        return Champion.from_data(value, loaded_groups={ChampionData})
 
     @transform.register(ChampionListData, Champions)
     def champion_list_data_to_core(self, value: ChampionListData, context: PipelineContext = None) -> Champions:
-        return Champions([self.champion_data_to_core(c) for c in value], region=value.region, version=value.version, locale=value.locale, included_data=value.included_data)
+        return Champions.from_data(*[self.champion_data_to_core(c) for c in value], region=value.region, version=value.version, locale=value.locale, included_data=value.included_data)
 
     # Mastery
 
-    @transform.register(MasteryData, Mastery)
+    #@transform.register(MasteryData, Mastery)
     def mastery_data_to_core(self, value: MasteryData, context: PipelineContext = None) -> Mastery:
         return Mastery.from_data(value)
 
     @transform.register(MasteryListData, Masteries)
     def mastery_list_data_to_core(self, value: MasteryListData, context: PipelineContext = None) -> Masteries:
-        return Masteries([self.mastery_data_to_core(m) for m in value], region=value.region, version=value.version, locale=value.locale, included_data=value.included_data)
+        return Masteries.from_data(*[self.mastery_data_to_core(m) for m in value], region=value.region, version=value.version, locale=value.locale, included_data=value.included_data)
 
     # Rune
 
-    @transform.register(RuneData, Rune)
+    #@transform.register(RuneData, Rune)
     def rune_data_to_core(self, value: RuneData, context: PipelineContext = None) -> Rune:
         return Rune.from_data(value)
 
     @transform.register(RuneListData, Runes)
     def rune_list_data_to_core(self, value: RuneListData, context: PipelineContext = None) -> Runes:
-        return Runes([self.rune_data_to_core(r) for r in value], region=value.region, version=value.version, locale=value.locale, included_data=value.included_data)
+        return Runes.from_data(*[self.rune_data_to_core(r) for r in value], region=value.region, version=value.version, locale=value.locale, included_data=value.included_data)
 
     # Item
 
-    @transform.register(ItemData, Item)
+    #@transform.register(ItemData, Item)
     def item_data_to_core(self, value: ItemData, context: PipelineContext = None) -> Item:
         return Item.from_data(value)
 
     @transform.register(ItemListData, Items)
     def item_list_data_to_core(self, value: ItemListData, context: PipelineContext = None) -> Items:
-        return Items([self.item_data_to_core(i) for i in value], region=value.region, version=value.version, locale=value.locale, included_data=value.included_data)
+        return Items.from_data(*(self.item_data_to_core(i) for i in value), region=value.region, version=value.version, locale=value.locale, included_data=value.included_data)
 
     # Summoner Spell
 
-    @transform.register(SummonerSpellData, SummonerSpell)
+    #@transform.register(SummonerSpellData, SummonerSpell)
     def summoner_spell_data_to_core(self, value: SummonerSpellData, context: PipelineContext = None) -> SummonerSpell:
         return SummonerSpell.from_data(value)
 
     @transform.register(SummonerSpellListData, SummonerSpells)
     def summoner_spell_list_data_to_core(self, value: SummonerSpellListData, context: PipelineContext = None) -> SummonerSpells:
-        return SummonerSpells([self.summoner_spell_data_to_core(s) for s in value], region=value.region, version=value.version, locale=value.locale, included_data=value.included_data)
+        return SummonerSpells.from_data(*[self.summoner_spell_data_to_core(s) for s in value], region=value.region, version=value.version, locale=value.locale, included_data=value.included_data)
 
     # Map
 
-    @transform.register(MapData, Map)
+    #@transform.register(MapData, Map)
     def map_data_to_core(self, value: MapData, context: PipelineContext = None) -> Map:
         return Map.from_data(value)
 
     @transform.register(MapListData, Maps)
     def map_list_data_to_core(self, value: MapListData, context: PipelineContext = None) -> Maps:
-        return Maps([self.map_data_to_core(m) for m in value], region=value.region, version=value.version, locale=value.locale)
+        return Maps.from_data(*[self.map_data_to_core(m) for m in value], region=value.region, version=value.version, locale=value.locale)
 
     # Version
 
     @transform.register(VersionListData, Versions)
     def version_list_data_to_core(self, value: VersionListData, context: PipelineContext = None) -> Versions:
-        version = Versions(value, region=value.region)
+        version = Versions.from_data(*value, region=value.region)
         return version
 
     # Realm
@@ -270,7 +270,7 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(LanguagesData, Locales)
     def languages_data_to_core(self, value: LanguagesData, context: PipelineContext = None) -> Locales:
-        return Locales(value, region=value.region)
+        return Locales.from_data(*value, region=value.region)
 
     # Language Strings
 
@@ -280,10 +280,10 @@ class StaticDataTransformer(DataTransformer):
 
     # Profile Icon
 
-    @transform.register(ProfileIconData, ProfileIcon)
+    #@transform.register(ProfileIconData, ProfileIcon)
     def profile_icon_data_to_core(self, value: ProfileIconData, context: PipelineContext = None) -> ProfileIcon:
         return ProfileIcon.from_data(value)
 
     @transform.register(ProfileIconListData, ProfileIcons)
     def profile_icon_data_to_core(self, value: ProfileIconListData, context: PipelineContext = None) -> ProfileIcons:
-        return ProfileIcons(value, region=value.region, version=value.version, locale=value.locale)
+        return ProfileIcons.from_data(*value, region=value.region, version=value.version, locale=value.locale)

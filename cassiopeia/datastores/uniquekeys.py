@@ -1498,6 +1498,44 @@ def for_many_champion_mastery_query(query: Query) -> Generator[Tuple[str, str, s
         yield keys
 
 
+validate_champion_masteries_query = Query. \
+    has("platform").as_(Platform).also. \
+    has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name")
+
+
+validate_many_champion_masteries_query = Query. \
+    has("platform").as_(Platform).also. \
+    has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name")
+
+
+def for_champion_masteries(champion_mastery: ChampionMasteries) -> List[Tuple]:
+    keys = []
+    try:
+        keys.append((champion_mastery.platform.value, champion_mastery.summoner._data[SummonerData].id))
+    except KeyError:
+        pass
+    try:
+        keys.append((champion_mastery.platform.value, champion_mastery.summoner._data[SummonerData].name))
+    except KeyError:
+        pass
+    try:
+        keys.append((champion_mastery.platform.value, champion_mastery.summoner._data[SummonerData].account_id))
+    except KeyError:
+        pass
+    return keys
+
+
+def for_champion_masteries_query(query: Query) -> List[Tuple]:
+    keys = []
+    if "summoner.id" in query:
+        keys.append((query["platform"].value, query["summoner.id"]))
+    if "summoner.name" in query:
+        keys.append((query["platform"].value, query["summoner.name"]))
+    if "summoner.account.id" in query:
+        keys.append((query["platform"].value, query["summoner.account.id"]))
+    return keys
+
+
 ##############
 # League API #
 ##############

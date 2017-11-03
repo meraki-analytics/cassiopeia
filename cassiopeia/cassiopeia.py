@@ -1,8 +1,7 @@
 from typing import List, Set, Dict, Union, TextIO
 import datetime
 
-from .data import PATCHES, Region, Queue, Season
-from .patches import Patch
+from .data import Region, Queue, Season, Patch
 from .core import Champion, Summoner, Account, ChampionMastery, Rune, Mastery, Item, RunePage, MasteryPage, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Masteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Locales, ProfileIcons, MasteryPages, RunePages, ChallengerLeague, MasterLeague, SummonerLeagues, LeagueEntries
 from .datastores import common as _common_datastore
 from ._configuration import Settings, load_config
@@ -163,15 +162,8 @@ def get_version(date: datetime.date = None, region: Union[Region, str] = None) -
     if date is None:
         return versions[0]
     else:
-        patch = get_patch(date)
+        patch = Patch.from_date(date, region=region)
         for version in versions:
             if patch.majorminor in version:
                 return version
     return None
-
-
-def get_patch(date: datetime.date) -> Patch:
-    for _date in PATCHES:
-        if _date >= date:
-            return PATCHES[_date]
-    return PATCHES[next(reversed(PATCHES))]

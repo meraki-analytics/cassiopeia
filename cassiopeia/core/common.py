@@ -1,11 +1,11 @@
 from abc import abstractmethod, abstractclassmethod
-from typing import Mapping, Any, Set, Union, Optional
+import types
+from typing import Mapping, Any, Set, Union, Optional, Type
 import functools
 import logging
 
-from datapipelines import NotFoundError, UnsupportedError
 from merakicommons.ghost import Ghost
-from merakicommons.container import SearchableList, SearchableLazyList, SearchError
+from merakicommons.container import SearchableList, SearchableLazyList
 
 from .. import configuration
 from ..data import Region, Platform
@@ -111,26 +111,8 @@ class CassiopeiaObject(object):
         self._data = {type: type() for type in self._data_types}
         self(**kwargs)
 
-    @classmethod
-    def from_data(cls, data: CoreData):
-        assert data is not None
-        self = type.__call__(cls)  # Manually skip the CheckCache (well, all metaclasss' __call__s) for ghost objects if they are created via this constructor. Maybe CassiopeiaGhost should overload this method instead? I didn't because I'd have to copy-paste all the below code and I want it all in one spot for now.
-        self._data = {_type: _type() for _type in self._data_types}
-        if data.__class__ not in self._data_types:
-            raise TypeError("Wrong data type '{}' passed to '{}.from_data'".format(data.__class__.__name__, self.__class__.__name__))
-        self._data[data.__class__] = data
-        # Without the below for-loops, if a Champion is instantiated with a StaticData data with `id`
-        # in it, and then `.free_to_play` is called on that object, the query won't have an `id`.
-        other_types = self._data_types - {data.__class__}
-        for _type in other_types:
-            for key in data:
-                value = getattr(data, key)
-                if key in dir(_type):
-                    self._data[_type]._set(key, value)
-        return self
-
     def __str__(self) -> str:
-        # This is a bit strange because we'll print a list of dict-like objects rather than one joined dict, but we've decided it's appropritate.
+        # This is a bit strange because we'll print a list of dict-like objects rather than one joined dict, but we've decided it's appropriate.
         result = {}
         for type, data in self._data.items():
             result[str(type)] = str(data)
@@ -141,6 +123,17 @@ class CassiopeiaObject(object):
     def _data_types(self) -> Set[type]:
         """The `CoreData`_ types that belongs to this core type."""
         pass
+
+    @classmethod
+    def from_data(cls, data: CoreData):
+        assert data is not None
+        self = cls()
+
+        if data.__class__ not in self._data_types:
+            raise TypeError("Wrong data type '{}' passed to '{}.from_data'".format(
+                data.__class__.__name__, self.__class__.__name__))
+        self._data[data.__class__] = data
+        return self
 
     def __call__(self, **kwargs) -> "CassiopeiaObject":
         """Updates `self` with `kwargs` and returns `self`.
@@ -196,6 +189,29 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=GetFromPipeline):
     def _load_types(self):
         return {t: t for t in self._data_types}
 
+    @classmethod
+    def from_data(cls, data: CoreData, loaded_groups: Optional[Set[Type[CoreData]]] = None):
+        assert data is not None
+        # Manually skip the CheckCache (well, all metaclass' __call__s) for ghost objects if they are
+        # created via this constructor.
+        self = type.__call__(cls)
+
+        # Make spots for the data and put it in
+        self._data = {_type: _type() for _type in self._data_types}
+        if data.__class__ not in self._data_types:
+            raise TypeError("Wrong data type '{}' passed to '{}.from_data'".format(
+                data.__class__.__name__, self.__class__.__name__))
+        self._data[data.__class__] = data
+
+        # Set as loaded
+        if loaded_groups is None:
+            for load_group in self._Ghost__load_groups:
+                self._Ghost__set_loaded(load_group)
+        else:
+            for load_group in loaded_groups:
+                self._Ghost__set_loaded(load_group)
+        return self
+
     @abstractmethod
     def __get_query__(self):
         pass
@@ -206,97 +222,44 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=GetFromPipeline):
         self._data[load_group] = data
 
 
-class CassiopeiaGhostList(SearchableList, CassiopeiaGhost):
-    def __hash__(self):
-        return id(self)
-
-    @property
-    def _Ghost__load_groups(self) -> Set[type]:
-        # Since @Ghost.property isn't set, the object doesn't have any load groups. Define them as equivalent to _data_types.
-        return self._data_types
-
+class CassiopeiaList(SearchableList, CassiopeiaObject, metaclass=GetFromPipeline):
     def __init__(self, *args, **kwargs):
-        SearchableList.__init__(self, *args)
-        CassiopeiaGhost.__init__(self, **kwargs)
-        self.__triggered_load = False
+        SearchableList.__init__(self, args)
+        CassiopeiaObject.__init__(self, **kwargs)
 
     @classmethod
-    def from_data(cls, data: Union[list, CoreData]):
-        raise NotImplemented
-
-    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
-        super().__load_hook__(load_group=load_group, data=data)
-        # Since @Ghost.property isn't set, the ghost's __property won't set itself as loaded because it never gets called.
-        # Therefore we manually set it as loaded here.
-        self._Ghost__set_loaded(load_group)
-
-    def __len__(self):
-        if not self._Ghost__all_loaded and not self.__triggered_load:
-            # See the below explanation in __iter__.
-            self.__triggered_load = True
-            self.__load__()
-        return super().__len__()
-
-    def __iter__(self):
-        if not self._Ghost__all_loaded and not self.__triggered_load:
-            # This seems like a weird hack, but it also seems required. The issue is that within the Cache I call a .put
-            #  on all the items in this object after putting this object itself in the cache.
-            #  To do that, I iterate over this object, calling this __iter__ method, which triggers a __load__ (two
-            #  lines down). That load triggers a transformer (Core to Dto; idk what that's called but it's irrelevant
-            #  because there are situations where it should be called, e.g. with a database). So the load triggers a
-            #  transformer, which has a for loop, which triggers this __iter__.
-            #  The process is therefore:  __iter__ -> __load__ -> transformer -> __iter__ ...
-            #  and we have a recursion depth error. To circumvent it, I added this __triggered_load boolean. It fixes
-            #  that issue and everything works as-expected.
-            self.__triggered_load = True
-            self.__load__()
-        return super().__iter__()
-
-    def __getitem__(self, item):
-        try:
-            return super().__getitem__(item)
-        except (IndexError, SearchError):
-            if not self._Ghost__all_loaded:
-                self.__triggered_load = True
-                self.__load__()
-            return super().__getitem__(item)
-
-
-class CassiopeiaGhostLazyList(SearchableLazyList, CassiopeiaGhost):
-    def __hash__(self):
-        return id(self)
-
-    @property
-    def _Ghost__load_groups(self) -> Set[type]:
-        # Since @Ghost.property isn't set, the object doesn't have any load groups. Define them as equivalent to _data_types.
-        return self._data_types
-
-    def __init__(self, generator, **kwargs):
-        SearchableLazyList.__init__(self, generator)
-        CassiopeiaGhost.__init__(self, **kwargs)
-        self.__triggered_load = False
-
-    @classmethod
-    def from_data(cls, data: Union[list, CoreData]):
-        assert data is not None
+    def from_data(cls, *args, **kwargs):
         self = cls.__new__(cls)
-        self._data = {_type: _type() for _type in self._data_types}
-        def gen(data):
-            for item in data:
-                yield item
-        SearchableLazyList.__init__(self, generator=gen(data))
+        self.__init__(*args, **kwargs)
         return self
 
-    def __load__(self, load_group: CoreData = None) -> None:
-        while not self._empty:
-            try:
-                next(self)
-            except StopIteration:
-                pass
+    def __hash__(self):
+        return id(self)
 
-    def __len__(self):
-        if self._empty:
-            return super().__len__()
+    def __str__(self):
+        return SearchableList.__str__(self)
+
+
+class CassiopeiaLazyList(SearchableLazyList, CassiopeiaObject, metaclass=GetFromPipeline):
+    def __init__(self, *args, **kwargs):
+        if len(args) == 1 and isinstance(args[0], types.GeneratorType):
+            gen = args[0]
         else:
-            self.__load__()
-            return super().__len__()
+            def gen(*args):
+                for arg in args:
+                    yield arg
+            gen = gen(args)
+        SearchableLazyList.__init__(self, gen)
+        CassiopeiaObject.__init__(self, **kwargs)
+
+    @classmethod
+    def from_data(cls, *args, **kwargs):
+        self = cls.__new__(cls)
+        self.__init__(*args, **kwargs)
+        return self
+
+    def __hash__(self):
+        return id(self)
+
+    def __str__(self):
+        return SearchableLazyList.__str__(self)

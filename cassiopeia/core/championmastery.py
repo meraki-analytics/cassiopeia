@@ -7,7 +7,7 @@ from merakicommons.container import searchable, SearchableList
 
 from .. import configuration
 from ..data import Region, Platform
-from .common import CoreData, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
+from .common import CoreData, CassiopeiaGhost, CassiopeiaList, DataObjectList, get_latest_version, GetFromPipeline
 from ..dto.championmastery import ChampionMasteryDto
 from .staticdata.champion import Champion
 from .summoner import Summoner
@@ -78,7 +78,7 @@ class ChampionMasteryData(CoreData):
 ##############
 
 
-class ChampionMasteries(CassiopeiaGhostList):
+class ChampionMasteries(CassiopeiaList):
     _data_types = {ChampionMasteryListData}
 
     def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None, _account_id: int = None):
@@ -90,15 +90,6 @@ class ChampionMasteries(CassiopeiaGhostList):
         elif isinstance(summoner, int):
             summoner = Summoner(id=summoner, region=region)
         self.__summoner = summoner
-
-    def __get_query__(self) -> dict:
-        return {"region": self.region, "platform": self.platform, "summoner.id": self.summoner.id}
-
-    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
-        self.clear()
-        from ..transformers.championmastery import ChampionMasteryTransformer
-        SearchableList.__init__(self, [ChampionMasteryTransformer.champion_mastery_data_to_core(None, cm) for cm in data])
-        super().__load_hook__(load_group, data)
 
     @lazy_property
     def region(self) -> Region:

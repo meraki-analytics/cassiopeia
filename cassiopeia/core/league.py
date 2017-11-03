@@ -6,7 +6,7 @@ from merakicommons.container import searchable, SearchableList
 
 from .. import configuration
 from ..data import Region, Platform, Tier, Division, Queue
-from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList
+from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, GetFromPipeline
 from ..dto.league import LeaguePositionDto, LeaguePositionsDto,  LeaguesListDto, LeagueListDto, MiniSeriesDto, ChallengerLeagueListDto, MasterLeagueListDto
 from .summoner import Summoner
 
@@ -333,7 +333,7 @@ class LeagueEntry(CassiopeiaGhost):
         return self._data[LeaguePositionData].league_points
 
 
-class LeagueEntries(CassiopeiaGhostList):
+class LeagueEntries(CassiopeiaList):
     _data_types = {LeaguePositionsData}
 
     def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
@@ -348,15 +348,6 @@ class LeagueEntries(CassiopeiaGhostList):
             summoner = Summoner(id=summoner, region=region)
         self.__summoner = summoner
 
-    def __get_query__(self):
-        return {"summoner.id": self.__summoner.id, "region": self.region, "platform": self.platform}
-
-    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
-        self.clear()
-        from ..transformers.leagues import LeagueTransformer
-        SearchableList.__init__(self, [LeagueTransformer.league_position_data_to_core(None, i) for i in data])
-        super().__load_hook__(load_group, data)
-
     @lazy_property
     def region(self) -> Region:
         return Region(self._data[LeaguePositionsData].region)
@@ -367,30 +358,30 @@ class LeagueEntries(CassiopeiaGhostList):
 
     @property
     def fives(self):
-        return self[Queue.ranked_solo]
+        return self[Queue.ranked_solo_fives]
 
     @property
     def flex(self):
-        return self[Queue.flex]
+        return self[Queue.ranked_flex_fives]
 
     @property
     def threes(self):
-        return self[Queue.ranked_threes]
+        return self[Queue.ranked_flex_threes]
 
 
 class SummonerLeagues(SearchableList):
     """A helper class that is simply a searchable list but that also provides the below convenience methods."""
     @property
     def fives(self):
-        return self[Queue.ranked_solo]
+        return self[Queue.ranked_flex_fives]
 
     @property
     def flex(self):
-        return self[Queue.flex]
+        return self[Queue.ranked_flex_fives]
 
     @property
     def threes(self):
-        return self[Queue.ranked_threes]
+        return self[Queue.ranked_flex_threes]
 
 
 @searchable({str: ["tier", "queue", "name"], Queue: ["queue"], Tier: ["tier"]})

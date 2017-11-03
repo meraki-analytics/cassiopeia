@@ -30,7 +30,7 @@ class SpectatorTransformer(DataTransformer):
 
     # Data to Core
 
-    @transform.register(CurrentGameInfoData, CurrentMatch)
+    #@transform.register(CurrentGameInfoData, CurrentMatch)
     def current_game_data_to_core(self, value: CurrentGameInfoData, context: PipelineContext = None) -> CurrentMatch:
         from ..core.summoner import Summoner
         summoner = Summoner(name=value.teams[0].participants[0].summoner_name, region=value.region)
@@ -44,4 +44,4 @@ class SpectatorTransformer(DataTransformer):
             summoner = Summoner(name=match.teams[0].participants[0].summoner_name, region=value.region)
             match = CurrentMatch.from_data(match, summoner=summoner)
             matches.append(match)
-        return FeaturedMatches(matches, region=value.region, client_refresh_interval=value.client_refresh_interval)
+        return FeaturedMatches.from_data(*matches, region=value.region, client_refresh_interval=value.client_refresh_interval)

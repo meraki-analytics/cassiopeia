@@ -6,7 +6,7 @@ from merakicommons.container import searchable, SearchableList
 
 from ... import configuration
 from ...data import Region, Platform
-from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
+from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, DataObjectList, get_latest_version, CassiopeiaList
 from .common import ImageData, Sprite, Image
 from .map import Map
 from ...dto.staticdata import item as dto
@@ -321,7 +321,7 @@ class ItemData(CoreData):
 ##############
 
 
-class Items(CassiopeiaGhostList):
+class Items(CassiopeiaList):
     _data_types = {ItemListData}
 
     def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
@@ -337,15 +337,6 @@ class Items(CassiopeiaGhostList):
         if version:
             kwargs["version"] = version
         super().__init__(*args, **kwargs)
-
-    def __get_query__(self):
-        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
-
-    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
-        self.clear()
-        from ...transformers.staticdata import StaticDataTransformer
-        SearchableList.__init__(self, [StaticDataTransformer.item_data_to_core(None, i) for i in data])
-        super().__load_hook__(load_group, data)
 
     @lazy_property
     def region(self) -> Region:

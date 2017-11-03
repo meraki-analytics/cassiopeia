@@ -1,4 +1,5 @@
 from typing import Type, Mapping, Any, Iterable, TypeVar, Tuple, Callable, Generator
+from collections import defaultdict
 import datetime
 
 from datapipelines import DataSource, DataSink, PipelineContext, validate_query, NotFoundError
@@ -156,7 +157,27 @@ class Cache(DataSource, DataSink):
 
     @put_many.register(ChampionMastery)
     def put_many_champion_mastery(self, items: Iterable[ChampionMastery], context: PipelineContext = None) -> None:
-        self._put_many(ChampionMastery, items, uniquekeys.for_champion_mastery, context=context)
+        self._put_many(ChampionMastery, items, uniquekeys.for_many_champion_mastery, context=context)
+
+    @get.register(ChampionMasteries)
+    @validate_query(uniquekeys.validate_champion_masteries_query, uniquekeys.convert_region_to_platform)
+    def get_champion_mastery(self, query: Mapping[str, Any], context: PipelineContext = None) -> Champion:
+        return self._get(ChampionMasteries, query, uniquekeys.for_champion_masteries_query, context)
+
+    @get_many.register(ChampionMasteries)
+    @validate_query(uniquekeys.validate_many_champion_masteries_query, uniquekeys.convert_region_to_platform)
+    def get_many_champion_mastery(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[Champion, None, None]:
+        return self._get_many(ChampionMasteries, query, uniquekeys.for_many_champion_masteries_query, context)
+
+    @put.register(ChampionMasteries)
+    def put_champion_mastery(self, item: ChampionMasteries, context: PipelineContext = None) -> None:
+        self._put(ChampionMasteries, item, uniquekeys.for_champion_masteries, context=context)
+        for cm in item:
+            self._put(ChampionMastery, cm, uniquekeys.for_champion_mastery, context=context)
+
+    @put_many.register(ChampionMasteries)
+    def put_many_champion_mastery(self, items: Iterable[ChampionMasteries], context: PipelineContext = None) -> None:
+        self._put_many(ChampionMasteries, items, uniquekeys.for_champion_masteries, context=context)
 
     ##############
     # League API #
@@ -245,7 +266,7 @@ class Cache(DataSource, DataSink):
     ###################
     # Static Data API #
     ###################
-    
+
     # Champion
 
     @get.register(Champion)
@@ -279,9 +300,8 @@ class Cache(DataSource, DataSink):
     @put.register(Champions)
     def put_champions(self, champions: Champions, context: PipelineContext = None) -> None:
         self._put(Champions, champions, uniquekeys.for_champions, context=context)
-        if list.__len__(champions) > 0:
-            for champion in champions:
-                self._put(Champion, champion, uniquekeys.for_champion, context=context)
+        for champion in champions:
+            self._put(Champion, champion, uniquekeys.for_champion, context=context)
 
     @put_many.register(Champions)
     def put_many_champions(self, champions: Iterable[Champions], context: PipelineContext = None) -> None:
@@ -310,7 +330,7 @@ class Cache(DataSource, DataSink):
     @get.register(Items)
     @validate_query(uniquekeys.validate_items_query, uniquekeys.convert_region_to_platform)
     def get_items(self, query: Mapping[str, Any], context: PipelineContext = None) -> Items:
-        return self._get(Items, query, uniquekeys.for_items_query, context)
+        return self._get(Items, query, uniquekeys.for_items_query, context=context)
 
     @get_many.register(Items)
     @validate_query(uniquekeys.validate_many_items_query, uniquekeys.convert_region_to_platform)
@@ -320,9 +340,8 @@ class Cache(DataSource, DataSink):
     @put.register(Items)
     def put_items(self, items: Items, context: PipelineContext = None) -> None:
         self._put(Items, items, uniquekeys.for_items, context=context)
-        if list.__len__(items) > 0:
-            for item in items:
-                self._put(Item, item, uniquekeys.for_item, context=context)
+        for item in items:
+            self._put(Item, item, uniquekeys.for_item, context=context)
 
     @put_many.register(Items)
     def put_many_items(self, many_items: Iterable[Items], context: PipelineContext = None) -> None:
@@ -399,9 +418,8 @@ class Cache(DataSource, DataSink):
     @put.register(Maps)
     def put_maps(self, item: Maps, context: PipelineContext = None) -> None:
         self._put(Maps, item, uniquekeys.for_maps, context=context)
-        if list.__len__(item) > 0:
-            for map in item:
-                self._put(Map, map, uniquekeys.for_map, context=context)
+        for map in item:
+            self._put(Map, map, uniquekeys.for_map, context=context)
 
     @put_many.register(Maps)
     def put_many_maps(self, items: Iterable[Maps], context: PipelineContext = None) -> None:
@@ -440,9 +458,8 @@ class Cache(DataSource, DataSink):
     @put.register(Masteries)
     def put_masteries(self, item: Masteries, context: PipelineContext = None) -> None:
         self._put(Masteries, item, uniquekeys.for_masteries, context=context)
-        if list.__len__(item) > 0:
-            for mastery in item:
-                self._put(Mastery, mastery, uniquekeys.for_mastery, context=context)
+        for mastery in item:
+            self._put(Mastery, mastery, uniquekeys.for_mastery, context=context)
 
     @put_many.register(Masteries)
     def put_many_masteries(self, items: Iterable[Masteries], context: PipelineContext = None) -> None:
@@ -481,9 +498,8 @@ class Cache(DataSource, DataSink):
     @put.register(ProfileIcons)
     def put_profile_icons(self, item: ProfileIcons, context: PipelineContext = None) -> None:
         self._put(ProfileIcons, item, uniquekeys.for_profile_icons, context=context)
-        if list.__len__(item) > 0:
-            for profile_icon in item:
-                self._put(ProfileIcon, profile_icon, uniquekeys.for_profile_icon, context=context)
+        for profile_icon in item:
+            self._put(ProfileIcon, profile_icon, uniquekeys.for_profile_icon, context=context)
 
     @put_many.register(ProfileIcons)
     def put_many_profile_icons(self, items: Iterable[ProfileIcons], context: PipelineContext = None) -> None:
@@ -542,9 +558,8 @@ class Cache(DataSource, DataSink):
     @put.register(Runes)
     def put_runes(self, item: Runes, context: PipelineContext = None) -> None:
         self._put(Runes, item, uniquekeys.for_runes, context=context)
-        if list.__len__(item) > 0:
-            for rune in item:
-                self._put(Mastery, rune, uniquekeys.for_rune, context=context)
+        for rune in item:
+            self._put(Mastery, rune, uniquekeys.for_rune, context=context)
 
     @put_many.register(Runes)
     def put_many_runes(self, items: Iterable[Runes], context: PipelineContext = None) -> None:
@@ -583,9 +598,8 @@ class Cache(DataSource, DataSink):
     @put.register(SummonerSpells)
     def put_summoner_spells(self, item: SummonerSpells, context: PipelineContext = None) -> None:
         self._put(SummonerSpells, item, uniquekeys.for_summoner_spells, context=context)
-        if list.__len__(item) > 0:
-            for summoner_spell in item:
-                self._put(Mastery, summoner_spell, uniquekeys.for_summoner_spell, context=context)
+        for summoner_spell in item:
+            self._put(Mastery, summoner_spell, uniquekeys.for_summoner_spell, context=context)
 
     @put_many.register(SummonerSpells)
     def put_many_summoner_spells(self, items: Iterable[SummonerSpells], context: PipelineContext = None) -> None:

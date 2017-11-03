@@ -8,7 +8,7 @@ from merakicommons.container import searchable, SearchableList, SearchableDictio
 from ... import configuration
 from ...data import Resource, Region, Platform, GameMode
 from ..champion import ChampionStatusData
-from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaGhostList, DataObjectList, get_latest_version
+from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, DataObjectList, get_latest_version
 from .common import ImageData, Image, Sprite
 from .map import Map
 from ...dto.staticdata import champion as dto
@@ -458,7 +458,7 @@ class ChampionData(CoreData):
 ##############
 
 
-class Champions(CassiopeiaGhostList):
+class Champions(CassiopeiaList):
     _data_types = {ChampionListData}
 
     def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
@@ -474,15 +474,6 @@ class Champions(CassiopeiaGhostList):
         if version:
             kwargs["version"] = version
         super().__init__(*args, **kwargs)
-
-    def __get_query__(self):
-        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
-
-    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
-        self.clear()
-        from ...transformers.staticdata import StaticDataTransformer
-        SearchableList.__init__(self, [StaticDataTransformer.champion_data_to_core(None, c) for c in data])
-        super().__load_hook__(load_group, data)
 
     @lazy_property
     def region(self) -> Region:

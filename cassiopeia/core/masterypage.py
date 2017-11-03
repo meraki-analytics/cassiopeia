@@ -5,7 +5,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
 from ..data import Region, Platform
-from .common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
+from .common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaList, get_latest_version, GetFromPipeline
 from .summoner import Summoner
 from ..dto.masterypage import MasteryDto, MasteryPageDto, MasteryPagesDto
 from .staticdata.mastery import Mastery as StaticdataMastery
@@ -80,7 +80,7 @@ class MasteryPageData(CoreData):
 ##############
 
 
-class MasteryPages(CassiopeiaGhostList):
+class MasteryPages(CassiopeiaList):
     _data_types = {MasteryPagesData}
 
     def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
@@ -90,15 +90,6 @@ class MasteryPages(CassiopeiaGhostList):
         elif isinstance(summoner, int):
             summoner = Summoner(id=summoner, region=region)
         self.__summoner = summoner
-
-    def __get_query__(self):
-        return {"summoner.id": self.__summoner.id, "region": self.region, "platform": self.platform}
-
-    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
-        self.clear()
-        from ..transformers.masteries import MasteriesTransformer
-        SearchableList.__init__(self, [MasteriesTransformer.mastery_page_data_to_core(None, i) for i in data])
-        super().__load_hook__(load_group, data)
 
     @lazy_property
     def region(self) -> Region:

@@ -43,14 +43,14 @@ class MatchTransformer(DataTransformer):
 
     # Data to Core
 
-    @transform.register(MatchData, Match)
+    #@transform.register(MatchData, Match)
     def match_data_to_core(self, value: MatchData, context: PipelineContext = None) -> Match:
         return Match.from_data(value)
 
-    @transform.register(MatchReferenceData, Match)
+    #@transform.register(MatchReferenceData, Match)
     def match_reference_data_to_core(self, value: MatchReferenceData, context: PipelineContext = None) -> Match:
         return Match.from_match_reference(value)
 
-    @transform.register(TimelineData, Timeline)
+    #@transform.register(TimelineData, Timeline)
     def timeline_data_to_core(self, value: TimelineData, context: PipelineContext = None) -> Timeline:
         return Timeline.from_data(value)

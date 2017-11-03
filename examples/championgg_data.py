@@ -10,7 +10,7 @@ To enable the champion.gg plugin, add it to the data pipeline in your settings f
   "pipline": {
     ...,
     "ChampionGG": {
-      "package": "cassiopeia-plugins.championgg.championgg",
+      "package": "cassiopeia_championgg",
       "api_key": "CHAMPIONGG_KEY"
     },
     ...

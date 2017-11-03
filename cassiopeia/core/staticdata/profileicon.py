@@ -4,12 +4,12 @@ from typing import Union
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy_property, lazy
-from merakicommons.container import searchable, SearchableList
+from merakicommons.container import searchable
 
 from ... import configuration
 from ...data import Region, Platform
 from ...dto.staticdata.profileicon import ProfileIconDetailsDto, ProfileIconDataDto
-from ..common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaGhostList, get_latest_version
+from ..common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaList, get_latest_version
 
 
 try:
@@ -68,7 +68,7 @@ class ProfileIconData(CoreData):
 ##############
 
 
-class ProfileIcons(CassiopeiaGhostList):
+class ProfileIcons(CassiopeiaList):
     _data_types = {ProfileIconData}
 
     def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None):
@@ -80,20 +80,6 @@ class ProfileIcons(CassiopeiaGhostList):
         if locale is not None:
             kwargs["locale"] = locale
         super().__init__(*args, **kwargs)
-
-    def __get_query__(self):
-        query = {"region": self.region, "platform": self.platform, "version": self.version}
-        try:
-            query["locale"] = self.locale
-        except KeyError:
-            pass
-        return query
-
-    def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
-        self.clear()
-        from ...transformers.staticdata import StaticDataTransformer
-        SearchableList.__init__(self, [StaticDataTransformer.profile_icon_data_to_core(None, i) for i in data])
-        super().__load_hook__(load_group, data)
 
     @lazy_property
     def region(self) -> Region:

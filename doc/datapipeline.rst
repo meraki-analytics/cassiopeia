@@ -25,8 +25,6 @@ Below is an example (which tuses more data stores than Cass uses by default):
       "pipeline": {
         "Cache": {},
 
-        "UnloadedGhostStore": {},
-
         "SimpleKVDiskStore": {
           "package": "cassiopeia-datastores.diskstore.diskstore"
         },
@@ -38,7 +36,7 @@ Below is an example (which tuses more data stores than Cass uses by default):
         },
 
         "ChampionGG": {
-          "package": "cassiopeia-plugins.championgg.championgg",
+          "package": "cassiopeia_championgg",
           "api_key": "CHAMPIONGG_KEY"
         }
     }
@@ -140,6 +138,8 @@ The ChampionGG plugin has its own data source if it is included. See :ref:`plugi
 Unloaded Ghost Store
 """"""""""""""""""""
 
-As a user, it's very likely that you don't need to worry about what this store does as long as you include it in your data pipeline (it is included by default). It should go immediately after the cache, and if you are not using a cache, it should be the first element in the data pipeline.
+As a user, it's very likely that you don't need to worry about what this store does. Cass automatically puts this store in your datapipeline if your global variable ``enable_ghost_loading`` is set to ``true``.
 
-The ``UnloadedGhostStore`` provides unloaded ghost objects to the rest of Cass when a new ghost object is created. This allows us to have a single location where all top-level objects are created, which alleviates some complicated issues when requesting new objects from the data pipeline. In general, it should always be in your pipeline.
+The ``UnloadedGhostStore`` provides unloaded ghost objects to the rest of Cass when a new ghost object is created. This allows us to have a single location where all top-level objects are created, which alleviates some complicated issues that crop up when caching core objects and using ghost loading. In general, it should always be in your pipeline.
+
+If you wish to override how Cass inserts it into your pipeline, you can include it in your pipeline and Cass won't insert it automatically. Normally, it should go immediately after the cache, and if you are not using a cache, it should be the first element in the data pipeline.

@@ -27,7 +27,7 @@ Ghost Loading
 
 A *ghost object* is an object that can be instantiated without all of its data. It is therefore a shadow of itself, or a *ghost*. Ghost objects know how to load the rest of their data using what they were given at init. This is what allows you to write ``kalturi = Summoner(name="Kalturi")`` followed by ``kalturi.level``. The latter will trigger a call to the data pipeline (discussed below) to pull the rest of the data for ``kalturi`` by using ``kalturi.name``.
 
-All top-level objects in Cass are ghost objects and therefore know how to load their own data.
+Most top-level objects in Cass are ghost objects and therefore know how to load their own data. Lists of things (e.g. ``Champions``) are not ghost objects, and instead load their data immediately (this is due to some issues with caching unloaded lists and the objects contained in those lists). The ``MatchHistory`` type works a bit differently (see below).
 
 For developers who are interested, the implementation for ghost objects can be found in our Meraki Commons repository on GitHub.
 
@@ -80,3 +80,5 @@ Match History
 """""""""""""
 
 The match history of summoners is handled slightly differently than most objects in Cass. Most importantly, it is not Cached or stored in databases we create. This is largely because the logic for doing so is non-trivial, and we haven't implemented it yet -- although we hope to. Therefore match histories are requested from the Riot API every time the method is called. Users are encouraged to cache the results themselves if they wish.
+
+Match histories are also lazily loaded.

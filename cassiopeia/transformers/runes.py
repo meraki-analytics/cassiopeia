@@ -42,4 +42,4 @@ class RunesTransformer(DataTransformer):
 
     @transform.register(RunePagesData, RunePages)
     def rune_pages_data_to_core(self, value: RunePagesData, context: PipelineContext = None) -> RunePages:
-        return RunePages([self.rune_page_data_to_core(page) for page in value], summoner=value.summoner_id, region=value.region)
+        return RunePages.from_data(*[self.rune_page_data_to_core(page) for page in value], summoner=value.summoner_id, region=value.region)
