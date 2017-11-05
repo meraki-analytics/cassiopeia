@@ -1,8 +1,12 @@
 import cassiopeia as cass
-from cassiopeia import Champion
+from cassiopeia import Champion, Champions
 
 
 def get_champions():
+    champions = Champions(region="NA")
+    for champion in champions:
+        print(champion.name, champion.id)
+
     # annie = Champion(name="Annie", region="NA")
     annie = Champion(name="Annie", region="NA")
     print(annie.name)

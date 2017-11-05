@@ -3,11 +3,11 @@ from typing import Union
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable, SearchableList
+from merakicommons.container import searchable
 
 from .. import configuration
 from ..data import Region, Platform
-from .common import CoreData, CassiopeiaGhost, CassiopeiaList, DataObjectList, get_latest_version, GetFromPipeline
+from .common import CoreData, CassiopeiaGhost, CassiopeiaList, DataObjectList, get_latest_version, provide_default_region
 from ..dto.championmastery import ChampionMasteryDto
 from .staticdata.champion import Champion
 from .summoner import Summoner
@@ -81,6 +81,7 @@ class ChampionMasteryData(CoreData):
 class ChampionMasteries(CassiopeiaList):
     _data_types = {ChampionMasteryListData}
 
+    @provide_default_region
     def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None, _account_id: int = None):
         super().__init__(*args, region=region)
         if _account_id is not None:
@@ -90,6 +91,26 @@ class ChampionMasteries(CassiopeiaList):
         elif isinstance(summoner, int):
             summoner = Summoner(id=summoner, region=region)
         self.__summoner = summoner
+
+    @classmethod
+    @provide_default_region
+    def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, int, str], region: Union[Region, str]) -> dict:
+        query = {"region": region}
+        if isinstance(summoner, Summoner):
+            from .summoner import SummonerData
+            summoner_data = summoner._data[SummonerData]
+            try:
+                query["summoner.id"] = summoner_data.id
+            except KeyError:
+                try:
+                    query["summoner.account.id"] = summoner_data.account_id
+                except KeyError:
+                    query["summoner.name"] = summoner_data.name
+        elif isinstance(summoner, str):
+            query["summoner.name"] = summoner
+        else:  # int
+            query["summoner.id"] = summoner
+        return query
 
     @lazy_property
     def region(self) -> Region:
@@ -108,11 +129,8 @@ class ChampionMasteries(CassiopeiaList):
 class ChampionMastery(CassiopeiaGhost):
     _data_types = {ChampionMasteryData}
 
+    @provide_default_region
     def __init__(self, *, summoner: Union[Summoner, int, str] = None, champion: Union[Champion, int, str] = None, region: Union[Region, str] = None, _account_id: int = None):
-        if region is None:
-            region = configuration.settings.default_region
-        if region is not None and not isinstance(region, Region):
-            region = Region(region)
         kwargs = {"region": region}
 
         if _account_id is not None:
@@ -137,6 +155,38 @@ class ChampionMastery(CassiopeiaGhost):
                 kwargs["champion_id"] = champion
 
         super().__init__(**kwargs)
+
+    @classmethod
+    @provide_default_region
+    def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, int, str], champion: Union[Champion, int, str], region: Union[Region, str]) -> dict:
+        query = {"region": region}
+        if isinstance(summoner, Summoner):
+            from .summoner import SummonerData
+            summoner_data = summoner._data[SummonerData]
+            try:
+                query["summoner.id"] = summoner_data.id
+            except KeyError:
+                try:
+                    query["summoner.account.id"] = summoner_data.account_id
+                except KeyError:
+                    query["summoner.name"] = summoner_data.name
+        elif isinstance(summoner, str):
+            query["summoner.name"] = summoner
+        else:  # int
+            query["summoner.id"] = summoner
+
+        if isinstance(champion, Champion):
+            from .staticdata.champion import ChampionData
+            champion_data = champion._data[ChampionData]
+            try:
+                query["champion.id"] = champion_data.id
+            except KeyError:
+                query["champion.name"] = champion_data.name
+        elif isinstance(champion, str):
+            query["champion.name"] = champion
+        else:  # int
+            query["champion.id"] = champion
+        return query
 
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform.value, "summoner.id": self.summoner.id, "champion.id": self.champion.id}

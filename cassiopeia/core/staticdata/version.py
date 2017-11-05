@@ -2,10 +2,9 @@ from typing import Union
 
 from merakicommons.cache import lazy_property
 
-from ... import configuration
 from ...data import Region, Platform
 from ...dto.staticdata.version import VersionListDto
-from ..common import DataObjectList, CassiopeiaList
+from ..common import DataObjectList, CassiopeiaList, provide_default_region
 
 
 class VersionListData(DataObjectList):
@@ -20,11 +19,8 @@ class VersionListData(DataObjectList):
 class Versions(CassiopeiaList):
     _data_types = {VersionListData}
 
+    @provide_default_region
     def __init__(self, *args, region: Union[Region, str] = None):
-        if region is None:
-            region = configuration.settings.default_region
-        if region is not None and not isinstance(region, Region):
-            region = Region(region)
         kwargs = {"region": region}
         super().__init__(*args, **kwargs)
 

@@ -9,7 +9,7 @@ from merakicommons.container import searchable
 from ... import configuration
 from ...data import Region, Platform
 from ...dto.staticdata.profileicon import ProfileIconDetailsDto, ProfileIconDataDto
-from ..common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaList, get_latest_version
+from ..common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region
 
 
 try:
@@ -71,9 +71,8 @@ class ProfileIconData(CoreData):
 class ProfileIcons(CassiopeiaList):
     _data_types = {ProfileIconData}
 
+    @provide_default_region
     def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None):
-        if region is None:
-            region = configuration.settings.default_region
         kwargs = {"region": region}
         if version is not None:
             kwargs["version"] = version
@@ -108,9 +107,8 @@ class ProfileIcon(CassiopeiaGhost):
     _data_types = {ProfileIconData}
     _load_types = {ProfileIconData: ProfileIconListData}
 
+    @provide_default_region
     def __init__(self, *, id: int = None, region: Union[Region, str] = None, version: str = None, locale: str = None):
-        if region is None:
-            region = configuration.settings.default_region
         kwargs = {"region": region}
         if id is not None:
             kwargs["id"] = id

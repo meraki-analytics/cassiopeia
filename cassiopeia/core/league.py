@@ -6,7 +6,7 @@ from merakicommons.container import searchable, SearchableList
 
 from .. import configuration
 from ..data import Region, Platform, Tier, Division, Queue
-from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, GetFromPipeline
+from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, provide_default_region
 from ..dto.league import LeaguePositionDto, LeaguePositionsDto,  LeaguesListDto, LeagueListDto, MiniSeriesDto, ChallengerLeagueListDto, MasterLeagueListDto
 from .summoner import Summoner
 
@@ -256,11 +256,8 @@ class MiniSeries(CassiopeiaObject):
 class LeagueEntry(CassiopeiaGhost):
     _data_types = {LeaguePositionData}
 
+    @provide_default_region
     def __init__(self, *, region: Union[Region, str] = None):
-        if region is None:
-            region = configuration.settings.default_region
-        if region is not None and not isinstance(region, Region):
-            region = Region(region)
         kwargs = {"region": region}
         super().__init__(**kwargs)
 
@@ -336,17 +333,27 @@ class LeagueEntry(CassiopeiaGhost):
 class LeagueEntries(CassiopeiaList):
     _data_types = {LeaguePositionsData}
 
+    @provide_default_region
     def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
-        if region is None:
-            region = configuration.settings.default_region
-        if region is not None and not isinstance(region, Region):
-            region = Region(region)
         super().__init__(*args, region=region)
         if isinstance(summoner, str):
             summoner = Summoner(name=summoner, region=region)
         elif isinstance(summoner, int):
             summoner = Summoner(id=summoner, region=region)
         self.__summoner = summoner
+
+    @classmethod
+    @provide_default_region
+    def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, int, str], region: Union[Region, str]) -> dict:
+        query = {"region": region}
+        if isinstance(summoner, Summoner):
+            query["summoner.id"] = summoner.id
+        elif isinstance(summoner, int):  # int
+            query["summoner.id"] = summoner
+        elif isinstance(summoner, str):
+            query["summoner.id"] = Summoner(name=summoner, region=region).id
+        assert "summoner.id" in query
+        return query
 
     @lazy_property
     def region(self) -> Region:
@@ -442,11 +449,8 @@ class League(CassiopeiaGhost):
 class ChallengerLeague(CassiopeiaGhost):
     _data_types = {ChallengerLeagueListData}
 
+    @provide_default_region
     def __init__(self, *, queue: Union[Queue, str, int] = None, region: Union[Region, str] = None):
-        if region is None:
-            region = configuration.settings.default_region
-        if region is not None and not isinstance(region, Region):
-            region = Region(region)
         kwargs = {"region": region}
         if isinstance(queue, int):
             kwargs["queue"] = Queue.from_id(queue)
@@ -500,11 +504,8 @@ class ChallengerLeague(CassiopeiaGhost):
 class MasterLeague(CassiopeiaGhost):
     _data_types = {MasterLeagueListData}
 
+    @provide_default_region
     def __init__(self, *, queue: Union[Queue, str, int] = None, region: Union[Region, str] = None):
-        if region is None:
-            region = configuration.settings.default_region
-        if region is not None and not isinstance(region, Region):
-            region = Region(region)
         kwargs = {"region": region}
         if isinstance(queue, int):
             kwargs["queue"] = Queue.from_id(queue)

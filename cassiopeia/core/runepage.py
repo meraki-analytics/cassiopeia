@@ -3,10 +3,10 @@ from collections import Counter
 
 from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable, SearchableList, SearchableDictionary
+from merakicommons.container import searchable, SearchableDictionary
 
 from ..data import Region, Platform
-from .common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaList, get_latest_version
+from .common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region
 from .summoner import Summoner
 from ..dto.runepage import RuneSlotDto, RunePageDto, RunePagesDto
 from .staticdata.rune import Rune as StaticdataRune
@@ -88,6 +88,7 @@ class RunePageData(CoreData):
 class RunePages(CassiopeiaList):
     _data_types = {RunePagesData}
 
+    @provide_default_region
     def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
         super().__init__(*args, region=region)
         if isinstance(summoner, str):
@@ -95,6 +96,26 @@ class RunePages(CassiopeiaList):
         elif isinstance(summoner, int):
             summoner = Summoner(id=summoner, region=region)
         self.__summoner = summoner
+
+    @classmethod
+    @provide_default_region
+    def __get_query_from_kwargs__(cls, *args, summoner: Union[Summoner, int, str], region: Union[Region, str]) -> dict:
+        query = {"region": region}
+        if isinstance(summoner, Summoner):
+            from .summoner import SummonerData
+            summoner_data = summoner._data[SummonerData]
+            try:
+                query["summoner.id"] = summoner_data.id
+            except KeyError:
+                try:
+                    query["summoner.account.id"] = summoner_data.account_id
+                except KeyError:
+                    query["summoner.name"] = summoner_data.name
+        elif isinstance(summoner, str):
+            query["summoner.name"] = summoner
+        else:  # int
+            query["summoner.id"] = summoner
+        return query
 
     @lazy_property
     def region(self) -> Region:

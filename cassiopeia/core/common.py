@@ -1,6 +1,6 @@
 from abc import abstractmethod, abstractclassmethod
 import types
-from typing import Mapping, Any, Set, Union, Optional, Type
+from typing import Mapping, Any, Set, Union, Optional, Type, Generator
 import functools
 import logging
 
@@ -36,8 +36,9 @@ def provide_default_region(method):
         else:
             if region is not None and not isinstance(region, Region):
                 region = Region(region)
-        kwargs["region"] = region.value
-        if self:
+        if region is not None:  # region can still be None if the configuration doesn't have a default
+            kwargs["region"] = region.value
+        if self is not None:
                 return method(self, *args, **kwargs)
         else:
             return method(*args, **kwargs)
@@ -103,19 +104,25 @@ class DataObjectList(list, CoreData):
         SearchableList.__init__(self, dto)
 
 
+class DataObjectGenerator(CoreData):
+    def __init__(self, generator: Generator = None, **kwargs):
+        self._generator = generator
+        super().__init__(**kwargs)
+
+
 class CassiopeiaObject(object):
     _renamed = {}
 
     def __init__(self, **kwargs):
         # Note: Dto names are not allowed to be passed in.
-        self._data = {type: type() for type in self._data_types}
+        self._data = {_type: None for _type in self._data_types}
         self(**kwargs)
 
     def __str__(self) -> str:
         # This is a bit strange because we'll print a list of dict-like objects rather than one joined dict, but we've decided it's appropriate.
         result = {}
-        for type, data in self._data.items():
-            result[str(type)] = str(data)
+        for _type, data in self._data.items():
+            result[str(_type)] = str(data)
         return str(result).replace("\\'", "'")
 
     @property
@@ -144,31 +151,57 @@ class CassiopeiaObject(object):
                 champion(champData={"tags"}).tags  # only pulls the tag data
         """
         # Update underlying data and deconstruct any Enums the user passed in.
+        results = {_type: {}  for _type in self._data_types}
         found = False
         for key, value in kwargs.items():
-            for type in self._data_types:
-                # Don't allow dto names to be passed in.
-                if key in dir(type):
-                    u = {key: value}
-                    self._data[type]._update(u)
+            # We don't know which type to put the piece of data under, so put it in any type that supports this key
+            for _type in self._data_types:
+                if key in dir(_type):
+                    results[_type][key] = value
                     found = True
             if not found:
+                # The user passed in a value that we don't know anything about -- raise a warning.
                 LOGGER.warning("When initializing {}, key `{}` is not in type(s) {}. Not set.".format(self.__class__.__name__, key, self._data_types))
+
+        # Now that we've parsed the data and know where to put it all, we can update our data.
+        for _type, insert_this in results.items():
+            if self._data[_type] is not None:
+                self._data[_type]._update(insert_this)
+            else:
+                self._data[_type] = _type(**insert_this)
         return self
 
 
 class GetFromPipeline(type):
     @provide_default_region
-    def __call__(cls, *args, **kwargs):
+    def __call__(cls: "CassiopeiaPipelineObject", *args, **kwargs):
         pipeline = configuration.settings.pipeline
-        from ..datastores.uniquekeys import construct_query
-        query = construct_query(cls, **kwargs)
+        query = cls.__get_query_from_kwargs__(**kwargs)
         if hasattr(cls, "version") and query.get("version", None) is None and cls.__name__ not in ["Realms", "Match"]:
             query["version"] = get_latest_version(region=query["region"], endpoint=None)
         return pipeline.get(cls, query=query)
 
 
-class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=GetFromPipeline):
+class CassiopeiaPipelineObject(CassiopeiaObject, metaclass=GetFromPipeline):
+    @classmethod
+    def _construct_normally(cls, *args, **kwargs) -> "CassiopeiaObject":
+        # cls.__class__ will be this class's metaclass (GetFromPipeline), so supering that will find the metaclass's
+        # class, which is `type` in this case. Then `type`'s `__call__` will be called.
+        # This has the effect of skipping the GetFromPipeline instantiation, and defaulting to the normal class
+        # instantiation for the class.
+        return super(cls.__class__, cls).__call__(*args, **kwargs)
+
+    @abstractmethod
+    def __get_query__(self):
+        pass
+
+    @classmethod
+    @provide_default_region
+    def __get_query_from_kwargs__(cls, **kwargs):
+        return kwargs
+
+
+class CassiopeiaGhost(CassiopeiaPipelineObject, Ghost):
     def __load__(self, load_group: CoreData = None) -> None:
         if load_group is None:  # Load all groups
             if self._Ghost__all_loaded:
@@ -194,10 +227,10 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=GetFromPipeline):
         assert data is not None
         # Manually skip the CheckCache (well, all metaclass' __call__s) for ghost objects if they are
         # created via this constructor.
-        self = type.__call__(cls)
+        self = cls._construct_normally()
 
         # Make spots for the data and put it in
-        self._data = {_type: _type() for _type in self._data_types}
+        self._data = {_type: None for _type in self._data_types}
         if data.__class__ not in self._data_types:
             raise TypeError("Wrong data type '{}' passed to '{}.from_data'".format(
                 data.__class__.__name__, self.__class__.__name__))
@@ -212,26 +245,20 @@ class CassiopeiaGhost(CassiopeiaObject, Ghost, metaclass=GetFromPipeline):
                 self._Ghost__set_loaded(load_group)
         return self
 
-    @abstractmethod
-    def __get_query__(self):
-        pass
-
     def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         if not isinstance(data, CoreData):
             raise TypeError("expected subclass of CoreData, got {cls}".format(cls=data.__class__))
         self._data[load_group] = data
 
 
-class CassiopeiaList(SearchableList, CassiopeiaObject, metaclass=GetFromPipeline):
+class CassiopeiaList(SearchableList, CassiopeiaPipelineObject):
     def __init__(self, *args, **kwargs):
         SearchableList.__init__(self, args)
         CassiopeiaObject.__init__(self, **kwargs)
 
     @classmethod
     def from_data(cls, *args, **kwargs):
-        self = cls.__new__(cls)
-        self.__init__(*args, **kwargs)
-        return self
+        return cls._construct_normally(*args, **kwargs)
 
     def __hash__(self):
         return id(self)
@@ -240,23 +267,28 @@ class CassiopeiaList(SearchableList, CassiopeiaObject, metaclass=GetFromPipeline
         return SearchableList.__str__(self)
 
 
-class CassiopeiaLazyList(SearchableLazyList, CassiopeiaObject, metaclass=GetFromPipeline):
+class CassiopeiaLazyList(SearchableLazyList, CassiopeiaPipelineObject):
     def __init__(self, *args, **kwargs):
-        if len(args) == 1 and isinstance(args[0], types.GeneratorType):
-            gen = args[0]
+        if "generator" in kwargs:
+            generator = kwargs.pop("generator")
         else:
-            def gen(*args):
-                for arg in args:
-                    yield arg
-            gen = gen(args)
-        SearchableLazyList.__init__(self, gen)
-        CassiopeiaObject.__init__(self, **kwargs)
+            if len(args) == 1 and isinstance(args[0], types.GeneratorType):
+                generator = args[0]
+            else:
+                def generator(*args):
+                    for arg in args:
+                        yield arg
+                generator = generator(args)
+        SearchableLazyList.__init__(self, generator)
+        # Something feels very wrong; this is meant to work with MatchHistory.from_generator
+        if self.__class__ is not CassiopeiaLazyList:
+            self.__init__(**kwargs)
+        else:
+            CassiopeiaObject.__init__(self, **kwargs)
 
     @classmethod
     def from_data(cls, *args, **kwargs):
-        self = cls.__new__(cls)
-        self.__init__(*args, **kwargs)
-        return self
+        return cls._construct_normally(*args, **kwargs)
 
     def __hash__(self):
         return id(self)

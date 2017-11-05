@@ -4,9 +4,8 @@ from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy_property
 from merakicommons.container import searchable
 
-from ... import configuration
 from ...data import Region, Platform
-from ..common import CoreData, CassiopeiaGhost, get_latest_version
+from ..common import CoreData, CassiopeiaGhost, get_latest_version, provide_default_region
 from ...dto.staticdata import realm as dto
 
 
@@ -49,13 +48,10 @@ class LanguageStringsData(CoreData):
 class LanguageStrings(CassiopeiaGhost):
     _data_types = {LanguageStringsData}
 
+    @provide_default_region
     def __init__(self, *, strings: Dict[str, str] = None, region: Union[Region, str] = None, version: str = None, locale: str = None):
-        if region is None:
-            region = configuration.settings.default_region
-        if region is not None and not isinstance(region, Region):
-            region = Region(region)
-        if locale is None:
-            locale = region.default_locale
+        if locale is None and region is not None:
+            locale = Region(region).default_locale
         kwargs = {"region": region, "locale": locale}
         if version is not None:
             kwargs["version"] = version

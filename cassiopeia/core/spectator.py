@@ -8,7 +8,7 @@ from merakicommons.container import searchable, SearchableList, SearchableDictio
 
 from .. import configuration
 from ..data import Region, Platform, GameMode, GameType, Queue
-from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, get_latest_version
+from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region
 from ..dto import spectator as dto
 from .staticdata.profileicon import ProfileIcon
 from .staticdata.champion import Champion
@@ -283,11 +283,8 @@ class Team(CassiopeiaObject):
 class CurrentMatch(CassiopeiaGhost):
     _data_types = {CurrentGameInfoData}
 
+    @provide_default_region
     def __init__(self, *, summoner: Union[Summoner, int, str] = None, region: Union[Region, str] = None):
-        if region is None:
-            region = configuration.settings.default_region
-        if region is not None and not isinstance(region, Region):
-            region = Region(region)
         kwargs = {"region": region}
 
         if summoner is not None:
@@ -307,6 +304,19 @@ class CurrentMatch(CassiopeiaGhost):
             summoner = Summoner(id=summoner, region=data.region)
         self.__summoner = summoner
         return self
+
+    @classmethod
+    @provide_default_region
+    def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, int, str], region: Union[Region, str]) -> dict:
+        query = {"region": region}
+        if isinstance(summoner, Summoner):
+            query["summoner.id"] = summoner.id
+        elif isinstance(summoner, int):  # int
+            query["summoner.id"] = summoner
+        elif isinstance(summoner, str):
+            query["summoner.id"] = Summoner(name=summoner, region=region).id
+        assert "summoner.id" in query
+        return query
 
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform, "summoner.id": self.__summoner.id}

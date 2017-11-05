@@ -4,9 +4,8 @@ from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
-from ... import configuration
 from ...data import Region, Platform, MasteryTree
-from ..common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaList, get_latest_version
+from ..common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region
 from .common import Sprite, Image, ImageData
 from ...dto.staticdata import mastery as dto
 
@@ -100,15 +99,12 @@ class MasteryData(CoreData):
 class Masteries(CassiopeiaList):
     _data_types = {MasteryListData}
 
+    @provide_default_region
     def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
-        if region is None:
-            region = configuration.settings.default_region
-        if region is not None and not isinstance(region, Region):
-            region = Region(region)
         if included_data is None:
             included_data = {"all"}
-        if locale is None:
-            locale = region.default_locale
+        if locale is None and region is not None:
+            locale = Region(region).default_locale
         kwargs = {"region": region, "included_data": included_data, "locale": locale}
         if version:
             kwargs["version"] = version
@@ -145,15 +141,12 @@ class Masteries(CassiopeiaList):
 class Mastery(CassiopeiaGhost):
     _data_types = {MasteryData}
 
+    @provide_default_region
     def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
-        if region is None:
-            region = configuration.settings.default_region
-        if region is not None and not isinstance(region, Region):
-            region = Region(region)
         if included_data is None:
             included_data = {"all"}
         if locale is None and region is not None:
-            locale = region.default_locale
+            locale = Region(region).default_locale
         kwargs = {"region": region, "included_data": included_data, "locale": locale}
         if id is not None:
             kwargs["id"] = id

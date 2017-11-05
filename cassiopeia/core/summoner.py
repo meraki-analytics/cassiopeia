@@ -7,8 +7,8 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
 from .. import configuration
-from ..data import Region, Platform, Queue
-from .common import CoreData, CassiopeiaObject, CassiopeiaGhost
+from ..data import Region, Platform
+from .common import CoreData, CassiopeiaObject, CassiopeiaGhost, provide_default_region
 from .staticdata import ProfileIcon
 from ..dto.summoner import SummonerDto
 
@@ -79,11 +79,8 @@ class Account(CassiopeiaObject):
 class Summoner(CassiopeiaGhost):
     _data_types = {SummonerData}
 
-    def __init__(self, *, id: int = None, account: Union[Account, int] = None, name: str = None, region: Union[Region, str] = None):
-        if region is None:
-            region = configuration.settings.default_region
-        if region is not None and not isinstance(region, Region):
-            region = Region(region)
+    @provide_default_region
+    def __init__(self, *, id: int = None, account: Union[Account, int] = None, name: str = None, region: Union[Region, str]):
         kwargs = {"region": region}
         if id is not None:
             kwargs["id"] = id
@@ -94,6 +91,20 @@ class Summoner(CassiopeiaGhost):
         elif account is not None:
             kwargs["account_id"] = account
         super().__init__(**kwargs)
+
+    @classmethod
+    @provide_default_region
+    def __get_query_from_kwargs__(cls, *, id: int = None, account: Union[Account, int] = None, name: str = None, region: Union[Region, str]) -> dict:
+        query = {"region": region}
+        if id is not None:
+            query["id"] = id
+        if name is not None:
+            query["name"] = name
+        if account and isinstance(account, Account):
+            query["account.id"] = account.id
+        elif account is not None:
+            query["account.id"] = account
+        return query
 
     def __get_query__(self):
         query = {"region": self.region, "platform": self.platform}
@@ -210,8 +221,3 @@ class Summoner(CassiopeiaGhost):
     def rank_last_season(self):
         most_recent_match = self.match_history[0]
         return most_recent_match.participants[self.name].rank_last_season
-
-
-def _summoner_league(summoner: Summoner, queue: Queue) -> "League":
-    from .league import League
-    return League(id=summoner.league_positions[queue].id, region=summoner.region, queue=queue)

@@ -1,5 +1,3 @@
-from PIL.Image import Image as PILImage
-
 from merakicommons.container import searchable
 from merakicommons.cache import lazy_property
 from PIL.Image import Image as PILImage
