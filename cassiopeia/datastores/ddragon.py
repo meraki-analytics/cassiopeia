@@ -88,8 +88,10 @@ class DDragon(DataSource):
             raise NotFoundError
         champion["region"] = query["platform"].region.value
         champion["version"] = query["version"]
-        champion["locale"] = query["locale"]
-        champion["includedData"] = query["includedData"]
+        if "locale" in query:
+            champion["locale"] = query["locale"]
+        if "includedData" in query:
+            champion["includedData"] = query["includedData"]
         return ChampionDto(champion)
 
     _validate_get_champion_list_query = Query. \
@@ -275,7 +277,8 @@ class DDragon(DataSource):
             raise NotFoundError
         map["region"] = query["platform"].region.value
         map["version"] = query["version"]
-        map["locale"] = query["locale"]
+        if "locale" in query:
+            map["locale"] = query["locale"]
         return MapDto(map)
 
     _validate_get_map_list_query = Query. \
@@ -380,8 +383,10 @@ class DDragon(DataSource):
             raise NotFoundError
         mastery["region"] = query["platform"].region.value
         mastery["version"] = query["version"]
-        mastery["locale"] = query["locale"]
-        mastery["includedData"] = query["includedData"]
+        if "locale" in query:
+            mastery["locale"] = query["locale"]
+        if "includedData" in query:
+            mastery["includedData"] = query["includedData"]
         return MasteryDto(mastery)
 
     _validate_get_mastery_list_query = Query. \
@@ -477,8 +482,10 @@ class DDragon(DataSource):
             raise NotFoundError
         rune["region"] = query["platform"].region.value
         rune["version"] = query["version"]
-        rune["locale"] = query["locale"]
-        rune["includedData"] = query["includedData"]
+        if "locale" in query:
+            rune["locale"] = query["locale"]
+        if "includedData" in query:
+            rune["includedData"] = query["includedData"]
         return RuneDto(rune)
 
     _validate_get_rune_list_query = Query. \
@@ -569,8 +576,10 @@ class DDragon(DataSource):
             raise NotFoundError
         item["region"] = query["platform"].region.value
         item["version"] = query["version"]
-        item["locale"] = query["locale"]
-        item["includedData"] = query["includedData"]
+        if "locale" in query:
+            item["locale"] = query["locale"]
+        if "includedData" in query:
+            item["includedData"] = query["includedData"]
         return ItemDto(item)
 
     _validate_get_item_list_query = Query. \
@@ -668,8 +677,10 @@ class DDragon(DataSource):
             raise NotFoundError
         summoner_spell["region"] = query["platform"].region.value
         summoner_spell["version"] = query["version"]
-        summoner_spell["locale"] = query["locale"]
-        summoner_spell["includedData"] = query["includedData"]
+        if "locale" in query:
+            summoner_spell["locale"] = query["locale"]
+        if "includedData" in query:
+            summoner_spell["includedData"] = query["includedData"]
         return SummonerSpellDto(summoner_spell)
 
     _validate_get_summoner_spell_list_query = Query. \

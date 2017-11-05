@@ -1,12 +1,11 @@
 from typing import List, Mapping, Union
 from collections import Counter
 
-from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableDictionary
 
 from ..data import Region, Platform
-from .common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region
+from .common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
 from .summoner import Summoner
 from ..dto.runepage import RuneSlotDto, RunePageDto, RunePagesDto
 from .staticdata.rune import Rune as StaticdataRune
@@ -152,12 +151,12 @@ class RunePage(CassiopeiaGhost):
         return Summoner(id=self._data[RunePageData].summoner_id, region=self.region)
 
     @CassiopeiaGhost.property(RunePageData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def current(self) -> bool:
         return self._data[RunePageData].current
 
     @CassiopeiaGhost.property(RunePageData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def runes(self) -> Mapping[StaticdataRune, int]:
         try:
@@ -171,11 +170,11 @@ class RunePage(CassiopeiaGhost):
                 raise error
 
     @CassiopeiaGhost.property(RunePageData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def name(self) -> str:
         return self._data[RunePageData].name
 
     @CassiopeiaGhost.property(RunePageData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def id(self) -> int:
         return self._data[RunePageData].id

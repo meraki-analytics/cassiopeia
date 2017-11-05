@@ -1,12 +1,11 @@
 from typing import List, Union, Optional
 
-from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy_property, lazy
 from merakicommons.container import searchable, SearchableList
 
 from .. import configuration
 from ..data import Region, Platform, Tier, Division, Queue
-from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, provide_default_region
+from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, provide_default_region, ghost_load_on
 from ..dto.league import LeaguePositionDto, LeaguePositionsDto,  LeaguesListDto, LeagueListDto, MiniSeriesDto, ChallengerLeagueListDto, MasterLeagueListDto
 from .summoner import Summoner
 
@@ -425,7 +424,7 @@ class League(CassiopeiaGhost):
         return self._data[LeagueListData].id
 
     @CassiopeiaGhost.property(LeagueListData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def tier(self) -> Tier:
         return Tier(self._data[LeagueListData].tier)
@@ -435,12 +434,12 @@ class League(CassiopeiaGhost):
         return Queue(self._data[LeagueListData].queue)
 
     @CassiopeiaGhost.property(LeagueListData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def name(self) -> str:
         return self._data[LeagueListData].name
 
     @CassiopeiaGhost.property(LeagueListData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def entries(self) -> List[LeagueEntry]:
         return SearchableList([LeagueEntry.from_data(entry) for entry in self._data[LeagueListData].entries])
@@ -490,12 +489,12 @@ class ChallengerLeague(CassiopeiaGhost):
         return Queue(self._data[ChallengerLeagueListData].queue)
 
     @CassiopeiaGhost.property(ChallengerLeagueListData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def name(self) -> str:
         return self._data[ChallengerLeagueListData].name
 
     @CassiopeiaGhost.property(ChallengerLeagueListData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def entries(self) -> List[LeagueEntry]:
         return SearchableList([LeagueEntry.from_data(entry) for entry in self._data[ChallengerLeagueListData].entries])
@@ -545,12 +544,12 @@ class MasterLeague(CassiopeiaGhost):
         return Queue(self._data[MasterLeagueListData].queue)
 
     @CassiopeiaGhost.property(MasterLeagueListData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def name(self) -> str:
         return self._data[MasterLeagueListData].name
 
     @CassiopeiaGhost.property(MasterLeagueListData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def entries(self) -> List[LeagueEntry]:
         return SearchableList([LeagueEntry.from_data(entry) for entry in self._data[MasterLeagueListData].entries])

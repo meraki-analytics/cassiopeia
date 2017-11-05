@@ -1,11 +1,10 @@
 from typing import List, Mapping, Union
 
-from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableDictionary
 
 from ..data import Region, Platform
-from .common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region
+from .common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
 from .summoner import Summoner
 from ..dto.masterypage import MasteryDto, MasteryPageDto, MasteryPagesDto
 from .staticdata.mastery import Mastery as StaticdataMastery
@@ -145,12 +144,12 @@ class MasteryPage(CassiopeiaGhost):
         return Summoner(id=self._data[MasteryPageData].summoner_id, region=self.region)
 
     @CassiopeiaGhost.property(MasteryPageData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def current(self) -> bool:
         return self._data[MasteryPageData].current
 
     @CassiopeiaGhost.property(MasteryPageData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def masteries(self) -> Mapping[StaticdataMastery, int]:
         try:
@@ -163,11 +162,11 @@ class MasteryPage(CassiopeiaGhost):
                 raise error
 
     @CassiopeiaGhost.property(MasteryPageData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def name(self) -> str:
         return self._data[MasteryPageData].name
 
     @CassiopeiaGhost.property(MasteryPageData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def id(self) -> int:
         return self._data[MasteryPageData].id

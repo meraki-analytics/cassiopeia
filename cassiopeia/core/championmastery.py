@@ -1,13 +1,11 @@
 import datetime
 from typing import Union
 
-from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
-from .. import configuration
 from ..data import Region, Platform
-from .common import CoreData, CassiopeiaGhost, CassiopeiaList, DataObjectList, get_latest_version, provide_default_region
+from .common import CoreData, CassiopeiaGhost, CassiopeiaList, DataObjectList, get_latest_version, provide_default_region, ghost_load_on
 from ..dto.championmastery import ChampionMasteryDto
 from .staticdata.champion import Champion
 from .summoner import Summoner
@@ -229,37 +227,37 @@ class ChampionMastery(CassiopeiaGhost):
         return Summoner(id=self._data[ChampionMasteryData].summoner_id, region=self.region)
 
     @CassiopeiaGhost.property(ChampionMasteryData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def chest_granted(self) -> bool:
         """Is chest granted for this champion or not in current season?"""
         return self._data[ChampionMasteryData].chest_granted
 
     @CassiopeiaGhost.property(ChampionMasteryData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def level(self) -> int:
         """Champion level for specified player and champion combination."""
         return self._data[ChampionMasteryData].level
 
     @CassiopeiaGhost.property(ChampionMasteryData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def points(self) -> int:
         """Total number of champion points for this player and champion combination - used to determine champion level."""
         return self._data[ChampionMasteryData].points
 
     @CassiopeiaGhost.property(ChampionMasteryData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def points_until_next_level(self) -> int:
         """Number of points needed to achieve next level. Zero if player reached maximum champion level for this champion."""
         return self._data[ChampionMasteryData].points_until_next_level
 
     @CassiopeiaGhost.property(ChampionMasteryData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def points_since_last_level(self) -> int:
         """Number of points earned since current level has been achieved. Zero if player reached maximum champion level for this champion."""
         return self._data[ChampionMasteryData].points_since_last_level
 
     @CassiopeiaGhost.property(ChampionMasteryData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def last_played(self) -> datetime.datetime:
         """Last time this champion was played by this player."""

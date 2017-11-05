@@ -1,11 +1,10 @@
 from typing import List, Union
 
-from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
 from ...data import Region, Platform
-from ..common import CoreData, CassiopeiaGhost, DataObjectList, CassiopeiaList, get_latest_version, provide_default_region
+from ..common import CoreData, CassiopeiaGhost, DataObjectList, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
 from .common import ImageData, Sprite, Image
 from ...dto.staticdata import map as dto
 
@@ -153,23 +152,23 @@ class Map(CassiopeiaGhost):
         return self._data[MapData].locale or self.region.default_locale
 
     @CassiopeiaGhost.property(MapData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def id(self) -> int:
         """The map's ID."""
         return self._data[MapData].id
 
     @CassiopeiaGhost.property(MapData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def name(self) -> str:
         return self._data[MapData].name
 
     @CassiopeiaGhost.property(MapData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def unpurchasable_items(self) -> List[int]:
         return self._data[MapData].unpurchasable_items
 
     @CassiopeiaGhost.property(MapData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def image(self) -> Image:
         image = Image.from_data(self._data[MapData].image)

@@ -1,11 +1,10 @@
 from typing import Dict, Union
 
-from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy_property
 from merakicommons.container import searchable
 
 from ...data import Region, Platform
-from ..common import CoreData, CassiopeiaGhost, get_latest_version, provide_default_region
+from ..common import CoreData, CassiopeiaGhost, get_latest_version, provide_default_region, ghost_load_on
 from ...dto.staticdata import realm as dto
 
 
@@ -84,11 +83,11 @@ class LanguageStrings(CassiopeiaGhost):
         return self._data[LanguageStringsData].locale
 
     @CassiopeiaGhost.property(LanguageStringsData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def type(self) -> str:
         return self._data[LanguageStringsData].type
 
     @CassiopeiaGhost.property(LanguageStringsData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def strings(self) -> Dict[str, str]:
         return self._data[LanguageStringsData].strings

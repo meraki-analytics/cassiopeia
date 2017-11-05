@@ -1,11 +1,10 @@
 from typing import Set, Union
 
-from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
 from ...data import Region, Platform, MasteryTree
-from ..common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region
+from ..common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
 from .common import Sprite, Image, ImageData
 from ...dto.staticdata import mastery as dto
 
@@ -195,55 +194,55 @@ class Mastery(CassiopeiaGhost):
         return self._data[MasteryData].included_data
 
     @CassiopeiaGhost.property(MasteryData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def prerequisite(self) -> "Mastery":
         """The prerequisite masteries."""
         return Mastery(id=self._data[MasteryData].prerequisite, region=self.region, version=self.version)
 
     @CassiopeiaGhost.property(MasteryData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def tree(self) -> MasteryTree:
         """The mastery's tree (Cunning, Ferocity, Resolve)."""
         return MasteryTree(self._data[MasteryData].tree)
 
     @CassiopeiaGhost.property(MasteryData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def name(self) -> str:
         """The mastery's name."""
         return self._data[MasteryData].name
 
     @CassiopeiaGhost.property(MasteryData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def points(self) -> str:
         """The number of points that can be put into this mastery."""
         return self._data[MasteryData].points
 
     @CassiopeiaGhost.property(MasteryData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def id(self) -> int:
         """The mastery's ID."""
         return self._data[MasteryData].id
 
     @CassiopeiaGhost.property(MasteryData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def description(self) -> int:
         """The mastery's description."""
         return self._data[MasteryData].description
 
     @CassiopeiaGhost.property(MasteryData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def sanitized_description(self) -> int:
         """The mastery's sanitized description."""
         return self._data[MasteryData].sanitized_description
 
     @CassiopeiaGhost.property(MasteryData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def id(self) -> int:
         """The mastery's ID."""
         return self._data[MasteryData].id
 
     @CassiopeiaGhost.property(MasteryData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def image(self) -> Image:
         """The image information for this mastery."""

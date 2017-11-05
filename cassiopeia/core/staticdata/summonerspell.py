@@ -1,11 +1,10 @@
 from typing import List, Union, Set
 
-from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList
 
 from ...data import Resource, Region, Platform, GameMode
-from ..common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region
+from ..common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
 from .common import ImageData, Image, Sprite
 from ...dto.staticdata import summonerspell as dto
 
@@ -296,20 +295,20 @@ class SummonerSpell(CassiopeiaGhost):
         return self._data[SummonerSpellData].included_data
 
     @CassiopeiaGhost.property(SummonerSpellData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def modes(self) -> List[GameMode]:
         return SearchableList([GameMode(mode) for mode in self._data[SummonerSpellData].modes])
 
     @CassiopeiaGhost.property(SummonerSpellData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def variables(self) -> List[SpellVars]:
         """Contains spell data."""
         return SearchableList(SpellVars(v) for v in self._data[SummonerSpellData].variables)
 
     @CassiopeiaGhost.property(SummonerSpellData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def resource(self) -> Resource:
         """The resource consumed when using this spell."""
@@ -320,90 +319,90 @@ class SummonerSpell(CassiopeiaGhost):
         return self.image.sprite_info
 
     @CassiopeiaGhost.property(SummonerSpellData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def sanitized_description(self) -> str:
         """The spell's sanitized description."""
         return self._data[SummonerSpellData].sanitized_description
 
     @CassiopeiaGhost.property(SummonerSpellData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def sanitized_tooltip(self) -> str:
         """The spell's sanitized tooltip."""
         return self._data[SummonerSpellData].sanitized_tooltip
 
     @CassiopeiaGhost.property(SummonerSpellData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def effects(self) -> List[List[float]]:
         """The level-by-level replacements for {{ e# }} tags in other values."""
         return SearchableList(self._data[SummonerSpellData].effects)
 
     @CassiopeiaGhost.property(SummonerSpellData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def tooltip(self) -> str:
         """The spell's tooltip."""
         return self._data[SummonerSpellData].tooltip
 
     @CassiopeiaGhost.property(SummonerSpellData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def max_rank(self) -> int:
         """The maximum rank this spell can attain."""
         return self._data[SummonerSpellData].max_rank
 
     @CassiopeiaGhost.property(SummonerSpellData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def range(self) -> List[Union[int, str]]:
         """The maximum range of this spell. `self` if it has no range."""
         return SearchableList(self._data[SummonerSpellData].range)
 
     @CassiopeiaGhost.property(SummonerSpellData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def cooldowns(self) -> List[float]:
         """The cooldowns of this spell (per level)."""
         return SearchableList(self._data[SummonerSpellData].cooldowns)
 
     @CassiopeiaGhost.property(SummonerSpellData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def costs(self) -> List[int]:
         """The resource costs of this spell (per level)."""
         return SearchableList(self._data[SummonerSpellData].costs)
 
     @CassiopeiaGhost.property(SummonerSpellData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def key(self) -> str:
         """The spell's key."""
         return self._data[SummonerSpellData].key
 
     @CassiopeiaGhost.property(SummonerSpellData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def description(self) -> str:
         """The spell's description."""
         return self._data[SummonerSpellData].description
 
     @CassiopeiaGhost.property(SummonerSpellData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def alternative_images(self) -> List[Image]:
         """The alternative images for this spell. These won't exist after patch NN, when Riot standardized all images."""
         return SearchableList(Image.from_data(alt) for alt in self._data[SummonerSpellData].alternative_images)
 
     @CassiopeiaGhost.property(SummonerSpellData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def id(self) -> int:
         """The spell's id."""
         return self._data[SummonerSpellData].id
 
     @CassiopeiaGhost.property(SummonerSpellData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def name(self) -> str:
         """The spell's name."""
         return self._data[SummonerSpellData].name
 
     @CassiopeiaGhost.property(SummonerSpellData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def image(self) -> Image:
         image = Image.from_data(self._data[SummonerSpellData].image)

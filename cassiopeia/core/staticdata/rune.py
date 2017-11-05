@@ -1,11 +1,10 @@
 from typing import List, Set, Union
 
-from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
 from ...data import Region, Platform, RuneType
-from ..common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region
+from ..common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
 from .common import ImageData, Sprite, Image
 from ...dto.staticdata import rune as dto
 
@@ -739,51 +738,51 @@ class Rune(CassiopeiaGhost):
         return self._data[RuneData].included_data
 
     @CassiopeiaGhost.property(RuneData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def tier(self) -> int:
         return self._data[RuneData].metadata.tier
 
     @CassiopeiaGhost.property(RuneData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def type(self) -> RuneType:
         return RuneType(self._data[RuneData].metadata.type)
 
     @CassiopeiaGhost.property(RuneData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def name(self) -> str:
         """The rune's name."""
         return self._data[RuneData].name
 
     @CassiopeiaGhost.property(RuneData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def id(self) -> int:
         """The rune's ID."""
         return self._data[RuneData].id
 
     @CassiopeiaGhost.property(RuneData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def description(self) -> int:
         """The rune's description."""
         return self._data[RuneData].description
 
     @CassiopeiaGhost.property(RuneData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def sanitized_description(self) -> int:
         """The rune's sanitized description."""
         return self._data[RuneData].sanitized_description
 
     @CassiopeiaGhost.property(RuneData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def stats(self) -> RuneStats:
         return RuneStats.from_data(self._data[RuneData].stats)
 
     @CassiopeiaGhost.property(RuneData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def tags(self) -> List[str]:
         return self._data[RuneData].id
 
     @CassiopeiaGhost.property(RuneData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def image(self) -> Image:
         """The image information for this rune."""

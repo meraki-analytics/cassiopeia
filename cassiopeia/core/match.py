@@ -2,13 +2,12 @@ import functools
 import datetime
 from typing import List, Tuple, Dict, Set, Union, Generator
 
-from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableLazyList, SearchableDictionary
 
 from .. import configuration
 from ..data import Region, Platform, Tier, GameType, GameMode, Queue, Side, Season, Patch
-from .common import CoreData, DataObjectList, DataObjectGenerator, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, provide_default_region
+from .common import CoreData, DataObjectList, DataObjectGenerator, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, provide_default_region, ghost_load_on
 from ..dto import match as dto
 from .summoner import Summoner
 from .staticdata.champion import Champion
@@ -1272,12 +1271,12 @@ class Timeline(CassiopeiaGhost):
         return self.region.platform
 
     @CassiopeiaGhost.property(TimelineData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def frames(self) -> List[Frame]:
         return SearchableList([Frame.from_data(frame) for frame in self._data[TimelineData].frames])
 
     @CassiopeiaGhost.property(TimelineData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def frame_interval(self) -> int:
         return self._data[TimelineData].frame_interval
 
@@ -1863,19 +1862,19 @@ class Match(CassiopeiaGhost):
         return Timeline(id=self.id, region=self.region.value)
 
     @CassiopeiaGhost.property(MatchData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def season(self) -> Season:
         return Season.from_id(self._data[MatchData].season_id)
 
     @CassiopeiaGhost.property(MatchData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def queue(self) -> Queue:
         return Queue.from_id(self._data[MatchData].queue_id)
 
     @CassiopeiaGhost.property(MatchData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     # This method is lazy-loaded in a special way because of its unique behavior
     def participants(self) -> List[Participant]:
         # This is a complicated function because we don't want to load the particpants if the only one the user cares about is the one loaded from a match ref
@@ -1925,7 +1924,7 @@ class Match(CassiopeiaGhost):
         return SearchableLazyList(generate_participants(self))
 
     @CassiopeiaGhost.property(MatchData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def teams(self) -> List[Team]:
         return [Team.from_data(t, participants=[p for p in self.participants if p.side.value == self._data[MatchData].teams[i].side]) for i, t in enumerate(self._data[MatchData].teams)]
@@ -1945,7 +1944,7 @@ class Match(CassiopeiaGhost):
             return self.teams[1]
 
     @CassiopeiaGhost.property(MatchData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def version(self) -> str:
         return self._data[MatchData].version
 
@@ -1956,32 +1955,32 @@ class Match(CassiopeiaGhost):
         return patch
 
     @CassiopeiaGhost.property(MatchData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def mode(self) -> GameMode:
         return GameMode(self._data[MatchData].mode)
 
     @CassiopeiaGhost.property(MatchData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def map(self) -> Map:
         version = _choose_staticdata_version(self)
         return Map(id=self._data[MatchData].map_id, region=self.region, version=version)
 
     @CassiopeiaGhost.property(MatchData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def type(self) -> GameType:
         return GameType(self._data[MatchData].type)
 
     @CassiopeiaGhost.property(MatchData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def duration(self) -> datetime.timedelta:
         return datetime.timedelta(seconds=self._data[MatchData].duration)
 
     @CassiopeiaGhost.property(MatchData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def creation(self) -> datetime.datetime:
         return datetime.datetime.fromtimestamp(self._data[MatchData].creation / 1000)

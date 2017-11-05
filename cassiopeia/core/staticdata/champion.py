@@ -1,14 +1,13 @@
 from typing import Dict, List, Set, Union
 
 from PIL.Image import Image as PILImage
-from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
 from ... import configuration
 from ...data import Resource, Region, Platform, GameMode
 from ..champion import ChampionStatusData
-from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, DataObjectList, get_latest_version, provide_default_region
+from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, DataObjectList, get_latest_version, provide_default_region, ghost_load_on
 from .common import ImageData, Image, Sprite
 from .map import Map
 from ...dto.staticdata import champion as dto
@@ -951,118 +950,118 @@ class Champion(CassiopeiaGhost):
         return self._data[ChampionData].included_data
 
     @CassiopeiaGhost.property(ChampionData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def id(self) -> int:
         """The champion's ID."""
         return self._data[ChampionData].id
 
     @CassiopeiaGhost.property(ChampionStatusData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def enabled(self) -> bool:
         """Whether or not the champion is currently enabled."""
         return self._data[ChampionStatusData].enabled
 
     @CassiopeiaGhost.property(ChampionStatusData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def custom_enabled(self) -> bool:
         """Whether or not the champion is currently enabled in custom games."""
         return self._data[ChampionStatusData].custom_enabled
 
     @CassiopeiaGhost.property(ChampionStatusData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def coop_ai_enabled(self) -> bool:
         """Whether or not the champion is currently enabled in coop and AI games."""
         return self._data[ChampionStatusData].coop_ai_enabled
 
     @CassiopeiaGhost.property(ChampionStatusData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def ranked_enabled(self) -> bool:
         """Whether or not the champion is currently enabled in ranked games."""
         return self._data[ChampionStatusData].ranked_enabled
 
     @CassiopeiaGhost.property(ChampionStatusData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def free_to_play(self) -> bool:
         """Whether or not the champion is currently free to play."""
         return self._data[ChampionStatusData].free_to_play
 
     @CassiopeiaGhost.property(ChampionData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def ally_tips(self) -> List[str]:
         """The tips for playing with this champion."""
         return self._data[ChampionData].ally_tips
 
     @CassiopeiaGhost.property(ChampionData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def enemy_tips(self) -> List[str]:
         """The tips for playing against this champion."""
         return self._data[ChampionData].enemy_tips
 
     @CassiopeiaGhost.property(ChampionData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def blurb(self) -> str:
         """A short blurb about this champion."""
         return self._data[ChampionData].blurb
 
     @CassiopeiaGhost.property(ChampionData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def key(self) -> str:
         """The champion's key."""
         return self._data[ChampionData].key
 
     @CassiopeiaGhost.property(ChampionData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def lore(self) -> str:
         """The champion's lore."""
         return self._data[ChampionData].lore
 
     @CassiopeiaGhost.property(ChampionData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def name(self) -> str:
         """The champion's name."""
         return self._data[ChampionData].name
 
     @CassiopeiaGhost.property(ChampionData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def resource(self) -> Resource:
         """The type of resource this champion uses."""
         return Resource(self._data[ChampionData].resource)
 
     @CassiopeiaGhost.property(ChampionData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def tags(self) -> List[str]:
         """The tags associated with this champion."""
         return self._data[ChampionData].tags
 
     @CassiopeiaGhost.property(ChampionData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def title(self) -> str:
         """The champion's title."""
         return self._data[ChampionData].title
 
     @CassiopeiaGhost.property(ChampionData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def info(self) -> Info:
         """Info about this champion."""
         return Info.from_data(self._data[ChampionData].info)
 
     @CassiopeiaGhost.property(ChampionData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def recommended_itemsets(self) -> List[RecommendedItems]:
         """The champion's recommended itemsets."""
         return SearchableList(RecommendedItems.from_data(item, region=self.region) for item in self._data[ChampionData].recommended_itemsets)
 
     @CassiopeiaGhost.property(ChampionData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def stats(self) -> Stats:
         """The champion's stats."""
         return Stats.from_data(self._data[ChampionData].stats)
 
     @CassiopeiaGhost.property(ChampionData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def skins(self) -> List[Skin]:
         """This champion's skins."""
@@ -1073,21 +1072,21 @@ class Champion(CassiopeiaGhost):
         return SearchableList(skins)
 
     @CassiopeiaGhost.property(ChampionData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def passive(self) -> Passive:
         """This champion's passive."""
         return Passive.from_data(self._data[ChampionData].passive)
 
     @CassiopeiaGhost.property(ChampionData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def spells(self) -> List[ChampionSpell]:
         """This champion's spells."""
         return SearchableList(ChampionSpell.from_data(spell) for spell in self._data[ChampionData].spells)
 
     @CassiopeiaGhost.property(ChampionData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def image(self) -> Image:
         """The image information for this champion."""

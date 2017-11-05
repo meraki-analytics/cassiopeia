@@ -2,14 +2,13 @@ import os
 from PIL.Image import Image as PILImage
 from typing import Union
 
-from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy_property, lazy
 from merakicommons.container import searchable
 
 from ... import configuration
 from ...data import Region, Platform
 from ...dto.staticdata.profileicon import ProfileIconDetailsDto, ProfileIconDataDto
-from ..common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region
+from ..common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
 
 
 try:
@@ -179,13 +178,13 @@ class ProfileIcon(CassiopeiaGhost):
             return None
 
     @CassiopeiaGhost.property(ProfileIconData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def url(self) -> str:
         version = get_latest_version(region=self.region, endpoint="profileicon")
         return "https://ddragon.leagueoflegends.com/cdn/{version}/img/profileicon/{id}.png".format(version=version, id=self.id)
 
     @CassiopeiaGhost.property(ProfileIconData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def image(self) -> PILImage:
         return configuration.settings.pipeline.get(PILImage, query={"url": self.url})

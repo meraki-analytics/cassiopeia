@@ -1,11 +1,10 @@
 from typing import List, Set, Mapping, Union
 
-from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList
 
 from ...data import Region, Platform
-from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, DataObjectList, get_latest_version, CassiopeiaList, provide_default_region
+from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, DataObjectList, get_latest_version, CassiopeiaList, provide_default_region, ghost_load_on
 from .common import ImageData, Sprite, Image
 from .map import Map
 from ...dto.staticdata import item as dto
@@ -572,120 +571,120 @@ class Item(CassiopeiaGhost):
         return self._data[ItemData].included_data
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def id(self) -> int:
         """The item's ID."""
         return self._data[ItemData].id
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def gold(self) -> Gold:
         return Gold.from_data(self._data[ItemData].gold)
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def plaintext(self) -> str:
         return self._data[ItemData].plaintext
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def hide(self) -> bool:
         return self._data[ItemData].hide
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def in_store(self) -> bool:
         return self._data[ItemData].in_store
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def builds_into(self) -> List["Item"]:
         return self._data[ItemData].builds_into
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def builds_from(self) -> List["Item"]:
         return self._data[ItemData].builds_from
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def stats(self) -> ItemStats:
         return self._data[ItemData].stats
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def keywords(self) -> List[str]:
         return SearchableList(self._data[ItemData].keywords)
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def maps(self) -> List[Map]:
         return [Map(id=id_, region=self.region, version=self.version) for id_ in self._data[ItemData].maps]
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def description(self) -> str:
         return self._data[ItemData].description
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def tags(self) -> List[str]:
         return self._data[ItemData].tags
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def effect(self) -> Mapping[str, str]:
         return self._data[ItemData].effect
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def champion(self) -> "Champion":
         from .champion import Champion
         return Champion(name=self._data[ItemData].champion, region=self.region, version=self.verion)
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def group(self) -> str:
         return self._data[ItemData].group
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def name(self) -> str:
         return self._data[ItemData].name
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def consume_on_full(self) -> bool:
         return self._data[ItemData].consume_on_full
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def consumed(self) -> bool:
         return self._data[ItemData].consumed
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def sanitized_description(self) -> str:
         return self._data[ItemData].sanitized_description
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def tier(self) -> int:
         return self._data[ItemData].tier
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def max_stacks(self) -> int:
         return self._data[ItemData].max_stacks
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def special_recipe(self) -> int:
         return self._data[ItemData].special_recipe
 
     @CassiopeiaGhost.property(ItemData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def image(self) -> Image:
         """The image information for this item."""

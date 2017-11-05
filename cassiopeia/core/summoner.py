@@ -2,13 +2,11 @@ import datetime
 from typing import Union
 
 from datapipelines import NotFoundError
-from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
-from .. import configuration
 from ..data import Region, Platform
-from .common import CoreData, CassiopeiaObject, CassiopeiaGhost, provide_default_region
+from .common import CoreData, CassiopeiaObject, CassiopeiaGhost, provide_default_region, ghost_load_on
 from .staticdata import ProfileIcon
 from ..dto.summoner import SummonerDto
 
@@ -80,7 +78,7 @@ class Summoner(CassiopeiaGhost):
     _data_types = {SummonerData}
 
     @provide_default_region
-    def __init__(self, *, id: int = None, account: Union[Account, int] = None, name: str = None, region: Union[Region, str]):
+    def __init__(self, *, id: int = None, account: Union[Account, int] = None, name: str = None, region: Union[Region, str] = None):
         kwargs = {"region": region}
         if id is not None:
             kwargs["id"] = id
@@ -144,33 +142,33 @@ class Summoner(CassiopeiaGhost):
         return self.region.platform
 
     @CassiopeiaGhost.property(SummonerData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def account(self) -> Account:
         return Account(id=self._data[SummonerData].account_id)
 
     @CassiopeiaGhost.property(SummonerData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def id(self) -> int:
         return self._data[SummonerData].id
 
     @CassiopeiaGhost.property(SummonerData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def name(self) -> str:
         return self._data[SummonerData].name
 
     @CassiopeiaGhost.property(SummonerData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def level(self) -> str:
         return self._data[SummonerData].level
 
     @CassiopeiaGhost.property(SummonerData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def profile_icon(self) -> ProfileIcon:
         return ProfileIcon(id=self._data[SummonerData].profile_icon_id, region=self.region)
 
     @CassiopeiaGhost.property(SummonerData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def revision_date(self) -> datetime.date:
         return datetime.datetime.fromtimestamp(self._data[SummonerData].revision_date / 1000).date()
 

@@ -173,7 +173,7 @@ class StaticDataTransformer(DataTransformer):
     @transform.register(LanguageStringsDto, LanguageStringsData)
     def language_strings_dto_to_data(self, value: LanguageStringsDto, context: PipelineContext = None) -> LanguageStringsData:
         data = deepcopy(value)
-        return LanguageStringsData(strings=data, region=value["region"], version=value["version"], locale=value["locale"])
+        return LanguageStringsData.from_dto(data)
 
     # Profile Icons
 
@@ -276,7 +276,7 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(LanguageStringsData, LanguageStrings)
     def language_strings_data_to_core(self, value: LanguageStringsData, context: PipelineContext = None) -> LanguageStrings:
-        return LanguageStrings(strings=value.strings, region=value.region, version=value.version, locale=value.locale)
+        return LanguageStrings.from_data(value)
 
     # Profile Icon
 
@@ -285,5 +285,5 @@ class StaticDataTransformer(DataTransformer):
         return ProfileIcon.from_data(value)
 
     @transform.register(ProfileIconListData, ProfileIcons)
-    def profile_icon_data_to_core(self, value: ProfileIconListData, context: PipelineContext = None) -> ProfileIcons:
+    def profile_icon_list_data_to_core(self, value: ProfileIconListData, context: PipelineContext = None) -> ProfileIcons:
         return ProfileIcons.from_data(*value, region=value.region, version=value.version, locale=value.locale)

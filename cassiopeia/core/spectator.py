@@ -2,13 +2,11 @@ from typing import List, Dict, Union
 import datetime
 
 from datapipelines import NotFoundError
-from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
-from .. import configuration
 from ..data import Region, Platform, GameMode, GameType, Queue
-from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region
+from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
 from ..dto import spectator as dto
 from .staticdata.profileicon import ProfileIcon
 from .staticdata.champion import Champion
@@ -340,23 +338,23 @@ class CurrentMatch(CassiopeiaGhost):
         return self.region.platform
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def id(self) -> int:
         return self._data[CurrentGameInfoData].id
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def teams(self) -> List[Team]:
         return SearchableList([Team.from_data(team, region=self.region) for team in self._data[CurrentGameInfoData].teams])
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def blue_team(self) -> Team:
         return self.teams[0]
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def red_team(self) -> Team:
         return self.teams[1]
 
@@ -365,36 +363,36 @@ class CurrentMatch(CassiopeiaGhost):
         return SearchableList([*self.blue_team.participants, *self.red_team.participants])
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def mode(self) -> GameMode:
         return GameMode(self._data[CurrentGameInfoData].mode)
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def map(self) -> Map:
         return Map(id=self._data[CurrentGameInfoData].map, region=self.region, version=get_latest_version(self.region, endpoint="map"))
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def type(self) -> GameType:
         return GameType(self._data[CurrentGameInfoData].type)
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def queue(self) -> Queue:
         return Queue.from_id(self._data[CurrentGameInfoData].queue)
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def duration(self) -> datetime.timedelta:
         return datetime.timedelta(seconds=self._data[CurrentGameInfoData].duration)
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def creation(self) -> datetime.datetime:
         return datetime.datetime.fromtimestamp(self._data[CurrentGameInfoData].creation / 1000)
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def observer_key(self) -> str:
         return self._data[CurrentGameInfoData].observer_key

@@ -1,4 +1,4 @@
-from .settings import Settings
+from .settings import Settings, get_default_config
 from .load import load_config
 
 

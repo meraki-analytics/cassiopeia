@@ -4,7 +4,7 @@ from typing import Mapping, Any, Set, Union, Optional, Type, Generator
 import functools
 import logging
 
-from merakicommons.ghost import Ghost
+from merakicommons.ghost import Ghost, ghost_load_on as _ghost_load_on
 from merakicommons.container import SearchableList, SearchableLazyList
 
 from .. import configuration
@@ -18,6 +18,10 @@ except ImportError:
 
 
 LOGGER = logging.getLogger("core")
+
+
+def ghost_load_on(method):
+    return _ghost_load_on(KeyError, AttributeError)(method)
 
 
 def provide_default_region(method):

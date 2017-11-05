@@ -1,11 +1,10 @@
 from typing import List, Union
 
-from merakicommons.ghost import ghost_load_on
 from merakicommons.cache import lazy
 from merakicommons.container import searchable, SearchableList
 
 from ..data import Region, Platform
-from .common import CoreData, CassiopeiaObject, CassiopeiaGhost, provide_default_region
+from .common import CoreData, CassiopeiaObject, CassiopeiaGhost, provide_default_region, ghost_load_on
 
 
 ##############
@@ -240,43 +239,43 @@ class ShardStatus(CassiopeiaGhost):
         return {"region": self.region, "platform": self.platform}
 
     @CassiopeiaGhost.property(ShardStatusData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def region(self) -> Region:
         return Region(self._data[ShardStatusData].region)
 
     @CassiopeiaGhost.property(ShardStatusData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     @lazy
     def platform(self) -> Platform:
         return self.region.platform
 
     @CassiopeiaGhost.property(ShardStatusData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def name(self) -> str:
         return self._data[ShardStatusData].name
 
     @CassiopeiaGhost.property(ShardStatusData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def region_tag(self) -> str:
         return self._data[ShardStatusData].region_tag
 
     @CassiopeiaGhost.property(ShardStatusData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def hostname(self) -> str:
         return self._data[ShardStatusData].hostname
 
     @CassiopeiaGhost.property(ShardStatusData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def services(self) -> List[Service]:
         return SearchableList([Service.from_data(service) for service in self._data[ShardStatusData].services])
 
     @CassiopeiaGhost.property(ShardStatusData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def slug(self) -> str:
         return self._data[ShardStatusData].slug
 
     @CassiopeiaGhost.property(ShardStatusData)
-    @ghost_load_on(KeyError)
+    @ghost_load_on
     def locales(self) -> List[str]:
         return self._data[ShardStatusData].locales

@@ -1,8 +1,10 @@
-from typing import TypeVar, Type, Dict, Union
+from typing import TypeVar, Type, Dict, Union, List
 import logging
 import importlib
+import inspect
+import copy
 
-from datapipelines import DataPipeline, DataSink, DataSource
+from datapipelines import DataPipeline, DataSink, DataSource, CompositeDataTransformer, DataTransformer
 
 from ..data import Region, Platform
 
@@ -51,6 +53,9 @@ def create_pipeline(service_configs: Dict, enable_ghost_loading: bool, verbose: 
             else:
                 # Insert the ghost store at the beginning of the pipeline
                 services.insert(0, UnloadedGhostStore())
+    else:
+        # Enable the data -> core transformers for ghost objects
+        enable_ghost_transformers(riotapi_transformer)
 
     pipeline = DataPipeline(services, transformers)
 
@@ -81,31 +86,106 @@ def create_pipeline(service_configs: Dict, enable_ghost_loading: bool, verbose: 
     return pipeline
 
 
-_defaults = {
-    "global": {
-        "version_from_match": "patch",
-        "default_region": None,
-        "enable_ghost_loading": True
-    },
-    "plugins": {},
-    "pipeline": {
-        "Cache": {},
-        "DDragon": {},
-        "RiotAPI": {
-            "api_key": "RIOT_API_KEY"
+def register_transformer_conversion(transformer: DataTransformer, from_type, to_type):
+    # Find the method that takes a `from_type` and returns a `to_type` and register it
+    methods = inspect.getmembers(transformer, predicate=inspect.ismethod)
+    for name, method in methods:
+        annotations = copy.copy(method.__annotations__)
+        return_type = annotations.pop("return")
+        annotations.pop("context", None)
+        try:
+            if to_type is return_type and from_type in annotations.values():
+                transformer.transform.register(from_type, to_type)(method.__func__).__get__(transformer, transformer.__class__)
+                break
+        except TypeError:
+            continue
+    else:
+        raise RuntimeError("Could not find method to register: {} to {} in {}.".format(from_type, to_type, transformer))
+
+
+def enable_ghost_transformers(riotapi_transformers: List[CompositeDataTransformer]):
+    # Enable the data -> core transformers for ghost objects
+
+    # First, find all the transformer objects in te composite data transformer(s)
+    from ..transformers import ChampionMasteryTransformer, LeagueTransformer, MatchTransformer, SpectatorTransformer, StaticDataTransformer, StatusTransformer, SummonerTransformer
+    data_transformers = set([transformer
+                             for composite_transformer in riotapi_transformers
+                             for transformer in composite_transformer._transformers.values()
+                             ])
+
+    # Then, for each transformer we want to enable, register the function that's defined
+    for transformer in data_transformers:
+        if isinstance(transformer, ChampionMasteryTransformer):
+            from ..core.championmastery import ChampionMasteryData, ChampionMastery
+            register_transformer_conversion(transformer, ChampionMasteryData, ChampionMastery)
+        elif isinstance(transformer, LeagueTransformer):
+            from ..core.league import LeagueListData, League, ChallengerLeagueListData, ChallengerLeague, MasterLeagueListData, MasterLeague
+            register_transformer_conversion(transformer, LeagueListData, League)
+            register_transformer_conversion(transformer, ChallengerLeagueListData, ChallengerLeague)
+            register_transformer_conversion(transformer, MasterLeagueListData, MasterLeague)
+        elif isinstance(transformer, MatchTransformer):
+            from ..core.match import MatchData, Match, MatchReferenceData, TimelineData, Timeline
+            register_transformer_conversion(transformer, MatchData, Match)
+            register_transformer_conversion(transformer, MatchReferenceData, Match)
+            register_transformer_conversion(transformer, TimelineData, Timeline)
+        elif isinstance(transformer, SpectatorTransformer):
+            from ..core.spectator import CurrentGameInfoData, CurrentMatch
+            register_transformer_conversion(transformer, CurrentGameInfoData, CurrentMatch)
+        elif isinstance(transformer, StaticDataTransformer):
+            from ..core.staticdata.champion import ChampionData, Champion
+            from ..core.staticdata.mastery import MasteryData, Mastery
+            from ..core.staticdata.rune import RuneData, Rune
+            from ..core.staticdata.item import ItemData, Item
+            from ..core.staticdata.summonerspell import SummonerSpellData, SummonerSpell
+            from ..core.staticdata.map import MapData, Map
+            from ..core.staticdata.profileicon import ProfileIconData, ProfileIcon
+            register_transformer_conversion(transformer, ChampionData, Champion)
+            register_transformer_conversion(transformer, MasteryData, Mastery)
+            register_transformer_conversion(transformer, RuneData, Rune)
+            register_transformer_conversion(transformer, ItemData, Item)
+            register_transformer_conversion(transformer, SummonerSpellData, SummonerSpell)
+            register_transformer_conversion(transformer, MapData, Map)
+            register_transformer_conversion(transformer, ProfileIconData, ProfileIcon)
+        elif isinstance(transformer, StatusTransformer):
+            from ..core.status import ShardStatusData, ShardStatus
+            register_transformer_conversion(transformer, ShardStatusData, ShardStatus)
+        elif isinstance(transformer, SummonerTransformer):
+            from ..core.summoner import SummonerData, Summoner
+            register_transformer_conversion(transformer, SummonerData, Summoner)
+
+    # Re-init the composite transformers to redefine their transformers
+    for composite_transformer in riotapi_transformers:
+        data_transformers = [transformer for transformer in composite_transformer._transformers.values()]
+        composite_transformer.__init__(data_transformers)
+
+
+def get_default_config():
+    return {
+        "global": {
+            "version_from_match": "patch",
+            "default_region": None,
+            "enable_ghost_loading": True
+        },
+        "plugins": {},
+        "pipeline": {
+            "Cache": {},
+            "DDragon": {},
+            "RiotAPI": {
+                "api_key": "RIOT_API_KEY"
+            }
+        },
+        "logging": {
+            "print_calls": True,
+            "print_riot_api_key": False,
+            "default": "WARNING",
+            "core": "WARNING"
         }
-    },
-    "logging": {
-        "print_calls": True,
-        "print_riot_api_key": False,
-        "default": "WARNING",
-        "core": "WARNING"
     }
-}
 
 
 class Settings(object):
     def __init__(self, settings):
+        _defaults = get_default_config()
         globals_ = settings.get("global", _defaults["global"])
         self.__version_from_match = globals_.get("version_from_match", _defaults["global"]["version_from_match"])  # Valid json values are: "version", "patch", and null
         self.__default_region = globals_.get("default_region", _defaults["global"]["default_region"])

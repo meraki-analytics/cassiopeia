@@ -4,7 +4,7 @@ import datetime
 from .data import Region, Queue, Season, Patch
 from .core import Champion, Summoner, Account, ChampionMastery, Rune, Mastery, Item, RunePage, MasteryPage, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Masteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Locales, ProfileIcons, MasteryPages, RunePages, ChallengerLeague, MasterLeague, SummonerLeagues, LeagueEntries
 from .datastores import common as _common_datastore
-from ._configuration import Settings, load_config
+from ._configuration import Settings, load_config, get_default_config
 from . import configuration
 
 
