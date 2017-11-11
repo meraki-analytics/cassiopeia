@@ -111,15 +111,16 @@ class HTTPClient(object):
 
         content_type = response_headers.get("Content-Type", "application/octet-stream").upper()
 
-        # Decode to text if a charset is included
-        match = re.search("CHARSET=(\S+)", content_type)
-        if match:
-            encoding = match.group(1)
+        # Load JSON if necessary
+        if "APPLICATION/JSON" in content_type:
+            # Decode to text; use charset if included
+            match = re.search("CHARSET=(\S+)", content_type)
+            if match:
+                encoding = match.group(1)
+            else:
+                encoding = "UTF-8"
             body = body.decode(encoding)
-
-            # Load JSON if necessary
-            if "APPLICATION/JSON" in content_type:
-                body = json.loads(body)
+            body = json.loads(body)
 
         # Handle errors
         if status_code >= 400:

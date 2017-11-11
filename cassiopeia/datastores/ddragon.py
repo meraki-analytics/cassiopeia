@@ -117,7 +117,7 @@ class DDragon(DataSource):
             locale=locale
         )
         try:
-            body = json.loads(self._client.get(url)[0])
+            body = self._client.get(url)[0]
         except HTTPError as e:
             raise NotFoundError(str(e)) from e
 
@@ -191,7 +191,7 @@ class DDragon(DataSource):
     def get_versions(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> VersionListDto:
         url = "https://ddragon.leagueoflegends.com/api/versions.json"
         try:
-            body = json.loads(self._client.get(url)[0])
+            body = self._client.get(url)[0]
         except HTTPError as e:
             raise NotFoundError(str(e)) from e
 
@@ -213,7 +213,7 @@ class DDragon(DataSource):
         region = query["platform"].region
         url = "https://ddragon.leagueoflegends.com/realms/{region}.json".format(region=region.value.lower())
         try:
-            body = json.loads(self._client.get(url)[0])
+            body = self._client.get(url)[0]
 
         except HTTPError as e:
             raise NotFoundError(str(e)) from e
@@ -233,7 +233,7 @@ class DDragon(DataSource):
     def get_languages(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LanguagesDto:
         url = "https://ddragon.leagueoflegends.com/cdn/languages.json"
         try:
-            body = json.loads(self._client.get(url)[0])
+            body = self._client.get(url)[0]
         except HTTPError as e:
             raise NotFoundError(str(e)) from e
 
@@ -303,7 +303,7 @@ class DDragon(DataSource):
             locale=locale
         )
         try:
-            body = json.loads(self._client.get(url)[0])
+            body = self._client.get(url)[0]
         except HTTPError as e:
             raise NotFoundError(str(e)) from e
 
@@ -337,7 +337,7 @@ class DDragon(DataSource):
             locale=locale
         )
         try:
-            body = json.loads(self._client.get(url)[0])
+            body = self._client.get(url)[0]
         except HTTPError as e:
             raise NotFoundError(str(e)) from e
 
@@ -412,7 +412,7 @@ class DDragon(DataSource):
             locale=locale
         )
         try:
-            body = json.loads(self._client.get(url)[0])
+            body = self._client.get(url)[0]
         except HTTPError as e:
             raise NotFoundError(str(e)) from e
 
@@ -511,7 +511,7 @@ class DDragon(DataSource):
             locale=locale
         )
         try:
-            body = json.loads(self._client.get(url)[0])
+            body = self._client.get(url)[0]
         except HTTPError as e:
             raise NotFoundError(str(e)) from e
 
@@ -605,7 +605,7 @@ class DDragon(DataSource):
             locale=locale
         )
         try:
-            body = json.loads(self._client.get(url)[0])
+            body = self._client.get(url)[0]
         except HTTPError as e:
             raise NotFoundError(str(e)) from e
 
@@ -706,7 +706,7 @@ class DDragon(DataSource):
             locale=locale
         )
         try:
-            body = json.loads(self._client.get(url)[0])
+            body = self._client.get(url)[0]
         except HTTPError as e:
             raise NotFoundError(str(e)) from e
 
@@ -749,7 +749,7 @@ class DDragon(DataSource):
             locale=locale
         )
         try:
-            body = json.loads(self._client.get(url)[0])
+            body = self._client.get(url)[0]
         except HTTPError as e:
             raise NotFoundError(str(e)) from e
 
