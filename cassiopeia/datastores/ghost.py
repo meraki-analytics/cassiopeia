@@ -3,7 +3,7 @@ from typing import Type, TypeVar, MutableMapping, Any, Iterable
 from datapipelines import DataSource, PipelineContext, Query, validate_query
 
 from ..data import Platform, Queue
-from ..core import Champion, Rune, Mastery, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, MasterLeague, League
+from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, MasterLeague, League
 from ..core.match import Timeline
 from .riotapi.staticdata import _get_latest_version, _get_default_locale
 from .uniquekeys import convert_region_to_platform
@@ -42,19 +42,6 @@ class UnloadedGhostStore(DataSource):
         can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
         can_have("includedData").with_default({"all"}).also. \
         can_have("dataById").with_default(True)
-
-    _validate_get_mastery_query = Query. \
-        has("id").as_(int).or_("name").as_(str).also. \
-        has("platform").as_(Platform).also. \
-        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
-        can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-        can_have("includedData").with_default({"all"})
-
-    _validate_get_masteries_query = Query. \
-        has("platform").as_(Platform).also. \
-        can_have("version").as_(str).also. \
-        can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-        can_have("includedData").with_default({"all"})
 
     _validate_get_rune_query = Query. \
         has("id").as_(int).or_("name").as_(str).also. \
@@ -150,14 +137,6 @@ class UnloadedGhostStore(DataSource):
         has("queue").as_(Queue).also. \
         has("platform").as_(Platform)
 
-    _validate_get_mastery_pages_query = Query. \
-        has("summoner.id").as_(int).also. \
-        has("platform").as_(Platform)
-
-    _validate_get_rune_pages_query = Query. \
-        has("summoner.id").as_(int).also. \
-        has("platform").as_(Platform)
-
     _validate_get_current_match_query = Query. \
         has("platform").as_(Platform).also. \
         has("summoner.id").as_(int)
@@ -205,13 +184,6 @@ class UnloadedGhostStore(DataSource):
         query["region"] = query.pop("platform").region
         query["included_data"] = query.pop("includedData")
         return Rune._construct_normally(**query)
-
-    @get.register(Mastery)
-    @validate_query(_validate_get_mastery_query, convert_region_to_platform)
-    def get_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Mastery:
-        query["region"] = query.pop("platform").region
-        query["included_data"] = query.pop("includedData")
-        return Mastery._construct_normally(**query)
 
     @get.register(Item)
     @validate_query(_validate_get_item_query, convert_region_to_platform)

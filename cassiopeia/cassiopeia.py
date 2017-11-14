@@ -2,7 +2,7 @@ from typing import List, Set, Dict, Union, TextIO
 import datetime
 
 from .data import Region, Queue, Season, Patch
-from .core import Champion, Summoner, Account, ChampionMastery, Rune, Mastery, Item, RunePage, MasteryPage, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Masteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Locales, ProfileIcons, MasteryPages, RunePages, ChallengerLeague, MasterLeague, SummonerLeagues, LeagueEntries
+from .core import Champion, Summoner, Account, ChampionMastery, Rune, Item, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Locales, ProfileIcons, ChallengerLeague, MasterLeague, SummonerLeagues, LeagueEntries
 from .datastores import common as _common_datastore
 from ._configuration import Settings, load_config, get_default_config
 from . import configuration
@@ -105,10 +105,6 @@ def get_champions(region: Union[Region, str] = None) -> List[Champion]:
     return Champions(region=region)
 
 
-def get_masteries(region: Union[Region, str] = None) -> List[Mastery]:
-    return Masteries(region=region)
-
-
 def get_runes(region: Union[Region, str] = None) -> List[Rune]:
     return Runes(region=region)
 
@@ -119,14 +115,6 @@ def get_summoner_spells(region: Union[Region, str] = None) -> List[SummonerSpell
 
 def get_items(region: Union[Region, str] = None) -> List[Item]:
     return Items(region=region)
-
-
-def get_mastery_pages(summoner: Summoner, region: Union[Region, str] = None) -> List[MasteryPage]:
-    return MasteryPages(summoner=summoner, region=region)
-
-
-def get_rune_pages(summoner: Summoner, region: Union[Region, str] = None) -> List[RunePage]:
-    return RunePages(summoner=summoner, region=region)
 
 
 def get_maps(region: Union[Region, str] = None) -> List[Map]:

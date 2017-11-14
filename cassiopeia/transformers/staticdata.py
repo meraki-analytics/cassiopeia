@@ -4,7 +4,6 @@ from copy import deepcopy
 from datapipelines import DataTransformer, PipelineContext
 
 from ..core.staticdata.champion import ChampionData, ChampionListData, Champion, Champions
-from ..core.staticdata.mastery import MasteryData, MasteryListData, Mastery, Masteries
 from ..core.staticdata.rune import RuneData, RuneListData, Rune, Runes
 from ..core.staticdata.item import ItemData, ItemListData, Item, Items
 from ..core.staticdata.summonerspell import SummonerSpellData, SummonerSpellListData, SummonerSpell, SummonerSpells
@@ -16,7 +15,6 @@ from ..core.staticdata.languagestrings import LanguageStringsData, LanguageStrin
 from ..core.staticdata.profileicon import ProfileIconData, ProfileIconListData, ProfileIcon, ProfileIcons
 
 from ..dto.staticdata import ChampionDto, ChampionListDto
-from ..dto.staticdata import MasteryDto, MasteryListDto
 from ..dto.staticdata import RuneDto, RuneListDto
 from ..dto.staticdata import ItemDto, ItemListDto
 from ..dto.staticdata import SummonerSpellDto, SummonerSpellListDto
@@ -56,24 +54,6 @@ class StaticDataTransformer(DataTransformer):
 
         data = data["data"]
         return ChampionListData(data, region=value["region"], version=value["version"], locale=value["locale"], included_data=value["includedData"])
-
-    # Mastery
-
-    @transform.register(MasteryDto, MasteryData)
-    def mastery_dto_to_data(self, value: MasteryDto, context: PipelineContext = None) -> MasteryData:
-        data = deepcopy(value)
-        return MasteryData.from_dto(data)
-
-    @transform.register(MasteryListDto, MasteryListData)
-    def mastery_list_dto_to_data(self, value: MasteryListDto, context: PipelineContext = None) -> MasteryListData:
-        data = deepcopy(value)
-
-        data["data"] = [self.mastery_dto_to_data(c) for c in data["data"].values()]
-        for c in data["data"]:
-            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"], "includedData": data["includedData"]})
-
-        data = data["data"]
-        return MasteryListData(data, region=value["region"], version=value["version"], locale=value["locale"], included_data=value["includedData"])
 
     # Rune
 
@@ -178,14 +158,14 @@ class StaticDataTransformer(DataTransformer):
     # Profile Icons
 
     @transform.register(ProfileIconDetailsDto, ProfileIconData)
-    def profile_icon_dto_to_data(self, value: ProfileIconDetailsDto, context: PipelineContext = None) -> ProfileIconData:
+    def profile_icon_details_dto_to_data(self, value: ProfileIconDetailsDto, context: PipelineContext = None) -> ProfileIconData:
         data = deepcopy(value)
         return ProfileIconData.from_dto(data)
 
     @transform.register(ProfileIconDataDto, ProfileIconListData)
-    def profile_icon_dto_to_data(self, value: ProfileIconDataDto, context: PipelineContext = None) -> ProfileIconListData:
+    def profile_icon_data_dto_to_data(self, value: ProfileIconDataDto, context: PipelineContext = None) -> ProfileIconListData:
         data = deepcopy(value)
-        return ProfileIconListData([self.profile_icon_dto_to_data(p) for p in data["data"]], region=value["region"], version=value["version"], locale=value["locale"])
+        return ProfileIconListData([self.profile_icon_details_dto_to_data(p) for p in data["data"].values()], region=value["region"], version=value["version"], locale=value["locale"])
 
     ################
     # Data to Core #
@@ -200,16 +180,6 @@ class StaticDataTransformer(DataTransformer):
     @transform.register(ChampionListData, Champions)
     def champion_list_data_to_core(self, value: ChampionListData, context: PipelineContext = None) -> Champions:
         return Champions.from_data(*[self.champion_data_to_core(c) for c in value], region=value.region, version=value.version, locale=value.locale, included_data=value.included_data)
-
-    # Mastery
-
-    #@transform.register(MasteryData, Mastery)
-    def mastery_data_to_core(self, value: MasteryData, context: PipelineContext = None) -> Mastery:
-        return Mastery.from_data(value)
-
-    @transform.register(MasteryListData, Masteries)
-    def mastery_list_data_to_core(self, value: MasteryListData, context: PipelineContext = None) -> Masteries:
-        return Masteries.from_data(*[self.mastery_data_to_core(m) for m in value], region=value.region, version=value.version, locale=value.locale, included_data=value.included_data)
 
     # Rune
 
@@ -286,4 +256,4 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(ProfileIconListData, ProfileIcons)
     def profile_icon_list_data_to_core(self, value: ProfileIconListData, context: PipelineContext = None) -> ProfileIcons:
-        return ProfileIcons.from_data(*value, region=value.region, version=value.version, locale=value.locale)
+        return ProfileIcons.from_data(*[self.profile_icon_data_to_core(profile_icon) for profile_icon in value], region=value.region, version=value.version, locale=value.locale)

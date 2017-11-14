@@ -21,8 +21,6 @@ Also note that many types can be pulled from ``Summoner`` objects. This is the p
     kalturi = Summoner(name="Kalturi")
     kalturi.champion_masteries
     kalturi.match_history
-    kalturi.mastery_pages
-    kalturi.rune_pages
     kalturi.current_match
     kalturi.leagues
 

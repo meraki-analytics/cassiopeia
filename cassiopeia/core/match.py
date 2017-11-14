@@ -12,7 +12,6 @@ from ..dto import match as dto
 from .summoner import Summoner
 from .staticdata.champion import Champion
 from .staticdata.rune import Rune
-from .staticdata.mastery import Mastery
 from .staticdata.summonerspell import SummonerSpell
 from .staticdata.item import Item
 from .staticdata.map import Map
@@ -662,10 +661,6 @@ class ParticipantData(CoreData):
         return self._dto["runes"]
 
     @property
-    def masteries(self) -> List[int]:
-        return self._dto["masteries"]
-
-    @property
     def timeline(self) -> ParticipantTimelineData:
         return ParticipantTimelineData.from_dto(self._dto["timeline"])
 
@@ -998,7 +993,8 @@ class MatchHistory(CassiopeiaLazyList):
             query["seasons"] = seasons
 
         if champions is not None:
-            query["champions"] = champions
+            champions = [champion.id if isinstance(champion, Champion) else champion for champion in champions]
+            query["champion.ids"] = champions
 
         return query
 
@@ -1028,11 +1024,11 @@ class MatchHistory(CassiopeiaLazyList):
 
     @lazy_property
     def summoner(self) -> Summoner:
-        return Summoner(account=self._data[MatchListData].account_id, region=self.region)
+        return Summoner(account=self._data[MatchListGenerator].account_id, region=self.region)
 
     @lazy_property
     def region(self) -> Region:
-        return Region(self._data[MatchListData].region)
+        return Region(self._data[MatchListGenerator].region)
 
     @lazy_property
     def platform(self) -> Platform:
@@ -1040,39 +1036,39 @@ class MatchHistory(CassiopeiaLazyList):
 
     @lazy_property
     def queues(self) -> Set[Queue]:
-        return {Queue(q) for q in self._data[MatchListData].queues}
+        return {Queue(q) for q in self._data[MatchListGenerator].queues}
 
     @lazy_property
     def seasons(self) -> Set[Season]:
-        return {Season(s) for s in self._data[MatchListData].seasons}
+        return {Season(s) for s in self._data[MatchListGenerator].seasons}
 
     @lazy_property
     def champions(self) -> Set[Champion]:
-        return {Champion(id=cid, region=self.region) for cid in self._data[MatchListData].champion_ids}
+        return {Champion(id=cid, region=self.region) for cid in self._data[MatchListGenerator].champion_ids}
 
     @property
     def begin_index(self) -> Union[int, None]:
         try:
-            return self._data[MatchListData].begin_index
+            return self._data[MatchListGenerator].begin_index
         except KeyError:
             return None
 
     @property
     def end_index(self) -> Union[int, None]:
         try:
-            return self._data[MatchListData].end_index
+            return self._data[MatchListGenerator].end_index
         except KeyError:
             return None
 
     @property
     def begin_time(self) -> datetime.datetime:
-        time = self._data[MatchListData].begin_time
+        time = self._data[MatchListGenerator].begin_time
         if time is not None:
             return datetime.datetime.fromtimestamp(time / 1000)
 
     @property
     def end_time(self) -> datetime.datetime:
-        time = self._data[MatchListData].end_time
+        time = self._data[MatchListGenerator].end_time
         if time is not None:
             return datetime.datetime.fromtimestamp(time / 1000)
 
@@ -1628,7 +1624,7 @@ def load_match_on_keyerror(method):
     return wrapper
 
 
-@searchable({str: ["summoner", "champion", "stats", "runes", "masteries", "side", "summoner_spell_d", "summoner_spell_f"], Summoner: ["summoner"], Champion: ["champion"], Side: ["side"], Rune: ["runes"], Mastery: ["masteries"], SummonerSpell: ["summoner_spell_d", "summoner_spell_f"]})
+@searchable({str: ["summoner", "champion", "stats", "runes", "side", "summoner_spell_d", "summoner_spell_f"], Summoner: ["summoner"], Champion: ["champion"], Side: ["side"], Rune: ["runes"], SummonerSpell: ["summoner_spell_d", "summoner_spell_f"]})
 class Participant(CassiopeiaObject):
     _data_types = {ParticipantData, PlayerData}
 
@@ -1664,12 +1660,6 @@ class Participant(CassiopeiaObject):
     def runes(self) -> Dict["Rune", int]:
         version = _choose_staticdata_version(self.__match)
         return SearchableDictionary({Rune(id=rune["runeId"], version=version, region=self.__match.region): rune["rank"] for rune in self._data[ParticipantData].runes})
-
-    @lazy_property
-    @load_match_on_keyerror
-    def masteries(self) -> Dict["Mastery", int]:
-        version = _choose_staticdata_version(self.__match)
-        return SearchableDictionary({Mastery(id=mastery["masteryId"], version=version, region=self.__match.region): mastery["rank"] for mastery in self._data[ParticipantData].masteries})
 
     @lazy_property
     @load_match_on_keyerror

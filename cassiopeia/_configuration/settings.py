@@ -133,14 +133,12 @@ def enable_ghost_transformers(riotapi_transformers: List[CompositeDataTransforme
             register_transformer_conversion(transformer, CurrentGameInfoData, CurrentMatch)
         elif isinstance(transformer, StaticDataTransformer):
             from ..core.staticdata.champion import ChampionData, Champion
-            from ..core.staticdata.mastery import MasteryData, Mastery
             from ..core.staticdata.rune import RuneData, Rune
             from ..core.staticdata.item import ItemData, Item
             from ..core.staticdata.summonerspell import SummonerSpellData, SummonerSpell
             from ..core.staticdata.map import MapData, Map
             from ..core.staticdata.profileicon import ProfileIconData, ProfileIcon
             register_transformer_conversion(transformer, ChampionData, Champion)
-            register_transformer_conversion(transformer, MasteryData, Mastery)
             register_transformer_conversion(transformer, RuneData, Rune)
             register_transformer_conversion(transformer, ItemData, Item)
             register_transformer_conversion(transformer, SummonerSpellData, SummonerSpell)

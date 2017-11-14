@@ -5,7 +5,6 @@ from datapipelines import DataSource, PipelineContext, Query, NotFoundError, val
 from .common import RiotAPIService, APINotFoundError
 from ...data import Platform
 from ...dto.staticdata.champion import ChampionDto, ChampionListDto
-from ...dto.staticdata.mastery import MasteryDto, MasteryListDto
 from ...dto.staticdata.rune import RuneDto, RuneListDto
 from ...dto.staticdata.item import ItemDto, ItemListDto
 from ...dto.staticdata.summonerspell import SummonerSpellDto, SummonerSpellListDto
@@ -253,182 +252,6 @@ class StaticDataAPI(RiotAPIService):
             "region": query["platform"].region.value,
             "versions": data
         })
-
-    #############
-    # Masteries #
-    #############
-
-    _validate_get_mastery_query = Query. \
-        has("id").as_(int).or_("name").as_(str).also. \
-        has("platform").as_(Platform).also. \
-        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
-        can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-        can_have("includedData").with_default({"all"})
-
-    @get.register(MasteryDto)
-    @validate_query(_validate_get_mastery_query, convert_region_to_platform)
-    def get_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasteryDto:
-        if self._request_by_id or "id" not in query:  # Get by mastery list
-            mastery_query = copy.deepcopy(query)
-            if "id" in mastery_query:
-                mastery_query.pop("id")
-            if "name" in mastery_query:
-                mastery_query.pop("name")
-            masteries = context[context.Keys.PIPELINE].get(MasteryListDto, query=mastery_query)
-
-            def find_matching_attribute(list_of_dtos, attrname, attrvalue):
-                for dto in list_of_dtos:
-                    if dto.get(attrname, None) == attrvalue:
-                        return dto
-
-            if "id" in query:
-                mastery = find_matching_attribute(masteries["data"].values(), "id", query["id"])
-            elif "name" in query:
-                mastery = find_matching_attribute(masteries["data"].values(), "name", query["name"])
-            else:
-                raise ValueError("Impossible!")
-            if mastery is None:
-                raise NotFoundError
-            mastery["region"] = query["platform"].region.value
-            mastery["version"] = query["version"]
-            mastery["locale"] = query["locale"]
-            mastery["includedData"] = query["includedData"]
-            return MasteryDto(mastery)
-        else:
-            params = {
-                "version": query["version"],
-                "locale": query["locale"],
-                "tags": ",".join(list(query["includedData"]))
-            }
-
-            url = "https://{platform}.api.riotgames.com/lol/static-data/v3/masteries/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
-            try:
-                data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/mastery"))
-            except APINotFoundError as error:
-                raise NotFoundError(str(error)) from error
-
-            data["region"] = query["platform"].region.value
-            data["version"] = query["version"]
-            data["locale"] = query["locale"]
-            data["includedData"] = query["includedData"]
-            return MasteryDto(data)
-
-    _validate_get_many_mastery_query = Query. \
-        has("ids").as_(Iterable).also. \
-        has("platform").as_(Platform).also. \
-        can_have("version").as_(str).also. \
-        can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-        can_have("includedData").with_default({"all"})
-
-    @get_many.register(MasteryDto)
-    @validate_query(_validate_get_many_mastery_query, convert_region_to_platform)
-    def get_many_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[MasteryDto, None, None]:
-        params = {
-            "locale": query["locale"],
-            "tags": ",".join(list(query["includedData"]))
-        }
-
-        if "version" in query:
-            params["version"] = query["version"]
-
-        url = "https://{platform}.api.riotgames.com/lol/static-data/v3/masteries".format(platform=query["platform"].value.lower())
-        try:
-            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/mastery"))
-        except APINotFoundError as error:
-            raise NotFoundError(str(error)) from error
-
-        def generator():
-            for id in query["ids"]:
-                try:
-                    mastery = data["data"][str(id)]
-                except KeyError as error:
-                    raise NotFoundError("No mastery exists with id \"{id}\"".format(id=id)) from error
-
-                mastery["region"] = query["platform"].region.value
-                mastery["version"] = data["version"]
-                mastery["locale"] = query["locale"]
-                mastery["includedData"] = query["includedData"]
-                yield MasteryDto(mastery)
-
-        return generator()
-
-    _validate_get_mastery_list_query = Query. \
-        has("platform").as_(Platform).also. \
-        can_have("version").as_(str).also. \
-        can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-        can_have("includedData").with_default({"all"})
-
-    @get.register(MasteryListDto)
-    @validate_query(_validate_get_mastery_list_query, convert_region_to_platform)
-    def get_mastery_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasteryListDto:
-        params = {
-            "locale": query["locale"],
-            "tags": ",".join(list(query["includedData"]))
-        }
-
-        if "version" in query:
-            params["version"] = query["version"]
-
-        url = "https://{platform}.api.riotgames.com/lol/static-data/v3/masteries".format(platform=query["platform"].value.lower())
-        try:
-            data = self._get(url, params, self._get_rate_limiter(query["platform"], "staticdata/masteries"))
-        except APINotFoundError as error:
-            raise NotFoundError(str(error)) from error
-
-        data["region"] = query["platform"].region.value
-        data["locale"] = query["locale"]
-        data["includedData"] = query["includedData"]
-        for key, mastery in data["data"].items():
-            mastery = MasteryDto(mastery)
-            data["data"][key] = mastery
-            mastery["region"] = query["platform"].region.value
-            mastery["version"] = data["version"]
-            mastery["locale"] = query["locale"]
-            mastery["includedData"] = query["includedData"]
-        result = MasteryListDto(data)
-        return result
-
-    _validate_get_many_mastery_list_query = Query. \
-        has("platforms").as_(Iterable).also. \
-        can_have("version").as_(str).also. \
-        can_have("locale").as_(str).also. \
-        can_have("includedData").with_default({"all"})
-
-    @get_many.register(MasteryListDto)
-    @validate_query(_validate_get_many_mastery_list_query, convert_region_to_platform)
-    def get_many_mastery_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[MasteryListDto, None, None]:
-        params = {
-            "tags": ",".join(list(query["includedData"]))
-        }
-
-        if "version" in query:
-            params["version"] = query["version"]
-
-        if "locale" in query:
-            params["locale"] = query["locale"]
-
-        def generator():
-            for platform in query["platforms"]:
-                platform = Platform(platform.upper())
-                url = "https://{platform}.api.riotgames.com/lol/static-data/v3/masteries".format(platform=platform.value.lower())
-                try:
-                    data = self._get(url, params, self._get_rate_limiter(platform, "staticdata/masteries"))
-                except APINotFoundError as error:
-                    raise NotFoundError(str(error)) from error
-
-                data["region"] = platform.region.value
-                data["locale"] = query["locale"] if "locale" in query else platform.default_locale
-                data["includedData"] = query["includedData"]
-                for key, mastery in data["data"].items():
-                    mastery = MasteryDto(mastery)
-                    data["data"][key] = mastery
-                    mastery["region"] = query["platform"].region.value
-                    mastery["version"] = data["version"]
-                    mastery["locale"] = query["locale"]
-                    mastery["includedData"] = query["includedData"]
-                yield MasteryListDto(data)
-
-        return generator()
 
     #########
     # Runes #
@@ -1227,6 +1050,10 @@ class StaticDataAPI(RiotAPIService):
 
         data["region"] = query["platform"].region.value
         data["locale"] = query["locale"]
+        for pi in data["data"].values():
+            pi["region"] = data["region"]
+            pi["version"] = data["version"]
+            pi["locale"] = data["locale"]
         return ProfileIconDataDto(data)
 
     _validate_get_many_profile_icons_query = Query. \
@@ -1256,6 +1083,10 @@ class StaticDataAPI(RiotAPIService):
 
                 data["region"] = platform.region.value
                 data["locale"] = query["locale"] if "locale" in query else platform.default_locale
+                for pi in data["data"].values():
+                    pi["region"] = data["region"]
+                    pi["version"] = data["version"]
+                    pi["locale"] = data["locale"]
                 yield ProfileIconDataDto(data)
 
         return generator()

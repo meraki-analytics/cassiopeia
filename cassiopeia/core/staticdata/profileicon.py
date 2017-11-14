@@ -43,11 +43,11 @@ class ProfileIconListData(DataObjectList):
 
 class ProfileIconData(CoreData):
     _dto_type = ProfileIconDetailsDto
-    _renamed = {"id": "profileIconId"}
+    _renamed = {}
 
     @property
     def id(self) -> int:
-        return self._dto["profileIconId"]
+        return self._dto["id"]
 
     @property
     def region(self) -> str:
@@ -105,6 +105,7 @@ class ProfileIcons(CassiopeiaList):
 class ProfileIcon(CassiopeiaGhost):
     _data_types = {ProfileIconData}
     _load_types = {ProfileIconData: ProfileIconListData}
+    _load_type = ProfileIcons
 
     @provide_default_region
     def __init__(self, *, id: int = None, region: Union[Region, str] = None, version: str = None, locale: str = None):

@@ -8,22 +8,18 @@ from ..data import Region, Platform, Queue, Tier, Season
 from ..dto.champion import ChampionListDto as ChampionStatusListDto, ChampionDto as ChampionStatusDto
 from ..dto.championmastery import ChampionMasteryDto, ChampionMasteryListDto, ChampionMasteryScoreDto
 from ..dto.league import LeagueListDto, LeaguePositionDto
-from ..dto.staticdata import ChampionDto, ChampionListDto, ItemDto, ItemListDto, LanguageStringsDto, LanguagesDto, MasteryDto, MasteryListDto, ProfileIconDataDto, ProfileIconDetailsDto, RealmDto, RuneDto, RuneListDto, SummonerSpellDto, SummonerSpellListDto, MapDto, MapListDto, VersionListDto
+from ..dto.staticdata import ChampionDto, ChampionListDto, ItemDto, ItemListDto, LanguageStringsDto, LanguagesDto, ProfileIconDataDto, ProfileIconDetailsDto, RealmDto, RuneDto, RuneListDto, SummonerSpellDto, SummonerSpellListDto, MapDto, MapListDto, VersionListDto
 from ..dto.status import ShardStatusDto
-from ..dto.masterypage import MasteryPagesDto, MasteryPageDto
 from ..dto.match import MatchDto, MatchReferenceDto, TimelineDto
-from ..dto.runepage import RunePagesDto, RunePageDto
 from ..dto.spectator import CurrentGameInfoDto, FeaturedGamesDto
 from ..dto.summoner import SummonerDto
 
-from ..core.common import provide_default_region
+from ..core.champion import ChampionStatusData, ChampionStatusListData
 from ..core.championmastery import ChampionMastery, ChampionMasteries
 from ..core.league import LeagueEntries, ChallengerLeague, MasterLeague, League
-from ..core.staticdata import Champion, Mastery, Rune, Item, SummonerSpell, Map, Locales, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions, Items, Champions, Maps, SummonerSpells, Masteries, Runes
+from ..core.staticdata import Champion, Rune, Item, SummonerSpell, Map, Locales, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions, Items, Champions, Maps, SummonerSpells, Runes
 from ..core.status import ShardStatus
-from ..core.masterypage import MasteryPage, MasteryPages
 from ..core.match import Match, MatchHistory, Timeline
-from ..core.runepage import RunePage, RunePages
 from ..core.summoner import Summoner
 from ..core.spectator import CurrentMatch, FeaturedMatches
 
@@ -31,7 +27,6 @@ from ..core.staticdata.champion import ChampionData
 from ..core.staticdata.item import ItemData
 from ..core.staticdata.summonerspell import SummonerSpellData
 from ..core.staticdata.rune import RuneData
-from ..core.staticdata.mastery import MasteryData
 from ..core.staticdata.map import MapData
 from ..core.summoner import Account, SummonerData
 
@@ -562,76 +557,6 @@ def for_many_map_list_dto_query(query: Query) -> Generator[Tuple[str, str, str],
             raise QueryValidationError from e
 
 
-# Mastery
-
-validate_mastery_dto_query = Query. \
-    has("platform").as_(Platform).also. \
-    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
-    can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("includedData").with_default({"all"}).also. \
-    has("id").as_(int).or_("name").as_(str)
-
-
-validate_many_mastery_dto_query = Query. \
-    has("platform").as_(Platform).also. \
-    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
-    can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("includedData").with_default({"all"}).also. \
-    has("ids").as_(Iterable).or_("names").as_(Iterable)
-
-
-def for_mastery_dto(mastery: MasteryDto, identifier: str = "id") -> Tuple[str, str, str, int, Union[int, str]]:
-    return mastery["platform"], mastery["version"], mastery["locale"], _hash_included_data(mastery["includedData"]), mastery[identifier]
-
-
-def for_mastery_dto_query(query: Query) -> Tuple[str, str, str, int, Union[int, str]]:
-    identifier = "id" if "id" in query else "name"
-    return query["platform"], query["version"], query["locale"], _hash_included_data(query["includedData"]), query[identifier]
-
-
-def for_many_mastery_dto_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
-    identifiers, identifier_type = (query["ids"], int) if "ids" in query else (query["names"], str)
-    included_data_hash = _hash_included_data(query["includedData"])
-    for identifier in identifiers:
-        try:
-            identifier = identifier_type(identifier)
-            yield query["platform"].value, query["version"], query["locale"], included_data_hash, identifier
-        except ValueError as e:
-            raise QueryValidationError from e
-
-
-validate_mastery_list_dto_query = Query. \
-    has("platform").as_(Platform).also. \
-    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
-    can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("includedData").with_default({"all"})
-
-
-validate_many_mastery_list_dto_query = Query. \
-    has("platforms").as_(Iterable).also. \
-    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
-    can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("includedData").with_default({"all"})
-
-
-def for_mastery_list_dto(mastery_list: MasteryListDto) -> Tuple[str, str, str, int]:
-    return mastery_list["platform"], mastery_list["version"], mastery_list["locale"], _hash_included_data(mastery_list["includedData"])
-
-
-def for_mastery_list_dto_query(query: Query) -> Tuple[str, str, str, int]:
-    return query["platform"], query["version"], query["locale"], _hash_included_data(query["includedData"])
-
-
-def for_many_mastery_list_dto_query(query: Query) -> Generator[Tuple[str, str, str, int], None, None]:
-    included_data_hash = _hash_included_data(query["includedData"])
-    for platform in query["platforms"]:
-        try:
-            platform = Platform(platform)
-            yield platform.value, query["version"], query["locale"], included_data_hash
-        except ValueError as e:
-            raise QueryValidationError from e
-
-
 # Profile Icon
 
 
@@ -918,67 +843,6 @@ def for_many_shard_status_dto_query(query: Query) -> Generator[str, None, None]:
             raise QueryValidationError from e
 
 
-#################
-# Masteries API #
-#################
-
-
-validate_mastery_page_dto_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("summonerId").also. \
-    has("id").as_(int)
-
-
-validate_many_mastery_page_dto_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("summonerId").also. \
-    has("ids").as_(Iterable)
-
-
-def for_mastery_page_dto(mastery_page: MasteryPageDto) -> Tuple[str, int, int]:
-    return mastery_page["platform"], mastery_page["summonerId"], mastery_page["id"]
-
-
-def for_mastery_page_dto_query(query: Query) -> Tuple[str, int, int]:
-    return query["platform"].value, query["summonerId"], query["id"]
-
-
-def for_many_mastery_page_dto_query(query: Query) -> Generator[Tuple[str, int, int], None, None]:
-    for id in query["ids"]:
-        try:
-            id = int(id)
-            yield query["platform"].value, query["summonerId"], id
-        except ValueError as e:
-            raise QueryValidationError from e
-
-
-validate_mastery_pages_dto_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("summonerId").as_(int)
-
-
-validate_many_mastery_pages_dto_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("summonerIds").as_(Iterable)
-
-
-def for_mastery_pages_dto(mastery_pages: MasteryPagesDto) -> Tuple[str, int]:
-    return mastery_pages["platform"], mastery_pages["summonerId"]
-
-
-def for_mastery_pages_dto_query(query: Query) -> Tuple[str, int]:
-    return query["platform"].value, query["summonerId"]
-
-
-def for_many_mastery_pages_dto_query(query: Query) -> Generator[Tuple[str, int], None, None]:
-    for summoner_id in query["summonerIds"]:
-        try:
-            summoner_id = int(summoner_id)
-            yield query["platform"].value, summoner_id
-        except ValueError as e:
-            raise QueryValidationError from e
-
-
 #############
 # Match API #
 #############
@@ -1061,67 +925,6 @@ def for_many_match_timeline_dto_query(query: Query) -> Generator[Tuple[str, int]
         try:
             match_id = int(match_id)
             yield query["platform"].value, match_id
-        except ValueError as e:
-            raise QueryValidationError from e
-
-
-#############
-# Runes API #
-#############
-
-
-validate_rune_page_dto_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("summonerId").as_(int).also. \
-    has("id").as_(int)
-
-
-validate_many_rune_page_dto_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("summonerId").also. \
-    has("ids").as_(Iterable)
-
-
-def for_rune_page_dto(rune_page: RunePageDto) -> Tuple[str, int, int]:
-    return rune_page["platform"], rune_page["summonerId"], rune_page["id"]
-
-
-def for_rune_page_dto_query(query: Query) -> Tuple[str, int, int]:
-    return query["platform"].value, query["summonerId"], query["id"]
-
-
-def for_many_rune_page_dto_query(query: Query) -> Generator[Tuple[str, int, int], None, None]:
-    for id in query["ids"]:
-        try:
-            id = int(id)
-            yield query["platform"].value, query["summonerId"], id
-        except ValueError as e:
-            raise QueryValidationError from e
-
-
-validate_rune_pages_dto_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("summonerId").as_(int)
-
-
-validate_many_rune_pages_dto_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("summonerIds").as_(Iterable)
-
-
-def for_rune_pages_dto(rune_pages: RunePagesDto) -> Tuple[str, int]:
-    return rune_pages["platform"], rune_pages["summonerId"]
-
-
-def for_rune_pages_dto_query(query: Query) -> Tuple[str, int]:
-    return query["platform"].value, query["summonerId"]
-
-
-def for_many_rune_pages_dto_query(query: Query) -> Generator[Tuple[str, int], None, None]:
-    for summoner_id in query["summonerIds"]:
-        try:
-            summoner_id = int(summoner_id)
-            yield query["platform"].value, summoner_id
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -1232,9 +1035,47 @@ def for_many_summoner_dto_query(query: Query) -> Generator[Tuple[str, Union[int,
 ########
 
 
-##########################################################
-# Champion API (Covered by Static Data Champion in core) #
-##########################################################
+################
+# Champion API #
+################
+
+
+validate_champion_status_query = Query. \
+    has("platform").as_(Platform).also. \
+    has("id").as_(int)
+
+
+validate_many_champion_status_query = Query. \
+    has("platform").as_(Platform).also. \
+    has("ids").as_(Iterable)
+
+
+validate_champion_status_list_query = Query. \
+    has("platform").as_(Platform).also. \
+    can_have("freeToPlay").with_default(False)
+
+
+validate_many_champion_status_list_query = Query. \
+    has("platforms").as_(Iterable).also. \
+    can_have("freeToPlay").with_default(False)
+
+
+def for_champion_status(champion_status: ChampionStatusData) -> List[Tuple]:
+    keys = [(Region(champion_status.region).platform.value, champion_status.id)]
+    return keys
+
+
+def for_champion_status_query(query: Query) -> List[Tuple]:
+    keys = [(query["platform"].value, query["id"])]
+    return keys
+
+
+def for_champion_status_list(champion_status_list: ChampionStatusListData) -> List[Tuple]:
+    return [(Region(champion_status_list.region).platform,)]
+
+
+def for_champion_status_list_query(query: Query) -> List[Tuple]:
+    return [(query["platform"],)]
 
 
 ########################
@@ -1796,100 +1637,6 @@ def for_many_maps_query(query: Query) -> Generator[List[Tuple[str, str, str]], N
         yield [(platform.value, query["version"], query["locale"])]
 
 
-# Mastery
-
-validate_mastery_query = Query. \
-    has("platform").as_(Platform).also. \
-    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
-    can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("includedData").with_default({"all"}).also. \
-    has("id").as_(int).or_("name").as_(str)
-
-
-validate_many_mastery_query = Query. \
-    has("platform").as_(Platform).also. \
-    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
-    can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("includedData").with_default({"all"}).also. \
-    has("ids").as_(Iterable).or_("names").as_(Iterable)
-
-
-def for_mastery(mastery: Mastery) -> List[Tuple]:
-    keys = []
-    try:
-        keys.append((mastery.platform.value, mastery.version, mastery.locale, _hash_included_data(mastery.included_data), mastery._data[MasteryData].id))
-    except KeyError:
-        pass
-    try:
-        keys.append((mastery.platform.value, mastery.version, mastery.locale, _hash_included_data(mastery.included_data), mastery._data[MasteryData].name))
-    except KeyError:
-        pass
-    return keys
-
-
-def for_mastery_query(query: Query) -> List[Tuple]:
-    keys = []
-    included_data_hash = _hash_included_data(query["includedData"])
-    if "id" in query:
-        keys.append((query["platform"].value, query["version"], query["locale"], included_data_hash, query["id"]))
-    if "name" in query:
-        keys.append((query["platform"].value, query["version"], query["locale"], included_data_hash, query["name"]))
-    return keys
-
-
-def for_many_mastery_query(query: Query) -> Generator[Tuple[str, str, str, int, Union[int, str]], None, None]:
-    included_data_hash = _hash_included_data(query["includedData"])
-    grouped_identifiers = []
-    identifier_types = []
-    if "ids" in query:
-        grouped_identifiers.append(query["ids"])
-        identifier_types.append(int)
-    if "names" in query:
-        grouped_identifiers.append(query["names"])
-        identifier_types.append(str)
-    for identifiers in zip(*grouped_identifiers):
-        keys = []
-        for identifier, identifier_type in zip(identifiers, identifier_types):
-            try:
-                identifier = identifier_type(identifier)
-                keys.append((query["platform"].value, query["version"], query["locale"], included_data_hash, identifier))
-            except ValueError as e:
-                raise QueryValidationError from e
-        yield keys
-
-
-validate_masteries_query = Query. \
-    has("platform").as_(Platform).also. \
-    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
-    can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("includedData").with_default({"all"})
-
-
-validate_many_masteries_query = Query. \
-    has("platforms").as_(Iterable).also. \
-    can_have("version").with_default(_get_default_version, supplies_type=str).also. \
-    can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-    can_have("includedData").with_default({"all"})
-
-
-def for_masteries(masteries: Masteries) -> List[Tuple[str, str, str, int]]:
-    return [(masteries.platform.value, masteries.version, masteries.locale, _hash_included_data(masteries.included_data))]
-
-
-def for_masteries_query(query: Query) -> List[Tuple[str, str, str, int]]:
-    included_data_hash = _hash_included_data(query["includedData"])
-    return [(query["platform"].value, query["version"], query["locale"], included_data_hash)]
-
-
-def for_many_masteries_query(query: Query) -> Generator[List[Tuple[str, str, str, int, Union[int, str]]], None, None]:
-    included_data_hash = _hash_included_data(query["includedData"])
-    for platform in query["platforms"]:
-        try:
-            yield [(platform.value, query["version"], query["locale"], included_data_hash)]
-        except ValueError as e:
-            raise QueryValidationError from e
-
-
 # Profile Icon
 
 validate_profile_icons_query = Query. \
@@ -1905,7 +1652,7 @@ validate_many_profile_icons_query = Query. \
 
 
 def for_profile_icons(profile_icon: ProfileIcons) -> List[Tuple[str, str, str]]:
-    return [(profile_icon["platform"], profile_icon["version"], profile_icon["locale"])]
+    return [(Region(profile_icon.region).platform.value, profile_icon.version, profile_icon.locale)]
 
 
 def for_profile_icons_query(query: Query) -> List[Tuple[str, str, str]]:
@@ -1936,7 +1683,7 @@ validate_many_profile_icon_query = Query. \
 
 
 def for_profile_icon(profile_icon: ProfileIcon) -> List[Tuple[str, str, str, int]]:
-    return [(profile_icon.platform.value, profile_icon.version, profile_icon.locale, profile_icon.id)]
+    return [(Region(profile_icon.region).platform.value, profile_icon.version, profile_icon.locale, profile_icon.id)]
 
 
 def for_profile_icon_query(query: Query) -> List[Tuple[str, str, str, int]]:
@@ -2219,66 +1966,6 @@ def for_many_shard_status_query(query: Query) -> Generator[List[str], None, None
             raise QueryValidationError from e
 
 
-#################
-# Masteries API #
-#################
-
-
-validate_mastery_page_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
-    has("id").as_(int)
-
-
-validate_many_mastery_page_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
-    has("ids").as_(Iterable)
-
-
-def for_mastery_page(mastery_page: MasteryPage) -> List[Tuple]:
-    keys = []
-    try:
-        keys.append((mastery_page.platform.value, mastery_page.summoner[SummonerData].id, mastery_page.id))
-    except KeyError:
-        pass
-    try:
-        keys.append((mastery_page.platform.value, mastery_page.summoner[SummonerData].name, mastery_page.id))
-    except KeyError:
-        pass
-    try:
-        keys.append((mastery_page.platform.value, mastery_page.summoner[SummonerData].account_id, mastery_page.id))
-    except KeyError:
-        pass
-    return keys
-
-
-def for_mastery_page_query(query: Query) -> List[Tuple]:
-    keys = []
-    if "summoner.id" in query:
-        keys.append((query["platform"].value, query["summoner.id"], query["id"]))
-    if "summoner.account.id" in query:
-        keys.append((query["platform"].value, query["summoner.account.id"], query["id"]))
-    if "summoner.name" in query:
-        keys.append((query["platform"].value, query["summoner.name"], query["id"]))
-    return keys
-
-
-def for_many_mastery_page_query(query: Query) -> Generator[Tuple[str, Union[int, str], int], None, None]:
-    for id_ in query["ids"]:
-        id_ = int(id_)
-        keys = []
-        if "summoner.id" in query:
-            keys.append((query["platform"].value, query["summoner.id"], id_))
-        if "summoner.account.id" in query:
-            keys.append((query["platform"].value, query["summoner.account.id"], id_))
-        if "summoner.name" in query:
-            keys.append((query["platform"].value, query["summoner.name"], id_))
-        if len(keys) == 0:
-            raise QueryValidationError
-        yield keys
-
-
 #############
 # Match API #
 #############
@@ -2335,66 +2022,6 @@ def for_many_match_timeline_query(query: Query) -> Generator[List[Tuple[str, int
             yield [(query["platform"].value, id)]
         except ValueError as e:
             raise QueryValidationError from e
-
-
-#############
-# Runes API #
-#############
-
-
-validate_rune_page_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
-    has("id").as_(int)
-
-
-validate_many_rune_page_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("summoner.id").as_(int).or_("summoner.account.id").as_(int).or_("summoner.name").as_(str).also. \
-    has("ids").as_(Iterable)
-
-
-def for_rune_page(rune_page: RunePage) -> List[Tuple]:
-    keys = []
-    try:
-        keys.append((rune_page.platform.value, rune_page.summoner[SummonerData].id, rune_page.id))
-    except KeyError:
-        pass
-    try:
-        keys.append((rune_page.platform.value, rune_page.summoner[SummonerData].name, rune_page.id))
-    except KeyError:
-        pass
-    try:
-        keys.append((rune_page.platform.value, rune_page.summoner[SummonerData].account_id, rune_page.id))
-    except KeyError:
-        pass
-    return keys
-
-
-def for_rune_page_query(query: Query) -> List[Tuple]:
-    keys = []
-    if "summoner.id" in query:
-        keys.append((query["platform"].value, query["summoner.id"], query["id"]))
-    if "summoner.account.id" in query:
-        keys.append((query["platform"].value, query["summoner.account.id"], query["id"]))
-    if "summoner.name" in query:
-        keys.append((query["platform"].value, query["summoner.name"], query["id"]))
-    return keys
-
-
-def for_many_rune_page_query(query: Query) -> Generator[Tuple[str, Union[int, str], int], None, None]:
-    for id_ in query["ids"]:
-        id_ = int(id_)
-        keys = []
-        if "summoner.id" in query:
-            keys.append((query["platform"].value, query["summoner.id"], id_))
-        if "summoner.account.id" in query:
-            keys.append((query["platform"].value, query["summoner.account.id"], id_))
-        if "summoner.name" in query:
-            keys.append((query["platform"].value, query["summoner.name"], id_))
-        if len(keys) == 0:
-            raise QueryValidationError
-        yield keys
 
 
 #################

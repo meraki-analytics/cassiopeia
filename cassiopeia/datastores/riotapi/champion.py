@@ -103,6 +103,8 @@ class ChampionAPI(RiotAPIService):
             raise NotFoundError(str(error)) from error
 
         data["region"] = query["platform"].region.value
+        for c in data["champions"]:
+            c["region"] = data["region"]
         data["freeToPlay"] = query["freeToPlay"]
         return ChampionListDto(data)
 

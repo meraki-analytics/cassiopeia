@@ -159,29 +159,16 @@ class ChampionMastery(CassiopeiaGhost):
     def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, int, str], champion: Union[Champion, int, str], region: Union[Region, str]) -> dict:
         query = {"region": region}
         if isinstance(summoner, Summoner):
-            from .summoner import SummonerData
-            summoner_data = summoner._data[SummonerData]
-            try:
-                query["summoner.id"] = summoner_data.id
-            except KeyError:
-                try:
-                    query["summoner.account.id"] = summoner_data.account_id
-                except KeyError:
-                    query["summoner.name"] = summoner_data.name
+            query["summoner.id"] = summoner.id
         elif isinstance(summoner, str):
-            query["summoner.name"] = summoner
+            query["summoner.id"] = Summoner(name=summoner, region=region).id
         else:  # int
             query["summoner.id"] = summoner
 
         if isinstance(champion, Champion):
-            from .staticdata.champion import ChampionData
-            champion_data = champion._data[ChampionData]
-            try:
-                query["champion.id"] = champion_data.id
-            except KeyError:
-                query["champion.name"] = champion_data.name
+            query["champion.id"] = champion.id
         elif isinstance(champion, str):
-            query["champion.name"] = champion
+            query["champion.id"] = Champion(name=champion, region=region).id
         else:  # int
             query["champion.id"] = champion
         return query

@@ -26,7 +26,8 @@ class ChampionTransformer(DataTransformer):
     def champion_list_dto_to_data(self, value: ChampionListDto, context: PipelineContext = None) -> ChampionStatusListData:
         data = deepcopy(value)
         data["champions"] = [self.champion_dto_to_data(c) for c in data["champions"]]
+        region = data["region"]
         for c in data["champions"]:
-            c._update({"region": data["region"]})
+            c._update({"region": region})
         data = data["champions"]
-        return ChampionStatusListData(data)
+        return ChampionStatusListData(data, region=region)

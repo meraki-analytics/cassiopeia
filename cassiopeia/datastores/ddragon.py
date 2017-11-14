@@ -5,7 +5,6 @@ from datapipelines import DataSource, PipelineContext, Query, NotFoundError, val
 
 from ..data import Platform
 from ..dto.staticdata.champion import ChampionDto, ChampionListDto
-from ..dto.staticdata.mastery import MasteryDto, MasteryListDto
 from ..dto.staticdata.rune import RuneDto, RuneListDto
 from ..dto.staticdata.item import ItemDto, ItemListDto
 from ..dto.staticdata.summonerspell import SummonerSpellDto, SummonerSpellListDto
@@ -33,7 +32,7 @@ class DDragon(DataSource):
         else:
             self._client = http_client
 
-        self._cache = {ChampionListDto: {}, RuneListDto: {}, MasteryListDto: {}, ItemListDto: {}, SummonerSpellListDto: {}, MapListDto: {}}
+        self._cache = {ChampionListDto: {}, RuneListDto: {}, ItemListDto: {}, SummonerSpellListDto: {}, MapListDto: {}}
 
     @DataSource.dispatch
     def get(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> T:
@@ -344,105 +343,6 @@ class DDragon(DataSource):
         body["region"] = query["platform"].region.value
         body["locale"] = locale
         return LanguageStringsDto(body)
-
-    #############
-    # Masteries #
-    #############
-
-    _validate_get_mastery_query = Query. \
-        has("platform").as_(Platform).also. \
-        has("id").as_(int).or_("name").as_(str).also. \
-        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
-        can_have("locale").also. \
-        can_have("includedData")
-
-    @get.register(MasteryDto)
-    @validate_query(_validate_get_mastery_query, convert_region_to_platform)
-    def get_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasteryDto:
-        masteries_query = copy.deepcopy(query)
-        if "id" in masteries_query:
-            masteries_query.pop("id")
-        if "name" in masteries_query:
-            masteries_query.pop("name")
-        masteries = context[context.Keys.PIPELINE].get(MasteryListDto, query=masteries_query)
-
-        def find_matching_attribute(list_of_dtos, attrname, attrvalue):
-            for dto in list_of_dtos:
-                if dto.get(attrname, None) == attrvalue:
-                    return dto
-
-        # The `data` is a list of mastery data instances
-        if "id" in query:
-            find = "id", query["id"]
-        elif "name" in query:
-            find = "name", query["name"]
-        else:
-            raise RuntimeError("Impossible!")
-        mastery = find_matching_attribute(masteries["data"].values(), *find)
-        if mastery is None:
-            raise NotFoundError
-        mastery["region"] = query["platform"].region.value
-        mastery["version"] = query["version"]
-        if "locale" in query:
-            mastery["locale"] = query["locale"]
-        if "includedData" in query:
-            mastery["includedData"] = query["includedData"]
-        return MasteryDto(mastery)
-
-    _validate_get_mastery_list_query = Query. \
-        has("platform").as_(Platform).also. \
-        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
-        can_have("locale").as_(str).also. \
-        can_have("includedData")
-
-    @get.register(MasteryListDto)
-    @validate_query(_validate_get_mastery_list_query, convert_region_to_platform)
-    def get_mastery_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasteryListDto:
-        locale = query["locale"] if "locale" in query else query["platform"].default_locale
-        query["locale"] = locale
-
-        ahash = self.calculate_hash(query)
-        try:
-            return self._cache[MasteryListDto][ahash]
-        except KeyError:
-            pass
-
-        url = "https://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/mastery.json".format(
-            version=query["version"],
-            locale=locale
-        )
-        try:
-            body = json.loads(self._client.get(url)[0])
-        except HTTPError as e:
-            raise NotFoundError(str(e)) from e
-
-        mastery_map = {}  # mastery ID -> tree name mapping. Supplied by static data but not DDragon.
-
-        # Fix tree structure to match static data.
-        for tree in body["tree"]:
-            for x, tier in enumerate(body["tree"][tree]):
-                for mastery in tier:
-                    # In DDragon, masteryId is a str whereas in static data it is an int.
-                    mastery_id = int(mastery["masteryId"])
-                    mastery["masteryId"] = mastery_id
-                    mastery_map[mastery_id] = tree
-                # Each tier in the static data mastery tree is encapsulated by a single item dictionary.
-                body["tree"][tree][x] = {"masteryTreeItems": tier}
-
-        # Add fields not provided by DDragon
-        for key, mastery in body["data"].items():
-            mastery = MasteryDto(mastery)
-            body["data"][key] = mastery
-            mastery["masteryTree"] = mastery_map[mastery["id"]]
-            # TODO: Sanitizer?
-            mastery["sanitizedDescription"] = mastery["description"]
-
-        body["region"] = query["platform"].region.value
-        body["locale"] = locale
-        body["includedData"] = {"all"}
-        result = MasteryListDto(body)
-        self._cache[MasteryListDto][ahash] = result
-        return result
 
     #########
     # Runes #
@@ -755,4 +655,9 @@ class DDragon(DataSource):
 
         body["region"] = query["platform"].region.value
         body["locale"] = locale
+        body["version"] = query["version"]
+        for pi in body["data"].values():
+            pi["region"] = body["region"]
+            pi["version"] = body["version"]
+            pi["locale"] = locale
         return ProfileIconDataDto(body)

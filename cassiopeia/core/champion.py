@@ -1,9 +1,14 @@
-from .common import CoreData
+from .common import CoreData, DataObjectList
 from ..dto import champion as dto
 
 
-class ChampionStatusListData(list):
+class ChampionStatusListData(DataObjectList):
     _dto_type = dto.ChampionListDto
+    _renamed = {}
+
+    @property
+    def region(self) -> str:
+        return self._dto["region"]
 
 
 class ChampionStatusData(CoreData):

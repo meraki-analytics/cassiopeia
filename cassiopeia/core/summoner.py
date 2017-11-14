@@ -184,16 +184,6 @@ class Summoner(CassiopeiaGhost):
         return ChampionMasteries(summoner=self, region=self.region)
 
     @property
-    def mastery_pages(self) -> "MasteryPages":
-        from .masterypage import MasteryPages
-        return MasteryPages(summoner=self, region=self.region)
-
-    @property
-    def rune_pages(self) -> "RunePages":
-        from .runepage import RunePages
-        return RunePages(summoner=self, region=self.region)
-
-    @property
     def match_history(self) -> "MatchHistory":
         from .match import MatchHistory
         return MatchHistory(summoner=self, region=self.region)

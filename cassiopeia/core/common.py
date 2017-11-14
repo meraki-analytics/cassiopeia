@@ -130,8 +130,8 @@ class CassiopeiaObject(object):
         return str(result).replace("\\'", "'")
 
     @property
-    @abstractmethod
-    def _data_types(self) -> Set[type]:
+    @abstractclassmethod
+    def _data_types(cls) -> Set[type]:
         """The `CoreData`_ types that belongs to this core type."""
         pass
 
@@ -223,8 +223,12 @@ class CassiopeiaGhost(CassiopeiaPipelineObject, Ghost):
             self.__load_hook__(load_group, data)
 
     @property
-    def _load_types(self):
-        return {t: t for t in self._data_types}
+    def _load_types(cls):
+        return {t: t for t in cls._data_types}
+
+    @property
+    def _load_type(cls):
+        return cls
 
     @classmethod
     def from_data(cls, data: CoreData, loaded_groups: Optional[Set[Type[CoreData]]] = None):

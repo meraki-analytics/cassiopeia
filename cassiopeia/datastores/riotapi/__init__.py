@@ -12,8 +12,6 @@ def _default_services(api_key: str, limiting_share: float = 1.0, request_by_id: 
     from .champion import ChampionAPI
     from .summoner import SummonerAPI
     from .championmastery import ChampionMasteryAPI
-    from .runepage import RunePageAPI
-    from .masterypage import MasteryPageAPI
     from .match import MatchAPI
     from .spectator import SpectatorAPI
     from .status import StatusAPI
@@ -28,8 +26,6 @@ def _default_services(api_key: str, limiting_share: float = 1.0, request_by_id: 
         StaticDataAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, request_error_handling=request_error_handling, http_client=client),
         SummonerAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, request_error_handling=request_error_handling, http_client=client),
         ChampionMasteryAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, request_error_handling=request_error_handling, http_client=client),
-        RunePageAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, request_error_handling=request_error_handling, http_client=client),
-        MasteryPageAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, request_error_handling=request_error_handling, http_client=client),
         MatchAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, request_error_handling=request_error_handling, http_client=client),
         SpectatorAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, request_error_handling=request_error_handling, http_client=client),
         StatusAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, request_error_handling=request_error_handling, http_client=client),

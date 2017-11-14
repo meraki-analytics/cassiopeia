@@ -42,7 +42,6 @@ class MatchAPI(RiotAPIService):
         data["region"] = query["platform"].region.value
         for participant in data["participants"]:
             participant.setdefault("runes", [])
-            participant.setdefault("masteries", [])
         for p in data["participantIdentities"]:
             aid = p.get("player", {}).get("currentAccountId", None)
             if aid == 0:
@@ -66,7 +65,6 @@ class MatchAPI(RiotAPIService):
                 
                 for participant in data["participants"]:
                     participant.setdefault("runes", [])
-                    participant.setdefault("masteries", [])
                 for p in data["participantIdentities"]:
                     aid = p.get("player", {}).get("currentAccountId", None)
                     if aid == 0:
@@ -113,7 +111,7 @@ class MatchAPI(RiotAPIService):
             seasons = set()
 
         if "champion.ids" in query:
-            champions = {query["champion.ids"]}
+            champions = query["champion.ids"]
             params["champion"] = champions
         else:
             champions = set()
@@ -183,7 +181,7 @@ class MatchAPI(RiotAPIService):
             number_of_initial_matches_to_skip = 0
 
             index_interval_size = 100
-            datetime_interval_size = datetime.timedelta(days=7)
+            datetime_interval_size = datetime.timedelta(days=7) - datetime.timedelta(hours=1)  # Use hours=1 to account for daylight savings... This isn't perfect efficient but it will work for now I guess...
 
             # There is one weird special case that occurs when all of these are true:
             # 1) beginTime is after the summoner's most recent match
@@ -222,7 +220,7 @@ class MatchAPI(RiotAPIService):
                     data = self.get_match_list(query=query)
                     #data = configuration.settings.pipeline.get(type=MatchListData, query=query)
                 except NotFoundError:
-                    data = []
+                    data = {"matches": []}
                 for matchdto in data["matches"]:
                     pulled_matches += 1
                     if pulled_matches > 0:
@@ -252,7 +250,7 @@ class MatchAPI(RiotAPIService):
             seasons = set()
 
         if "champion.ids" in query:
-            champions = {query["champion.ids"]}
+            champions = query["champion.ids"]
         else:
             champions = set()
 

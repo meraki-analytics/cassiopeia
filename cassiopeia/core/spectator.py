@@ -11,7 +11,6 @@ from ..dto import spectator as dto
 from .staticdata.profileicon import ProfileIcon
 from .staticdata.champion import Champion
 from .staticdata.rune import Rune
-from .staticdata.mastery import Mastery
 from .staticdata.summonerspell import SummonerSpell
 from .staticdata.map import Map
 from .summoner import Summoner
@@ -236,10 +235,6 @@ class Participant(CassiopeiaObject):
     @property
     def runes(self) -> Dict[Rune, int]:
         return SearchableDictionary({Rune(id=rune.id, region=self.__region, version=get_latest_version(self.__region, endpoint="rune")): rune.count for rune in self._data[CurrentGameParticipantData].runes})
-
-    @property
-    def masteries(self) -> Dict[Mastery, int]:
-        return SearchableDictionary({Mastery(id=mastery.id, region=self.__region, version=get_latest_version(self.__region, endpoint="mastery")): mastery.points for mastery in self._data[CurrentGameParticipantData].masteries})
 
     @property
     def is_bot(self) -> bool:
