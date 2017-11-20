@@ -5,7 +5,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
 from ..data import Region, Platform
-from .common import CoreData, CassiopeiaGhost, CassiopeiaList, DataObjectList, get_latest_version, provide_default_region, ghost_load_on
+from .common import CoreData, CassiopeiaGhost, CassiopeiaList, CoreDataList, get_latest_version, provide_default_region, ghost_load_on
 from ..dto.championmastery import ChampionMasteryDto
 from .staticdata.champion import Champion
 from .summoner import Summoner
@@ -17,58 +17,14 @@ from ..dto import championmastery as dto
 ##############
 
 
-class ChampionMasteryListData(DataObjectList):
+class ChampionMasteryListData(CoreDataList):
     _dto_type = dto.ChampionMasteryListDto
-    _renamed = {"summoner_id": "summonerId"}
-
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def summoner_id(self) -> str:
-        return self._dto["summonerId"]
+    _renamed = {}
 
 
 class ChampionMasteryData(CoreData):
     _dto_type = ChampionMasteryDto
-    _renamed = {"chest_granted": "chestGranted", "level": "championLevel", "points": "championPoints", "champion_id": "championId", "summoner_id": "playerId", "points_until_next_level": "championPointsUntilNextLevel", "points_since_last_level": "championPointsSinceLastLevel", "last_played": "lastPlayTime"}
-
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def champion_id(self) -> int:
-        return self._dto["championId"]
-
-    @property
-    def summoner_id(self) -> int:
-        return self._dto["playerId"]
-
-    @property
-    def chest_granted(self) -> bool:
-        return self._dto["chestGranted"]
-
-    @property
-    def level(self) -> int:
-        return self._dto["championLevel"]
-
-    @property
-    def points(self) -> int:
-        return self._dto["championPoints"]
-
-    @property
-    def points_until_next_level(self) -> int:
-        return self._dto["championPointsUntilNextLevel"]
-
-    @property
-    def points_since_last_level(self) -> int:
-        return self._dto["championPointsSinceLastLevel"]
-
-    @property
-    def last_played(self) -> int:
-        return self._dto["lastPlayTime"]
+    _renamed = {"chestGranted": "chest_granted", "championLevel": "level", "championPoints": "points", "championId": "champion_id", "playerId": "summoner_id", "championPointsUntilNextLevel": "points_until_next_level", "championPointsSinceLastLevel": "points_since_last_level", "lastPlayTime": "last_played"}
 
 
 ##############
@@ -99,10 +55,10 @@ class ChampionMasteries(CassiopeiaList):
             summoner_data = summoner._data[SummonerData]
             try:
                 query["summoner.id"] = summoner_data.id
-            except KeyError:
+            except AttributeError:
                 try:
                     query["summoner.account.id"] = summoner_data.account_id
-                except KeyError:
+                except AttributeError:
                     query["summoner.name"] = summoner_data.name
         elif isinstance(summoner, str):
             query["summoner.name"] = summoner

@@ -1,6 +1,6 @@
 from abc import abstractmethod, abstractclassmethod
 import types
-from typing import Mapping, Any, Set, Union, Optional, Type, Generator
+from typing import Mapping, Set, Union, Optional, Type, Generator
 import functools
 import logging
 
@@ -9,7 +9,6 @@ from merakicommons.container import SearchableList, SearchableLazyList
 
 from .. import configuration
 from ..data import Region, Platform
-from ..dto.common import DtoObject
 
 try:
     import ujson as json
@@ -21,7 +20,7 @@ LOGGER = logging.getLogger("core")
 
 
 def ghost_load_on(method):
-    return _ghost_load_on(KeyError, AttributeError)(method)
+    return _ghost_load_on(AttributeError)(method)
 
 
 def provide_default_region(method):
@@ -58,54 +57,28 @@ def get_latest_version(region: Union[Region, str], endpoint: Optional[str]):
 
 
 class CoreData(object):
-    def __init__(self, **kwargs):
-        self._dto = {}
-        self._update(kwargs)
-
-    @classmethod
-    def from_dto(cls, dto):
-        self = cls()
-        self._dto = dto
-        return self
-
     @property
     @abstractclassmethod
     def _renamed(cls) -> Mapping[str, str]:
-        """A mapping of the new method names to the old. If a name wasn't changed, it is not in this mapping."""
         pass
 
-    def __contains__(self, item):
-        return self._renamed.get(item, item) in self._dto
+    def __init__(self, **kwargs):
+        self(**kwargs)
 
-    def __iter__(self):
-        for key in dir(self):
-            if key in self:
-                yield key
-
-    def __str__(self):
-        # TODO Update this to return the correct stuff when we update the data for this layer.
-        return str(self._dto)
-
-    def _update(self, data: Mapping[str, Any]) -> None:
-        for key, value in data.items():
-            self._set(key, value)
-
-    def _set(self, key, value):
-        key = self._renamed.get(key, key)
-        self._dto[key] = value
+    def __call__(self, **kwargs):
+        for key, value in kwargs.items():
+            new_key = self._renamed.get(key, key)
+            setattr(self, new_key, value)
+        return self
 
 
-class DataObjectList(list, CoreData):
+class CoreDataList(list, CoreData):
     def __str__(self):
         return list.__str__(self)
 
     def __init__(self, *args, **kwargs):
         list.__init__(self, *args)
         CoreData.__init__(self, **kwargs)
-
-    def from_dto(cls, dto: Union[list, DtoObject]):
-        self = CoreData.from_dto(dto)
-        SearchableList.__init__(self, dto)
 
 
 class DataObjectGenerator(CoreData):
@@ -160,7 +133,7 @@ class CassiopeiaObject(object):
         for key, value in kwargs.items():
             # We don't know which type to put the piece of data under, so put it in any type that supports this key
             for _type in self._data_types:
-                if key in dir(_type):
+                if issubclass(_type, CoreData) or key in dir(_type):
                     results[_type][key] = value
                     found = True
             if not found:
@@ -170,7 +143,7 @@ class CassiopeiaObject(object):
         # Now that we've parsed the data and know where to put it all, we can update our data.
         for _type, insert_this in results.items():
             if self._data[_type] is not None:
-                self._data[_type]._update(insert_this)
+                self._data[_type] = self._data[_type](**insert_this)
             else:
                 self._data[_type] = _type(**insert_this)
         return self
@@ -193,6 +166,9 @@ class CassiopeiaPipelineObject(CassiopeiaObject, metaclass=GetFromPipeline):
         # class, which is `type` in this case. Then `type`'s `__call__` will be called.
         # This has the effect of skipping the GetFromPipeline instantiation, and defaulting to the normal class
         # instantiation for the class.
+        # TODO I don't know how to handle includedData -> included_data for core...
+        if "includedData" in kwargs:
+            kwargs["included_data"] = kwargs.pop("includedData")
         return super(cls.__class__, cls).__call__(*args, **kwargs)
 
     @abstractmethod

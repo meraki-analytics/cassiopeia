@@ -1,13 +1,13 @@
 import functools
 import datetime
-from typing import List, Tuple, Dict, Set, Union, Generator
+from typing import List, Dict, Set, Union, Generator
 
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableLazyList, SearchableDictionary
 
 from .. import configuration
-from ..data import Region, Platform, Tier, GameType, GameMode, Queue, Side, Season, Patch
-from .common import CoreData, DataObjectList, DataObjectGenerator, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, provide_default_region, ghost_load_on
+from ..data import Region, Platform, Tier, GameType, GameMode, Queue, Side, Season, Patch, Lane, Role
+from .common import CoreData, CoreDataList, DataObjectGenerator, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, provide_default_region, ghost_load_on
 from ..dto import match as dto
 from .summoner import Summoner
 from .staticdata.champion import Champion
@@ -22,7 +22,7 @@ def _choose_staticdata_version(match):
     # However, we can use the creation date (which comes with a matchref) and get the ~ patch and therefore extract the version from the patch.
     if configuration.settings.version_from_match == "latest":
         version = None  # Rather than pick the latest version here, let the obj handle it so it knows which endpoint within the realms data to use
-    elif configuration.settings.version_from_match == "version" or "version" in match._data[MatchData]._dto:
+    elif configuration.settings.version_from_match == "version" or hasattr(match._data[MatchData], "version"):
         version = match.version
         version = ".".join(version.split(".")[:2]) + ".1"
     elif configuration.settings.version_from_match == "patch":
@@ -38,876 +38,217 @@ def _choose_staticdata_version(match):
 ##############
 
 
-class MatchListData(DataObjectList):
+class MatchListData(CoreDataList):
     _dto_type = dto.MatchListDto
-    _renamed = {"account_id": "accountId", "seasons": "season", "champion_ids": "champion", "queues": "queue", "being_index": "beginIndex", "end_index": "endIndex", "begin_time": "beginTime", "end_time": "endTime"}
+    _renamed = {"champion": "championIds"}
 
-    @property
-    def account_id(self) -> str:
-        return self._dto["accountId"]
+    def __call__(self, **kwargs):
+        if "season" in kwargs:
+            self.seasons = {Season.from_id(season) for season in kwargs["season"]}
+        if "queue" in kwargs:
+            self.queues = {Queue.from_id(queue) for queue in kwargs["queue"]}
+        super().__call__(**kwargs)
+        return self
 
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def queues(self) -> Set[int]:
-        return self._dto["queue"]
-
-    @property
-    def seasons(self) -> Set[int]:
-        return self._dto["season"]
-
-    @property
-    def champion_ids(self) -> Set[int]:
-        return self._dto["champion"]
-
-    @property
-    def begin_index(self) -> int:
-        return self._dto["beginIndex"]
-
-    @property
-    def end_index(self) -> int:
-        return self._dto["endIndex"]
-
-    @property
-    def begin_time(self) -> int:
-        return self._dto["beginTime"]
-
-    @property
-    def end_time(self) -> int:
-        return self._dto["endTime"]
 
 class MatchListGenerator(DataObjectGenerator):
     _dto_type = dto.MatchListDtoGenerator
-    _renamed = {"account_id": "accountId", "seasons": "season", "champion_ids": "champion", "queues": "queue", "being_index": "beginIndex", "end_index": "endIndex", "begin_time": "beginTime", "end_time": "endTime"}
+    _renamed = {"champion": "championIds"}
 
-    @property
-    def account_id(self) -> str:
-        return self._dto["accountId"]
-
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def queues(self) -> Set[int]:
-        return self._dto["queue"]
-
-    @property
-    def seasons(self) -> Set[int]:
-        return self._dto["season"]
-
-    @property
-    def champion_ids(self) -> Set[int]:
-        return self._dto["champion"]
-
-    @property
-    def begin_index(self) -> int:
-        return self._dto["beginIndex"]
-
-    @property
-    def end_index(self) -> int:
-        return self._dto["endIndex"]
-
-    @property
-    def begin_time(self) -> int:
-        return self._dto["beginTime"]
-
-    @property
-    def end_time(self) -> int:
-        return self._dto["endTime"]
+    def __call__(self, **kwargs):
+        if "season" in kwargs:
+            self.seasons = {Season.from_id(season) for season in kwargs["season"]}
+        if "queue" in kwargs:
+            self.queues = {Queue.from_id(queue) for queue in kwargs["queue"]}
+        super().__call__(**kwargs)
+        return self
 
 
 class PositionData(CoreData):
     _renamed = {}
 
-    @property
-    def x(self) -> int:
-        return self._dto["x"]
-
-    @property
-    def y(self) -> int:
-        return self._dto["y"]
-
 
 class EventData(CoreData):
-    _renamed = {"event_type": "eventType", "tower_type": "towerType", "team_id": "teamId", "ascended_type": "ascendedType", "killer_id": "killerId", "level_up_type": "levelUpType", "point_captured": "pointCaptured", "assisting_participant_ids": "assistingParticipantIds", "ward_type": "wardType", "monster_type": "monsterType", "skill_slot": "skillSlot", "victim_id": "victimId", "after_id": "afterId", "monster_sub_type": "monsterSubType", "lane_type": "laneType", "item_id": "itemId", "participant_id": "participantId", "building_type": "buildingType", "creator_id": "creatorId", "before_id": "beforeId"}
+    _renamed = {"eventType": "type", "teamId": "team", "pointCaptured": "capturedPoint", "assistingParticipantIds": "assistingParticipants", "skillSlot": "skill"}
 
-    @property
-    def event_type(self) -> str:
-        return self._dto["eventType"]
-
-    @property
-    def tower_type(self) -> str:
-        return self._dto["towerType"]
-
-    @property
-    def team_id(self) -> int:
-        return self._dto["teamId"]
-
-    @property
-    def ascended_type(self) -> str:
-        return self._dto["ascendedType"]
-
-    @property
-    def killer_id(self) -> int:
-        return self._dto["killerId"]
-
-    @property
-    def level_up_type(self) -> str:
-        return self._dto["levelUpType"]
-
-    @property
-    def point_captured(self) -> str:
-        return self._dto["pointCaptured"]
-
-    @property
-    def assisting_participant_ids(self) -> List[int]:
-        return self._dto["assistingParticipantIds"]
-
-    @property
-    def ward_type(self) -> str:
-        return self._dto["wardType"]
-
-    @property
-    def monster_type(self) -> str:
-        return self._dto["monsterType"]
-
-    @property
-    def type(self) -> List[str]:
-        """Legal values: CHAMPION_KILL, WARD_PLACED, WARD_KILL, BUILDING_KILL, ELITE_MONSTER_KILL, ITEM_PURCHASED, ITEM_SOLD, ITEM_DESTROYED, ITEM_UNDO, SKILL_LEVEL_UP, ASCENDED_EVENT, CAPTURE_POINT, PORO_KING_SUMMON"""
-        return self._dto["type"]
-
-    @property
-    def skill_slot(self) -> int:
-        return self._dto["skillSlot"]
-
-    @property
-    def victim_id(self) -> int:
-        return self._dto["victimId"]
-
-    @property
-    def timestamp(self) -> int:
-        return self._dto["timestamp"]
-
-    @property
-    def after_id(self) -> int:
-        return self._dto["afterId"]
-
-    @property
-    def monster_sub_type(self) -> str:
-        return self._dto["monsterSubType"]
-
-    @property
-    def lane_type(self) -> str:
-        return self._dto["laneType"]
-
-    @property
-    def item_id(self) -> int:
-        return self._dto["itemId"]
-
-    @property
-    def participant_id(self) -> int:
-        return self._dto["participantId"]
-
-    @property
-    def building_type(self) -> str:
-        return self._dto["buildingType"]
-
-    @property
-    def creator_id(self) -> int:
-        return self._dto["creatorId"]
-
-    @property
-    def position(self) -> PositionData:
-        return PositionData.from_dto(self._dto["position"])
-
-    @property
-    def before_id(self) -> int:
-        return self._dto["beforeId"]
+    def __call__(self, **kwargs):
+        if "position" in kwargs:
+            self.position = PositionData(**kwargs.pop("position"))
+        if "teamId" in kwargs:
+            self.team = Side(kwargs.pop("teamId"))
+        super().__call__(**kwargs)
+        return self
 
 
 class ParticipantFrameData(CoreData):
-    _renamed = {"total_gold": "totalGold", "team_score": "teamScore", "participant_id": "participantId", "current_gold": "currentGold", "minions_killed": "minionsKilled", "dominion_score": "dominionScore", "jungle_minions_killed": "jungleMinionsKilled"}
+    _renamed = {"totalGold": "goldEarned", "participantId": "participant_id", "currentGold": "gold", "minionsKilled": "creepScore", "Xp": "experience", "jungleMinionsKilled": "NeutralMinionsKilled"}
 
-    @property
-    def total_gold(self) -> int:
-        return self._dto["totalGold"]
-
-    @property
-    def team_score(self) -> int:
-        return self._dto["teamScore"]
-
-    @property
-    def participant_id(self) -> int:
-        return self._dto["participantId"]
-
-    @property
-    def level(self) -> int:
-        return self._dto["level"]
-
-    @property
-    def current_gold(self) -> int:
-        return self._dto["currentGold"]
-
-    @property
-    def minions_killed(self) -> int:
-        return self._dto["minionsKilled"]
-
-    @property
-    def dominion_score(self) -> int:
-        return self._dto["dominionScore"]
-
-    @property
-    def position(self) -> PositionData:
-        return PositionData.from_dto(self._dto["position"])
-
-    @property
-    def xp(self) -> int:
-        return self._dto["xp"]
-
-    @property
-    def jungle_minions_killed(self) -> int:
-        return self._dto["jungleMinionsKilled"]
+    def __call__(self, **kwargs):
+        if "position" in kwargs:
+            self.position = PositionData(**kwargs.pop("position"))
+        super().__call__(**kwargs)
+        return self
 
 
 class FrameData(CoreData):
-    _renamed = {"participant_frames": "participantFrames"}
+    _renamed = {"participantFrames": "_participant_frames", "events": "_events"}
 
-    @property
-    def timestamp(self) -> int:
-        return self._dto["timestamp"]
+    def __call__(self, **kwargs):
+        if "events" in kwargs:
+            self.events = [EventData(**event) for event in kwargs.pop("events")]
+        # TODO Implement participant frames here
+        #if "participantFrames" in kwargs:
+        super().__call__(**kwargs)
+        return self
 
-    @property
-    def participant_frames(self) -> Dict[int, ParticipantFrameData]:
-        return {k: ParticipantFrameData.from_dto(v) for k, v in self._dto["participantFrames"].items()}
-
-    @property
-    def events(self) -> List[EventData]:
-        return [EventData.from_dto(event) for event in self._dto["events"]]
+    #@property
+    #def participant_frames(self) -> Dict[int, ParticipantFrameData]:
+    #    return {k: ParticipantFrameData(**v) for k, v in self._participant_frames.items()}
 
 
 class TimelineData(CoreData):
     _dto_type = dto.TimelineDto
-    _renamed = {"id": "matchId"}
+    _renamed = {"matchId": "id", "frameInterval": "frame_interval"}
 
-    @property
-    def id(self) -> int:
-        return self._dto["matchId"]
-
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def frames(self) -> List[FrameData]:
-        return [FrameData.from_dto(frame) for frame in self._dto["frames"]]
-
-    @property
-    def frame_interval(self) -> int:
-        return self._dto["frameInterval"]
+    def __call__(self, **kwargs):
+        if "frames" in kwargs:
+            self.frames = [FrameData(**frame) for frame in kwargs.pop("frames")]
+        super().__call__(**kwargs)
+        return self
 
 
 class ParticipantTimelineData(CoreData):
-    _renamed = {"id": "participantId", "cs_diff_per_min_deltas": "csDiffPerMinDeltas", "gold_per_min_deltas": "goldPerMinDeltas", "xp_pdiff_per_min_deltas": "xpDiffPerMinDeltas", "creeps_per_min_deltas": "creepsPerMinDeltas", "damage_taken_diff_per_min_deltas": "damageTakenDiffPerMinDeltas", "damage_taken_per_min_deltas": "damageTakenPerMinDeltas"}
+    _renamed = {"participantId": "id", "csDiffPerMinDeltas": "cs_diff_per_min_deltas", "goldPerMinDeltas": "gold_per_min_deltas", "xpDiffPerMinDeltas": "xp_pdiff_per_min_deltas", "creepsPerMinDeltas": "creeps_per_min_deltas", "damageTakenDiffPerMinDeltas": "damage_taken_diff_per_min_deltas", "damageTakenPerMinDeltas": "damage_taken_per_min_deltas"}
 
-    @property
-    def lane(self) -> str:
-        return self._dto["lane"]
-
-    @property
-    def role(self) -> str:
-        return self._dto["role"]
-
-    @property
-    def id(self) -> int:
-        return self._dto["participantId"]
-
-    @property
-    def cs_diff_per_min_deltas(self) -> Dict[str, float]:
-        return self._dto["csDiffPerMinDeltas"]
-
-    @property
-    def gold_per_min_deltas(self) -> Dict[str, float]:
-        return self._dto["goldPerMinDeltas"]
-
-    @property
-    def xp_diff_per_min_deltas(self) -> Dict[str, float]:
-        return self._dto["xpDiffPerMinDeltas"]
-
-    @property
-    def creeps_per_min_deltas(self) -> Dict[str, float]:
-        return self._dto["creepsPerMinDeltas"]
-
-    @property
-    def xp_per_min_deltas(self) -> Dict[str, float]:
-        return self._dto["xpPerMinDeltas"]
-
-    @property
-    def damage_taken_per_min_deltas(self) -> Dict[str, float]:
-        return self._dto["damageTakenPerMinDeltas"]
-
-    @property
-    def damage_taken_diff_per_min_deltas(self) -> Dict[str, float]:
-        return self._dto["damageTakenDiffPerMinDeltas"]
+    def __call__(self, **kwargs):
+        #timeline.setCreepScore(getStatTotals(item.getCreepsPerMinDeltas(), durationInSeconds));
+        #timeline.setCreepScoreDifference(getStatTotals(item.getCsDiffPerMinDeltas(), durationInSeconds));
+        #timeline.setDamageTaken(getStatTotals(item.getDamageTakenPerMinDeltas(), durationInSeconds));
+        #timeline.setDamageTakenDifference(getStatTotals(item.getDamageTakenDiffPerMinDeltas(), durationInSeconds));
+        #timeline.setExperience(getStatTotals(item.getXpPerMinDeltas(), durationInSeconds));
+        #timeline.setExperienceDifference(getStatTotals(item.getXpDiffPerMinDeltas(), durationInSeconds));
+        if "lane" in kwargs:
+            self.lane = Lane.from_match_naming_scheme(kwargs.pop("lane"))
+        if "role" in kwargs:
+            role = kwargs.pop("role")
+            if role == "NONE":
+                self.role = None
+            elif role == "SOLO":
+                self.role = "SOLO"
+            else:
+                self.role = Role.from_match_naming_scheme(role)
+        super().__call__(**kwargs)
+        return self
 
 
 class ParticipantStatsData(CoreData):
-    _renamed = {"physical_damage_dealt": "physicalDamageDealt", "magic_damage_dealt": "magicDamageDealt", "neutral_minions_killed_team_jungle": "neutralMinionsKilledTeamJungle", "total_player_score": "totalPlayerScore", "neutral_minions_killed_enemy_jungle": "neutralMinionsKilledEnemyJungle", "altars_captured": "altarsCaptured", "largest_critical_strike": "largestCriticalStrike", "total_damage_dealt": "totalDamageDealt", "magic_damage_dealt_to_champions": "magicDamageDealtToChampions", "vision_wards_bought_in_game": "visionWardsBoughtInGame", "damage_dealt_to_objectives": "damageDealtToObjectives", "largest_killing_spree": "largestKillingSpree", "quadra_kills": "quadraKills", "team_objective": "teamObjective", "total_time_crowd_control_dealt": "totalTimeCrowdControlDealt", "longest_time_spent_living": "longestTimeSpentLiving", "wards_killed": "wardsKilled", "first_tower_assist": "firstTowerAssist", "first_tower_kill": "firstTowerKill", "first_blood_assist": "firstBloodAssist", "vision_score": "visionScore", "wards_placed": "wardsPlaced", "turret_kills": "turretKills", "triple_kills": "tripleKills", "damage_self_mitigated": "damageSelfMitigated", "champion_level": "champLevel", "node_neutralize_assist": "nodeNeutralizeAssist", "first_inhibitor_kill": "firstInhibitorKill", "gold_earned": "goldEarned", "magical_damage_taken": "magicalDamageTaken", "double_kills": "doubleKills", "node_capture_assist": "nodeCaptureAssist", "true_damage_taken": "trueDamageTaken", "node_neutralize": "nodeNeutralize", "first_inhibitor_assist": "firstInhibitorAssist", "unreal_kills": "unrealKills", "neutral_minions_killed": "neutralMinionsKilled", "objective_player_score": "objectivePlayerScore", "combat_player_score": "combatPlayerScore", "damage_dealt_to_turrets": "damageDealtToTurrets", "altars_neutralized": "altarsNeutralized", "physical_damage_dealt_to_champions": "physicalDamageDealtToChampions", "gold_spent": "goldSpent", "true_damage_dealt": "trueDamageDealt", "true_damage_dealt_to_champions": "trueDamageDealtToChampions", "id": "participantId", "penta_kills": "pentaKills", "total_heal": "totalHeal", "total_minions_killed": "totalMinionsKilled", "first_blood_kill": "firstBloodKill", "node_capture": "nodeCapture", "largest_multi_kill": "largestMultiKill", "sight_wards_bought_in_game": "sightWardsBoughtInGame", "total_damage_dealt_to_champions": "totalDamageDealtToChampions", "total_units_healed": "totalUnitsHealed", "inhibitor_kills": "inhibitorKills", "total_score_rank": "totalScoreRank", "total_damage_taken": "totalDamageTaken", "killing_sprees": "killingSprees", "time_CCing_others": "timeCCingOthers", "physical_damage_taken": "physicalDamageTaken"}
-
-    @property
-    def physical_damage_dealt(self) -> int:
-        return self._dto["physicalDamageDealt"]
-
-    @property
-    def magic_damage_dealt(self) -> int:
-        return self._dto["magicDamageDealt"]
-
-    @property
-    def neutral_minions_killed_team_jungle(self) -> int:
-        return self._dto["neutralMinionsKilledTeamJungle"]
-
-    @property
-    def total_player_score(self) -> int:
-        return self._dto["totalPlayerScore"]
-
-    @property
-    def deaths(self) -> int:
-        return self._dto["deaths"]
-
-    @property
-    def win(self) -> bool:
-        return self._dto["win"]
-
-    @property
-    def neutral_minions_killed_enemy_jungle(self) -> int:
-        return self._dto["neutralMinionsKilledEnemyJungle"]
-
-    @property
-    def altars_captured(self) -> int:
-        return self._dto["altarsCaptured"]
-
-    @property
-    def largest_critical_strike(self) -> int:
-        return self._dto["largestCriticalStrike"]
-
-    @property
-    def total_damage_dealt(self) -> int:
-        return self._dto["totalDamageDealt"]
-
-    @property
-    def magic_damage_dealt_to_champions(self) -> int:
-        return self._dto["magicDamageDealtToChampions"]
-
-    @property
-    def vision_wards_bought_in_game(self) -> int:
-        return self._dto["visionWardsBoughtInGame"]
-
-    @property
-    def damage_dealt_to_objectives(self) -> int:
-        return self._dto["damageDealtToObjectives"]
-
-    @property
-    def largest_killing_spree(self) -> int:
-        return self._dto["largestKillingSpree"]
-
-    @property
-    def item1(self) -> int:
-        return self._dto["item1"]
-
-    @property
-    def quadra_kills(self) -> int:
-        return self._dto["quadraKills"]
-
-    @property
-    def team_objective(self) -> int:
-        return self._dto["teamObjective"]
-
-    @property
-    def total_time_crowd_control_dealt(self) -> int:
-        return self._dto["totalTimeCrowdControlDealt"]
-
-    @property
-    def longest_time_spent_living(self) -> int:
-        return self._dto["longestTimeSpentLiving"]
-
-    @property
-    def wards_killed(self) -> int:
-        return self._dto["wardsKilled"]
-
-    @property
-    def first_tower_assist(self) -> bool:
-        return self._dto["firstTowerAssist"]
-
-    @property
-    def first_tower_kill(self) -> bool:
-        return self._dto["firstTowerKill"]
-
-    @property
-    def item2(self) -> int:
-        return self._dto["item2"]
-
-    @property
-    def item3(self) -> int:
-        return self._dto["item3"]
-
-    @property
-    def item0(self) -> int:
-        return self._dto["item0"]
-
-    @property
-    def first_blood_assist(self) -> bool:
-        return self._dto["firstBloodAssist"]
-
-    @property
-    def vision_score(self) -> int:
-        return self._dto["visionScore"]
-
-    @property
-    def wards_placed(self) -> int:
-        return self._dto["wardsPlaced"]
-
-    @property
-    def item4(self) -> int:
-        return self._dto["item4"]
-
-    @property
-    def item5(self) -> int:
-        return self._dto["item5"]
-
-    @property
-    def item6(self) -> int:
-        return self._dto["item6"]
-
-    @property
-    def turret_kills(self) -> int:
-        return self._dto["turretKills"]
-
-    @property
-    def triple_kills(self) -> int:
-        return self._dto["tripleKills"]
-
-    @property
-    def damage_self_mitigated(self) -> int:
-        return self._dto["damageSelfMitigated"]
-
-    @property
-    def champion_level(self) -> int:
-        return self._dto["champLevel"]
-
-    @property
-    def node_neutralize_assist(self) -> int:
-        return self._dto["nodeNeutralizeAssist"]
-
-    @property
-    def first_inhibitor_kill(self) -> bool:
-        return self._dto["firstInhibitorKill"]
-
-    @property
-    def gold_earned(self) -> int:
-        return self._dto["goldEarned"]
-
-    @property
-    def magical_damage_taken(self) -> int:
-        return self._dto["magicalDamageTaken"]
-
-    @property
-    def kills(self) -> int:
-        return self._dto["kills"]
-
-    @property
-    def double_kills(self) -> int:
-        return self._dto["doubleKills"]
-
-    @property
-    def node_capture_assist(self) -> int:
-        return self._dto["nodeCaptureAssist"]
-
-    @property
-    def true_damage_taken(self) -> int:
-        return self._dto["trueDamageTaken"]
-
-    @property
-    def node_neutralize(self) -> int:
-        return self._dto["nodeNeutralize"]
-
-    @property
-    def first_inhibitor_assist(self) -> bool:
-        return self._dto["firstInhibitorAssist"]
-
-    @property
-    def assists(self) -> int:
-        return self._dto["assists"]
-
-    @property
-    def unreal_kills(self) -> int:
-        return self._dto["unrealKills"]
-
-    @property
-    def neutral_minions_killed(self) -> int:
-        return self._dto["neutralMinionsKilled"]
-
-    @property
-    def objective_player_score(self) -> int:
-        return self._dto["objectivePlayerScore"]
-
-    @property
-    def combat_player_score(self) -> int:
-        return self._dto["combatPlayerScore"]
-
-    @property
-    def damage_dealt_to_turrets(self) -> int:
-        return self._dto["damageDealtToTurrets"]
-
-    @property
-    def altars_neutralized(self) -> int:
-        return self._dto["altarsNeutralized"]
-
-    @property
-    def physical_damage_dealt_to_champions(self) -> int:
-        return self._dto["physicalDamageDealtToChampions"]
-
-    @property
-    def gold_spent(self) -> int:
-        return self._dto["goldSpent"]
-
-    @property
-    def true_damage_dealt(self) -> int:
-        return self._dto["trueDamageDealt"]
-
-    @property
-    def true_damage_dealt_to_champions(self) -> int:
-        return self._dto["trueDamageDealtToChampions"]
-
-    @property
-    def id(self) -> int:
-        return self._dto["participantId"]
-
-    @property
-    def penta_kills(self) -> int:
-        return self._dto["pentaKills"]
-
-    @property
-    def total_heal(self) -> int:
-        return self._dto["totalHeal"]
-
-    @property
-    def total_minions_killed(self) -> int:
-        return self._dto["totalMinionsKilled"]
-
-    @property
-    def first_blood_kill(self) -> bool:
-        return self._dto["firstBloodKill"]
-
-    @property
-    def node_capture(self) -> int:
-        return self._dto["nodeCapture"]
-
-    @property
-    def largest_multi_kill(self) -> int:
-        return self._dto["largestMultKill"]
-
-    @property
-    def sight_wards_bought_in_game(self) -> int:
-        return self._dto["sightWardsBoughtInGame"]
-
-    @property
-    def total_damage_dealt_to_champions(self) -> int:
-        return self._dto["totalDamageDealtToChampions"]
-
-    @property
-    def total_units_healed(self) -> int:
-        return self._dto["totalUnitsHealed"]
-
-    @property
-    def inhibitor_kills(self) -> int:
-        return self._dto["inhibitorKills"]
-
-    @property
-    def total_score_rank(self) -> int:
-        return self._dto["totalScoreRank"]
-
-    @property
-    def total_damage_taken(self) -> int:
-        return self._dto["totalDamageTaken"]
-
-    @property
-    def killing_sprees(self) -> int:
-        return self._dto["killingSprees"]
-
-    @property
-    def time_CCing_others(self) -> int:
-        return self._dto["timeCCingOthers"]
-
-    @property
-    def physical_damage_taken(self) -> int:
-        return self._dto["physicalDamageTaken"]
+    _renamed = {"physicalDamageDealt": "physical_damage_dealt", "magicDamageDealt": "magic_damage_dealt", "neutralMinionsKilledTeamJungle": "neutral_minions_killed_team_jungle", "totalPlayerScore": "total_player_score", "neutralMinionsKilledEnemyJungle": "neutral_minions_killed_enemy_jungle", "altarsCaptured": "altars_captured", "largestCriticalStrike": "largest_critical_strike", "totalDamageDealt": "total_damage_dealt", "magicDamageDealtToChampions": "magic_damage_dealt_to_champions", "visionWardsBoughtInGame": "vision_wards_bought_in_game", "damageDealtToObjectives": "damage_dealt_to_objectives", "largestKillingSpree": "largest_killing_spree", "quadraKills": "quadra_kills", "teamObjective": "team_objective", "totalTimeCrowdControlDealt": "total_time_crowd_control_dealt", "longestTimeSpentLiving": "longest_time_spent_living", "wardsKilled": "wards_killed", "firstTowerAssist": "first_tower_assist", "firstTowerKill": "first_tower_kill", "firstBloodAssist": "first_blood_assist", "visionScore": "vision_score", "wardsPlaced": "wards_placed", "turretKills": "turret_kills", "tripleKills": "triple_kills", "damageSelfMitigated": "damage_self_mitigated", "champLevel": "champion_level", "nodeNeutralizeAssist": "node_neutralize_assist", "firstInhibitorKill": "first_inhibitor_kill", "goldEarned": "gold_earned", "magicalDamageTaken": "magical_damage_taken", "doubleKills": "double_kills", "nodeCaptureAssist": "node_capture_assist", "trueDamageTaken": "true_damage_taken", "nodeNeutralize": "node_neutralize", "firstInhibitorAssist": "first_inhibitor_assist", "unrealKills": "unreal_kills", "neutralMinionsKilled": "neutral_minions_killed", "objectivePlayerScore": "objective_player_score", "combatPlayerScore": "combat_player_score", "damageDealtToTurrets": "damage_dealt_to_turrets", "altarsNeutralized": "altars_neutralized", "physicalDamageDealtToChampions": "physical_damage_dealt_to_champions", "goldSpent": "gold_spent", "trueDamageDealt": "true_damage_dealt", "trueDamageDealtToChampions": "true_damage_dealt_to_champions", "participantId": "id", "pentaKills": "penta_kills", "totalHeal": "total_heal", "totalMinionsKilled": "total_minions_killed", "firstBloodKill": "first_blood_kill", "nodeCapture": "node_capture", "largestMultiKill": "largest_multi_kill", "sightWardsBoughtInGame": "sight_wards_bought_in_game", "totalDamageDealtToChampions": "total_damage_dealt_to_champions", "totalUnitsHealed": "total_units_healed", "inhibitorKills": "inhibitor_kills", "totalScoreRank": "total_score_rank", "totalDamageTaken": "total_damage_taken", "killingSprees": "killing_sprees", "timeCCingOthers": "time_CCing_others", "physicalDamageTaken": "physical_damage_taken"}
+    # TODO rename......
 
 
 class ParticipantData(CoreData):
-    _renamed = {"id": "participantId", "side": "teamId", "summoner_spell_d_id": "spell1Id", "summoner_spell_f_id": "spell2Id", "champion_id": "championId", "rank_last_season":"highestAchievedSeasonTier"}
+    _renamed = {"participantId": "id", "spell1Id": "summonerSpellDId", "spell2Id": "summonerSpellFId", "highestAchievedSeasonTier": "rankLastSeason", "bot": "isBot", "profileIcon": "profileIconId"}
 
-    @property
-    def stats(self) -> ParticipantStatsData:
-        return ParticipantStatsData.from_dto(self._dto["stats"])
+    def __call__(self, **kwargs):
+        if "stats" in kwargs:
+            self.stats = ParticipantStatsData(**kwargs.pop("stats"))
+        if "timeline" in kwargs:
+            self.timeline = ParticipantTimelineData(**kwargs.pop("timeline"))
+        if "teamId" in kwargs:
+            self.side = Side(kwargs.pop("teamId"))
 
-    @property
-    def id(self) -> int:
-        return self._dto["participantId"]
-
-    @property
-    def runes(self) -> List[int]:
-        return self._dto["runes"]
-
-    @property
-    def timeline(self) -> ParticipantTimelineData:
-        return ParticipantTimelineData.from_dto(self._dto["timeline"])
-
-    @property
-    def side(self) -> int:
-        return self._dto["teamId"]
-
-    @property
-    def summoner_spell_d_id(self) -> int:
-        return self._dto["spell1Id"]
-
-    @property
-    def summoner_spell_f_id(self) -> int:
-        return self._dto["spell2Id"]
-
-    @property
-    def rank_last_season(self) -> Tuple[str, int]:
-        return self._dto["highestAchievedSeasonTier"]
-
-    @property
-    def champion_id(self) -> int:
-        return self._dto["championId"]
-
-
-class PlayerData(CoreData):
-    _renamed = {"current_platform_id": "currentPlatformId", "summoner_name": "summonerName", "summoner_id": "summonerId", "match_history_uri": "matchHistoryUri", "platform_id": "platformId", "current_account_id": "currentAccountId", "profile_icon_id": "profileIcon", "account_id": "accountId", "is_bot": "bot"}
-
-    @property
-    def current_platform_id(self) -> int:
-        return self._dto["currentPlatformId"]
-
-    @property
-    def summoner_id(self) -> int:
-        return self._dto["summonerId"]
-
-    @property
-    def summoner_name(self) -> str:
-        return self._dto["summonerName"]
-
-    @property
-    def match_history_uri(self) -> str:
-        return self._dto["matchHistoryUri"]
-
-    @property
-    def platform_id(self) -> int:
-        return self._dto["platformId"]
-
-    @property
-    def profile_icon_id(self) -> int:
-        return self._dto["profileIcon"]
-
-    @property
-    def current_account_id(self) -> int:
-        return self._dto["currentAccountId"]
-
-    @property
-    def account_id(self) -> int:
-        return self._dto["accountId"]
-
-    @property
-    def is_bot(self) -> bool:
-        return self._dto.get("bot", False)
-
-
-class ParticipantIdentityData(CoreData):
-    _renamed = {"id": "participantId"}
-
-    @property
-    def player(self) -> PlayerData:
-        return PlayerData.from_dto(self._dto["player"])
-
-    @property
-    def id(self) -> int:
-        return self._dto["participantId"]
+        if "player" in kwargs:
+            for key, value in kwargs.pop("player").items():
+                kwargs[key] = value
+        if "platformId" in kwargs:
+            if kwargs["platformId"] == "NA":
+                kwargs["platformId"] = "NA1"
+            self.platform = Platform(kwargs.pop("platformId"))
+        super().__call__(**kwargs)
+        return self
 
 
 class TeamData(CoreData):
-    _renamed = {"first_dragon": "firstDragon", "first_inhibitor": "firstInhibitor", "first_rift_herald": "firstRiftHerald", "first_baron": "firstBaron", "first_tower": "firstTower", "first_blood": "firstBlood", "baron_kills": "baronKills", "rift_herald_kills": "riftHeraldKills", "vilemaw_kills": "vilemawKills", "inhibitor_kills": "inhibitorKills", "tower_kills": "towerKills", "dragon_kills": "dragonKills", "dominion_victory_score": "dominionVictoryScore", "side": "teamId"}
+    _renamed = {"dominionVictoryScore": "dominionScore", "firstBaron": "firstBaronKiller", "firstBlood": "firstBloodKiller", "firstDragon": "firstDragonKiller", "firstInhibitor": "firstInhibitorKiller", "firstRiftHerald": "firstRiftHeraldKiller", "firstTower": "firstTowerKiller"}
 
-    @property
-    def first_dragon(self) -> bool:
-        return self._dto["firstDragon"]
-
-    @property
-    def first_inhibitor(self) -> bool:
-        return self._dto["firstInhibitor"]
-
-    @property
-    def first_rift_herald(self) -> bool:
-        return self._dto["firstRiftHerald"]
-
-    @property
-    def first_baron(self) -> bool:
-        return self._dto["firstBaron"]
-
-    @property
-    def first_tower(self) -> bool:
-        return self._dto["firstTower"]
-
-    @property
-    def first_blood(self) -> bool:
-        return self._dto["firstBlood"]
-
-    @property
-    def bans(self) -> List[int]:
-        return [ban["championId"] for ban in self._dto["bans"]]
-
-    @property
-    def baron_kills(self) -> int:
-        return self._dto["baronKills"]
-
-    @property
-    def rift_herald_kills(self) -> int:
-        return self._dto["riftHeraldKills"]
-
-    @property
-    def vilemaw_kills(self) -> int:
-        return self._dto["vilemawKills"]
-
-    @property
-    def inhibitor_kills(self) -> int:
-        return self._dto["inhibitorKills"]
-
-    @property
-    def tower_kills(self) -> int:
-        return self._dto["towerKills"]
-
-    @property
-    def dragon_kills(self) -> int:
-        return self._dto["dragonKills"]
-
-    @property
-    def side(self) -> int:
-        return self._dto["teamId"]
-
-    @property
-    def dominion_victory_score(self) -> int:
-        return self._dto["dominionVictoryScore"]
-
-    @property
-    def win(self) -> bool:
-        return self._dto["win"]
+    def __call__(self, **kwargs):
+        if "bans" in kwargs:
+            self.bans = [ban["championId"] for ban in kwargs.pop("bans")]
+        if "win" in kwargs:
+            self.isWinner = kwargs.pop("win") != "Fail"
+        if "teamId" in kwargs:
+            self.side = Side(kwargs.pop("teamId"))
+        super().__call__(**kwargs)
+        return self
 
 
 class MatchReferenceData(CoreData):
-    _renamed = {"account_id": "accountId", "season_id": "season", "queue_id": "queue", "id": "gameId", "platform_id": "platformId", "champion_id": "champion", "creation": "timestamp"}
+    _renamed = {"accountId": "account_id", "gameId": "id", "champion": "championId"}
 
-    @property
-    def region(self) -> int:
-        return self._dto["region"]
-
-    @property
-    def account_id(self) -> int:
-        return self._dto["accountId"]
-
-    @property
-    def id(self) -> int:
-        return self._dto["gameId"]
-
-    @property
-    def season_id(self) -> int:
-        return self._dto["season"]
-
-    @property
-    def queue_id(self) -> int:
-        return self._dto["queue"]
-
-    @property
-    def platform_id(self) -> int:
-        return self._dto["platformId"]
-
-    @property
-    def lane(self) -> str:
-        return self._dto["lane"]
-
-    @property
-    def role(self) -> str:
-        return self._dto["role"]
-
-    @property
-    def champion_id(self) -> int:
-        return self._dto["champion"]
-
-    @property
-    def creation(self) -> int:
-        return self._dto["timestamp"]
+    def __call__(self, **kwargs):
+        if "season" in kwargs:
+            self.season = Season.from_id(kwargs.pop("season"))
+        if "queue" in kwargs:
+            self.queue = Queue.from_id(kwargs.pop("queue"))
+        if "teamId" in kwargs:
+            self.side = Side(kwargs.pop("teamId"))
+        if "timestamp" in kwargs:
+            self.creation = datetime.datetime.fromtimestamp(kwargs.pop("timestamp") / 1000)
+        if "platformId" in kwargs:
+            self.platform = Platform(kwargs.pop("platformId"))
+        super().__call__(**kwargs)
+        return self
 
 
 class MatchData(CoreData):
     _dto_type = dto.MatchDto
-    _renamed = {"season_id": "seasonId", "queue_id": "queueId", "id": "gameId", "participant_identities": "participantIdentities", "version": "gameVersion", "platform_id": "platformId", "mode": "gameMode", "map_id": "mapId", "type": "gameType", "duration": "gameDuration", "creation": "gameCreation"}
+    _renamed = {"gameId": "id", "gameVersion": "version"}
 
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
+    def __call__(self, **kwargs):
+        if "seasonId" in kwargs:
+            self.season = Season.from_id(kwargs.pop("seasonId"))
+        if "queueId" in kwargs:
+            self.queue = Queue.from_id(kwargs.pop("queueId"))
+        if "platformId" in kwargs:
+            self.platform = Platform(kwargs.pop("platformId"))
+        if "gameMode" in kwargs:
+            self.mode = GameMode(kwargs.pop("gameMode"))
+        if "gameType" in kwargs:
+            self.type = GameType(kwargs.pop("gameType"))
+        if "gameCreation" in kwargs:
+            self.creation = datetime.datetime.fromtimestamp(kwargs["gameCreation"] / 1000)
+        if "gameDuration" in kwargs:
+            self.duration = datetime.timedelta(seconds=kwargs["gameDuration"])
 
-    @property
-    def id(self) -> int:
-        return self._dto["gameId"]
+        if "participants" in kwargs:
+            for participant in kwargs["participants"]:
+                for pid in kwargs["participantIdentities"]:
+                    if participant["participantId"] == pid["participantId"]:
+                        participant["player"] =  pid["player"]
+                        break
+            self.participants = []
+            for i in range(len(kwargs["participants"])):
+                for participant in kwargs["participants"]:
+                    if i == participant["participantId"] - 1:
+                        participant = ParticipantData(**participant)
+                        self.participants.append(participant)
+                        break
+            assert len(self.participants) == len(kwargs["participants"])
+            kwargs.pop("participants")
+            kwargs.pop("participantIdentities")
 
-    @property
-    def season_id(self) -> int:
-        return self._dto["seasonId"]
+        if "teams" in kwargs:
+            self.teams = []
+            for team in kwargs.pop("teams"):
+                team_side = Side(team["teamId"])
+                participants = []
+                for participant in self.participants:
+                    if participant.side is team_side:
+                        participants.append(participant)
+                self.teams.append(TeamData(**team, participants=participants))
 
-    @property
-    def queue_id(self) -> int:
-        return self._dto["queueId"]
-
-    @property
-    def participants(self) -> List[ParticipantData]:
-        return [ParticipantData.from_dto(p) for p in self._dto["participants"]]
-
-    @property
-    def participant_identities(self) -> List[ParticipantIdentityData]:
-        return [ParticipantIdentityData.from_dto(p) for p in self._dto["participantIdentities"]]
-
-    @property
-    def teams(self) -> List[TeamData]:
-        return [TeamData.from_dto(t) for t in self._dto["teams"]]
-
-    @property
-    def version(self) -> str:
-        return self._dto["gameVersion"]
-
-    @property
-    def platform_id(self) -> int:
-        return self._dto["platformId"]
-
-    @property
-    def mode(self) -> str:
-        return self._dto["gameMode"]
-
-    @property
-    def map_id(self) -> int:
-        return self._dto["mapId"]
-
-    @property
-    def type(self) -> str:
-        return self._dto["gameType"]
-
-    @property
-    def duration(self) -> int:
-        return self._dto["gameDuration"]
-
-    @property
-    def creation(self) -> int:
-        return self._dto["gameCreation"]
+        super().__call__(**kwargs)
+        return self
 
 
 ##############
@@ -932,7 +273,7 @@ class MatchHistory(CassiopeiaLazyList):
         kwargs["queues"] = queues or []
         kwargs["seasons"] = seasons or []
         champions = champions or []
-        kwargs["champion_ids"] = [champion.id if isinstance(champion, Champion) else champion for champion in champions]
+        kwargs["championIds"] = [champion.id if isinstance(champion, Champion) else champion for champion in champions]
         kwargs["begin_index"] = begin_index
         kwargs["end_index"] = end_index
         if begin_time is not None and not isinstance(begin_time, (int, float)):
@@ -1044,20 +385,20 @@ class MatchHistory(CassiopeiaLazyList):
 
     @lazy_property
     def champions(self) -> Set[Champion]:
-        return {Champion(id=cid, region=self.region) for cid in self._data[MatchListGenerator].champion_ids}
+        return {Champion(id=cid, region=self.region) for cid in self._data[MatchListGenerator].championIds}
 
     @property
     def begin_index(self) -> Union[int, None]:
         try:
-            return self._data[MatchListGenerator].begin_index
-        except KeyError:
+            return self._data[MatchListGenerator].beginIndex
+        except AttributeError:
             return None
 
     @property
     def end_index(self) -> Union[int, None]:
         try:
-            return self._data[MatchListGenerator].end_index
-        except KeyError:
+            return self._data[MatchListGenerator].endIndex
+        except AttributeError:
             return None
 
     @property
@@ -1085,13 +426,13 @@ class Position(CassiopeiaObject):
         return self._data[PositionData].y
 
 
-@searchable({str: ["event_type", "tower_type", "ascended_type", "ward_type", "monster_type", "type", "monster_sub_type", "lane_type", "building_type"]})
+@searchable({str: ["type", "tower_type", "ascended_type", "ward_type", "monster_type", "type", "monster_sub_type", "lane_type", "building_type"]})
 class Event(CassiopeiaObject):
     _data_types = {EventData}
 
     @property
-    def event_type(self) -> str:
-        return self._data[EventData].event_type
+    def type(self) -> str:
+        return self._data[EventData].type
 
     @property
     def tower_type(self) -> str:
@@ -1114,12 +455,12 @@ class Event(CassiopeiaObject):
         return self._data[EventData].level_up_type
 
     @property
-    def point_captured(self) -> str:
-        return self._data[EventData].point_captured
+    def captured_point(self) -> str:
+        return self._data[EventData].capturedPoint
 
     @property
-    def assisting_participant_ids(self) -> List[int]:
-        return self._data[EventData].assisting_participant_ids
+    def assisting_participants(self) -> List[int]:
+        return self._data[EventData].assistingParticipants
 
     @property
     def ward_type(self) -> str:
@@ -1135,8 +476,8 @@ class Event(CassiopeiaObject):
         return self._data[EventData].type
 
     @property
-    def skill_slot(self) -> int:
-        return self._data[EventData].skill_slot
+    def skill(self) -> int:
+        return self._data[EventData].skill
 
     @property
     def victim_id(self) -> int:
@@ -1606,12 +947,12 @@ class ParticipantStats(CassiopeiaObject):
         return self._data[ParticipantStatsData].physical_damage_taken
 
 
-def load_match_on_keyerror(method):
+def load_match_on_attributeerror(method):
     @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
         try:
             return method(self, *args, **kwargs)
-        except KeyError:  # teamId
+        except AttributeError:  # teamId
             # The match has only partially loaded this participant and it doesn't have all it's data, so load the full match
             if not self._Participant__match._Ghost__is_loaded(MatchData):
                 self._Participant__match.__load__(MatchData)
@@ -1626,7 +967,7 @@ def load_match_on_keyerror(method):
 
 @searchable({str: ["summoner", "champion", "stats", "runes", "side", "summoner_spell_d", "summoner_spell_f"], Summoner: ["summoner"], Champion: ["champion"], Side: ["side"], Rune: ["runes"], SummonerSpell: ["summoner_spell_d", "summoner_spell_f"]})
 class Participant(CassiopeiaObject):
-    _data_types = {ParticipantData, PlayerData}
+    _data_types = {ParticipantData}
 
     @classmethod
     def from_data(cls, data: CoreData, match: "Match"):
@@ -1642,7 +983,7 @@ class Participant(CassiopeiaObject):
         return version
 
     @lazy_property
-    @load_match_on_keyerror
+    @load_match_on_attributeerror
     def stats(self) -> ParticipantStats:
         return ParticipantStats.from_data(self._data[ParticipantData].stats, match=self.__match)
 
@@ -1651,49 +992,49 @@ class Participant(CassiopeiaObject):
         return self._data[ParticipantData].id
 
     @lazy_property
-    @load_match_on_keyerror
+    @load_match_on_attributeerror
     def is_bot(self) -> bool:
-        return self._data[PlayerData].is_bot
+        return self._data[ParticipantData].isBot
 
     @lazy_property
-    @load_match_on_keyerror
+    @load_match_on_attributeerror
     def runes(self) -> Dict["Rune", int]:
         version = _choose_staticdata_version(self.__match)
         return SearchableDictionary({Rune(id=rune["runeId"], version=version, region=self.__match.region): rune["rank"] for rune in self._data[ParticipantData].runes})
 
     @lazy_property
-    @load_match_on_keyerror
+    @load_match_on_attributeerror
     def timeline(self) -> ParticipantTimeline:
         return ParticipantTimeline.from_data(self._data[ParticipantData].timeline)
 
     @lazy_property
-    @load_match_on_keyerror
+    @load_match_on_attributeerror
     def side(self) -> Side:
         return Side(self._data[ParticipantData].side)
 
     @lazy_property
-    @load_match_on_keyerror
+    @load_match_on_attributeerror
     def summoner_spell_d(self) -> SummonerSpell:
         version = _choose_staticdata_version(self.__match)
-        return SummonerSpell(id=self._data[ParticipantData].summoner_spell_d_id, version=version, region=self.__match.region)
+        return SummonerSpell(id=self._data[ParticipantData].summonerSpellDId, version=version, region=self.__match.region)
 
     @lazy_property
-    @load_match_on_keyerror
+    @load_match_on_attributeerror
     def summoner_spell_f(self) -> SummonerSpell:
         version = _choose_staticdata_version(self.__match)
-        return SummonerSpell(id=self._data[ParticipantData].summoner_spell_f_id, version=version, region=self.__match.region)
+        return SummonerSpell(id=self._data[ParticipantData].summonerSpellFId, version=version, region=self.__match.region)
 
     @lazy_property
-    @load_match_on_keyerror
+    @load_match_on_attributeerror
     def rank_last_season(self) -> Tier:
-        return Tier(self._data[ParticipantData].rank_last_season)
+        return Tier(self._data[ParticipantData].rankLastSeason)
 
     @lazy_property
-    @load_match_on_keyerror
+    @load_match_on_attributeerror
     def champion(self) -> "Champion":
         # See ParticipantStats for info
         version = _choose_staticdata_version(self.__match)
-        return Champion(id=self._data[ParticipantData].champion_id, version=version, region=self.__match.region)
+        return Champion(id=self._data[ParticipantData].championId, version=version, region=self.__match.region)
 
     # All the Player data from ParticipantIdentities.player is contained in the Summoner class.
     # The non-current accountId and platformId should never be relevant/used, and can be deleted from our type system.
@@ -1702,20 +1043,20 @@ class Participant(CassiopeiaObject):
     def summoner(self) -> "Summoner":
         kwargs = {}
         try:
-            kwargs["id"] = self._data[PlayerData].summoner_id
-        except KeyError:
+            kwargs["id"] = self._data[ParticipantData].summonerId
+        except AttributeError:
             pass
         try:
-            kwargs["name"] = self._data[PlayerData].summoner_name
-        except KeyError:
+            kwargs["name"] = self._data[ParticipantData].summonerName
+        except AttributeError:
             pass
         from .summoner import Summoner, ProfileIcon
-        kwargs["account"] = self._data[PlayerData].account_id
-        kwargs["region"] = Platform(self._data[PlayerData].current_platform_id).region
+        kwargs["account"] = self._data[ParticipantData].accountId
+        kwargs["region"] = Platform(self._data[ParticipantData].currentPlatformId).region
         # TODO Add profile icon
         #try:
-        #    kwargs["profile_icon"] = ProfileIcon(id=self._data[PlayerData].profile_icon_id)
-        #except KeyError:
+        #    kwargs["profile_icon"] = ProfileIcon(id=self._data[ParticipantData].profileIconId)
+        #except AttributeError:
         #    pass
         return Summoner(**kwargs)
 
@@ -1732,78 +1073,78 @@ class Team(CassiopeiaObject):
     _data_types = {TeamData}
 
     @classmethod
-    def from_data(cls, data: CoreData, participants: List[Participant]):
+    def from_data(cls, data: CoreData, match: "Match"):
         self = super().from_data(data)
-        self.__participants = participants
+        self.__match = match
         return self
 
     @property
     def first_dragon(self) -> bool:
-        return self._data[TeamData].first_dragon
+        return self._data[TeamData].firstDragonKiller
 
     @property
     def first_inhibitor(self) -> bool:
-        return self._data[TeamData].first_inhibitor
+        return self._data[TeamData].firstInhibitorKiller
 
     @property
     def first_rift_herald(self) -> bool:
-        return self._data[TeamData].first_rift_herald
+        return self._data[TeamData].firstRiftHeraldKiller
 
     @property
     def first_baron(self) -> bool:
-        return self._data[TeamData].first_baron
+        return self._data[TeamData].firstBaronKiller
 
     @property
     def first_tower(self) -> bool:
-        return self._data[TeamData].first_tower
+        return self._data[TeamData].firstTowerKiller
 
     @property
     def first_blood(self) -> bool:
-        return self._data[TeamData].first_blood
+        return self._data[TeamData].firstBloodKiller
 
     @property
     def bans(self) -> List["Champion"]:
-        return [Champion(id=champion_id, version=self.__participants[0].version, region=self.__participants[0]._Participant__match.region) if champion_id != -1 else None for champion_id in self._data[TeamData].bans]
+        return [Champion(id=champion_id, version=self.__match.version, region=self.__match.region) if champion_id != -1 else None for champion_id in self._data[TeamData].bans]
 
     @property
     def baron_kills(self) -> int:
-        return self._data[TeamData].baron_kills
+        return self._data[TeamData].baronKills
 
     @property
     def rift_herald_kills(self) -> int:
-        return self._data[TeamData].rift_herald_kills
+        return self._data[TeamData].riftHeraldKills
 
     @property
     def vilemaw_kills(self) -> int:
-        return self._data[TeamData].vilemaw_kills
+        return self._data[TeamData].vilemawKills
 
     @property
     def inhibitor_kills(self) -> int:
-        return self._data[TeamData].inhibitor_kills
+        return self._data[TeamData].inhibitorKills
 
     @property
     def tower_kills(self) -> int:
-        return self._data[TeamData].tower_kills
+        return self._data[TeamData].towerKills
 
     @property
     def dragon_kills(self) -> int:
-        return self._data[TeamData].dragon_kills
+        return self._data[TeamData].dragonKills
 
     @property
     def side(self) -> Side:
-        return Side(self._data[TeamData].side)
+        return self._data[TeamData].side
 
     @property
-    def dominion_victory_score(self) -> int:
-        return self._data[TeamData].dominion_victory_score
+    def dominion_score(self) -> int:
+        return self._data[TeamData].dominionScore
 
     @property
     def win(self) -> bool:
-        return self._data[TeamData].win != "Fail"
+        return self._data[TeamData].isWinner
 
-    @property
+    @lazy_property
     def participants(self) -> List[Participant]:
-        return self.__participants
+        return SearchableList([Participant.from_data(p, match=self.__match) for p in self._data[TeamData].participants])
 
 
 @searchable({str: ["participants", "region", "platform", "season", "queue", "mode", "map", "type"], Region: ["region"], Platform: ["platform"], Season: ["season"], Queue: ["queue"], GameMode: ["mode"], Map: ["map"], GameType: ["type"], Item: ["participants"], Champion: ["participants"]})
@@ -1825,12 +1166,12 @@ class Match(CassiopeiaGhost):
         instance = cls(id=ref.id, region=ref.region)
         # The below line is necessary because it's possible to pull this match from the cache (which has Match core objects in it).
         # In that case, the data will already be loaded and we don't want to overwrite anything.
-        if "participants" not in instance._data[MatchData]._dto:
-            participant = {"participantId": 0, "championId": ref.champion_id}
-            player = {"participantId": 0, "accountId": ref.account_id, "currentPlatformId": ref.platform_id}
-            instance(season_id=ref.season_id, queue_id=ref.queue_id, creation=ref.creation)
-            instance._data[MatchData]._dto["participants"] = [participant]
-            instance._data[MatchData]._dto["participantIdentities"] = [{"participantId": 0, "player": player, "bot": False}]
+        if not hasattr(instance._data[MatchData], "participants"):
+            participant = {"participantId": 1, "championId": ref.championId}
+            player = {"participantId": 1, "accountId": ref.account_id, "currentPlatformId": ref.platform}
+            instance(season=ref.season, queue=ref.queue, creation=ref.creation)
+            instance._data[MatchData](participants=[participant],
+                                      participantIdentities=[{"participantId": 1, "player": player, "bot": False}])
         return instance
 
     @lazy_property
@@ -1855,13 +1196,13 @@ class Match(CassiopeiaGhost):
     @ghost_load_on
     @lazy
     def season(self) -> Season:
-        return Season.from_id(self._data[MatchData].season_id)
+        return self._data[MatchData].season_id
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on
     @lazy
     def queue(self) -> Queue:
-        return Queue.from_id(self._data[MatchData].queue_id)
+        return self._data[MatchData].queue_id
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on
@@ -1869,17 +1210,8 @@ class Match(CassiopeiaGhost):
     def participants(self) -> List[Participant]:
         # This is a complicated function because we don't want to load the particpants if the only one the user cares about is the one loaded from a match ref
 
-        def construct_participant(participant_data, participant_identities):
-            """A helper function for creating a participant from participant, participant identity, and player data."""
-            for pidentity in participant_identities:
-                if pidentity.id == participant_data.id:
-                    participant = Participant.from_data(ParticipantData.from_dto({}), match=self)
-                    participant._data[ParticipantData] = participant_data
-                    participant._data[PlayerData] = pidentity.player
-                    return participant
-
         def generate_participants(match):
-            if "participants" not in match._data[MatchData]._dto:
+            if not hasattr(match._data[MatchData], "participants"):
                 empty_match = True
             else:
                 empty_match = False
@@ -1892,7 +1224,7 @@ class Match(CassiopeiaGhost):
                     yield match.__participants[0]
                 except IndexError:
                     p = match._data[MatchData].participants[0]
-                    participant = construct_participant(p, match._data[MatchData].participant_identities)
+                    participant = Participant.from_data(p, match=self)
                     match.__participants.append(participant)
                     yield participant
 
@@ -1904,7 +1236,7 @@ class Match(CassiopeiaGhost):
                     match._Ghost__set_loaded(MatchData)  # __load__ doesn't trigger __set_loaded. is this a "bug"?
                 match.__participants = [None for _ in match._data[MatchData].participants]
                 for i, p in enumerate(match._data[MatchData].participants):
-                    participant = construct_participant(p, match._data[MatchData].participant_identities)
+                    participant = Participant.from_data(p, match=self)
                     match.__participants[i] = participant
 
             # Yield the rest of the participants
@@ -1917,7 +1249,7 @@ class Match(CassiopeiaGhost):
     @ghost_load_on
     @lazy
     def teams(self) -> List[Team]:
-        return [Team.from_data(t, participants=[p for p in self.participants if p.side.value == self._data[MatchData].teams[i].side]) for i, t in enumerate(self._data[MatchData].teams)]
+        return [Team.from_data(t, match=self) for i, t in enumerate(self._data[MatchData].teams)]
 
     @property
     def red_team(self) -> Team:
@@ -1948,29 +1280,29 @@ class Match(CassiopeiaGhost):
     @ghost_load_on
     @lazy
     def mode(self) -> GameMode:
-        return GameMode(self._data[MatchData].mode)
+        return self._data[MatchData].mode
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on
     @lazy
     def map(self) -> Map:
         version = _choose_staticdata_version(self)
-        return Map(id=self._data[MatchData].map_id, region=self.region, version=version)
+        return Map(id=self._data[MatchData].mapId, region=self.region, version=version)
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on
     @lazy
     def type(self) -> GameType:
-        return GameType(self._data[MatchData].type)
+        return self._data[MatchData].type
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on
     @lazy
     def duration(self) -> datetime.timedelta:
-        return datetime.timedelta(seconds=self._data[MatchData].duration)
+        return self._data[MatchData].duration
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on
     @lazy
     def creation(self) -> datetime.datetime:
-        return datetime.datetime.fromtimestamp(self._data[MatchData].creation / 1000)
+        return self._data[MatchData].creation

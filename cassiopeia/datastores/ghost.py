@@ -182,14 +182,14 @@ class UnloadedGhostStore(DataSource):
     @validate_query(_validate_get_rune_query, convert_region_to_platform)
     def get_rune(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Rune:
         query["region"] = query.pop("platform").region
-        query["included_data"] = query.pop("includedData")
+        query["includedData"] = query.pop("includedData")
         return Rune._construct_normally(**query)
 
     @get.register(Item)
     @validate_query(_validate_get_item_query, convert_region_to_platform)
     def get_item(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Item:
         query["region"] = query.pop("platform").region
-        query["included_data"] = query.pop("includedData")
+        query["includedData"] = query.pop("includedData")
         return Item._construct_normally(**query)
 
     @get.register(Map)
@@ -202,7 +202,7 @@ class UnloadedGhostStore(DataSource):
     @validate_query(_validate_get_summoner_spell_query, convert_region_to_platform)
     def get_summoner_spell(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> SummonerSpell:
         query["region"] = query.pop("platform").region
-        query["included_data"] = query.pop("includedData")
+        query["includedData"] = query.pop("includedData")
         return SummonerSpell._construct_normally(**query)
 
     @get.register(Realms)

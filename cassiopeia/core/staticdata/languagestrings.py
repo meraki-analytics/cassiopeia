@@ -15,27 +15,7 @@ from ...dto.staticdata import realm as dto
 
 class LanguageStringsData(CoreData):
     _dto_type = dto.RealmDto
-    _renamed = {"strings": "data"}
-
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def version(self) -> str:
-        return self._dto["version"]
-
-    @property
-    def locale(self) -> str:
-        return self._dto["locale"]
-
-    @property
-    def type(self) -> str:
-        return self._dto["type"]
-
-    @property
-    def strings(self) -> Dict[str, str]:
-        return self._dto["data"]
+    _renamed = {"data": "strings"}
 
 
 ##############
@@ -73,7 +53,7 @@ class LanguageStrings(CassiopeiaGhost):
     def version(self) -> str:
         try:
             return self._data[LanguageStringsData].version
-        except KeyError:
+        except AttributeError:
             version = get_latest_version(region=self.region, endpoint="language")
             self(version=version)
             return self._data[LanguageStringsData].version

@@ -4,16 +4,12 @@ from merakicommons.cache import lazy_property
 
 from ...data import Region, Platform
 from ...dto.staticdata.version import VersionListDto
-from ..common import DataObjectList, CassiopeiaList, provide_default_region
+from ..common import CoreDataList, CassiopeiaList, provide_default_region
 
 
-class VersionListData(DataObjectList):
+class VersionListData(CoreDataList):
     _dto_type = VersionListDto
     _renamed = {}
-
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
 
 
 class Versions(CassiopeiaList):

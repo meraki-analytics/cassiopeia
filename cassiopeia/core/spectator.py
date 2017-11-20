@@ -5,8 +5,8 @@ from datapipelines import NotFoundError
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
-from ..data import Region, Platform, GameMode, GameType, Queue
-from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
+from ..data import Region, Platform, GameMode, GameType, Queue, Side
+from .common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
 from ..dto import spectator as dto
 from .staticdata.profileicon import ProfileIcon
 from .staticdata.champion import Champion
@@ -21,172 +21,50 @@ from .summoner import Summoner
 ##############
 
 
-class FeaturedGamesData(DataObjectList):
+class FeaturedGamesData(CoreDataList):
     _dto_type = dto.FeaturedGamesDto
-    _renamed = {"client_refresh_interval": "clientRefreshInterval"}
-
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def client_refresh_interval(self) -> str:
-        return self._dto["clientRefreshInterval"]
-
-    @property
-    def summoner_id(self) -> str:
-        return self._dto["summonerId"]
+    _renamed = {}
 
 
 class RuneData(CoreData):
-    _renamed = {"id": "runeId"}
-
-    @property
-    def id(self) -> int:
-        """The ID of the rune"""
-        return self._dto["runeId"]
-
-    @property
-    def count(self) -> int:
-        """The count of this rune used by the participant"""
-        return self._dto["count"]
-
-
-class MasteryData(CoreData):
-    _renamed = {"id": "masteryId", "points": "rank"}
-
-    @property
-    def id(self) -> int:
-        """The ID of the mastery"""
-        return self._dto["masteryId"]
-
-    @property
-    def points(self) -> int:
-        """The number of points put into this mastery by the user"""
-        return self._dto["rank"]
+    _renamed = {"runeId": "id"}
 
 
 class CurrentGameParticipantData(CoreData):
-    _renamed = {"profile_icon_id": "profileIconId", "champion_id": "championId", "summoner_name": "summonerName", "summoner_id": "summonerId", "bot": "bot", "team_id": "teamId", "summoner_spell_f": "spell1Id", "summoner_spell_d": "spell2Id"}
-
-    @property
-    def profile_icon_id(self) -> int:
-        """The ID of the profile icon used by this participant"""
-        return self._dto["profileIconId"]
-
-    @property
-    def champion_id(self) -> int:
-        """The ID of the champion played by this participant"""
-        return self._dto["championId"]
-
-    @property
-    def summoner_id(self) -> int:
-        """The summoner ID of this participant"""
-        return self._dto["summonerId"]
-
-    @property
-    def summoner_name(self) -> str:
-        """The summoner name of this participant"""
-        return self._dto["summonerName"]
-
-    @property
-    def runes(self) -> List[RuneData]:
-        """The runes used by this participant"""
-        return [RuneData.from_dto(rune) for rune in self._dto["runes"]]
-
-    @property
-    def masteries(self) -> List[MasteryData]:
-        """The masteries used by this participant"""
-        return [MasteryData.from_dto(mastery) for mastery in self._dto["masteries"]]
-
-    @property
-    def is_bot(self) -> int:
-        """Flag indicating whether or not this participant is a bot"""
-        return self._dto["bot"]
-
-    @property
-    def team_id(self) -> int:
-        """The team ID of this participant, indicating the participants team"""
-        return self._dto["teamId"]
-
-    @property
-    def summoner_spell_d(self) -> int:
-        """The ID of the first summoner spell used by this participant"""
-        return self._dto["spell1Id"]
-
-    @property
-    def summoner_spell_f(self) -> int:
-        """The ID of the second summoner spell used by this participant"""
-        return self._dto["spell2Id"]
+    _renamed = {"spell1Id": "summonerSpellFId", "spell2Id": "summonerSpellDId"}
 
 
 class TeamData(CoreData):
     _renamed = {}
 
-    @property
-    def participants(self) -> List[CurrentGameParticipantData]:
-        return [CurrentGameParticipantData.from_dto(p) for p in self._dto["participants"]]
-
-    @property
-    def bans(self) -> Dict[int, int]:
-        return {b["pickTurn"]: b["championId"] for b in self._dto["bans"]}
-
 
 class CurrentGameInfoData(CoreData):
     _dto_type = dto.CurrentGameInfoDto
-    _renamed = {"platform": "platformId", "observer_key": "observers", "creation": "gameStartTime", "duration": "gameLength", "mode": "gameMode", "map": "mapId", "type": "gameType", "queue": "gameQueueConfigId"}
+    _renamed = {"platformId": "platform", "observers": "observerEncryptionKey", "gameStartTime": "creation", "gameLength": "duration", "gameMode": "mode", "mapId": "map", "gameType": "type", "gameQueueConfigId": "queue", "gameId": "id"}
 
-    @property
-    def id(self) -> int:
-        return self._dto["gameId"]
-
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
+    def __call__(self, **kwargs):
+        if "observers" in kwargs:
+            self.observerEncryptionKey = kwargs.pop("observers")["encryptionKey"]
+        super().__call__(**kwargs)
+        return self
 
     @property
     def teams(self) -> List[TeamData]:
         blue_team = {"participants": [], "bans": []}
         red_team = {"participants": [], "bans": []}
-        for p in self._dto["participants"]:
-            if p["teamId"] == 100:
+        for p in self.participants:
+            if Side(p["teamId"]) is Side.blue:
+                p = CurrentGameParticipantData(**p)
                 blue_team["participants"].append(p)
-            elif p["teamId"] == 200:
+            elif Side(p["teamId"]) is Side.red:
+                p = CurrentGameParticipantData(**p)
                 red_team["participants"].append(p)
-        for b in self._dto["bannedChampions"]:
-            if b["teamId"] == 100:
+        for b in self.bannedChampions:
+            if Side(b["teamId"]) is Side.blue:
                 blue_team["bans"].append(b)
-            elif b["teamId"] == 200:
+            elif Side(b["teamId"]) is Side.red:
                 red_team["bans"].append(b)
-        return [TeamData.from_dto(blue_team), TeamData.from_dto(red_team)]
-
-    @property
-    def mode(self) -> str:
-        return self._dto["gameMode"]
-
-    @property
-    def map(self) -> int:
-        return self._dto["mapId"]
-
-    @property
-    def type(self) -> str:
-        return self._dto["gameType"]
-
-    @property
-    def queue(self) -> int:
-        return self._dto["gameQueueConfigId"]
-
-    @property
-    def duration(self) -> int:
-        return self._dto["gameLength"]
-
-    @property
-    def creation(self) -> int:
-        return self._dto["gameStartTime"]
-
-    @property
-    def observer_key(self) -> str:
-        return self._dto["observers"]["encryptionKey"]
+        return [TeamData(**blue_team), TeamData(**red_team)]
 
 
 ##############
@@ -207,7 +85,7 @@ class FeaturedMatches(CassiopeiaList):
 
     @property
     def client_refresh_interval(self) -> int:
-        return self._data[FeaturedGamesData].client_refresh_interval
+        return self._data[FeaturedGamesData].clientRefreshInterval
 
 
 @searchable({str: ["summoner", "champion"], Summoner: ["summoner"], Champion: ["champion"]})
@@ -222,15 +100,15 @@ class Participant(CassiopeiaObject):
 
     @property
     def champion(self) -> Champion:
-        return Champion(id=self._data[CurrentGameParticipantData].champion_id, region=self.__region, version=get_latest_version(self.__region, endpoint="champion"))
+        return Champion(id=self._data[CurrentGameParticipantData].championId, region=self.__region, version=get_latest_version(self.__region, endpoint="champion"))
 
     @property
     def summoner(self) -> Summoner:
-        ProfileIcon(id=self._data[CurrentGameParticipantData].profile_icon_id, region=self.__region)
-        if "summonerId" in self._data[CurrentGameParticipantData]._dto:
-            return Summoner(id=self._data[CurrentGameParticipantData].summoner_id, name=self._data[CurrentGameParticipantData].summoner_name, region=self.__region)
+        ProfileIcon(id=self._data[CurrentGameParticipantData].profileIconId, region=self.__region)
+        if hasattr(self._data[CurrentGameParticipantData], "summonerId"):
+            return Summoner(id=self._data[CurrentGameParticipantData].summonerId, name=self._data[CurrentGameParticipantData].summonerName, region=self.__region)
         else:
-            return Summoner(name=self._data[CurrentGameParticipantData].summoner_name, region=self.__region)
+            return Summoner(name=self._data[CurrentGameParticipantData].summonerName, region=self.__region)
 
     @property
     def runes(self) -> Dict[Rune, int]:
@@ -238,7 +116,7 @@ class Participant(CassiopeiaObject):
 
     @property
     def is_bot(self) -> bool:
-        return self._data[CurrentGameParticipantData].is_bot
+        return self._data[CurrentGameParticipantData].isBot
 
     @property
     def team(self) -> "Team":
@@ -246,11 +124,11 @@ class Participant(CassiopeiaObject):
 
     @property
     def summoner_spell_d(self) -> SummonerSpell:
-        return SummonerSpell(id=self._data[CurrentGameParticipantData].summoner_spell_d, region=self.__region, version=get_latest_version(self.__region, endpoint="summoner"))
+        return SummonerSpell(id=self._data[CurrentGameParticipantData].summonerSpellDId, region=self.__region, version=get_latest_version(self.__region, endpoint="summoner"))
 
     @property
     def summoner_spell_f(self) -> SummonerSpell:
-        return SummonerSpell(id=self._data[CurrentGameParticipantData].summoner_spell_f, region=self.__region, version=get_latest_version(self.__region, endpoint="summoner"))
+        return SummonerSpell(id=self._data[CurrentGameParticipantData].summonerSpellFId, region=self.__region, version=get_latest_version(self.__region, endpoint="summoner"))
 
 
 @searchable({})
@@ -269,7 +147,7 @@ class Team(CassiopeiaObject):
 
     @lazy_property
     def bans(self) -> Dict[int, Champion]:
-        return {pick: Champion(id=champion_id, region=self.__region, version=get_latest_version(self.__region, endpoint="champion")) for pick, champion_id in self._data[TeamData].bans.items()}
+        return {pick: Champion(id=championId, region=self.__region, version=get_latest_version(self.__region, endpoint="champion")) for pick, championId in self._data[TeamData].bans.items()}
 
 
 @searchable({})
@@ -390,4 +268,4 @@ class CurrentMatch(CassiopeiaGhost):
     @CassiopeiaGhost.property(CurrentGameInfoData)
     @ghost_load_on
     def observer_key(self) -> str:
-        return self._data[CurrentGameInfoData].observer_key
+        return self._data[CurrentGameInfoData].observerEncryptionKey

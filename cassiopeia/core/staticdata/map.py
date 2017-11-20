@@ -4,7 +4,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
 from ...data import Region, Platform
-from ..common import CoreData, CassiopeiaGhost, DataObjectList, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
+from ..common import CoreData, CassiopeiaGhost, CoreDataList, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
 from .common import ImageData, Sprite, Image
 from ...dto.staticdata import map as dto
 
@@ -14,54 +14,20 @@ from ...dto.staticdata import map as dto
 ##############
 
 
-class MapListData(DataObjectList):
+class MapListData(CoreDataList):
     _dto_type = dto.MapListDto
-    _renamed = {}
-
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def version(self) -> str:
-        return self._dto["version"]
-
-    @property
-    def locale(self) -> str:
-        return self._dto["locale"]
+    _renamed = {"included_data": "includedData"}
 
 
 class MapData(CoreData):
     _dto_type = dto.MapDto
-    _renamed = {"id": "mapId", "name": "mapName", "unpurchasable_items": "unpurchasableItemList"}
+    _renamed = {"mapId": "id", "mapName": "name", "unpurchasableItemList": "unpurchasableItems", "included_data": "includedData"}
 
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def version(self) -> str:
-        return self._dto["version"]
-
-    @property
-    def locale(self) -> str:
-        return self._dto["locale"]
-
-    @property
-    def id(self) -> int:
-        return self._dto["mapId"]
-
-    @property
-    def image(self) -> ImageData:
-        return ImageData.from_dto(self._dto["image"])
-
-    @property
-    def name(self) -> str:
-        return self._dto["mapName"]
-
-    @property
-    def unpurchasable_items(self) -> List[int]:
-        return self._dto["unpurchasableItemList"]
+    def __call__(self, **kwargs):
+        if "image" in kwargs:
+            self.image = ImageData(**kwargs.pop("image"))
+        super().__call__(**kwargs)
+        return self
 
 
 ##############
@@ -93,7 +59,7 @@ class Maps(CassiopeiaList):
     def version(self) -> str:
         try:
             return self._data[MapListData].version
-        except KeyError:
+        except AttributeError:
             version = get_latest_version(region=self.region, endpoint="map")
             self(version=version)
             return self._data[MapListData].version
@@ -122,9 +88,9 @@ class Map(CassiopeiaGhost):
 
     def __get_query__(self):
         query = {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale}
-        if "mapId" in self._data[MapData]._dto:
+        if hasattr(self._data[MapData], "id"):
             query["id"] = self.id
-        if "mapName" in self._data[MapData]._dto:
+        if hasattr(self._data[MapData], "name"):
             query["name"] = self.name
         return query
 
@@ -141,7 +107,7 @@ class Map(CassiopeiaGhost):
         """The version for this map."""
         try:
             return self._data[MapData].version
-        except KeyError:
+        except AttributeError:
             version = get_latest_version(region=self.region, endpoint="map")
             self(version=version)
             return self._data[MapData].version
@@ -165,7 +131,7 @@ class Map(CassiopeiaGhost):
     @CassiopeiaGhost.property(MapData)
     @ghost_load_on
     def unpurchasable_items(self) -> List[int]:
-        return self._data[MapData].unpurchasable_items
+        return self._data[MapData].unpurchasableItems
 
     @CassiopeiaGhost.property(MapData)
     @ghost_load_on
@@ -177,4 +143,4 @@ class Map(CassiopeiaGhost):
 
     @lazy_property
     def sprite(self) -> Sprite:
-        return self.image.sprite_info
+        return self.image.spriteInfo

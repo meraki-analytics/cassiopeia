@@ -7,7 +7,7 @@ from merakicommons.container import searchable, SearchableList, SearchableDictio
 from ... import configuration
 from ...data import Resource, Region, Platform, GameMode
 from ..champion import ChampionStatusData
-from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, DataObjectList, get_latest_version, provide_default_region, ghost_load_on
+from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, CoreDataList, get_latest_version, provide_default_region, ghost_load_on
 from .common import ImageData, Image, Sprite
 from .map import Map
 from ...dto.staticdata import champion as dto
@@ -19,437 +19,102 @@ from .item import Item
 ##############
 
 
-class ChampionListData(DataObjectList):
+class ChampionListData(CoreDataList):
     _dto_type = dto.ChampionListDto
     _renamed = {"included_data": "includedData"}
 
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def version(self) -> str:
-        return self._dto["version"]
-
-    @property
-    def locale(self) -> str:
-        return self._dto["locale"]
-
-    @property
-    def included_data(self) -> Set[str]:
-        """A set of tags to return additonal information for this champion when it's loaded."""
-        return self._dto["includedData"]
-
 
 class SpellVarsData(CoreData):
-    _renamed = {"ranks_with": "ranksWith", "dynamic": "dyn", "coefficients": "coeff"}
-
-    @property  # This doesn't get returned by the API
-    def ranks_with(self) -> str:
-        return self._dto["ranksWith"]
-
-    @property  # This doesn't get returned by the API
-    def dynamic(self) -> str:
-        return self._dto["dyn"]
-
-    @property
-    def link(self) -> str:
-        return self._dto["link"]
-
-    @property
-    def coefficients(self) -> List[float]:
-        return self._dto["coeff"]
-
-    @property
-    def key(self) -> str:
-        return self._dto["key"]
+    _renamed = {"dyn": "dynamic", "coeff": "coefficients"}
 
 
 class LevelTipData(CoreData):
-    _renamed = {"effects": "effect", "keywords": "label"}
-
-    @property
-    def effects(self) -> List[str]:
-        return self._dto["effect"]
-
-    @property
-    def keywords(self) -> List[str]:
-        return self._dto["label"]
+    _renamed = {"effect": "effects", "label": "keywords"}
 
 
 class ChampionSpellData(CoreData):
-    _renamed = {"level_up_tips": "leveltip", "variables": "vars", "sanitized_description": "sanitizedDescription", "sanitized_tooltip": "sanitizedTooltip",
-                "max_rank": "maxrank", "cooldowns": "cooldown", "costs": "cost", "alternative_images": "altimages", "effects": "effect", "resource": "costType"}
+    _renamed = {"vars": "variables", "maxrank": "maxRank", "cooldown": "cooldowns", "cost": "costs", "effect": "effects", "costType": "resource"}
 
-    @property
-    def level_up_tips(self) -> LevelTipData:
-        return LevelTipData.from_dto(self._dto["leveltip"])
-
-    @property
-    def variables(self) -> List[SpellVarsData]:
-        return [SpellVarsData.from_dto(v) for v in self._dto["vars"]]
-
-    @property
-    def resource(self) -> str:
-        return self._dto["costType"]
-
-    @property
-    def image(self) -> ImageData:
-        return ImageData.from_dto(self._dto["image"])
-
-    @property
-    def sanitized_description(self) -> str:
-        return self._dto["sanitizedDescription"]
-
-    @property
-    def sanitized_tooltip(self) -> str:
-        return self._dto["sanitizedTooltip"]
-
-    @property
-    def effects(self) -> List[List[float]]:
-        return self._dto["effect"]
-
-    @property
-    def tooltip(self) -> str:
-        return self._dto["tooltip"]
-
-    @property
-    def max_rank(self) -> int:
-        return self._dto["maxrank"]
-
-    @property
-    def range(self) -> List[Union[int, str]]:
-        return self._dto["range"]
-
-    @property
-    def cooldowns(self) -> List[float]:
-        return self._dto["cooldown"]
-
-    @property
-    def costs(self) -> List[int]:
-        return self._dto["cost"]
-
-    @property
-    def key(self) -> str:
-        return self._dto["key"]
-
-    @property
-    def description(self) -> str:
-        return self._dto["description"]
-
-    @property
-    def alternative_images(self) -> List[ImageData]:
-        return [ImageData.from_dto(alt) for alt in self._dto["altimages"]]
-
-    @property
-    def name(self) -> str:
-        return self._dto["name"]
+    def __call__(self, *args, **kwargs):
+        if "leveltip" in kwargs:
+            self.levelUpTips = LevelTipData(**kwargs.pop("leveltip"))
+        if "vars" in kwargs:
+            self.variables =  [SpellVarsData(**v) for v in kwargs.pop("vars")]
+        if "image" in kwargs:
+            self.image =  ImageData(**kwargs.pop("image"))
+        if "altimages" in kwargs:
+            self.alternative_images =  [ImageData(**alt) for alt in kwargs.pop("altimages")]
+        super().__call__(**kwargs)
+        return self
 
 
 class BlockItemData(CoreData):
     _renamed = {}
 
-    @property
-    def count(self) -> int:
-        return self._dto["count"]
-
-    @property
-    def id(self) -> int:
-        return self._dto["id"]
-
 
 class BlockData(CoreData):
-    _renamed = {"rec_math": "recMath"}
+    _renamed = {}
 
-    @property
-    def items(self) -> list:
-        return [BlockItemData.from_dto(item) for item in self._dto["items"]]
-
-    @property
-    def rec_math(self) -> bool:
-        return self._dto["recMath"]
-
-    @property
-    def type(self) -> str:
-        return self._dto["type"]
+    def __call__(self, *args, **kwargs):
+        if "items" in kwargs:
+            self.items = [BlockItemData(**item) for item in kwargs.pop("items")]
+        super().__call__(**kwargs)
+        return self
 
 
 class RecommendedData(CoreData):
-    _renamed = {"item_sets": "blocks"}
+    _renamed = {}
 
-    @property
-    def map(self) -> str:
-        return self._dto["map"]
-
-    @property
-    def item_sets(self) -> List[BlockData]:
-        return [BlockData.from_dto(item_set) for item_set in self._dto["blocks"]]
-
-    @property
-    def champion(self) -> str:
-        return self._dto["champion"]
-
-    @property
-    def title(self) -> str:
-        return self._dto["title"]
-
-    @property
-    def priority(self) -> bool:
-        return self._dto["priority"]
-
-    @property
-    def mode(self) -> str:
-        return self._dto["mode"]
-
-    @property
-    def type(self) -> str:
-        return self._dto["type"]
+    def __call__(self, *args, **kwargs):
+        if "blocks" in kwargs:
+            self.itemSets = [BlockData(**item) for item in kwargs.pop("blocks")]
+        super().__call__(**kwargs)
+        return self
 
 
 class PassiveData(CoreData):
-    _renamed = {"sanitized_description": "sanitizedDescription"}
+    _renamed = {}
 
-    @property
-    def image(self) -> ImageData:
-        return ImageData.from_dto(self._dto["image"])
-
-    @property
-    def sanitized_description(self) -> str:
-        return self._dto["sanitizedDescription"]
-
-    @property
-    def name(self) -> str:
-        return self._dto["name"]
-
-    @property
-    def description(self) -> str:
-        return self._dto["description"]
+    def __call__(self, **kwargs):
+        if "image" in kwargs:
+            self.image = ImageData(**kwargs.pop("image"))
+        super().__call__(**kwargs)
+        return self
 
 
 class SkinData(CoreData):
-    _renamed = {"number": "num"}
-
-    @property
-    def number(self) -> int:
-        return self._dto["num"]
-
-    @property
-    def name(self) -> str:
-        return self._dto["name"]
-
-    @property
-    def id(self) -> int:
-        return self._dto["id"]
+    _renamed = {"num": "number"}
 
 
 class StatsData(CoreData):
-    _renamed = {"armor_per_level": "armorperlevel",
-                "health_per_level": "hpperlevel",
-                "attack_damage": "attackdamage",
-                "mana_per_level": "mpperlevel",
-                "attack_speed_offset": "attackspeedoffset",
-                "health": "hp",
-                "health_regen_per_level": "hpregenperlevel",
-                "percent_attack_speed_per_level": "attackspeedperlevel",
-                "attack_range": "attackrange",
-                "attack_damage_per_level": "attackdamageperlevel",
-                "mana_regen_per_level": "mpregenperlevel",
-                "mana": "mp",
-                "magic_resist_per_level": "spellblockperlevel",
-                "critical_strike_chance": "crit",
-                "mana_regen": "mpregen",
-                "magic_resist": "spellblock",
-                "health_regen": "hpregen",
-                "critical_strike_chance_per_level": "critperlevel"}
-
-    @property
-    def armor_per_level(self) -> float:
-        return self._dto["armorperlevel"]
-
-    @property
-    def health_per_level(self) -> float:
-        return self._dto["hpperlevel"]
-
-    @property
-    def attack_damage(self) -> float:
-        return self._dto["attackdamage"]
-
-    @property
-    def mana_per_level(self) -> float:
-        return self._dto["mpperlevel"]
-
-    @property
-    def attack_speed_offset(self) -> float:
-        return self._dto["attackspeedoffset"]
-
-    @property
-    def armor(self) -> float:
-        return self._dto["armor"]
-
-    @property
-    def health(self) -> float:
-        return self._dto["hp"]
-
-    @property
-    def health_regen_per_level(self) -> float:
-        return self._dto["hpregenperlevel"]
-
-    @property
-    def magic_resist(self) -> float:
-        return self._dto["spellblock"]
-
-    @property
-    def attack_range(self) -> float:
-        return self._dto["attackrange"]
-
-    @property
-    def movespeed(self) -> float:
-        return self._dto["movespeed"]
-
-    @property
-    def attack_damage_per_level(self) -> float:
-        return self._dto["attackdamageperlevel"]
-
-    @property
-    def mana_regen_per_level(self) -> float:
-        return self._dto["mpregenperlevel"]
-
-    @property
-    def mana(self) -> float:
-        return self._dto["mp"]
-
-    @property
-    def magic_resist_per_level(self) -> float:
-        return self._dto["spellblockperlevel"]
-
-    @property
-    def critical_strike_chance(self) -> float:
-        return self._dto["crit"]
-
-    @property
-    def mana_regen(self) -> float:
-        return self._dto["mpregen"]
-
-    @property
-    def percent_attack_speed_per_level(self) -> float:
-        return self._dto["attackspeedperlevel"]
-
-    @property
-    def health_regen(self) -> float:
-        return self._dto["hpregen"]
-
-    @property
-    def critical_strike_chance_per_level(self) -> float:
-        return self._dto["critperlevel"]
+    _renamed = {"armorperlevel": "armorPerLevel", "hpperlevel": "healthPerLevel", "attackdamage": "attack_damage", "mpperlevel": "manaPerLevel", "attackspeedoffset": "attack_speed_offset", "hp": "health", "hpregenperlevel": "health_regenPerLevel", "attackspeedperlevel": "percent_attack_speedPerLevel", "attackrange": "attack_range", "attackdamageperlevel": "attack_damagePerLevel", "mpregenperlevel": "mana_regenPerLevel", "mp": "mana", "spellblockperlevel": "magicResistPerLevel", "crit": "critical_strike_chance", "mpregen": "manaRegen", "spellblock": "magicResist", "hpregen": "healthRegen", "critperlevel": "criticalStrikeChancePerLevel"}
 
 
 class InfoData(CoreData):
     _renamed = {}
 
-    @property
-    def difficulty(self) -> int:
-        return self._dto["difficulty"]
-
-    @property
-    def attack(self) -> int:
-        return self._dto["attack"]
-
-    @property
-    def defense(self) -> int:
-        return self._dto["defense"]
-
-    @property
-    def magic(self) -> int:
-        return self._dto["magic"]
-
 
 class ChampionData(CoreData):
     _dto_type = dto.ChampionDto
-    _renamed = {"ally_tips": "allytips", "enemy_tips": "enemytips", "recommended_itemsets": "recommended", "resource": "partype", "included_data": "includedData"}
+    _renamed = {"allytips": "allyTips", "enemytips": "enemyTips", "recommended": "recommendedItemsets", "partype": "resource", "included_data": "includedData"}
 
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def version(self) -> str:
-        return self._dto["version"]
-
-    @property
-    def locale(self) -> str:
-        return self._dto["locale"]
-
-    @property
-    def included_data(self) -> Set[str]:
-        return self._dto["includedData"]
-
-    @property
-    def id(self) -> int:
-        return self._dto["id"]
-
-    @property
-    def ally_tips(self) -> List[str]:
-        return self._dto["allytips"]
-
-    @property
-    def enemy_tips(self) -> List[str]:
-        return self._dto["enemytips"]
-
-    @property
-    def name(self) -> str:
-        return self._dto["name"]
-
-    @property
-    def title(self) -> str:
-        return self._dto["title"]
-
-    @property
-    def blurb(self) -> str:
-        return self._dto["blurb"]
-
-    @property
-    def key(self) -> str:
-        return self._dto["key"]
-
-    @property
-    def lore(self) -> str:
-        return self._dto["lore"]
-
-    @property
-    def resource(self) -> str:
-        return self._dto["partype"]
-
-    @property
-    def tags(self) -> List[str]:
-        return self._dto["tags"]
-
-    @property
-    def recommended_itemsets(self) -> List[RecommendedData]:
-        return [RecommendedData.from_dto(item) for item in self._dto["recommended"]]
-
-    @property
-    def info(self) -> InfoData:
-        return InfoData.from_dto(self._dto["info"])
-
-    @property
-    def stats(self) -> StatsData:
-        return StatsData.from_dto(self._dto["stats"])
-
-    @property
-    def image(self) -> ImageData:
-        return ImageData.from_dto(self._dto["image"])
-
-    @property
-    def skins(self) -> List[SkinData]:
-        return [SkinData.from_dto(skin) for skin in self._dto["skins"]]
-
-    @property
-    def passive(self) -> PassiveData:
-        return PassiveData.from_dto(self._dto["passive"])
-
-    @property
-    def spells(self) -> List[ChampionSpellData]:
-        return [ChampionSpellData.from_dto(spell) for spell in self._dto["spells"]]
+    def __call__(self, **kwargs):
+        if "recommended" in kwargs:
+            self.recommendedItemsets = [RecommendedData(**item) for item in kwargs.pop("recommended")]
+        if "info" in kwargs:
+            self.info = InfoData(**kwargs.pop("info"))
+        if "stats" in kwargs:
+            self.stats = StatsData(**kwargs.pop("stats"))
+        if "image" in kwargs:
+            self.image = ImageData(**kwargs.pop("image"))
+        if "skins" in kwargs:
+            self.skins = [SkinData(**skin) for skin in kwargs.pop("skins")]
+        if "passive" in kwargs:
+            self.passive = PassiveData(**kwargs.pop("passive"))
+        if "spells" in kwargs:
+            self.spells = [ChampionSpellData(**spell) for spell in kwargs.pop("spells")]
+        super().__call__(**kwargs)
+        return self
 
 
 ##############
@@ -486,7 +151,7 @@ class Champions(CassiopeiaList):
         """The version for this champion."""
         try:
             return self._data[ChampionListData].version
-        except KeyError:
+        except AttributeError:
             version = get_latest_version(region=self.region, endpoint="champion")
             self(version=version)
             return self._data[ChampionListData].version
@@ -499,7 +164,7 @@ class Champions(CassiopeiaList):
     @property
     def included_data(self) -> Set[str]:
         """A set of tags to return additonal information for this champion when it's loaded."""
-        return self._data[ChampionListData].included_data
+        return self._data[ChampionListData].includedData
 
 
 @searchable({str: ["key"]})
@@ -509,7 +174,7 @@ class SpellVars(CassiopeiaObject):
     @property
     def ranks_with(self) -> str:
         """Well, we don't know what this one is. let us know if you figure it out."""
-        return self._data[SpellVarsData].ranks_with
+        return self._data[SpellVarsData].ranksWith
 
     @property
     def dynamic(self) -> str:
@@ -539,12 +204,12 @@ class ChampionSpell(CassiopeiaObject):
     @lazy_property
     def keywords(self) -> List[str]:
         """The keywords for this spell."""
-        return SearchableList(self._data[ChampionSpellData].level_up_tips.keywords)
+        return SearchableList(self._data[ChampionSpellData].levelUpTips.keywords)
 
     @property
     def effects_by_level(self) -> List[str]:
         """The level-up changes, level-by-level."""
-        return SearchableList(self._data[ChampionSpellData].level_up_tips.effects)
+        return SearchableList(self._data[ChampionSpellData].levelUpTips.effects)
 
     @lazy_property
     def variables(self) -> List[SpellVars]:
@@ -564,12 +229,12 @@ class ChampionSpell(CassiopeiaObject):
     @property
     def sanitized_description(self) -> str:
         """The spell's sanitized description."""
-        return self._data[ChampionSpellData].sanitized_description
+        return self._data[ChampionSpellData].sanitizedDescription
 
     @property
     def sanitized_tooltip(self) -> str:
         """The spell's sanitized tooltip."""
-        return self._data[ChampionSpellData].sanitized_tooltip
+        return self._data[ChampionSpellData].sanitizedTooltip
 
     @property
     def effects(self) -> List[List[float]]:
@@ -614,7 +279,7 @@ class ChampionSpell(CassiopeiaObject):
     @lazy_property
     def alternative_images(self) -> List[Image]:
         """The alternative images for this spell. These won't exist after patch NN, when Riot standardized all images."""
-        return SearchableList(Image.from_data(alt) for alt in self._data[ChampionSpellData].alternative_images)
+        return SearchableList(Image.from_data(alt) for alt in self._data[ChampionSpellData].alternativeImages)
 
     @property
     def name(self) -> str:
@@ -645,7 +310,7 @@ class ItemSet(CassiopeiaObject):
     @property
     def rec_math(self) -> bool:
         """Well, we don't know what this one is. let us know if you figure it out."""
-        return self._data[BlockData].rec_math
+        return self._data[BlockData].recMath
 
     @property
     def type(self) -> str:
@@ -683,7 +348,7 @@ class RecommendedItems(CassiopeiaObject):
     @lazy_property
     def item_sets(self) -> List[ItemSet]:
         """The recommended item sets."""
-        return SearchableList(ItemSet.from_data(itemset, region=self.__region) for itemset in self._data[RecommendedData].item_sets)
+        return SearchableList(ItemSet.from_data(itemset, region=self.__region) for itemset in self._data[RecommendedData].itemSets)
 
     @property
     def title(self) -> str:
@@ -718,7 +383,7 @@ class Passive(CassiopeiaObject):
     @property
     def sanitized_description(self) -> str:
         """The spell's sanitized description."""
-        return self._data[PassiveData].sanitized_description
+        return self._data[PassiveData].sanitizedDescription
 
     @property
     def name(self) -> str:
@@ -785,23 +450,23 @@ class Stats(CassiopeiaObject):
 
     @property
     def armor_per_level(self) -> float:
-        return self._data[StatsData].armor_per_level
+        return self._data[StatsData].armorPerLevel
 
     @property
     def health_per_level(self) -> float:
-        return self._data[StatsData].health_per_level
+        return self._data[StatsData].healthPerLevel
 
     @property
     def attack_damage(self) -> float:
-        return self._data[StatsData].attack_damage
+        return self._data[StatsData].attackDamage
 
     @property
     def mana_per_level(self) -> float:
-        return self._data[StatsData].mana_per_level
+        return self._data[StatsData].manaPerLevel
 
     @property
     def attack_speed(self) -> float:
-        return 0.625 / (1.0 + self._data[StatsData].attack_speed_offset)
+        return 0.625 / (1.0 + self._data[StatsData].attackSpeedOffset)
 
     @property
     def armor(self) -> float:
@@ -813,15 +478,15 @@ class Stats(CassiopeiaObject):
 
     @property
     def health_regen_per_level(self) -> float:
-        return self._data[StatsData].health_regen_per_level
+        return self._data[StatsData].healthRegenPerLevel
 
     @property
     def magic_resist(self) -> float:
-        return self._data[StatsData].magic_resist
+        return self._data[StatsData].magicResist
 
     @property
     def attack_range(self) -> float:
-        return self._data[StatsData].attack_range
+        return self._data[StatsData].attackRange
 
     @property
     def movespeed(self) -> float:
@@ -829,11 +494,11 @@ class Stats(CassiopeiaObject):
 
     @property
     def attack_damage_per_level(self) -> float:
-        return self._data[StatsData].attack_damage_per_level
+        return self._data[StatsData].attackDamagePerLevel
 
     @property
     def mana_regen_per_level(self) -> float:
-        return self._data[StatsData].mana_regen_per_level
+        return self._data[StatsData].manaRegenPerLevel
 
     @property
     def mana(self) -> float:
@@ -841,27 +506,27 @@ class Stats(CassiopeiaObject):
 
     @property
     def magic_resist_per_level(self) -> float:
-        return self._data[StatsData].magic_resist_per_level
+        return self._data[StatsData].magicResistPerLevel
 
     @property
     def critical_strike_chance(self) -> float:
-        return self._data[StatsData].critical_strike_chance
+        return self._data[StatsData].criticalStrikeChance
 
     @property
     def mana_regen(self) -> float:
-        return self._data[StatsData].mana_regen
+        return self._data[StatsData].manaRegen
 
     @property
     def percent_attack_speed_per_level(self) -> float:
-        return self._data[StatsData].percent_attack_speed_per_level / 100.0
+        return self._data[StatsData].percentAttackSpeedPerLevel / 100.0
 
     @property
     def health_regen(self) -> float:
-        return self._data[StatsData].health_regen
+        return self._data[StatsData].healthRegen
 
     @property
     def critical_strike_chance_per_level(self) -> float:
-        return self._data[StatsData].critperlevel
+        return self._data[StatsData].criticalStrikeChancePerLevel
 
 
 class Info(CassiopeiaObject):
@@ -911,9 +576,9 @@ class Champion(CassiopeiaGhost):
 
     def __get_query__(self):
         query = {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
-        if "id" in self._data[ChampionData]._dto:
+        if hasattr(self._data[ChampionData], "id"):
             query["id"] = self._data[ChampionData].id
-        if "name" in self._data[ChampionData]._dto:
+        if hasattr(self._data[ChampionData], "name"):
             query["name"] = self._data[ChampionData].name
         return query
 
@@ -934,7 +599,7 @@ class Champion(CassiopeiaGhost):
         """The version for this champion."""
         try:
             return self._data[ChampionData].version
-        except KeyError:
+        except AttributeError:
             version = get_latest_version(region=self.region, endpoint="champion")
             self(version=version)
             return self._data[ChampionData].version
@@ -947,7 +612,7 @@ class Champion(CassiopeiaGhost):
     @property
     def included_data(self) -> Set[str]:
         """A set of tags to return additonal information for this champion when it's loaded."""
-        return self._data[ChampionData].included_data
+        return self._data[ChampionData].includedData
 
     @CassiopeiaGhost.property(ChampionData)
     @ghost_load_on
@@ -965,37 +630,37 @@ class Champion(CassiopeiaGhost):
     @ghost_load_on
     def custom_enabled(self) -> bool:
         """Whether or not the champion is currently enabled in custom games."""
-        return self._data[ChampionStatusData].custom_enabled
+        return self._data[ChampionStatusData].customEnabled
 
     @CassiopeiaGhost.property(ChampionStatusData)
     @ghost_load_on
     def coop_ai_enabled(self) -> bool:
         """Whether or not the champion is currently enabled in coop and AI games."""
-        return self._data[ChampionStatusData].coop_ai_enabled
+        return self._data[ChampionStatusData].coopAiEnabled
 
     @CassiopeiaGhost.property(ChampionStatusData)
     @ghost_load_on
     def ranked_enabled(self) -> bool:
         """Whether or not the champion is currently enabled in ranked games."""
-        return self._data[ChampionStatusData].ranked_enabled
+        return self._data[ChampionStatusData].rankedEnabled
 
     @CassiopeiaGhost.property(ChampionStatusData)
     @ghost_load_on
     def free_to_play(self) -> bool:
         """Whether or not the champion is currently free to play."""
-        return self._data[ChampionStatusData].free_to_play
+        return self._data[ChampionStatusData].freeToPlay
 
     @CassiopeiaGhost.property(ChampionData)
     @ghost_load_on
     def ally_tips(self) -> List[str]:
         """The tips for playing with this champion."""
-        return self._data[ChampionData].ally_tips
+        return self._data[ChampionData].allyTips
 
     @CassiopeiaGhost.property(ChampionData)
     @ghost_load_on
     def enemy_tips(self) -> List[str]:
         """The tips for playing against this champion."""
-        return self._data[ChampionData].enemy_tips
+        return self._data[ChampionData].enemyTips
 
     @CassiopeiaGhost.property(ChampionData)
     @ghost_load_on
@@ -1051,7 +716,7 @@ class Champion(CassiopeiaGhost):
     @lazy
     def recommended_itemsets(self) -> List[RecommendedItems]:
         """The champion's recommended itemsets."""
-        return SearchableList(RecommendedItems.from_data(item, region=self.region) for item in self._data[ChampionData].recommended_itemsets)
+        return SearchableList(RecommendedItems.from_data(item, region=self.region) for item in self._data[ChampionData].recommendedItemsets)
 
     @CassiopeiaGhost.property(ChampionData)
     @ghost_load_on
@@ -1096,4 +761,4 @@ class Champion(CassiopeiaGhost):
 
     @lazy_property
     def sprite(self) -> Sprite:
-        return self.image.sprite_info
+        return self.image.spriteInfo

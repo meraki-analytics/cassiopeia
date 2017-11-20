@@ -4,7 +4,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList
 
 from ...data import Resource, Region, Platform, GameMode
-from ..common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
+from ..common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
 from .common import ImageData, Image, Sprite
 from ...dto.staticdata import summonerspell as dto
 
@@ -14,150 +14,32 @@ from ...dto.staticdata import summonerspell as dto
 ##############
 
 
-class SummonerSpellListData(DataObjectList):
+class SummonerSpellListData(CoreDataList):
     _dto_type = dto.SummonerSpellListDto
     _renamed = {"included_data": "includedData"}
 
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def version(self) -> str:
-        return self._dto["version"]
-
-    @property
-    def locale(self) -> str:
-        return self._dto["locale"]
-
-    @property
-    def included_data(self) -> Set[str]:
-        return self._dto["includedData"]
-
 
 class SpellVarsData(CoreData):
-    _renamed = {"ranks_with": "ranksWith", "dynamic": "dyn", "coefficients": "coeff"}
-
-    @property  # This doesn't get returned by the API
-    def ranks_with(self) -> str:
-        return self._dto["ranksWith"]
-
-    @property  # This doesn't get returned by the API
-    def dynamic(self) -> str:
-        return self._dto["dyn"]
-
-    @property
-    def link(self) -> str:
-        return self._dto["link"]
-
-    @property
-    def coefficients(self) -> List[float]:
-        return self._dto["coeff"]
-
-    @property
-    def key(self) -> str:
-        return self._dto["key"]
+    _renamed = {"dyn": "dynamic", "coeff": "coefficients"}
 
 
 class LevelTipData(CoreData):
-    _renamed = {"effects": "effect", "keywords": "label"}
-
-    @property
-    def effects(self) -> List[str]:
-        return self._dto["effect"]
-
-    @property
-    def keywords(self) -> List[str]:
-        return self._dto["label"]
+    _renamed = {"effect": "effects", "label": "keywords"}
 
 
 class SummonerSpellData(CoreData):
     _dto_type = dto.SummonerSpellDto
-    _renamed = {"variables": "vars", "sanitized_description": "sanitizedDescription", "sanitized_tooltip": "sanitizedTooltip", "max_rank": "maxrank", "cooldowns": "cooldown", "costs": "cost", "alternative_images": "altimages", "effects": "effect", "resource": "costType", "included_data": "includedData"}
+    _renamed = {"maxrank": "maxRank", "cooldown": "cooldowns", "cost": "costs", "effect": "effects", "costType": "resource"}
 
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def version(self) -> str:
-        return self._dto["version"]
-
-    @property
-    def locale(self) -> str:
-        return self._dto["locale"]
-
-    @property
-    def included_data(self) -> str:
-        return self._dto["includedData"]
-
-    @property
-    def modes(self) -> List[str]:
-        return self._dto["modes"]
-
-    @property
-    def variables(self) -> List[SpellVarsData]:
-        return [SpellVarsData.from_dto(v) for v in self._dto["vars"]]
-
-    @property
-    def resource(self) -> str:
-        return self._dto["costType"]
-
-    @property
-    def image(self) -> ImageData:
-        return ImageData.from_dto(self._dto["image"])
-
-    @property
-    def sanitized_description(self) -> str:
-        return self._dto["sanitizedDescription"]
-
-    @property
-    def sanitized_tooltip(self) -> str:
-        return self._dto["sanitizedTooltip"]
-
-    @property
-    def effects(self) -> List[List[float]]:
-        return self._dto["effect"]
-
-    @property
-    def tooltip(self) -> str:
-        return self._dto["tooltip"]
-
-    @property
-    def max_rank(self) -> int:
-        return self._dto["maxrank"]
-
-    @property
-    def range(self) -> List[Union[int, str]]:
-        return self._dto["range"]
-
-    @property
-    def cooldowns(self) -> List[float]:
-        return self._dto["cooldown"]
-
-    @property
-    def costs(self) -> List[int]:
-        return self._dto["cost"]
-
-    @property
-    def key(self) -> str:
-        return self._dto["key"]
-
-    @property
-    def description(self) -> str:
-        return self._dto["description"]
-
-    @property
-    def alternative_images(self) -> List[ImageData]:
-        return [ImageData.from_dto(alt) for alt in self._dto["altimages"]]
-
-    @property
-    def id(self) -> int:
-        return self._dto["id"]
-
-    @property
-    def name(self) -> str:
-        return self._dto["name"]
+    def __call__(self, **kwargs):
+        if "vars" in kwargs:
+            self.variables = [SpellVarsData(**v) for v in kwargs.pop("vars")]
+        if "altimages" in kwargs:
+            self.alternativeImages = [ImageData(**alt) for alt in kwargs.pop("altimages")]
+        if "image" in kwargs:
+            self.image = ImageData(**kwargs.pop("image"))
+        super().__call__(**kwargs)
+        return self
 
 
 ##############
@@ -191,7 +73,7 @@ class SummonerSpells(CassiopeiaList):
     def version(self) -> str:
         try:
             return self._data[SummonerSpellListData].version
-        except KeyError:
+        except AttributeError:
             version = get_latest_version(region=self.region, endpoint="summoner")
             self(version=version)
             return self._data[SummonerSpellListData].version
@@ -204,7 +86,7 @@ class SummonerSpells(CassiopeiaList):
     @property
     def included_data(self) -> Set[str]:
         """A set of tags to return additonal information for this champion when it's loaded."""
-        return self._data[SummonerSpellListData].included_data
+        return self._data[SummonerSpellListData].includedData
 
 
 @searchable({str: ["key"]})
@@ -214,7 +96,7 @@ class SpellVars(CassiopeiaObject):
     @property
     def ranks_with(self) -> str:
         """Well, we don't know what this one is. let us know if you figure it out."""
-        return self._data[SpellVarsData].ranks_with
+        return self._data[SpellVarsData].ranksWith
 
     @property
     def dynamic(self) -> str:
@@ -258,9 +140,9 @@ class SummonerSpell(CassiopeiaGhost):
 
     def __get_query__(self):
         query = {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
-        if "id" in self._data[SummonerSpellData]._dto:
+        if hasattr(self._data[SummonerSpellData], "id"):
             query["id"] = self._data[SummonerSpellData].id
-        if "name" in self._data[SummonerSpellData]._dto:
+        if hasattr(self._data[SummonerSpellData], "name"):
             query["name"] = self._data[SummonerSpellData].name
         return query
 
@@ -279,7 +161,7 @@ class SummonerSpell(CassiopeiaGhost):
         """The version for this summoner spell."""
         try:
             return self._data[SummonerSpellData].version
-        except KeyError:
+        except AttributeError:
             version = get_latest_version(region=self.region, endpoint="summoner")
             self(version=version)
             return self._data[SummonerSpellData].version
@@ -292,7 +174,7 @@ class SummonerSpell(CassiopeiaGhost):
     @property
     def included_data(self) -> Set[str]:
         """The data to included in the query for this summoner spell."""
-        return self._data[SummonerSpellData].included_data
+        return self._data[SummonerSpellData].includedData
 
     @CassiopeiaGhost.property(SummonerSpellData)
     @ghost_load_on
@@ -328,7 +210,7 @@ class SummonerSpell(CassiopeiaGhost):
     @ghost_load_on
     def sanitized_tooltip(self) -> str:
         """The spell's sanitized tooltip."""
-        return self._data[SummonerSpellData].sanitized_tooltip
+        return self._data[SummonerSpellData].sanitizedTooltip
 
     @CassiopeiaGhost.property(SummonerSpellData)
     @ghost_load_on
@@ -347,7 +229,7 @@ class SummonerSpell(CassiopeiaGhost):
     @ghost_load_on
     def max_rank(self) -> int:
         """The maximum rank this spell can attain."""
-        return self._data[SummonerSpellData].max_rank
+        return self._data[SummonerSpellData].maxRank
 
     @CassiopeiaGhost.property(SummonerSpellData)
     @ghost_load_on
@@ -387,7 +269,7 @@ class SummonerSpell(CassiopeiaGhost):
     @lazy
     def alternative_images(self) -> List[Image]:
         """The alternative images for this spell. These won't exist after patch NN, when Riot standardized all images."""
-        return SearchableList(Image.from_data(alt) for alt in self._data[SummonerSpellData].alternative_images)
+        return SearchableList(Image.from_data(alt) for alt in self._data[SummonerSpellData].alternativeImages)
 
     @CassiopeiaGhost.property(SummonerSpellData)
     @ghost_load_on
@@ -411,4 +293,4 @@ class SummonerSpell(CassiopeiaGhost):
 
     @lazy_property
     def sprite(self) -> Sprite:
-        return self.image.sprite_info
+        return self.image.spriteInfo

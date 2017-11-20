@@ -299,6 +299,15 @@ class Lane(Enum):
     top_lane = "TOP_LANE"
     mid_lane = "MID_LANE"
     bot_lane = "BOT_LANE"
+    jungle = "JUNGLE"
+
+    def from_match_naming_scheme(string: str):
+        return {
+            "BOTTOM": Lane.bot_lane,
+            "MIDDLE": Lane.mid_lane,
+            "TOP": Lane.top_lane,
+            "JUNGLE": Lane.jungle
+        }[string]
 
 
 class Role(Enum):
@@ -307,6 +316,12 @@ class Role(Enum):
     middle = "MIDDLE"
     adc = "DUO_CARRY"
     support = "DUO_SUPPORT"
+
+    def from_match_naming_scheme(string: str):
+        return {
+            "DUO_CARRY": Role.adc,
+            "DUO_SUPPORT": Role.support
+        }[string]
 
 
 # References for Queues:

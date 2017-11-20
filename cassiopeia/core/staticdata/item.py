@@ -4,7 +4,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList
 
 from ...data import Region, Platform
-from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, DataObjectList, get_latest_version, CassiopeiaList, provide_default_region, ghost_load_on
+from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CoreDataList, get_latest_version, CassiopeiaList, provide_default_region, ghost_load_on
 from .common import ImageData, Sprite, Image
 from .map import Map
 from ...dto.staticdata import item as dto
@@ -15,303 +15,50 @@ from ...dto.staticdata import item as dto
 ##############
 
 
-class ItemListData(DataObjectList):
+class ItemListData(CoreDataList):
     _dto_type = dto.ItemListDto
     _renamed = {"included_data": "includedData"}
-
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def version(self) -> str:
-        return self._dto["version"]
-
-    @property
-    def locale(self) -> str:
-        return self._dto["locale"]
-
-    @property
-    def included_data(self) -> Set[str]:
-        return self._dto["includedData"]
 
 
 class ItemTreeData(CoreData):
     _renamed = {}
 
-    @property
-    def header(self) -> str:
-        return self._dto["header"]
-
-    @property
-    def tags(self) -> List[str]:
-        return self._dto["tags"]
-
 
 class ItemStatsData(CoreData):
     _renamed = {"percent_critical_strike_damage": "PercentCritDamageMod", "percent_magic_resist": "PercentSpellBlockMod", "percent_health_regen": "PercentHPRegenMod", "percent_movespeed": "PercentMovementSpeedMod", "magic_resist": "FlatSpellBlockMod", "critical_strike_damage": "FlatCritDamageMod", "energy": "FlatEnergyPoolMod", "life_steal": "PercentLifeStealMod", "mana": "FlatMPPoolMod", "movespeed": "FlatMovementSpeedMod", "percent_attack_speed": "PercentAttackSpeedMod", "block": "FlatBlockMod", "percent_block": "PercentBlockMod", "energy_regen": "FlatEnergyRegenMod", "spell_vamp": "PercentSpellVampMod", "mana_regen": "FlatMPRegenMod", "dodge": "PercentDodgeMod", "attack_speed": "FlatAttackSpeedMod", "armor": "FlatArmorMod", "health_regen": "FlatHPRegenMod", "percent_ability_power": "PercentMagicDamageMod", "percent_mana_regen": "PercentMPPoolMod", "ability_power": "FlatMagicDamageMod", "percent_mana_regen": "PercentMPRegenMod", "percent_attack_damage": "PercentPhysicalDamageMod", "attack_damage": "FlatPhysicalDamageMod", "percent_health": "PercentHPPoolMod", "percent_armor": "PercentArmorMod", "percent_xp_bonus": "PercentEXPBonus", "health": "FlatHPPoolMod", "critical_strike_chance": "FlatCritChanceMod", "xp_bonus": "FlatEXPBonus"}
-
-    @property
-    def percent_critical_strike_damage(self) -> float:
-        return self._dto["PercentCritDamageMod"]
-
-    @property
-    def percent_magic_resist(self) -> float:
-        return self._dto["PercentSpellBlockMod"]
-
-    @property
-    def percent_health_regen(self) -> float:
-        return self._dto["PercentHPRegenMod"]
-
-    @property
-    def percent_movespeed(self) -> float:
-        return self._dto["PercentMovementSpeedMod"]
-
-    @property
-    def magic_resist(self) -> str:
-        return self._dto["FlatSpellBlockMod"]
-
-    @property
-    def critical_strike_damage(self) -> float:
-        return self._dto["FlatCritDamageMod"]
-
-    @property
-    def energy(self) -> float:
-        return self._dto["FlatEnergyPoolMod"]
-
-    @property
-    def life_steal(self) -> float:
-        return self._dto["PercentLifeStealMod"]
-
-    @property
-    def mana(self) -> float:
-        return self._dto["FlatMPPoolMod"]
-
-    @property
-    def movespeed(self) -> float:
-        return self._dto["FlatMovementSpeedMod"]
-
-    @property
-    def percent_attack_speed(self) -> float:
-        return self._dto["PercentAttackSpeedMod"]
-
-    @property
-    def block(self) -> float:
-        return self._dto["FlatBlockMod"]
-
-    @property
-    def percent_block(self) -> float:
-        return self._dto["PercentBlockMod"]
-
-    @property
-    def energy_regen(self) -> float:
-        return self._dto["FlatEnergyRegenMod"]
-
-    @property
-    def spell_vamp(self) -> float:
-        return self._dto["PercentSpellVampMod"]
-
-    @property
-    def mana_regen(self) -> float:
-        return self._dto["FlatMPRegenMod"]
-
-    @property
-    def dodge(self) -> float:
-        return self._dto["PercentDodgeMod"]
-
-    @property
-    def attack_speed(self) -> float:
-        return self._dto["FlatAttackSpeedMod"]
-
-    @property
-    def armor(self) -> float:
-        return self._dto["FlatArmorMod"]
-
-    @property
-    def health_regen(self) -> float:
-        return self._dto["FlatHPRegenMod"]
-
-    @property
-    def percent_ability_power(self) -> float:
-        return self._dto["PercentMagicDamageMod"]
-
-    @property
-    def percent_mana_regen(self) -> float:
-        return self._dto["PercentMPPoolMod"]
-
-    @property
-    def ability_power(self) -> float:
-        return self._dto["FlatMagicDamageMod"]
-
-    @property
-    def percent_mana_regen(self) -> float:
-        return self._dto["PercentMPRegenMod"]
-
-    @property
-    def percent_attack_damage(self) -> float:
-        return self._dto["PercentPhysicalDamageMod"]
-
-    @property
-    def attack_damage(self) -> float:
-        return self._dto["FlatPhysicalDamageMod"]
-
-    @property
-    def percent_health(self) -> float:
-        return self._dto["PercentHPPoolMod"]
-
-    @property
-    def percent_armor(self) -> float:
-        return self._dto["PercentArmorMod"]
-
-    @property
-    def percent_xp_bonus(self) -> float:
-        return self._dto["PercentEXPBonus"]
-
-    @property
-    def health(self) -> float:
-        return self._dto["FlatHPPoolMod"]
+    # TODO rename....
 
     @property
     def critical_strike_chance(self) -> float:
         return self._dto["FlatCritChanceMod"] + self._dto["PercentCritChanceMod"]
 
-    @property
-    def xp_bonus(self) -> float:
-        return self._dto["FlatEXPBonus"]
-
 
 class GoldData(CoreData):
     _renamed = {}
 
-    @property
-    def sell(self) -> int:
-        return self._dto["sell"]
-
-    @property
-    def total(self) -> int:
-        return self._dto["total"]
-
-    @property
-    def base(self) -> int:
-        return self._dto["base"]
-
-    @property
-    def purchaseable(self) -> bool:
-        return self._dto["purchaseable"]
-
 
 class ItemData(CoreData):
     _dto_type = dto.ItemDto
-    _renamed = {"hide": "hideFromAll", "in_store": "inStore", "builds_into": "into", "builds_from": "from", "keywords": "colloq", "champion": "requiredChampion", "consume_on_full": "consumeOnFull", "sanitized_description": "sanitizedDescription", "tier": "depth", "max_stacks": "stacks", "included_data": "includedData"}
+    _renamed = {"hideFromAll": "hide", "colloq": "keywords", "requiredChampion": "champion", "depth": "tier", "stacks": "max_stacks", "included_data": "includedData"}
 
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def version(self) -> str:
-        return self._dto["version"]
-
-    @property
-    def locale(self) -> str:
-        return self._dto["locale"]
-
-    @property
-    def included_data(self) -> Set[str]:
-        return self._dto["includedData"]
-
-    @property
-    def gold(self) -> GoldData:
-        return GoldData.from_dto(self._dto["gold"])
-
-    @property
-    def plaintext(self) -> str:
-        return self._dto["plaintext"]
-
-    @property
-    def hide(self) -> bool:
-        return self._dto["hideFromAll"]
-
-    @property
-    def in_store(self) -> bool:
-        return self._dto["inStore"]
-
-    @property
-    def builds_into(self) -> List[int]:  # TODO Convert str to int in transformer
-        return self._dto["into"]
-
-    @property
-    def builds_from(self) -> List[int]:  # TODO Convert str to int in transformer
-        return self._dto["from"]
-
-    @property
-    def id(self) -> int:
-        return self._dto["id"]
-
-    @property
-    def stats(self) -> ItemStatsData:
-        return ItemStatsData.from_dto(self._dto["stats"])
-
-    @property
-    def keywords(self) -> Set[str]:
-        return set(kw for kw in self._dto["colloq"].split(";") if kw != "")
-
-    @property
-    def maps(self) -> List[int]:  # TODO Convert from Dict to List
-        """List of maps where this item is available."""
-        return [int(m) for m, tf in self._dto["maps"].items() if tf]
-
-    @property
-    def special_recipe(self) -> int:
-        return self._dto["specialRecipe"]
-
-    @property
-    def image(self) -> ImageData:
-        return ImageData.from_dto(self._dto["image"])
-
-    @property
-    def description(self) -> str:
-        return self._dto["description"]
-
-    @property
-    def tags(self) -> List[str]:
-        return self._dto["tags"]
-
-    @property
-    def effect(self) -> Mapping[str, str]:
-        return self._dto["effect"]
-
-    @property
-    def champion(self) -> str:
-        return self._dto["requiredChampion"]
-
-    @property
-    def group(self) -> str:
-        return self._dto["group"]
-
-    @property
-    def name(self) -> str:
-        return self._dto["name"]
-
-    @property
-    def consume_on_full(self) -> bool:
-        return self._dto["consumeOnFull"]
-
-    @property
-    def consumed(self) -> bool:
-        return self._dto["consumed"]
-
-    @property
-    def sanitized_description(self) -> str:
-        return self._dto["sanitizedDescription"]
-
-    @property
-    def tier(self) -> int:
-        return self._dto["depth"]
-
-    @property
-    def max_stacks(self) -> int:
-        return self._dto["stacks"]
+    def __call__(self, **kwargs):
+        if "image" in kwargs:
+            self.image = ImageData(**kwargs["image"])
+        if "gold" in kwargs:
+            self.gold = GoldData(**kwargs.pop("gold"))
+        if "into" in kwargs:
+            self.buildsInto = [int(x) for x in kwargs.pop("into")]
+        if "from" in kwargs:
+            self.buildsFrom = [int(x) for x in kwargs.pop("from")]
+        if "stats" in kwargs:
+            self.stats = ItemStatsData(**kwargs.pop("stats"))
+        if "colloq" in kwargs:
+            self.keywords = set(kw for kw in kwargs.pop("colloq").split(";") if kw != "")
+        if "maps" in kwargs:
+            """List of maps where this item is available."""
+            self.maps = [int(m) for m, tf in kwargs.pop("maps").items() if tf]
+        super().__call__(**kwargs)
+        return self
 
 
 ##############
@@ -345,7 +92,7 @@ class Items(CassiopeiaList):
     def version(self) -> str:
         try:
             return self._data[ItemListData].version
-        except KeyError:
+        except AttributeError:
             version = get_latest_version(region=self.region, endpoint="item")
             self(version=version)
             return self._data[ItemListData].version
@@ -358,7 +105,7 @@ class Items(CassiopeiaList):
     @property
     def included_data(self) -> Set[str]:
         """A set of tags to return additional information for this item when it's loaded."""
-        return self._data[ItemListData].included_data
+        return self._data[ItemListData].includedData
 
 
 class ItemStats(CassiopeiaObject):
@@ -534,9 +281,9 @@ class Item(CassiopeiaGhost):
 
     def __get_query__(self):
         query = {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
-        if "id" in self._data[ItemData]._dto:
+        if hasattr(self._data[ItemData], "id"):
             query["id"] = self._data[ItemData].id
-        if "name" in self._data[ItemData]._dto:
+        if hasattr(self._data[ItemData], "name"):
             query["name"] = self._data[ItemData].name
         return query
 
@@ -555,7 +302,7 @@ class Item(CassiopeiaGhost):
         """The version for this item."""
         try:
             return self._data[ItemData].version
-        except KeyError:
+        except AttributeError:
             version = get_latest_version(region=self.region, endpoint="item")
             self(version=version)
             return self._data[ItemData].version
@@ -568,7 +315,7 @@ class Item(CassiopeiaGhost):
     @property
     def included_data(self) -> Set[str]:
         """A set of tags to return additonal information for this item when it's loaded."""
-        return self._data[ItemData].included_data
+        return self._data[ItemData].includedData
 
     @CassiopeiaGhost.property(ItemData)
     @ghost_load_on

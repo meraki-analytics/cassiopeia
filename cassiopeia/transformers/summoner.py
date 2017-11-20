@@ -19,9 +19,7 @@ class SummonerTransformer(DataTransformer):
 
     @transform.register(SummonerDto, SummonerData)
     def summoner_dto_to_data(self, value: SummonerDto, context: PipelineContext = None) -> SummonerData:
-        data = deepcopy(value)
-        data = SummonerData.from_dto(data)
-        return data
+        return SummonerData(**value)
 
     # Data to Core
 

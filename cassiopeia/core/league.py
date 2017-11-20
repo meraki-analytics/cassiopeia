@@ -5,7 +5,7 @@ from merakicommons.container import searchable, SearchableList
 
 from .. import configuration
 from ..data import Region, Platform, Tier, Division, Queue
-from .common import CoreData, DataObjectList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, provide_default_region, ghost_load_on
+from .common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, provide_default_region, ghost_load_on
 from ..dto.league import LeaguePositionDto, LeaguePositionsDto,  LeaguesListDto, LeagueListDto, MiniSeriesDto, ChallengerLeagueListDto, MasterLeagueListDto
 from .summoner import Summoner
 
@@ -19,203 +19,61 @@ class MiniSeriesData(CoreData):
     _dto_type = MiniSeriesDto
     _renamed = {}
 
-    @property
-    def wins(self) -> int:
-        return self._dto["wins"]
-
-    @property
-    def losses(self) -> int:
-        return self._dto["losses"]
-
-    @property
-    def target(self) -> int:
-        return self._dto["target"]
-
-    @property
-    def progress(self) -> str:
-        return self._dto["progress"]
-
 
 class LeaguePositionData(CoreData):
     _dto_type = LeaguePositionDto
-    _renamed = {"hot_streak": "hotStreak", "promos": "miniSeries", "summoner_id": "playerOrTeamId", "summoner_name": "playerOrTeamName", "league_points": "leaguePoints", "name": "leagueName", "queue": "queueType", "division": "rank", "fresh_blood": "freshBlood", "league_id": "leagueId"}
+    _renamed = {"miniSeries": "promos", "playerOrTeamId": "summonerId", "playerOrTeamName": "summonerName", "leagueName": "name", "queueType": "queue", "rank": "division"}
 
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def tier(self) -> str:
-        return self._dto["tier"]
-
-    @property
-    def queue(self) -> str:
-        return self._dto["queueType"]
-
-    @property
-    def name(self) -> str:
-        return self._dto["leagueName"]
-
-    @property
-    def division(self) -> str:
-        return self._dto["rank"]
-
-    @property
-    def hot_streak(self) -> bool:
-        return self._dto["hotStreak"]
-
-    @property
-    def promos(self) -> MiniSeriesData:
-        return MiniSeriesData.from_dto(self._dto["miniSeries"])
-
-    @property
-    def wins(self) -> int:
-        return self._dto["wins"]
-
-    @property
-    def veteran(self) -> bool:
-        return self._dto["veteran"]
-
-    @property
-    def losses(self) -> int:
-        return self._dto["losses"]
-
-    @property
-    def summoner_id(self) -> int:
-        return int(self._dto["playerOrTeamId"])
-
-    @property
-    def summoner_name(self) -> str:
-        return self._dto["playerOrTeamName"]
-
-    @property
-    def inactive(self) -> bool:
-        return self._dto["inactive"]
-
-    @property
-    def fresh_blood(self) -> bool:
-        return self._dto["freshBlood"]
-
-    @property
-    def league_points(self) -> int:
-        return self._dto["leaguePoints"]
-
-    @property
-    def league_id(self) -> str:
-        return self._dto["leagueId"]
+    def __call__(self, **kwargs):
+        if "miniSeries" in kwargs:
+            self.promos = MiniSeriesData(**kwargs.pop("miniSeries"))
+        if "summonerId" in kwargs:
+            self.summonerId = int(kwargs.pop("summonerId"))
+        super().__call__(**kwargs)
+        return self
 
 
-class LeaguePositionsData(DataObjectList):
+class LeaguePositionsData(CoreDataList):
     _dto_type = LeaguePositionsDto
-    _renamed = {"summoner_id": "summonerId"}
-
-    @property
-    def summoner_id(self) -> str:
-        return self._dto["summonerId"]
-
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
+    _renamed = {}
 
 
 class LeagueListData(CoreData):
     _dto_type = LeagueListDto
-    _renamed = {"id": "leagueId"}
+    _renamed = {"leagueId": "id"}
 
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def tier(self) -> str:
-        return self._dto["tier"]
-
-    @property
-    def queue(self) -> str:
-        return self._dto["queue"]
-
-    @property
-    def name(self) -> str:
-        return self._dto["name"]
-
-    @property
-    def id(self) -> int:
-        return self._dto["leagueId"]
-
-    @property
-    def entries(self) -> List[LeaguePositionData]:
-        return [LeaguePositionData.from_dto(entry) for entry in self._dto["entries"]]
+    def __call__(self, **kwargs):
+        if "entries" in kwargs:
+            self.entries = [LeaguePositionData(**entry) for entry in kwargs.pop("entries")]
+        super().__call__(**kwargs)
+        return self
 
 
-class LeaguesListData(DataObjectList):
+class LeaguesListData(CoreDataList):
     _dto_type = LeaguesListDto
-    _renamed = {"summoner_id": "summonerId"}
-
-    @property
-    def summoner_id(self) -> str:
-        return self._dto["summonerId"]
-
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
+    _renamed = {}
 
 
 class ChallengerLeagueListData(CoreData):
     _dto_type = ChallengerLeagueListDto
-    _renamed = {"id": "leagueId"}
+    _renamed = {"leagueId": "id"}
 
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def tier(self) -> str:
-        return self._dto["tier"]
-
-    @property
-    def queue(self) -> str:
-        return self._dto["queue"]
-
-    @property
-    def name(self) -> str:
-        return self._dto["name"]
-
-    @property
-    def id(self) -> int:
-        return self._dto["leagueId"]
-
-    @property
-    def entries(self) -> List[LeaguePositionData]:
-        return [LeaguePositionData.from_dto(entry) for entry in self._dto["entries"]]
+    def __call__(self, **kwargs):
+        if "entries" in kwargs:
+            self.entries = [LeaguePositionData(**entry) for entry in kwargs.pop("entries")]
+        super().__call__(**kwargs)
+        return self
 
 
 class MasterLeagueListData(CoreData):
     _dto_type = MasterLeagueListDto
-    _renamed = {"id": "leagueId"}
+    _renamed = {"leagueId": "id"}
 
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def tier(self) -> str:
-        return self._dto["tier"]
-
-    @property
-    def queue(self) -> str:
-        return self._dto["queue"]
-
-    @property
-    def name(self) -> str:
-        return self._dto["name"]
-
-    @property
-    def id(self) -> int:
-        return self._dto["leagueId"]
-
-    @property
-    def entries(self) -> List[LeaguePositionData]:
-        return [LeaguePositionData.from_dto(entry) for entry in self._dto["entries"]]
+    def __call__(self, **kwargs):
+        if "entries" in kwargs:
+            self.entries = [LeaguePositionData(**entry) for entry in kwargs.pop("entries")]
+        super().__call__(**kwargs)
+        return self
 
 
 ##############
@@ -287,18 +145,18 @@ class LeagueEntry(CassiopeiaGhost):
 
     @property
     def hot_streak(self) -> bool:
-        return self._data[LeaguePositionData].hot_streak
+        return self._data[LeaguePositionData].hotStreak
 
     @lazy_property
     def promos(self) -> Optional[MiniSeries]:
-        try:
+        if hasattr(self._data[LeaguePositionData], "promos"):
             return MiniSeries.from_data(self._data[LeaguePositionData].promos)
-        except KeyError as error:
+        else:
             # Return None if the summoner isn't in their promos
-            if "leagueName" in self._data[LeaguePositionData]._dto:
+            if hasattr(self._data[LeaguePositionData], "name"):
                 return None
-            else:
-                raise error
+        # Reraise the original error
+        return MiniSeries.from_data(self._data[LeaguePositionData].promos)
 
     @property
     def wins(self) -> int:
@@ -314,19 +172,19 @@ class LeagueEntry(CassiopeiaGhost):
 
     @lazy_property
     def summoner(self) -> Summoner:
-        return Summoner(id=self._data[LeaguePositionData].summoner_id, name=self._data[LeaguePositionData].summoner_name, region=self.region)
+        return Summoner(id=int(self._data[LeaguePositionData].summonerId), name=self._data[LeaguePositionData].summonerName, region=self.region)  # TODO I don't know why the summoner id isn't already an int; it's a string for some reason.
 
     @property
     def fresh_blood(self) -> bool:
-        return self._data[LeaguePositionData].fresh_blood
+        return self._data[LeaguePositionData].freshBlood
 
     @property
     def league_id(self) -> str:
-        return self._data[LeaguePositionData].league_id
+        return self._data[LeaguePositionData].leagueId
 
     @property
     def league_points(self) -> int:
-        return self._data[LeaguePositionData].league_points
+        return self._data[LeaguePositionData].leaguePoints
 
 
 class LeagueEntries(CassiopeiaList):

@@ -19,14 +19,13 @@ class SpectatorTransformer(DataTransformer):
 
     @transform.register(CurrentGameInfoDto, CurrentGameInfoData)
     def current_game_dto_to_data(self, value: CurrentGameInfoDto, context: PipelineContext = None) -> CurrentGameInfoData:
-        data = deepcopy(value)
-        return CurrentGameInfoData.from_dto(data)
+        return CurrentGameInfoData(**value)
 
     @transform.register(FeaturedGamesDto, FeaturedGamesData)
     def featured_games_dto_to_data(self, value: FeaturedGamesDto, context: PipelineContext = None) -> FeaturedGamesData:
         data = deepcopy(value)
         data = data["gameList"]
-        return FeaturedGamesData([CurrentGameInfoData.from_dto(game) for game in data], region=value["region"], client_refresh_interval=value["clientRefreshInterval"])
+        return FeaturedGamesData([CurrentGameInfoData(**game) for game in data], region=value["region"], clientRefreshInterval=value["clientRefreshInterval"])
 
     # Data to Core
 
@@ -41,7 +40,7 @@ class SpectatorTransformer(DataTransformer):
         from ..core.summoner import Summoner
         matches = []
         for match in value:
-            summoner = Summoner(name=match.teams[0].participants[0].summoner_name, region=value.region)
+            summoner = Summoner(name=match.teams[0].participants[0].summonerName, region=value.region)
             match = CurrentMatch.from_data(match, summoner=summoner)
             matches.append(match)
-        return FeaturedMatches.from_data(*matches, region=value.region, client_refresh_interval=value.client_refresh_interval)
+        return FeaturedMatches.from_data(*matches, region=value.region, client_refresh_interval=value.clientRefreshInterval)

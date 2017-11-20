@@ -19,8 +19,7 @@ class StatusTransformer(DataTransformer):
 
     @transform.register(ShardStatusDto, ShardStatusData)
     def shard_status_dto_to_data(self, value: ShardStatusDto, context: PipelineContext = None) -> ShardStatusData:
-        data = deepcopy(value)
-        return ShardStatusData.from_dto(data)
+        return ShardStatusData(**value)
 
     # Data to Core
 

@@ -7,67 +7,11 @@ from ..common import CoreData, CassiopeiaObject
 
 
 class SpriteData(CoreData):
-    _renamed = {"height": "h", "width": "w"}
-
-    @property
-    def version(self) -> str:
-        return self._dto["version"]
-
-    @property
-    def sprite(self) -> str:
-        return self._dto["sprite"]
-
-    @property
-    def x(self) -> int:
-        return self._dto["x"]
-
-    @property
-    def y(self) -> int:
-        return self._dto["y"]
-
-    @property
-    def width(self) -> int:
-        return self._dto["w"]
-
-    @property
-    def height(self) -> int:
-        return self._dto["h"]
+    _renamed = {"h": "height", "w": "width"}
 
 
 class ImageData(CoreData):
-    _renamed = {"height": "h", "width": "w"}
-
-    @property
-    def version(self) -> str:
-        return self._dto["version"]
-
-    @property
-    def full(self) -> str:
-        return self._dto["full"]
-
-    @property
-    def group(self) -> str:
-        return self._dto["group"]
-
-    @property
-    def height(self) -> int:
-        return self._dto["h"]
-
-    @property
-    def width(self) -> int:
-        return self._dto["w"]
-
-    @property
-    def y(self) -> int:
-        return self._dto["y"]
-
-    @property
-    def x(self) -> int:
-        return self._dto["x"]
-
-    @property
-    def sprite(self) -> str:
-        return self._dto["sprite"]
+    _renamed = {"h": "height", "w": "width"}
 
 
 @searchable({str: ["sprite", "url"]})

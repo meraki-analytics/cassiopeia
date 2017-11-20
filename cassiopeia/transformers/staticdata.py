@@ -41,8 +41,7 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(ChampionDto, ChampionData)
     def champion_dto_to_data(self, value: ChampionDto, context: PipelineContext = None) -> ChampionData:
-        data = deepcopy(value)
-        return ChampionData.from_dto(data)
+        return ChampionData(**value)
 
     @transform.register(ChampionListDto, ChampionListData)
     def champion_list_dto_to_data(self, value: ChampionListDto, context: PipelineContext = None) -> ChampionListData:
@@ -50,17 +49,16 @@ class StaticDataTransformer(DataTransformer):
 
         data["data"] = [self.champion_dto_to_data(c) for c in data["data"].values()]
         for c in data["data"]:
-            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"], "includedData": data["includedData"]})
+            c(region=data["region"], locale=data["locale"], version=data["version"], includedData=data["includedData"])
 
         data = data["data"]
-        return ChampionListData(data, region=value["region"], version=value["version"], locale=value["locale"], included_data=value["includedData"])
+        return ChampionListData(data, region=value["region"], version=value["version"], locale=value["locale"], includedData=value["includedData"])
 
     # Rune
 
     @transform.register(RuneDto, RuneData)
     def rune_dto_to_data(self, value: RuneDto, context: PipelineContext = None) -> RuneData:
-        data = deepcopy(value)
-        return RuneData.from_dto(data)
+        return RuneData(**value)
 
     @transform.register(RuneListDto, RuneListData)
     def rune_list_dto_to_data(self, value: RuneListDto, context: PipelineContext = None) -> RuneListData:
@@ -68,17 +66,16 @@ class StaticDataTransformer(DataTransformer):
 
         data["data"] = [self.rune_dto_to_data(c) for c in data["data"].values()]
         for c in data["data"]:
-            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"], "includedData": data["includedData"]})
+            c(region=data["region"], locale=data["locale"], version=data["version"], includedData=data["includedData"])
 
         data = data["data"]
-        return RuneListData(data, region=value["region"], version=value["version"], locale=value["locale"], included_data=value["includedData"])
+        return RuneListData(data, region=value["region"], version=value["version"], locale=value["locale"], includedData=value["includedData"])
 
     # Item
 
     @transform.register(ItemDto, ItemData)
     def item_dto_to_data(self, value: ItemDto, context: PipelineContext = None) -> ItemData:
-        data = deepcopy(value)
-        return ItemData.from_dto(data)
+        return ItemData(**value)
 
     @transform.register(ItemListDto, ItemListData)
     def item_list_dto_to_data(self, value: ItemListDto, context: PipelineContext = None) -> ItemListData:
@@ -86,17 +83,16 @@ class StaticDataTransformer(DataTransformer):
 
         data["data"] = [self.item_dto_to_data(c) for c in data["data"].values()]
         for c in data["data"]:
-            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"], "includedData": data["includedData"]})
+            c(region=data["region"], locale=data["locale"], version=data["version"], includedData=data["includedData"])
 
         data = data["data"]
-        return ItemListData(data, region=value["region"], version=value["version"], locale=value["locale"], included_data=value["includedData"])
+        return ItemListData(data, region=value["region"], version=value["version"], locale=value["locale"], includedData=value["includedData"])
 
     # Summoner Spell
 
     @transform.register(SummonerSpellDto, SummonerSpellData)
     def summoner_spell_dto_to_data(self, value: SummonerSpellDto, context: PipelineContext = None) -> SummonerSpellData:
-        data = deepcopy(value)
-        return SummonerSpellData.from_dto(data)
+        return SummonerSpellData(**value)
 
     @transform.register(SummonerSpellListDto, SummonerSpellListData)
     def summoner_spell_list_dto_to_data(self, value: SummonerSpellListDto, context: PipelineContext = None) -> SummonerSpellListData:
@@ -104,17 +100,16 @@ class StaticDataTransformer(DataTransformer):
 
         data["data"] = [self.summoner_spell_dto_to_data(c) for c in data["data"].values()]
         for c in data["data"]:
-            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"], "includedData": data["includedData"]})
+            c(region=data["region"], locale=data["locale"], version=data["version"], includedData=data["includedData"])
 
         data = data["data"]
-        return SummonerSpellListData(data, region=value["region"], version=value["version"], locale=value["locale"], included_data=value["includedData"])
+        return SummonerSpellListData(data, region=value["region"], version=value["version"], locale=value["locale"], includedData=value["includedData"])
 
     # Map
 
     @transform.register(MapDto, MapData)
     def map_dto_to_data(self, value: MapDto, context: PipelineContext = None) -> MapData:
-        data = deepcopy(value)
-        return MapData.from_dto(data)
+        return MapData(**value)
 
     @transform.register(MapListDto, MapListData)
     def map_list_dto_to_data(self, value: MapListDto, context: PipelineContext = None) -> MapListData:
@@ -122,7 +117,7 @@ class StaticDataTransformer(DataTransformer):
 
         data["data"] = [self.map_dto_to_data(c) for c in data["data"].values()]
         for c in data["data"]:
-            c._update({"region": data["region"], "locale": data["locale"], "version": data["version"]})
+            c(region=data["region"], locale=data["locale"], version=data["version"])
 
         data = data["data"]
         return MapListData(data, region=value["region"], version=value["version"], locale=value["locale"])
@@ -138,8 +133,7 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(RealmDto, RealmData)
     def realm_dto_to_data(self, value: RealmDto, context: PipelineContext = None) -> RealmData:
-        data = deepcopy(value)
-        return RealmData(**data)
+        return RealmData(**value)
 
     # Languages
 
@@ -152,15 +146,13 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(LanguageStringsDto, LanguageStringsData)
     def language_strings_dto_to_data(self, value: LanguageStringsDto, context: PipelineContext = None) -> LanguageStringsData:
-        data = deepcopy(value)
-        return LanguageStringsData.from_dto(data)
+        return LanguageStringsData(**value)
 
     # Profile Icons
 
     @transform.register(ProfileIconDetailsDto, ProfileIconData)
     def profile_icon_details_dto_to_data(self, value: ProfileIconDetailsDto, context: PipelineContext = None) -> ProfileIconData:
-        data = deepcopy(value)
-        return ProfileIconData.from_dto(data)
+        return ProfileIconData(**value)
 
     @transform.register(ProfileIconDataDto, ProfileIconListData)
     def profile_icon_data_dto_to_data(self, value: ProfileIconDataDto, context: PipelineContext = None) -> ProfileIconListData:
@@ -179,7 +171,7 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(ChampionListData, Champions)
     def champion_list_data_to_core(self, value: ChampionListData, context: PipelineContext = None) -> Champions:
-        return Champions.from_data(*[self.champion_data_to_core(c) for c in value], region=value.region, version=value.version, locale=value.locale, included_data=value.included_data)
+        return Champions.from_data(*[self.champion_data_to_core(c) for c in value], region=value.region, version=value.version, locale=value.locale, included_data=value.includedData)
 
     # Rune
 
@@ -189,7 +181,7 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(RuneListData, Runes)
     def rune_list_data_to_core(self, value: RuneListData, context: PipelineContext = None) -> Runes:
-        return Runes.from_data(*[self.rune_data_to_core(r) for r in value], region=value.region, version=value.version, locale=value.locale, included_data=value.included_data)
+        return Runes.from_data(*[self.rune_data_to_core(r) for r in value], region=value.region, version=value.version, locale=value.locale, included_data=value.includedData)
 
     # Item
 
@@ -199,7 +191,7 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(ItemListData, Items)
     def item_list_data_to_core(self, value: ItemListData, context: PipelineContext = None) -> Items:
-        return Items.from_data(*(self.item_data_to_core(i) for i in value), region=value.region, version=value.version, locale=value.locale, included_data=value.included_data)
+        return Items.from_data(*(self.item_data_to_core(i) for i in value), region=value.region, version=value.version, locale=value.locale, included_data=value.includedData)
 
     # Summoner Spell
 
@@ -209,7 +201,7 @@ class StaticDataTransformer(DataTransformer):
 
     @transform.register(SummonerSpellListData, SummonerSpells)
     def summoner_spell_list_data_to_core(self, value: SummonerSpellListData, context: PipelineContext = None) -> SummonerSpells:
-        return SummonerSpells.from_data(*[self.summoner_spell_data_to_core(s) for s in value], region=value.region, version=value.version, locale=value.locale, included_data=value.included_data)
+        return SummonerSpells.from_data(*[self.summoner_spell_data_to_core(s) for s in value], region=value.region, version=value.version, locale=value.locale, included_data=value.includedData)
 
     # Map
 

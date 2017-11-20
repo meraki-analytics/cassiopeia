@@ -22,13 +22,11 @@ class MatchTransformer(DataTransformer):
 
     @transform.register(MatchDto, MatchData)
     def match_dto_to_data(self, value: MatchDto, context: PipelineContext = None) -> MatchData:
-        data = deepcopy(value)
-        return MatchData.from_dto(data)
+        return MatchData(**value)
 
     @transform.register(MatchReferenceDto, MatchReferenceData)
     def match_reference_dto_to_data(self, value: MatchReferenceDto, context: PipelineContext = None) -> MatchReferenceData:
-        data = deepcopy(value)
-        return MatchReferenceData.from_dto(data)
+        return MatchReferenceData(**value)
 
     @transform.register(MatchListDto, MatchListData)
     def matchlist_dto_to_data(self, value: MatchListDto, context: PipelineContext = None) -> MatchListData:
@@ -38,8 +36,7 @@ class MatchTransformer(DataTransformer):
 
     @transform.register(TimelineDto, TimelineData)
     def timeline_dto_to_data(self, value: TimelineDto, context: PipelineContext = None) -> TimelineData:
-        data = deepcopy(value)
-        return TimelineData.from_dto(data)
+        return TimelineData(**value)
 
     @transform.register(MatchListDtoGenerator, MatchListGenerator)
     def matchlist_generator_dto_to_data(self, value: MatchListDtoGenerator, context: PipelineContext = None) -> MatchListGenerator:
@@ -69,40 +66,40 @@ class MatchTransformer(DataTransformer):
     def matchlist_generator_to_matchhistory(self, value: MatchListGenerator, context: PipelineContext = None) -> MatchHistory:
         kwargs = {}
         try:
-            kwargs["account_id"] = value.account_id
-        except KeyError:
+            kwargs["account_id"] = value.accountId
+        except AttributeError:
             pass
         try:
             kwargs["region"] = value.region
-        except KeyError:
+        except AttributeError:
             pass
         try:
-            kwargs["end_time"] = value.end_time
-        except KeyError:
+            kwargs["end_time"] = value.endTime
+        except AttributeError:
             pass
         try:
-            kwargs["begin_time"] = value.begin_time
-        except KeyError:
+            kwargs["begin_time"] = value.beginTime
+        except AttributeError:
             pass
         try:
-            kwargs["end_index"] = value.end_index
-        except KeyError:
+            kwargs["end_index"] = value.endIndex
+        except AttributeError:
             pass
         try:
-            kwargs["begin_index"] = value.begin_index
-        except KeyError:
+            kwargs["begin_index"] = value.beginIndex
+        except AttributeError:
             pass
         try:
             kwargs["seasons"] = value.seasons
-        except KeyError:
+        except AttributeError:
             pass
         try:
             kwargs["queues"] = value.queues
-        except KeyError:
+        except AttributeError:
             pass
         try:
-            kwargs["champions"] = value.champion_ids
-        except KeyError:
+            kwargs["champions"] = value.championIds
+        except AttributeError:
             pass
 
         def match_generator(gen, summoner):

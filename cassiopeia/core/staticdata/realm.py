@@ -15,56 +15,33 @@ from ...dto.staticdata import realm as dto
 
 class RealmData(CoreData):
     _dto_type = dto.RealmDto
-    _renamed = {"legacy_mode": "lg", "latest_data_dragon": "dd", "language": "l", "latest_versions": "n", "max_profile_icon_id": "profileiconmax", "store": "store", "version": "v", "cdn": "cdn", "css_version": "css"}
+    _renamed = {"lg": "legacyMode", "dd": "latestDataDragon", "l": "language", "n": "latestVersions",
+                "profileiconmax": "maxProfileIconId", "v": "version", "css": "cssVersion"}
 
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
+    #@property
+    #def max_profile_icon_id(self) -> int:
+    #    """Special behavior number identifying the largest profile icon ID that can be used under 500. Any profile icon that is requested between this number and 500 should be mapped to 0."""
+    #    return self._dto["profileiconmax"]
 
-    @property
-    def legacy_mode(self) -> str:
-        """Legacy script mode for IE6 or older."""
-        return self._dto["lg"]
+    #@property
+    #def store(self) -> str:
+    #    """Additional API data drawn from other sources that may be related to Data Dragon functionality."""
+    #    return self._dto["store"]
 
-    @property
-    def latest_data_dragon(self) -> str:
-        """Latest changed version of Dragon Magic."""
-        return self._dto["dd"]
+    #@property
+    #def version(self) -> str:
+    #    """Current version of this file for this realm."""
+    #    return self._dto["v"]
 
-    @property
-    def language(self) -> str:
-        """Default language for this realm."""
-        return self._dto["l"]
+    #@property
+    #def cdn(self) -> str:
+    #    """The base CDN URL."""
+    #    return self._dto["cdn"]
 
-    @property
-    def latest_versions(self) -> Dict[str, str]:
-        """Latest changed version for each data type listed."""
-        return self._dto["n"]
-
-    @property
-    def max_profile_icon_id(self) -> int:
-        """Special behavior number identifying the largest profile icon ID that can be used under 500. Any profile icon that is requested between this number and 500 should be mapped to 0."""
-        return self._dto["profileiconmax"]
-
-    @property
-    def store(self) -> str:
-        """Additional API data drawn from other sources that may be related to Data Dragon functionality."""
-        return self._dto["store"]
-
-    @property
-    def version(self) -> str:
-        """Current version of this file for this realm."""
-        return self._dto["v"]
-
-    @property
-    def cdn(self) -> str:
-        """The base CDN URL."""
-        return self._dto["cdn"]
-
-    @property
-    def css_version(self) -> str:
-        """Latest changed version of Dragon Magics CSS file."""
-        return self._dto["css"]
+    #@property
+    #def css_version(self) -> str:
+    #    """Latest changed version of Dragon Magics CSS file."""
+    #    return self._dto["css"]
 
 
 ##############
@@ -114,17 +91,17 @@ class Realms(CassiopeiaGhost):
     @ghost_load_on
     def latest_versions(self) -> Dict[str, str]:
         """Latest changed version for each data type listed."""
-        return self._data[RealmData].latest_versions
+        return self._data[RealmData].latestVersions
 
     @CassiopeiaGhost.property(RealmData)
     @ghost_load_on
     def legacy_mode(self) -> str:
-        return self._data[RealmData].legacy_mode
+        return self._data[RealmData].legacyMode
 
     @CassiopeiaGhost.property(RealmData)
     @ghost_load_on
     def latest_data_dragon(self) -> str:
-        return self._data[RealmData].latest_data_dragon
+        return self._data[RealmData].latestDataDragon
 
     @CassiopeiaGhost.property(RealmData)
     @ghost_load_on
@@ -134,7 +111,7 @@ class Realms(CassiopeiaGhost):
     @CassiopeiaGhost.property(RealmData)
     @ghost_load_on
     def max_profile_icon_id(self) -> int:
-        return self._data[RealmData].max_profile_icon_id
+        return self._data[RealmData].maxProfileIconId
 
     @CassiopeiaGhost.property(RealmData)
     @ghost_load_on

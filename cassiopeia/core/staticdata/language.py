@@ -3,17 +3,13 @@ from typing import Union
 from merakicommons.cache import lazy_property
 
 from ...data import Region, Platform
-from ..common import DataObjectList, CassiopeiaList, provide_default_region
+from ..common import CoreDataList, CassiopeiaList, provide_default_region
 from ...dto.staticdata.language import LanguagesDto
 
 
-class LanguagesData(DataObjectList):
+class LanguagesData(CoreDataList):
     _dto_type = LanguagesDto
     _renamed = {}
-
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
 
 
 class Locales(CassiopeiaList):

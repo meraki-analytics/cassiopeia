@@ -8,7 +8,7 @@ from merakicommons.container import searchable
 from ... import configuration
 from ...data import Region, Platform
 from ...dto.staticdata.profileicon import ProfileIconDetailsDto, ProfileIconDataDto
-from ..common import CoreData, DataObjectList, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
+from ..common import CoreData, CoreDataList, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
 
 
 try:
@@ -24,42 +24,14 @@ _profile_icon_names = None
 ##############
 
 
-class ProfileIconListData(DataObjectList):
+class ProfileIconListData(CoreDataList):
     _dto_type = ProfileIconDataDto
-    _renamed = {}
-
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def version(self) -> str:
-        return self._dto["version"]
-
-    @property
-    def locale(self) -> str:
-        return self._dto["locale"]
+    _renamed = {"included_data": "includedData"}
 
 
 class ProfileIconData(CoreData):
     _dto_type = ProfileIconDetailsDto
-    _renamed = {}
-
-    @property
-    def id(self) -> int:
-        return self._dto["id"]
-
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def version(self) -> str:
-        return self._dto["version"]
-
-    @property
-    def locale(self) -> str:
-        return self._dto["locale"]
+    _renamed = {"included_data": "includedData"}
 
 
 ##############
@@ -91,7 +63,7 @@ class ProfileIcons(CassiopeiaList):
     def version(self) -> str:
         try:
             return self._data[ProfileIconData].version
-        except KeyError:
+        except AttributeError:
             version = get_latest_version(region=self.region, endpoint="profileicon")
             self(version=version)
             return self._data[ProfileIconData].version
@@ -122,7 +94,7 @@ class ProfileIcon(CassiopeiaGhost):
         query = {"region": self.region, "platform": self.platform, "version": self.version}
         try:
             query["locale"] = self.locale
-        except KeyError:
+        except AttributeError:
             pass
         return query
 
@@ -149,7 +121,7 @@ class ProfileIcon(CassiopeiaGhost):
         """The version for this profile icon."""
         try:
             return self._data[ProfileIconData].version
-        except KeyError:
+        except AttributeError:
             version = get_latest_version(region=self.region, endpoint="profileicon")
             self(version=version)
             return self._data[ProfileIconData].version
@@ -175,7 +147,7 @@ class ProfileIcon(CassiopeiaGhost):
             _profile_icon_names = {int(key): value for key, value in _profile_icon_names.items()}
         try:
             return _profile_icon_names[self._data[ProfileIconData].id]
-        except KeyError:
+        except AttributeError:
             return None
 
     @CassiopeiaGhost.property(ProfileIconData)

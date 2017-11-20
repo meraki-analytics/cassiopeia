@@ -19,15 +19,14 @@ class ChampionMasteryTransformer(DataTransformer):
 
     @transform.register(ChampionMasteryDto, ChampionMasteryData)
     def champion_mastery_dto_to_data(self, value: ChampionMasteryDto, context: PipelineContext = None) -> ChampionMasteryData:
-        data = deepcopy(value)
-        return ChampionMasteryData.from_dto(data)
+        return ChampionMasteryData(**value)
 
     @transform.register(ChampionMasteryListDto, ChampionMasteryListData)
     def champion_mastery_list_dto_to_data(self, value: ChampionMasteryListDto, context: PipelineContext = None) -> ChampionMasteryListData:
         data = deepcopy(value)
         data["masteries"] = [self.champion_mastery_dto_to_data(c) for c in data["masteries"]]
         for c in data["masteries"]:
-            c._update({"region": data["region"]})
+            c(region=data["region"])
         data = data["masteries"]
         return ChampionMasteryListData(data, region=value["region"], summoner_id=value["summonerId"])
 

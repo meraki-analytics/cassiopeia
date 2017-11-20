@@ -20,8 +20,7 @@ class LeagueTransformer(DataTransformer):
 
     @transform.register(LeaguePositionDto, LeaguePositionData)
     def league_position_dto_to_data(self, value: LeaguePositionDto, context: PipelineContext = None) -> LeaguePositionData:
-        data = deepcopy(value)
-        return LeaguePositionData.from_dto(data)
+        return LeaguePositionData(**value)
 
     @transform.register(LeaguePositionsDto, LeaguePositionsData)
     def league_positions_dto_to_data(self, value: LeaguePositionsDto, context: PipelineContext = None) -> LeaguePositionsData:
@@ -31,8 +30,7 @@ class LeagueTransformer(DataTransformer):
 
     @transform.register(LeagueListDto, LeagueListData)
     def league_list_dto_to_data(self, value: LeagueListDto, context: PipelineContext = None) -> LeagueListData:
-        data = deepcopy(value)
-        return LeagueListData.from_dto(data)
+        return LeagueListData(**value)
 
     @transform.register(LeaguesListDto, LeaguesListData)
     def leagues_list_dto_to_data(self, value: LeaguesListDto, context: PipelineContext = None) -> LeaguesListData:
@@ -50,13 +48,11 @@ class LeagueTransformer(DataTransformer):
 
     @transform.register(ChallengerLeagueListDto, ChallengerLeagueListData)
     def challenger_league_list_dto_to_data(self, value: ChallengerLeagueListDto, context: PipelineContext = None) -> ChallengerLeagueListData:
-        data = deepcopy(value)
-        return ChallengerLeagueListData.from_dto(data)
+        return ChallengerLeagueListData(**value)
 
     @transform.register(MasterLeagueListDto, MasterLeagueListData)
     def master_league_list_dto_to_data(self, value: MasterLeagueListDto, context: PipelineContext = None) -> MasterLeagueListData:
-        data = deepcopy(value)
-        return MasterLeagueListData.from_dto(data)
+        return MasterLeagueListData(**value)
 
     # Data to Core
 

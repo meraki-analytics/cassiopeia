@@ -1099,27 +1099,27 @@ def for_champion_mastery(champion_mastery: ChampionMastery) -> List[Tuple]:
     keys = []
     try:
         keys.append((champion_mastery.platform.value, champion_mastery.summoner._data[SummonerData].id, champion_mastery.champion._data[ChampionData].id))
-    except KeyError:
+    except AttributeError:
         pass
     try:
         keys.append((champion_mastery.platform.value, champion_mastery.summoner._data[SummonerData].id, champion_mastery.champion._data[ChampionData].name))
-    except KeyError:
+    except AttributeError:
         pass
     try:
         keys.append((champion_mastery.platform.value, champion_mastery.summoner._data[SummonerData].name, champion_mastery.champion._data[ChampionData].id))
-    except KeyError:
+    except AttributeError:
         pass
     try:
         keys.append((champion_mastery.platform.value, champion_mastery.summoner._data[SummonerData].name, champion_mastery.champion._data[ChampionData].name))
-    except KeyError:
+    except AttributeError:
         pass
     try:
         keys.append((champion_mastery.platform.value, champion_mastery.summoner._data[SummonerData].account_id, champion_mastery.champion._data[ChampionData].id))
-    except KeyError:
+    except AttributeError:
         pass
     try:
         keys.append((champion_mastery.platform.value, champion_mastery.summoner._data[SummonerData].account_id, champion_mastery.champion._data[ChampionData].name))
-    except KeyError:
+    except AttributeError:
         pass
     return keys
 
@@ -1179,15 +1179,15 @@ def for_champion_masteries(champion_mastery: ChampionMasteries) -> List[Tuple]:
     keys = []
     try:
         keys.append((champion_mastery.platform.value, champion_mastery.summoner._data[SummonerData].id))
-    except KeyError:
+    except AttributeError:
         pass
     try:
         keys.append((champion_mastery.platform.value, champion_mastery.summoner._data[SummonerData].name))
-    except KeyError:
+    except AttributeError:
         pass
     try:
         keys.append((champion_mastery.platform.value, champion_mastery.summoner._data[SummonerData].account_id))
-    except KeyError:
+    except AttributeError:
         pass
     return keys
 
@@ -1344,11 +1344,11 @@ def for_champion(champion: Champion) -> List[Tuple]:
     keys = []
     try:
         keys.append((champion.platform.value, champion.version, champion.locale, _hash_included_data(champion.included_data), champion._data[ChampionData].id))
-    except KeyError:
+    except AttributeError:
         pass
     try:
         keys.append((champion.platform.value, champion.version, champion.locale, _hash_included_data(champion.included_data), champion._data[ChampionData].name))
-    except KeyError:
+    except AttributeError:
         pass
     return keys
 
@@ -1438,11 +1438,11 @@ def for_item(item: Item) -> List[Tuple]:
     keys = []
     try:
         keys.append((item.platform.value, item.version, item.locale, _hash_included_data(item.included_data), item._data[ItemData].id))
-    except KeyError:
+    except AttributeError:
         pass
     try:
         keys.append((item.platform.value, item.version, item.locale, _hash_included_data(item.included_data), item._data[ItemData].name))
-    except KeyError:
+    except AttributeError:
         pass
     return keys
 
@@ -1574,11 +1574,11 @@ def for_map(map: Map) -> List[Tuple]:
     keys = []
     try:
         keys.append((map.platform.value, map.version, map.locale, map._data[MapData].id))
-    except KeyError:
+    except AttributeError:
         pass
     try:
         keys.append((map.platform.value, map.version, map.locale, map._data[MapData].name))
-    except KeyError:
+    except AttributeError:
         pass
     return keys
 
@@ -1744,11 +1744,11 @@ def for_rune(rune: Rune) -> List[Tuple]:
     keys = []
     try:
         keys.append((rune.platform.value, rune.version, rune.locale, _hash_included_data(rune.included_data), rune._data[RuneData].id))
-    except KeyError:
+    except AttributeError:
         pass
     try:
         keys.append((rune.platform.value, rune.version, rune.locale, _hash_included_data(rune.included_data), rune._data[RuneData].name))
-    except KeyError:
+    except AttributeError:
         pass
     return keys
 
@@ -1838,11 +1838,11 @@ def for_summoner_spell(summoner_spell: SummonerSpell) -> List[Tuple]:
     keys = []
     try:
         keys.append((summoner_spell.platform.value, summoner_spell.version, summoner_spell.locale, _hash_included_data(summoner_spell.included_data), summoner_spell._data[SummonerSpellData].id))
-    except KeyError:
+    except AttributeError:
         pass
     try:
         keys.append((summoner_spell.platform.value, summoner_spell.version, summoner_spell.locale, _hash_included_data(summoner_spell.included_data), summoner_spell._data[SummonerSpellData].name))
-    except KeyError:
+    except AttributeError:
         pass
     return keys
 
@@ -2099,15 +2099,15 @@ def for_summoner(summoner: Summoner) -> List[Tuple]:
     keys = []
     try:
         keys.append((summoner.platform.value, summoner._data[SummonerData].id))
-    except KeyError:
+    except AttributeError:
         pass
     try:
         keys.append((summoner.platform.value, summoner._data[SummonerData].name))
-    except KeyError:
+    except AttributeError:
         pass
     try:
         keys.append((summoner.platform.value, summoner._data[SummonerData].account_id))
-    except KeyError:
+    except AttributeError:
         pass
     return keys
 

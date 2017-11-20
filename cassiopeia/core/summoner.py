@@ -17,46 +17,18 @@ from ..dto.summoner import SummonerDto
 
 
 class AccountData(CoreData):
-    _renamed = {"id": "accountId"}
-
-    @property
-    def id(self) -> int:
-        return self._dto["accountId"]
+    _renamed = {"accountId": "id"}
 
 
 class SummonerData(CoreData):
     _dto_type = SummonerDto
-    _renamed = {"profile_icon": "profileIconId", "level": "summonerLevel", "revision_date": "revisionDate", "account_id": "accountId"}
+    _renamed = {"summonerLevel": "level"}
 
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def account_id(self) -> int:  # TODO This should return an AccoutData but there is a bug somewhere. See the match example.
-        return self._dto["accountId"]
-
-    @property
-    def id(self) -> int:
-        return self._dto["id"]
-
-    @property
-    def name(self) -> str:
-        return self._dto["name"]
-
-    @property
-    def level(self) -> str:
-        return self._dto["summonerLevel"]
-
-    @property
-    def profile_icon_id(self) -> int:
-        """ID of the summoner icon associated with the summoner."""
-        return self._dto["profileIconId"]
-
-    @property
-    def revision_date(self) -> datetime.date:
-        """Date summoner was last modified specified as epoch milliseconds. The following events will update this timestamp: profile icon change, playing the tutorial or advanced tutorial, finishing a game, summoner name change."""
-        return self._dto["revisionDate"]
+    def __call__(self, **kwargs):
+        if "accountId" in kwargs:
+            self.account = AccountData(id=kwargs.pop("accountId"))
+        super().__call__(**kwargs)
+        return self
 
 
 ##############
@@ -108,15 +80,15 @@ class Summoner(CassiopeiaGhost):
         query = {"region": self.region, "platform": self.platform}
         try:
             query["id"] = self._data[SummonerData].id
-        except KeyError:
+        except AttributeError:
             pass
         try:
-            query["account.id"] = self._data[SummonerData].account_id
-        except KeyError:
+            query["account.id"] = self._data[SummonerData].accountId
+        except AttributeError:
             pass
         try:
             query["name"] = self._data[SummonerData].name
-        except KeyError:
+        except AttributeError:
             pass
         assert "id" in query or "name" in query or "account.id" in query
         return query
@@ -145,7 +117,7 @@ class Summoner(CassiopeiaGhost):
     @ghost_load_on
     @lazy
     def account(self) -> Account:
-        return Account(id=self._data[SummonerData].account_id)
+        return Account.from_data(self._data[SummonerData].account)
 
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on
@@ -165,12 +137,12 @@ class Summoner(CassiopeiaGhost):
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on
     def profile_icon(self) -> ProfileIcon:
-        return ProfileIcon(id=self._data[SummonerData].profile_icon_id, region=self.region)
+        return ProfileIcon(id=self._data[SummonerData].profileIconId, region=self.region)
 
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on
     def revision_date(self) -> datetime.date:
-        return datetime.datetime.fromtimestamp(self._data[SummonerData].revision_date / 1000).date()
+        return datetime.datetime.fromtimestamp(self._data[SummonerData].revisionDate / 1000).date()
 
     @property
     def match_history_uri(self) -> str:
@@ -208,4 +180,4 @@ class Summoner(CassiopeiaGhost):
     @lazy_property
     def rank_last_season(self):
         most_recent_match = self.match_history[0]
-        return most_recent_match.participants[self.name].rank_last_season
+        return most_recent_match.participants[self.name].rankLastSeason

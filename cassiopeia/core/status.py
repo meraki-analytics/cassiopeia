@@ -13,123 +13,23 @@ from .common import CoreData, CassiopeiaObject, CassiopeiaGhost, provide_default
 
 
 class TranslationData(CoreData):
-    _renamed = {}
-
-    @property
-    def locale(self) -> str:
-        return self._dto["locale"]
-
-    @property
-    def content(self) -> str:
-        return self._dto["content"]
-
-    @property
-    def updated_at(self) -> str:
-        return self._dto["updated_at"]
+    _renamed = {"updated_at": "updated"}
 
 
 class MessageData(CoreData):
-    _renamed = {}
-
-    @property
-    def severity(self) -> str:
-        return self._dto["severity"]
-
-    @property
-    def author(self) -> str:
-        return self._dto["author"]
-
-    @property
-    def created_at(self) -> str:
-        return self._dto["created_at"]
-
-    @property
-    def translations(self) -> List[TranslationData]:
-        return [TranslationData.from_dto(trans) for trans in self._dto["translations"]]
-
-    @property
-    def updated_at(self) -> str:
-        return self._dto["updated_at"]
-
-    @property
-    def content(self) -> str:
-        return self._dto["content"]
-
-    @property
-    def id(self) -> str:
-        return self._dto["id"]
+    _renamed = {"created_at": "created", "updated_at": "updated"}
 
 
 class IncidentData(CoreData):
-    _renamed = {}
-
-    @property
-    def active(self) -> bool:
-        return self._dto["active"]
-
-    @property
-    def created_at(self) -> str:
-        return self._dto["created_at"]
-
-    @property
-    def id(self) -> int:
-        return self._dto["id"]
-
-    @property
-    def updates(self) -> List[MessageData]:
-        return [MessageData.from_dto(message) for message in self._dto["updates"]]
+    _renamed = {"created_at": "created"}
 
 
 class ServiceData(CoreData):
     _renamed = {}
 
-    @property
-    def status(self) -> str:
-        return self._dto["status"]
-
-    @property
-    def incidents(self) -> List[IncidentData]:
-        return [IncidentData.from_dto(inc) for inc in self._dto["incidents"]]
-
-    @property
-    def name(self) -> str:
-        return self._dto["name"]
-
-    @property
-    def slug(self) -> str:
-        return self._dto["slug"]
-
 
 class ShardStatusData(CoreData):
-    _renamed = {}
-
-    @property
-    def region(self) -> str:
-        return self._dto["region"]
-
-    @property
-    def name(self) -> str:
-        return self._dto["name"]
-
-    @property
-    def region_tag(self) -> str:
-        return self._dto["region_tag"]
-
-    @property
-    def hostname(self) -> str:
-        return self._dto["hostname"]
-
-    @property
-    def services(self) -> List[ServiceData]:
-        return [ServiceData.from_dto(service) for service in self._dto["services"]]
-
-    @property
-    def slug(self) -> str:
-        return self._dto["slug"]
-
-    @property
-    def locales(self) -> List[str]:
-        return self._dto["locales"]
+    _renamed = {"region_tag": "platform"}
 
 
 ##############
@@ -150,8 +50,8 @@ class Translation(CassiopeiaObject):
         return self._data[TranslationData].content
 
     @property
-    def updated_at(self) -> str:
-        return self._data[TranslationData].updated_at
+    def updated(self) -> str:
+        return self._data[TranslationData].updated
 
 
 class Message(CassiopeiaObject):
@@ -166,16 +66,16 @@ class Message(CassiopeiaObject):
         return self._data[MessageData].author
 
     @property
-    def created_at(self) -> str:
-        return self._data[MessageData].created_at
+    def created(self) -> str:
+        return self._data[MessageData].created
 
     @property
     def translations(self) -> List[Translation]:
         return SearchableList([Translation(trans) for trans in self._data[MessageData].translations])
 
     @property
-    def updated_at(self) -> str:
-        return self._data[MessageData].updated_at
+    def updated(self) -> str:
+        return self._data[MessageData].updated
 
     @property
     def content(self) -> str:
@@ -194,8 +94,8 @@ class Incident(CassiopeiaObject):
         return self._data[IncidentData].active
 
     @property
-    def created_at(self) -> str:
-        return self._data[IncidentData].created_at
+    def created(self) -> str:
+        return self._data[IncidentData].created
 
     @property
     def id(self) -> int:
@@ -254,11 +154,6 @@ class ShardStatus(CassiopeiaGhost):
     @ghost_load_on
     def name(self) -> str:
         return self._data[ShardStatusData].name
-
-    @CassiopeiaGhost.property(ShardStatusData)
-    @ghost_load_on
-    def region_tag(self) -> str:
-        return self._data[ShardStatusData].region_tag
 
     @CassiopeiaGhost.property(ShardStatusData)
     @ghost_load_on
