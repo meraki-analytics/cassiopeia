@@ -144,6 +144,110 @@ class ParticipantTimelineData(CoreData):
 class ParticipantStatsData(CoreData):
     _renamed = {}
 
+    @property
+    def perk0(self) -> int:
+        return self._dto["perk0"]
+
+    @property
+    def perk0_var1(self) -> int:
+        return self._dto["perk0Var1"]
+
+    @property
+    def perk0_var2(self) -> int:
+        return self._dto["perk0Var2"]
+
+    @property
+    def perk0_var3(self) -> int:
+        return self._dto["perk0Var3"]
+
+    @property
+    def perk1(self) -> int:
+        return self._dto["perk1"]
+
+    @property
+    def perk1_var1(self) -> int:
+        return self._dto["perk1Var1"]
+
+    @property
+    def perk1_var2(self) -> int:
+        return self._dto["perk1Var2"]
+
+    @property
+    def perk1_var3(self) -> int:
+        return self._dto["perk1Var3"]
+        
+    @property
+    def perk2(self) -> int:
+        return self._dto["perk2"]
+
+    @property
+    def perk2_var1(self) -> int:
+        return self._dto["perk2Var1"]
+
+    @property
+    def perk2_var2(self) -> int:
+        return self._dto["perk2Var2"]
+
+    @property
+    def perk2_var3(self) -> int:
+        return self._dto["perk2Var3"]
+
+    @property
+    def perk3(self) -> int:
+        return self._dto["perk3"]
+
+    @property
+    def perk3_var1(self) -> int:
+        return self._dto["perk3Var1"]
+
+    @property
+    def perk3_var2(self) -> int:
+        return self._dto["perk3Var2"]
+
+    @property
+    def perk3_var3(self) -> int:
+        return self._dto["perk3Var3"]
+
+    @property
+    def perk4(self) -> int:
+        return self._dto["perk4"]
+
+    @property
+    def perk4_var1(self) -> int:
+        return self._dto["perk4Var1"]
+
+    @property
+    def perk4_var2(self) -> int:
+        return self._dto["perk4Var2"]
+
+    @property
+    def perk4_var3(self) -> int:
+        return self._dto["perk4Var3"]
+
+    @property
+    def perk5(self) -> int:
+        return self._dto["perk5"]
+
+    @property
+    def perk5_var1(self) -> int:
+        return self._dto["perk5Var1"]
+
+    @property
+    def perk5_var2(self) -> int:
+        return self._dto["perk5Var2"]
+
+    @property
+    def perk5_var3(self) -> int:
+        return self._dto["perk5Var3"]
+
+    @property
+    def perk_primary_style(self) -> int:
+        return self._dto["perkPrimaryStyle"]
+
+    @property
+    def perk_sub_style(self) -> int:
+        return self._dto["perkSubStyle"]
+
 
 class ParticipantData(CoreData):
     _renamed = {"participantId": "id", "spell1Id": "summonerSpellDId", "spell2Id": "summonerSpellFId", "highestAchievedSeasonTier": "rankLastSeason", "bot": "isBot", "profileIcon": "profileIconId"}
@@ -955,6 +1059,110 @@ class ParticipantStats(CassiopeiaObject):
     @property
     def physical_damage_taken(self) -> int:
         return self._data[ParticipantStatsData].physicalDamageTaken
+
+    @property
+    def perk0(self) -> int:
+        return self._data[ParticipantStatsData].perk0
+
+    @property
+    def perk0_var1(self) -> int:
+        return self._data[ParticipantStatsData].perk0_var1
+
+    @property
+    def perk0_var2(self) -> int:
+        return self._data[ParticipantStatsData].perk0_var2
+
+    @property
+    def perk0_var3(self) -> int:
+        return self._data[ParticipantStatsData].perk0_var3
+
+    @property
+    def perk1(self) -> int:
+        return self._data[ParticipantStatsData].perk1
+
+    @property
+    def perk1_var1(self) -> int:
+        return self._data[ParticipantStatsData].perk1_var1
+
+    @property
+    def perk1_var2(self) -> int:
+        return self._data[ParticipantStatsData].perk1_var2
+
+    @property
+    def perk1_var3(self) -> int:
+        return self._data[ParticipantStatsData].perk1_var3
+        
+    @property
+    def perk2(self) -> int:
+        return self._data[ParticipantStatsData].perk2
+
+    @property
+    def perk2_var1(self) -> int:
+        return self._data[ParticipantStatsData].perk2_var1
+
+    @property
+    def perk2_var2(self) -> int:
+        return self._data[ParticipantStatsData].perk2_var2
+
+    @property
+    def perk2_var3(self) -> int:
+        return self._data[ParticipantStatsData].perk2_var3
+
+    @property
+    def perk3(self) -> int:
+        return self._data[ParticipantStatsData].perk3
+
+    @property
+    def perk3_var1(self) -> int:
+        return self._data[ParticipantStatsData].perk3_var1
+
+    @property
+    def perk3_var2(self) -> int:
+        return self._data[ParticipantStatsData].perk3_var2
+
+    @property
+    def perk3_var3(self) -> int:
+        return self._data[ParticipantStatsData].perk3_var3
+
+    @property
+    def perk4(self) -> int:
+        return self._data[ParticipantStatsData].perk4
+
+    @property
+    def perk4_var1(self) -> int:
+        return self._data[ParticipantStatsData].perk4_var1
+
+    @property
+    def perk4_var2(self) -> int:
+        return self._data[ParticipantStatsData].perk4_var2
+
+    @property
+    def perk4_var3(self) -> int:
+        return self._data[ParticipantStatsData].perk4_var3
+
+    @property
+    def perk5(self) -> int:
+        return self._data[ParticipantStatsData].perk5
+
+    @property
+    def perk5_var1(self) -> int:
+        return self._data[ParticipantStatsData].perk5_var1
+
+    @property
+    def perk5_var2(self) -> int:
+        return self._data[ParticipantStatsData].perk5_var2
+
+    @property
+    def perk5_var3(self) -> int:
+        return self._data[ParticipantStatsData].perk5_var3
+
+    @property
+    def perk_primary_style(self) -> int:
+        return self._data[ParticipantStatsData].perk_primary_style
+
+    @property
+    def perk_sub_style(self) -> int:
+        return self._data[ParticipantStatsData].perk_sub_style
 
 
 def load_match_on_attributeerror(method):
