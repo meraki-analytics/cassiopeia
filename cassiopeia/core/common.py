@@ -3,6 +3,8 @@ import types
 from typing import Mapping, Set, Union, Optional, Type, Generator
 import functools
 import logging
+from enum import Enum
+import datetime
 
 from merakicommons.ghost import Ghost, ghost_load_on as _ghost_load_on
 from merakicommons.container import SearchableList, SearchableLazyList
@@ -10,10 +12,7 @@ from merakicommons.container import SearchableList, SearchableLazyList
 from .. import configuration
 from ..data import Region, Platform
 
-try:
-    import ujson as json
-except ImportError:
-    import json
+import json  # Can't use ujson here because of the encoder
 
 
 LOGGER = logging.getLogger("core")
@@ -70,6 +69,27 @@ class CoreData(object):
             new_key = self._renamed.get(key, key)
             setattr(self, new_key, value)
         return self
+
+    def to_dict(self):
+        d = {}
+        attrs = {attrname for attrname in dir(self)} - {attrname for attrname in dir(self.__class__)}
+        for attr in attrs:
+            v = getattr(self, attr)
+            if isinstance(v, CoreData):
+                v = v.to_dict()
+            elif hasattr(v, "__iter__") and not isinstance(v, str):
+                if isinstance(v, dict):
+                    new_v = {}
+                    for k, vi in v.items():
+                        if isinstance(vi, CoreData):
+                            new_v[k] = vi.to_dict()
+                        else:
+                            new_v[k] = v
+                    v = new_v
+                else:
+                    v = [vi.to_dict() if isinstance(vi, CoreData) else vi for vi in v]
+            d[attr] = v
+        return d
 
 
 class CoreDataList(list, CoreData):
@@ -148,6 +168,19 @@ class CassiopeiaObject(object):
                 self._data[_type] = _type(**insert_this)
         return self
 
+    def to_dict(self):
+        d = {}
+        for data_type in self._data_types:
+            new = self._data[data_type].to_dict()
+            d.update(new)
+        return d
+
+    def to_json(self, **kwargs):
+        return json.dumps(self.to_dict(), cls=CassiopeiaJsonEncoder, **kwargs)
+
+    def __json__(self, **kwargs):
+        return self.to_json(**kwargs)
+
 
 class GetFromPipeline(type):
     @provide_default_region
@@ -179,14 +212,6 @@ class CassiopeiaPipelineObject(CassiopeiaObject, metaclass=GetFromPipeline):
     @provide_default_region
     def __get_query_from_kwargs__(cls, **kwargs):
         return kwargs
-
-    def to_dict(self):
-        d = {}
-        for data_type in self._data_types:
-            attrs = {attrname for attrname in dir(self._data[data_type])} - {attrname for attrname in dir(data_type)}
-            for attr in attrs:
-                d[attr] = getattr(self._data[data_type], attr)
-        return d
 
 
 class CassiopeiaGhost(CassiopeiaPipelineObject, Ghost):
@@ -287,3 +312,14 @@ class CassiopeiaLazyList(SearchableLazyList, CassiopeiaPipelineObject):
 
     def __str__(self):
         return SearchableLazyList.__str__(self)
+
+
+class CassiopeiaJsonEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Enum):
+            return obj.name
+        elif isinstance(obj, datetime.datetime):
+            return obj.isoformat()
+        elif isinstance(obj, datetime.timedelta):
+            return obj.seconds
+        return json.JSONEncoder.default(self, obj)
