@@ -21,12 +21,10 @@ class RuneListData(CoreDataList):
 
 class MetadataData(CoreData):
     _renamed = {}
-    # TODO Convert the type in the transformer from str to int
 
 
 class RuneStatsData(CoreData):
-    _renamed = {"percent_time_dead_mod_per_level": "PercentTimeDeadModPerLevel", "percent_armor_penetration_mod_per_level": "PercentArmorPenetrationModPerLevel", "percent_crit_damage_mod": "PercentCritDamageMod", "percent_spell_block_mod": "PercentSpellBlockMod", "percent_hp_regen_mod": "PercentHPRegenMod", "percent_movement_speed_mod": "PercentMovementSpeedMod", "flat_spell_block_mod": "FlatSpellBlockMod", "flat_energy_regen_mod_per_level": "FlatEnergyRegenModPerLevel", "flat_energy_pool_mod": "FlatEnergyPoolMod", "flat_magic_penetration_mod_per_level": "FlatMagicPenetrationModPerLevel", "percent_life_steal_mod": "PercentLifeStealMod", "flat_mp_pool_mod": "FlatMPPoolMod", "percent_cooldown_mod": "PercentCooldownMod", "percent_magic_penetration_mod": "PercentMagicPenetrationMod", "flat_armor_penetration_mod_per_level": "FlatArmorPenetrationModPerLevel", "flat_movement_speed_mod": "FlatMovementSpeedMod", "flat_time_dead_mod_per_level": "FlatTimeDeadModPerLevel", "flat_armor_mod_per_level": "FlatArmorModPerLevel", "percent_attack_speed_mod": "PercentAttackSpeedMod", "flat_dodge_mod_per_level": "FlatDodgeModPerLevel", "percent_magic_damage_mod": "PercentMagicDamageMod", "percent_block_mod": "PercentBlockMod", "flat_dodge_mod": "FlatDodgeMod", "flat_energy_regen_mod": "FlatEnergyRegenMod", "flat_hp_mod_per_level": "FlatHPModPerLevel", "percent_attack_speed_mod_per_level": "PercentAttackSpeedModPerLevel", "percent_spell_vamp_mod": "PercentSpellVampMod", "flat_mp_regen_mod": "FlatMPRegenMod", "percent_hp_pool_mod": "PercentHPPoolMod", "percent_dodge_mod": "PercentDodgeMod", "flat_attack_speed_mod": "FlatAttackSpeedMod", "flat_armor_mod": "FlatArmorMod", "flat_magic_damage_mod_per_level": "FlatMagicDamageModPerLevel", "flat_hp_regen_mod": "FlatHPRegenMod", "percent_physical_damage_mod": "PercentPhysicalDamageMod", "flat_crit_chance_mod_per_level": "FlatCritChanceModPerLevel", "flat_spell_block_mod_per_level": "FlatSpellBlockModPerLevel", "percent_time_dead_mod": "PercentTimeDeadMod", "flat_block_mod": "FlatBlockMod", "percent_mp_pool_mod": "PercentMPPoolMod", "flat_magic_damage_mod": "FlatMagicDamageMod", "percent_mp_regen_mod": "PercentMPRegenMod", "percent_movement_speed_mod_per_level": "PercentMovementSpeedModPerLevel", "percent_cooldown_mod_per_level": "PercentCooldownModPerLevel", "flat_mp_mod_per_level": "FlatMPModPerLevel", "flat_energy_mod_per_level": "FlatEnergyModPerLevel", "flat_physical_damage_mod": "FlatPhysicalDamageMod", "flat_hp_regen_mod_per_level": "FlatHPRegenModPerLevel", "flat_crit_damage_mod": "FlatCritDamageMod", "percent_armor_mod": "PercentArmorMod", "flat_magic_penetration_mod": "FlatMagicPenetrationMod", "percent_crit_chance_mod": "PercentCritChanceMod", "flat_physical_damage_mod_per_level": "FlatPhysicalDamageModPerLevel", "percent_armor_penetration_mod": "PercentArmorPenetrationMod", "percent_exp_bonus": "PercentEXPBonus", "flat_mp_regen_mod_per_level": "FlatMPRegenModPerLevel", "percent_magic_penetration_mod_per_level": "PercentMagicPenetrationModPerLevel", "flat_time_dead_mod": "FlatTimeDeadMod", "flat_movement_speed_mod_per_level": "FlatMovementSpeedModPerLevel", "flat_gold_per_10_mod": "FlatGoldPer10Mod", "flat_armor_penetration_mod": "FlatArmorPenetrationMod", "flat_crit_damage_mod_per_level": "FlatCritDamageModPerLevel", "flat_hp_pool_mod": "FlatHPPoolMod", "flat_crit_chance_mod": "FlatCritChanceMod", "flat_exp_bonus": "FlatEXPBonus"}
-    # TODO rename......
+    _renamed = {}
 
 
 class RuneData(CoreData):
@@ -96,263 +94,263 @@ class RuneStats(CassiopeiaObject):
 
     @property
     def percent_time_dead_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].percent_time_dead_mod_per_level
+        return self._data[RuneStatsData].percentTimeDeadModPerLevel
 
     @property
     def percent_armor_penetration_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].percent_armor_penetration_mod_per_level
+        return self._data[RuneStatsData].percentArmorPenetrationModPerLevel
 
     @property
     def percent_crit_damage_mod(self) -> float:
-        return self._data[RuneStatsData].percent_crit_damage_mod
+        return self._data[RuneStatsData].percentCritDamageMod
 
     @property
     def percent_spell_block_mod(self) -> float:
-        return self._data[RuneStatsData].percent_spell_block_mod
+        return self._data[RuneStatsData].percentSpellBlockMod
 
     @property
     def percent_hp_regen_mod(self) -> float:
-        return self._data[RuneStatsData].percent_hp_regen_mod
+        return self._data[RuneStatsData].percentHpRegenMod
 
     @property
     def percent_movement_speed_mod(self) -> float:
-        return self._data[RuneStatsData].percent_movement_speed_mod
+        return self._data[RuneStatsData].percentMovementSpeedMod
 
     @property
     def flat_spell_block_mod(self) -> float:
-        return self._data[RuneStatsData].flat_spell_block_mod
+        return self._data[RuneStatsData].flatSpellBlockMod
 
     @property
     def flat_energy_regen_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flat_energy_regen_mod_per_level
+        return self._data[RuneStatsData].flatEnergyRegenModPerLevel
 
     @property
     def flat_energy_pool_mod(self) -> float:
-        return self._data[RuneStatsData].flat_energy_pool_mod
+        return self._data[RuneStatsData].flatEnergyPoolMod
 
     @property
     def flat_magic_penetration_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flat_magic_penetration_mod_per_level
+        return self._data[RuneStatsData].flatMagicPenetrationModPerLevel
 
     @property
     def percent_life_steal_mod(self) -> float:
-        return self._data[RuneStatsData].percent_life_steal_mod
+        return self._data[RuneStatsData].percentLifeStealMod
 
     @property
     def flat_mp_pool_mod(self) -> float:
-        return self._data[RuneStatsData].flat_mp_pool_mod
+        return self._data[RuneStatsData].flatMpPoolMod
 
     @property
     def percent_cooldown_mod(self) -> float:
-        return self._data[RuneStatsData].percent_cooldown_mod
+        return self._data[RuneStatsData].percentCooldownMod
 
     @property
     def percent_magic_penetration_mod(self) -> float:
-        return self._data[RuneStatsData].percent_magic_penetration_mod
+        return self._data[RuneStatsData].percentMagicPenetrationMod
 
     @property
     def flat_armor_penetration_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flat_armor_penetration_mod_per_level
+        return self._data[RuneStatsData].flatArmorPenetrationModPerLevel
 
     @property
     def flat_movement_speed_mod(self) -> float:
-        return self._data[RuneStatsData].flat_movement_speed_mod
+        return self._data[RuneStatsData].flatMovementSpeedMod
 
     @property
     def flat_time_dead_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flat_time_dead_mod_per_level
+        return self._data[RuneStatsData].flatTimeDeadModPerLevel
 
     @property
     def flat_armor_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flat_armor_mod_per_level
+        return self._data[RuneStatsData].flatArmorModPerLevel
 
     @property
     def percent_attack_speed_mod(self) -> float:
-        return self._data[RuneStatsData].percent_attack_speed_mod
+        return self._data[RuneStatsData].percentAttackSpeedMod
 
     @property
     def flat_dodge_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flat_dodge_mod_per_level
+        return self._data[RuneStatsData].flatDodgeModPerLevel
 
     @property
     def percent_magic_damage_mod(self) -> float:
-        return self._data[RuneStatsData].percent_magic_damage_mod
+        return self._data[RuneStatsData].percentMagicDamageMod
 
     @property
     def percent_block_mod(self) -> float:
-        return self._data[RuneStatsData].percent_block_mod
+        return self._data[RuneStatsData].percentBlockMod
 
     @property
     def flat_dodge_mod(self) -> float:
-        return self._data[RuneStatsData].flat_dodge_mod
+        return self._data[RuneStatsData].flatDodgeMod
 
     @property
     def flat_energy_regen_mod(self) -> float:
-        return self._data[RuneStatsData].flat_energy_regen_mod
+        return self._data[RuneStatsData].flatEnergyRegenMod
 
     @property
     def flat_hp_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flat_hp_mod_per_level
+        return self._data[RuneStatsData].flatHpModPerLevel
 
     @property
     def percent_attack_speed_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].percent_attack_speed_mod_per_level
+        return self._data[RuneStatsData].percentAttackSpeedModPerLevel
 
     @property
     def percent_spell_vamp_mod(self) -> float:
-        return self._data[RuneStatsData].percent_spell_vamp_mod
+        return self._data[RuneStatsData].percentSpellVampMod
 
     @property
     def flat_mp_regen_mod(self) -> float:
-        return self._data[RuneStatsData].flat_mp_regen_mod
+        return self._data[RuneStatsData].flatMpRegenMod
 
     @property
     def percent_hp_pool_mod(self) -> float:
-        return self._data[RuneStatsData].percent_hp_pool_mod
+        return self._data[RuneStatsData].percentHpPoolMod
 
     @property
     def percent_dodge_mod(self) -> float:
-        return self._data[RuneStatsData].percent_dodge_mod
+        return self._data[RuneStatsData].percentDodgeMod
 
     @property
     def flat_attack_speed_mod(self) -> float:
-        return self._data[RuneStatsData].flat_attack_speed_mod
+        return self._data[RuneStatsData].flatAttackSpeedMod
 
     @property
     def flat_armor_mod(self) -> float:
-        return self._data[RuneStatsData].flat_armor_mod
+        return self._data[RuneStatsData].flatArmorMod
 
     @property
     def flat_magic_damage_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flat_magic_damage_mod_per_level
+        return self._data[RuneStatsData].flatMagicDamageModPerLevel
 
     @property
     def flat_hp_regen_mod(self) -> float:
-        return self._data[RuneStatsData].flat_hp_regen_mod
+        return self._data[RuneStatsData].flatHpRegenMod
 
     @property
     def percent_physical_damage_mod(self) -> float:
-        return self._data[RuneStatsData].percent_physical_damage_mod
+        return self._data[RuneStatsData].percentPhysicalDamageMod
 
     @property
     def flat_crit_chance_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flat_crit_chance_mod_per_level
+        return self._data[RuneStatsData].flatCritChanceModPerLevel
 
     @property
     def flat_spell_block_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flat_spell_block_mod_per_level
+        return self._data[RuneStatsData].flatSpellBlockModPerLevel
 
     @property
     def percent_time_dead_mod(self) -> float:
-        return self._data[RuneStatsData].percent_time_dead_mod
+        return self._data[RuneStatsData].percentTimeDeadMod
 
     @property
     def flat_block_mod(self) -> float:
-        return self._data[RuneStatsData].flat_block_mod
+        return self._data[RuneStatsData].flatBlockMod
 
     @property
     def percent_mp_pool_mod(self) -> float:
-        return self._data[RuneStatsData].percent_mp_pool_mod
+        return self._data[RuneStatsData].percentMpPoolMod
 
     @property
     def flat_magic_damage_mod(self) -> float:
-        return self._data[RuneStatsData].flat_magic_damage_mod
+        return self._data[RuneStatsData].flatMagicDamageMod
 
     @property
     def percent_mp_regen_mod(self) -> float:
-        return self._data[RuneStatsData].percent_mp_regen_mod
+        return self._data[RuneStatsData].percentMpRegenMod
 
     @property
     def percent_movement_speed_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].percent_movement_speed_mod_per_level
+        return self._data[RuneStatsData].percentMovementSpeedModPerLevel
 
     @property
     def percent_cooldown_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].percent_cooldown_mod_per_level
+        return self._data[RuneStatsData].percentCooldownModPerLevel
 
     @property
     def flat_mp_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flat_mp_mod_per_level
+        return self._data[RuneStatsData].flatMpModPerLevel
 
     @property
     def flat_energy_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flat_energy_mod_per_level
+        return self._data[RuneStatsData].flatEnergyModPerLevel
 
     @property
     def flat_physical_damage_mod(self) -> float:
-        return self._data[RuneStatsData].flat_physical_damage_mod
+        return self._data[RuneStatsData].flatPhysicalDamageMod
 
     @property
     def flat_hp_regen_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flat_hp_regen_mod_per_level
+        return self._data[RuneStatsData].flatHpRegenModPerLevel
 
     @property
     def flat_crit_damage_mod(self) -> float:
-        return self._data[RuneStatsData].flat_crit_damage_mod
+        return self._data[RuneStatsData].flatCritDamageMod
 
     @property
     def percent_armor_mod(self) -> float:
-        return self._data[RuneStatsData].percent_armor_mod
+        return self._data[RuneStatsData].percentArmorMod
 
     @property
     def flat_magic_penetration_mod(self) -> float:
-        return self._data[RuneStatsData].flat_magic_penetration_mod
+        return self._data[RuneStatsData].flatMagicPenetrationMod
 
     @property
     def percent_crit_chance_mod(self) -> float:
-        return self._data[RuneStatsData].percent_crit_chance_mod
+        return self._data[RuneStatsData].percentCritChanceMod
 
     @property
     def flat_physical_damage_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flat_physical_damage_mod_per_level
+        return self._data[RuneStatsData].flatPhysicalDamageModPerLevel
 
     @property
     def percent_armor_penetration_mod(self) -> float:
-        return self._data[RuneStatsData].percent_armor_penetration_mod
+        return self._data[RuneStatsData].percentArmorPenetrationMod
 
     @property
     def percent_exp_bonus(self) -> float:
-        return self._data[RuneStatsData].percent_exp_bonus
+        return self._data[RuneStatsData].percentExpBonus
 
     @property
     def flat_mp_regen_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flat_mp_regen_mod_per_level
+        return self._data[RuneStatsData].flatMpRegenModPerLevel
 
     @property
     def percent_magic_penetration_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].percent_magic_penetration_mod_per_level
+        return self._data[RuneStatsData].percentMagicPenetrationModPerLevel
 
     @property
     def flat_time_dead_mod(self) -> float:
-        return self._data[RuneStatsData].flat_time_dead_mod
+        return self._data[RuneStatsData].flatTimeDeadMod
 
     @property
     def flat_movement_speed_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flat_movement_speed_mod_per_level
+        return self._data[RuneStatsData].flatMovementSpeedModPerLevel
 
     @property
     def flat_gold_per_10_mod(self) -> float:
-        return self._data[RuneStatsData].flat_gold_per_10_mod
+        return self._data[RuneStatsData].flatGoldPer_10Mod
 
     @property
     def flat_armor_penetration_mod(self) -> float:
-        return self._data[RuneStatsData].flat_armor_penetration_mod
+        return self._data[RuneStatsData].flatArmorPenetrationMod
 
     @property
     def flat_crit_damage_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flat_crit_damage_mod_per_level
+        return self._data[RuneStatsData].flatCritDamageModPerLevel
 
     @property
     def flat_hp_pool_mod(self) -> float:
-        return self._data[RuneStatsData].flat_hp_pool_mod
+        return self._data[RuneStatsData].flatHpPoolMod
 
     @property
     def flat_crit_chance_mod(self) -> float:
-        return self._data[RuneStatsData].flat_crit_chance_mod
+        return self._data[RuneStatsData].flatCritChanceMod
 
     @property
     def flat_exp_bonus(self) -> float:
-        return self._data[RuneStatsData].flat_exp_bonus
+        return self._data[RuneStatsData].flatExpBonus
 
 
 @searchable({str: ["name", "tags", "type", "region", "platform", "locale"], int: ["id"], RuneType: ["type"], Region: ["region"], Platform: ["platform"]})

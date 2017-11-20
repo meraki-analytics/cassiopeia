@@ -25,12 +25,12 @@ class ItemTreeData(CoreData):
 
 
 class ItemStatsData(CoreData):
-    _renamed = {"percent_critical_strike_damage": "PercentCritDamageMod", "percent_magic_resist": "PercentSpellBlockMod", "percent_health_regen": "PercentHPRegenMod", "percent_movespeed": "PercentMovementSpeedMod", "magic_resist": "FlatSpellBlockMod", "critical_strike_damage": "FlatCritDamageMod", "energy": "FlatEnergyPoolMod", "life_steal": "PercentLifeStealMod", "mana": "FlatMPPoolMod", "movespeed": "FlatMovementSpeedMod", "percent_attack_speed": "PercentAttackSpeedMod", "block": "FlatBlockMod", "percent_block": "PercentBlockMod", "energy_regen": "FlatEnergyRegenMod", "spell_vamp": "PercentSpellVampMod", "mana_regen": "FlatMPRegenMod", "dodge": "PercentDodgeMod", "attack_speed": "FlatAttackSpeedMod", "armor": "FlatArmorMod", "health_regen": "FlatHPRegenMod", "percent_ability_power": "PercentMagicDamageMod", "percent_mana_regen": "PercentMPPoolMod", "ability_power": "FlatMagicDamageMod", "percent_mana_regen": "PercentMPRegenMod", "percent_attack_damage": "PercentPhysicalDamageMod", "attack_damage": "FlatPhysicalDamageMod", "percent_health": "PercentHPPoolMod", "percent_armor": "PercentArmorMod", "percent_xp_bonus": "PercentEXPBonus", "health": "FlatHPPoolMod", "critical_strike_chance": "FlatCritChanceMod", "xp_bonus": "FlatEXPBonus"}
-    # TODO rename....
+    _renamed = {"PercentCritDamageMod": "percentCriticalStrikeDamage", "PercentSpellBlockMod": "percentMagicResist", "PercentHPRegenMod": "percentHealthRegen", "PercentMovementSpeedMod": "percentMovespeed", "FlatSpellBlockMod": "magicResist", "FlatCritDamageMod": "criticalStrikeDamage", "FlatEnergyPoolMod": "energy", "PercentLifeStealMod": "lifeSteal", "FlatMPPoolMod": "mana", "FlatMovementSpeedMod": "movespeed", "PercentAttackSpeedMod": "percentAttackSpeed", "FlatBlockMod": "block", "PercentBlockMod": "percentBlock", "FlatEnergyRegenMod": "energyRegen", "PercentSpellVampMod": "spellVamp", "FlatMPRegenMod": "manaRegen", "PercentDodgeMod": "dodge", "FlatAttackSpeedMod": "attackSpeed", "FlatArmorMod": "armor", "FlatHPRegenMod": "healthRegen", "PercentMagicDamageMod": "percentAbilityPower", "PercentMPPoolMod": "percentMana", "FlatMagicDamageMod": "abilityPower", "PercentMPRegenMod": "percentManaRegen", "PercentPhysicalDamageMod": "percentAttackDamage", "FlatPhysicalDamageMod": "attackDamage", "PercentHPPoolMod": "percentHealth", "PercentArmorMod": "percentArmor", "PercentEXPBonus": "percentExpBonus", "FlatHPPoolMod": "health", "FlatCritChanceMod": "criticalStrikeChance", "FlatEXPBonus": "expBonus"}
 
-    @property
-    def critical_strike_chance(self) -> float:
-        return self._dto["FlatCritChanceMod"] + self._dto["PercentCritChanceMod"]
+    def __call__(self, **kwargs):
+        self.critical_strike_chance =  kwargs.pop("FlatCritChanceMod") + kwargs.pop("PercentCritChanceMod")
+        super().__call__(**kwargs)
+        return self
 
 
 class GoldData(CoreData):
@@ -113,27 +113,27 @@ class ItemStats(CassiopeiaObject):
 
     @property
     def percent_critical_strike_damage(self) -> float:
-        return self._data[ItemStatsData].percent_critical_strike_damage
+        return self._data[ItemStatsData].percentCriticalStrikeDamage
 
     @property
     def percent_magic_resist(self) -> float:
-        return self._data[ItemStatsData].percent_magic_resist
+        return self._data[ItemStatsData].percentMagicResist
 
     @property
     def percent_health_regen(self) -> float:
-        return self._data[ItemStatsData].percent_health_regen
+        return self._data[ItemStatsData].percentHealthRegen
 
     @property
     def percent_movespeed(self) -> float:
-        return self._data[ItemStatsData].percent_movespeed
+        return self._data[ItemStatsData].percentMovespeed
 
     @property
     def magic_resist(self) -> float:
-        return self._data[ItemStatsData].magic_resist
+        return self._data[ItemStatsData].magicResist
 
     @property
     def critical_strike_damage(self) -> float:
-        return self._data[ItemStatsData].critical_strike_damage
+        return self._data[ItemStatsData].criticalStrikeDamage
 
     @property
     def energy(self) -> float:
@@ -141,7 +141,7 @@ class ItemStats(CassiopeiaObject):
 
     @property
     def life_steal(self) -> float:
-        return self._data[ItemStatsData].life_steal
+        return self._data[ItemStatsData].lifeSteal
 
     @property
     def mana(self) -> float:
@@ -153,7 +153,7 @@ class ItemStats(CassiopeiaObject):
 
     @property
     def percent_attack_speed(self) -> float:
-        return self._data[ItemStatsData].percent_attack_speed
+        return self._data[ItemStatsData].percentAttackSpeed
 
     @property
     def block(self) -> float:
@@ -161,19 +161,19 @@ class ItemStats(CassiopeiaObject):
 
     @property
     def percent_block(self) -> float:
-        return self._data[ItemStatsData].percent_block
+        return self._data[ItemStatsData].percentBlock
 
     @property
     def energy_regen(self) -> float:
-        return self._data[ItemStatsData].energy_regen
+        return self._data[ItemStatsData].energyRegen
 
     @property
     def spell_vamp(self) -> float:
-        return self._data[ItemStatsData].spell_vamp
+        return self._data[ItemStatsData].spellVamp
 
     @property
     def mana_regen(self) -> float:
-        return self._data[ItemStatsData].mana_regen
+        return self._data[ItemStatsData].manaRegen
 
     @property
     def dodge(self) -> float:
@@ -181,7 +181,7 @@ class ItemStats(CassiopeiaObject):
 
     @property
     def attack_speed(self) -> float:
-        return self._data[ItemStatsData].attack_speed
+        return self._data[ItemStatsData].attackSpeed
 
     @property
     def armor(self) -> float:
@@ -189,43 +189,43 @@ class ItemStats(CassiopeiaObject):
 
     @property
     def health_regen(self) -> float:
-        return self._data[ItemStatsData].health_regen
+        return self._data[ItemStatsData].healthRegen
 
     @property
     def percent_ability_power(self) -> float:
-        return self._data[ItemStatsData].percent_ability_power
+        return self._data[ItemStatsData].percentAbilityPower
 
     @property
     def percent_mana_regen(self) -> float:
-        return self._data[ItemStatsData].percent_mana_regen
+        return self._data[ItemStatsData].percentManaRegen
 
     @property
     def ability_power(self) -> float:
-        return self._data[ItemStatsData].ability_power
+        return self._data[ItemStatsData].abilityPower
 
     @property
     def percent_mana_regen(self) -> float:
-        return self._data[ItemStatsData].percent_mana_regen
+        return self._data[ItemStatsData].percentManaRegen
 
     @property
     def percent_attack_damage(self) -> float:
-        return self._data[ItemStatsData].percent_attack_damage
+        return self._data[ItemStatsData].percentAttackDamage
 
     @property
     def attack_damage(self) -> float:
-        return self._data[ItemStatsData].attack_damage
+        return self._data[ItemStatsData].attackDamage
 
     @property
     def percent_health(self) -> float:
-        return self._data[ItemStatsData].percent_health
+        return self._data[ItemStatsData].percentHealth
 
     @property
     def percent_armor(self) -> float:
-        return self._data[ItemStatsData].percent_armor
+        return self._data[ItemStatsData].percentArmor
 
     @property
     def percent_xp_bonus(self) -> float:
-        return self._data[ItemStatsData].percent_xp_bonus
+        return self._data[ItemStatsData].percentExpBonus
 
     @property
     def health(self) -> float:
@@ -233,11 +233,11 @@ class ItemStats(CassiopeiaObject):
 
     @property
     def critical_strike_chance(self) -> float:
-        return self._data[ItemStatsData].critical_strike_chance
+        return self._data[ItemStatsData].criticalStrikeChance
 
     @property
     def xp_bonus(self) -> float:
-        return self._data[ItemStatsData].xp_bonus
+        return self._data[ItemStatsData].expBonus
 
 
 class Gold(CassiopeiaObject):

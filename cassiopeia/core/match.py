@@ -142,8 +142,7 @@ class ParticipantTimelineData(CoreData):
 
 
 class ParticipantStatsData(CoreData):
-    _renamed = {"physicalDamageDealt": "physical_damage_dealt", "magicDamageDealt": "magic_damage_dealt", "neutralMinionsKilledTeamJungle": "neutral_minions_killed_team_jungle", "totalPlayerScore": "total_player_score", "neutralMinionsKilledEnemyJungle": "neutral_minions_killed_enemy_jungle", "altarsCaptured": "altars_captured", "largestCriticalStrike": "largest_critical_strike", "totalDamageDealt": "total_damage_dealt", "magicDamageDealtToChampions": "magic_damage_dealt_to_champions", "visionWardsBoughtInGame": "vision_wards_bought_in_game", "damageDealtToObjectives": "damage_dealt_to_objectives", "largestKillingSpree": "largest_killing_spree", "quadraKills": "quadra_kills", "teamObjective": "team_objective", "totalTimeCrowdControlDealt": "total_time_crowd_control_dealt", "longestTimeSpentLiving": "longest_time_spent_living", "wardsKilled": "wards_killed", "firstTowerAssist": "first_tower_assist", "firstTowerKill": "first_tower_kill", "firstBloodAssist": "first_blood_assist", "visionScore": "vision_score", "wardsPlaced": "wards_placed", "turretKills": "turret_kills", "tripleKills": "triple_kills", "damageSelfMitigated": "damage_self_mitigated", "champLevel": "champion_level", "nodeNeutralizeAssist": "node_neutralize_assist", "firstInhibitorKill": "first_inhibitor_kill", "goldEarned": "gold_earned", "magicalDamageTaken": "magical_damage_taken", "doubleKills": "double_kills", "nodeCaptureAssist": "node_capture_assist", "trueDamageTaken": "true_damage_taken", "nodeNeutralize": "node_neutralize", "firstInhibitorAssist": "first_inhibitor_assist", "unrealKills": "unreal_kills", "neutralMinionsKilled": "neutral_minions_killed", "objectivePlayerScore": "objective_player_score", "combatPlayerScore": "combat_player_score", "damageDealtToTurrets": "damage_dealt_to_turrets", "altarsNeutralized": "altars_neutralized", "physicalDamageDealtToChampions": "physical_damage_dealt_to_champions", "goldSpent": "gold_spent", "trueDamageDealt": "true_damage_dealt", "trueDamageDealtToChampions": "true_damage_dealt_to_champions", "participantId": "id", "pentaKills": "penta_kills", "totalHeal": "total_heal", "totalMinionsKilled": "total_minions_killed", "firstBloodKill": "first_blood_kill", "nodeCapture": "node_capture", "largestMultiKill": "largest_multi_kill", "sightWardsBoughtInGame": "sight_wards_bought_in_game", "totalDamageDealtToChampions": "total_damage_dealt_to_champions", "totalUnitsHealed": "total_units_healed", "inhibitorKills": "inhibitor_kills", "totalScoreRank": "total_score_rank", "totalDamageTaken": "total_damage_taken", "killingSprees": "killing_sprees", "timeCCingOthers": "time_CCing_others", "physicalDamageTaken": "physical_damage_taken"}
-    # TODO rename......
+    _renamed = {}
 
 
 class ParticipantData(CoreData):
@@ -675,19 +674,19 @@ class ParticipantStats(CassiopeiaObject):
 
     @property
     def physical_damage_dealt(self) -> int:
-        return self._data[ParticipantStatsData].physical_damage_dealt
+        return self._data[ParticipantStatsData].physicalDamageDealt
 
     @property
     def magic_damage_dealt(self) -> int:
-        return self._data[ParticipantStatsData].magic_damage_dealt
+        return self._data[ParticipantStatsData].magicDamageDealt
 
     @property
     def neutral_minions_killed_team_jungle(self) -> int:
-        return self._data[ParticipantStatsData].neutral_minions_killed_team_jungle
+        return self._data[ParticipantStatsData].neutralMinionsKilledTeamJungle
 
     @property
     def total_player_score(self) -> int:
-        return self._data[ParticipantStatsData].total_player_score
+        return self._data[ParticipantStatsData].totalPlayerScore
 
     @property
     def deaths(self) -> int:
@@ -699,63 +698,63 @@ class ParticipantStats(CassiopeiaObject):
 
     @property
     def neutral_minions_killed_enemy_jungle(self) -> int:
-        return self._data[ParticipantStatsData].neutral_minions_killed_enemy_jungle
+        return self._data[ParticipantStatsData].neutralMinionsKilledEnemyJungle
 
     @property
     def altars_captured(self) -> int:
-        return self._data[ParticipantStatsData].altars_captured
+        return self._data[ParticipantStatsData].altarsCaptured
 
     @property
     def largest_critical_strike(self) -> int:
-        return self._data[ParticipantStatsData].largest_critical_strike
+        return self._data[ParticipantStatsData].largestCriticalStrike
 
     @property
     def total_damage_dealt(self) -> int:
-        return self._data[ParticipantStatsData].total_damage_dealt
+        return self._data[ParticipantStatsData].totalDamageDealt
 
     @property
     def magic_damage_dealt_to_champions(self) -> int:
-        return self._data[ParticipantStatsData].magic_damage_dealt_to_champions
+        return self._data[ParticipantStatsData].magicDamageDealtToChampions
 
     @property
     def vision_wards_bought_in_game(self) -> int:
-        return self._data[ParticipantStatsData].vision_wards_bought_in_game
+        return self._data[ParticipantStatsData].visionWardsBoughtInGame
 
     @property
     def damage_dealt_to_objectives(self) -> int:
-        return self._data[ParticipantStatsData].damage_dealt_to_objectives
+        return self._data[ParticipantStatsData].damageDealtToObjectives
 
     @property
     def largest_killing_spree(self) -> int:
-        return self._data[ParticipantStatsData].largest_killing_spree
+        return self._data[ParticipantStatsData].largestKillingSpree
 
     @property
     def quadra_kills(self) -> int:
-        return self._data[ParticipantStatsData].quadra_kills
+        return self._data[ParticipantStatsData].quadraKills
 
     @property
     def team_objective(self) -> int:
-        return self._data[ParticipantStatsData].team_objective
+        return self._data[ParticipantStatsData].teamObjective
 
     @property
     def total_time_crowd_control_dealt(self) -> int:
-        return self._data[ParticipantStatsData].total_time_crowd_control_dealt
+        return self._data[ParticipantStatsData].totalTimeCrowdControlDealt
 
     @property
     def longest_time_spent_living(self) -> int:
-        return self._data[ParticipantStatsData].longest_time_spent_living
+        return self._data[ParticipantStatsData].longestTimeSpentLiving
 
     @property
     def wards_killed(self) -> int:
-        return self._data[ParticipantStatsData].wards_killed
+        return self._data[ParticipantStatsData].wardsKilled
 
     @property
     def first_tower_assist(self) -> bool:
-        return self._data[ParticipantStatsData].first_tower_assist
+        return self._data[ParticipantStatsData].firstTowerAssist
 
     @property
     def first_tower_kill(self) -> bool:
-        return self._data[ParticipantStatsData].first_tower_kill
+        return self._data[ParticipantStatsData].firstTowerKill
 
     @property
     def items(self) -> List[Item]:
@@ -772,47 +771,47 @@ class ParticipantStats(CassiopeiaObject):
 
     @property
     def first_blood_assist(self) -> bool:
-        return self._data[ParticipantStatsData].first_blood_assist
+        return self._data[ParticipantStatsData].firstBloodAssist
 
     @property
     def vision_score(self) -> int:
-        return self._data[ParticipantStatsData].vision_score
+        return self._data[ParticipantStatsData].visionScore
 
     @property
     def wards_placed(self) -> int:
-        return self._data[ParticipantStatsData].wards_placed
+        return self._data[ParticipantStatsData].wardsPlaced
 
     @property
     def turret_kills(self) -> int:
-        return self._data[ParticipantStatsData].turret_kills
+        return self._data[ParticipantStatsData].turretKills
 
     @property
     def triple_kills(self) -> int:
-        return self._data[ParticipantStatsData].triple_kills
+        return self._data[ParticipantStatsData].tripleKills
 
     @property
     def damage_self_mitigated(self) -> int:
-        return self._data[ParticipantStatsData].damage_self_mitigated
+        return self._data[ParticipantStatsData].damageSelfMitigated
 
     @property
     def champion_level(self) -> int:
-        return self._data[ParticipantStatsData].champion_level
+        return self._data[ParticipantStatsData].championLevel
 
     @property
     def node_neutralize_assist(self) -> int:
-        return self._data[ParticipantStatsData].node_neutralize_assist
+        return self._data[ParticipantStatsData].nodeNeutralizeAssist
 
     @property
     def first_inhibitor_kill(self) -> bool:
-        return self._data[ParticipantStatsData].first_inhibitor_kill
+        return self._data[ParticipantStatsData].firstInhibitorKill
 
     @property
     def gold_earned(self) -> int:
-        return self._data[ParticipantStatsData].gold_earned
+        return self._data[ParticipantStatsData].goldEarned
 
     @property
     def magical_damage_taken(self) -> int:
-        return self._data[ParticipantStatsData].magical_damage_taken
+        return self._data[ParticipantStatsData].magicalDamageTaken
 
     @property
     def kills(self) -> int:
@@ -820,23 +819,23 @@ class ParticipantStats(CassiopeiaObject):
 
     @property
     def double_kills(self) -> int:
-        return self._data[ParticipantStatsData].double_kills
+        return self._data[ParticipantStatsData].doubleKills
 
     @property
     def node_capture_assist(self) -> int:
-        return self._data[ParticipantStatsData].node_capture_assist
+        return self._data[ParticipantStatsData].nodeCaptureAssist
 
     @property
     def true_damage_taken(self) -> int:
-        return self._data[ParticipantStatsData].true_damage_taken
+        return self._data[ParticipantStatsData].trueDamageTaken
 
     @property
     def node_neutralize(self) -> int:
-        return self._data[ParticipantStatsData].node_neutralize
+        return self._data[ParticipantStatsData].nodeNeutralize
 
     @property
     def first_inhibitor_assist(self) -> bool:
-        return self._data[ParticipantStatsData].first_inhibitor_assist
+        return self._data[ParticipantStatsData].firstInhibitorAssist
 
     @property
     def assists(self) -> int:
@@ -844,43 +843,43 @@ class ParticipantStats(CassiopeiaObject):
 
     @property
     def unreal_kills(self) -> int:
-        return self._data[ParticipantStatsData].unreal_kills
+        return self._data[ParticipantStatsData].unrealKills
 
     @property
     def neutral_minions_killed(self) -> int:
-        return self._data[ParticipantStatsData].neutral_minions_killed
+        return self._data[ParticipantStatsData].neutralMinionsKilled
 
     @property
     def objective_player_score(self) -> int:
-        return self._data[ParticipantStatsData].objective_player_score
+        return self._data[ParticipantStatsData].objectivePlayerScore
 
     @property
     def combat_player_score(self) -> int:
-        return self._data[ParticipantStatsData].combat_player_score
+        return self._data[ParticipantStatsData].combatPlayerScore
 
     @property
     def damage_dealt_to_turrets(self) -> int:
-        return self._data[ParticipantStatsData].damage_dealt_to_turrets
+        return self._data[ParticipantStatsData].damageDealtToTurrets
 
     @property
     def altars_neutralized(self) -> int:
-        return self._data[ParticipantStatsData].altars_neutralized
+        return self._data[ParticipantStatsData].altarsNeutralized
 
     @property
     def physical_damage_dealt_to_champions(self) -> int:
-        return self._data[ParticipantStatsData].physical_damage_dealt_to_champions
+        return self._data[ParticipantStatsData].physicalDamageDealtToChampions
 
     @property
     def gold_spent(self) -> int:
-        return self._data[ParticipantStatsData].gold_spent
+        return self._data[ParticipantStatsData].goldSpent
 
     @property
     def true_damage_dealt(self) -> int:
-        return self._data[ParticipantStatsData].true_damage_dealt
+        return self._data[ParticipantStatsData].trueDamageDealt
 
     @property
     def true_damage_dealt_to_champions(self) -> int:
-        return self._data[ParticipantStatsData].true_damage_dealt_to_champions
+        return self._data[ParticipantStatsData].trueDamageDealtToChampions
 
     @property
     def id(self) -> int:
@@ -888,63 +887,63 @@ class ParticipantStats(CassiopeiaObject):
 
     @property
     def penta_kills(self) -> int:
-        return self._data[ParticipantStatsData].penta_kills
+        return self._data[ParticipantStatsData].pentaKills
 
     @property
     def total_heal(self) -> int:
-        return self._data[ParticipantStatsData].total_heal
+        return self._data[ParticipantStatsData].totalHeal
 
     @property
     def total_minions_killed(self) -> int:
-        return self._data[ParticipantStatsData].total_minions_killed
+        return self._data[ParticipantStatsData].totalMinionsKilled
 
     @property
     def first_blood_kill(self) -> bool:
-        return self._data[ParticipantStatsData].first_blood_kill
+        return self._data[ParticipantStatsData].firstBloodKill
 
     @property
     def node_capture(self) -> int:
-        return self._data[ParticipantStatsData].node_capture
+        return self._data[ParticipantStatsData].nodeCapture
 
     @property
     def largest_multi_kill(self) -> int:
-        return self._data[ParticipantStatsData].largest_multi_kill
+        return self._data[ParticipantStatsData].largestMultiKill
 
     @property
     def sight_wards_bought_in_game(self) -> int:
-        return self._data[ParticipantStatsData].sight_wards_bought_in_game
+        return self._data[ParticipantStatsData].sightWardsBoughtInGame
 
     @property
     def total_damage_dealt_to_champions(self) -> int:
-        return self._data[ParticipantStatsData].total_damage_dealt_to_champions
+        return self._data[ParticipantStatsData].totalDamageDealtToChampions
 
     @property
     def total_units_healed(self) -> int:
-        return self._data[ParticipantStatsData].total_units_healed
+        return self._data[ParticipantStatsData].totalUnitsHealed
 
     @property
     def inhibitor_kills(self) -> int:
-        return self._data[ParticipantStatsData].inhibitor_kills
+        return self._data[ParticipantStatsData].inhibitorKills
 
     @property
     def total_score_rank(self) -> int:
-        return self._data[ParticipantStatsData].total_score_rank
+        return self._data[ParticipantStatsData].totalScoreRank
 
     @property
     def total_damage_taken(self) -> int:
-        return self._data[ParticipantStatsData].total_damage_taken
+        return self._data[ParticipantStatsData].totalDamageTaken
 
     @property
     def killing_sprees(self) -> int:
-        return self._data[ParticipantStatsData].killing_sprees
+        return self._data[ParticipantStatsData].killingSprees
 
     @property
     def time_CCing_others(self) -> int:
-        return self._data[ParticipantStatsData].time_CCing_others
+        return self._data[ParticipantStatsData].time_CCingOthers
 
     @property
     def physical_damage_taken(self) -> int:
-        return self._data[ParticipantStatsData].physical_damage_taken
+        return self._data[ParticipantStatsData].physicalDamageTaken
 
 
 def load_match_on_attributeerror(method):
