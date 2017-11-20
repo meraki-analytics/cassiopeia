@@ -150,7 +150,18 @@ class ParticipantData(CoreData):
 
     def __call__(self, **kwargs):
         if "stats" in kwargs:
-            self.stats = ParticipantStatsData(**kwargs.pop("stats"))
+            if "perk0" in kwargs["stats"]:  # Assume all the rest are too
+                stats = kwargs.pop("stats")
+                self.runes = {
+                    stats.pop("perk0"): [stats.pop("perk0Var1"), stats.pop("perk0Var2"), stats.pop("perk0Var3")],
+                    stats.pop("perk1"): [stats.pop("perk1Var1"), stats.pop("perk1Var2"), stats.pop("perk1Var3")],
+                    stats.pop("perk2"): [stats.pop("perk2Var1"), stats.pop("perk2Var2"), stats.pop("perk2Var3")],
+                    stats.pop("perk3"): [stats.pop("perk3Var1"), stats.pop("perk3Var2"), stats.pop("perk3Var3")],
+                    stats.pop("perk4"): [stats.pop("perk4Var1"), stats.pop("perk4Var2"), stats.pop("perk4Var3")],
+                    stats.pop("perk5"): [stats.pop("perk5Var1"), stats.pop("perk5Var2"), stats.pop("perk5Var3")]
+                }
+                stats.pop("runes", None)
+            self.stats = ParticipantStatsData(**stats)
         if "timeline" in kwargs:
             self.timeline = ParticipantTimelineData(**kwargs.pop("timeline"))
         if "teamId" in kwargs:
@@ -999,7 +1010,8 @@ class Participant(CassiopeiaObject):
     @load_match_on_attributeerror
     def runes(self) -> Dict["Rune", int]:
         version = _choose_staticdata_version(self.__match)
-        return SearchableDictionary({Rune(id=rune["runeId"], version=version, region=self.__match.region): rune["rank"] for rune in self._data[ParticipantData].runes})
+        return SearchableDictionary({Rune(id=rune_id, version=version, region=self.__match.region): perk_vars
+            for rune_id, perk_vars in self._data[ParticipantData].runes.items()})
 
     @lazy_property
     @load_match_on_attributeerror

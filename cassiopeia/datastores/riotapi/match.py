@@ -40,8 +40,6 @@ class MatchAPI(RiotAPIService):
 
         data["gameId"] = query["id"]
         data["region"] = query["platform"].region.value
-        for participant in data["participants"]:
-            participant.setdefault("runes", [])
         for p in data["participantIdentities"]:
             aid = p.get("player", {}).get("currentAccountId", None)
             if aid == 0:

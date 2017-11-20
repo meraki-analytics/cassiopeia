@@ -26,12 +26,14 @@ class FeaturedGamesData(CoreDataList):
     _renamed = {}
 
 
-class RuneData(CoreData):
-    _renamed = {"runeId": "id"}
-
-
 class CurrentGameParticipantData(CoreData):
     _renamed = {"spell1Id": "summonerSpellFId", "spell2Id": "summonerSpellDId"}
+
+    def __call__(self, **kwargs):
+        if "perks" in kwargs:
+            self.runes = kwargs.pop("perks")["perkIds"]
+        super().__call__(**kwargs)
+        return self
 
 
 class TeamData(CoreData):
@@ -111,8 +113,8 @@ class Participant(CassiopeiaObject):
             return Summoner(name=self._data[CurrentGameParticipantData].summonerName, region=self.__region)
 
     @property
-    def runes(self) -> Dict[Rune, int]:
-        return SearchableDictionary({Rune(id=rune.id, region=self.__region, version=get_latest_version(self.__region, endpoint="rune")): rune.count for rune in self._data[CurrentGameParticipantData].runes})
+    def runes(self) -> List[Rune]:
+        return SearchableList([Rune(id=rune_id, region=self.__region, version=get_latest_version(self.__region, endpoint="rune")) for rune_id in self._data[CurrentGameParticipantData].runes])
 
     @property
     def is_bot(self) -> bool:

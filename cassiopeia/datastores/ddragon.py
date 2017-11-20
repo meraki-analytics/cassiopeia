@@ -406,30 +406,41 @@ class DDragon(DataSource):
         except KeyError:
             pass
 
-        url = "https://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/rune.json".format(
-            version=query["version"],
-            locale=locale
-        )
-        try:
-            body = json.loads(self._client.get(url)[0])
-        except HTTPError as e:
-            raise NotFoundError(str(e)) from e
+        if True:
+            # TODO Temporarily load from disk until Riot gets this data online
+            import os
+            module_directory = os.path.dirname(os.path.realpath(__file__))
+            module_directory, _ = os.path.split(module_directory)  # Go up one directory
+            filename = os.path.join(module_directory, "perks.json")
+            with open(filename) as f:
+                body = json.load(f)
+                body = {rune["id"]: rune for rune in body if rune["name"] != "Template"}
+            body = {"data": body, "version": query["version"]}
+        else:
+            url = "https://ddragon.leagueoflegends.com/cdn/{version}/data/{locale}/rune.json".format(
+                version=query["version"],
+                locale=locale
+            )
+            try:
+                body = json.loads(self._client.get(url)[0])
+            except HTTPError as e:
+                raise NotFoundError(str(e)) from e
 
-        body.pop("basic")
+            body.pop("basic")
 
-        for rune_id, rune in body["data"].items():
-            rune = RuneDto(rune)
-            body["data"][rune_id] = rune
-            rune["id"] = int(rune_id)
-            # TODO: Sanitizer?
-            rune["sanitizedDescription"] = rune["description"]
-            # Some DDragon stats begin with "r", but they don"t in static data.
-            rune["stats"] = {k.strip("r"): v for k, v in rune["stats"].items()}
-            # isrune on DDragon is isRune on static data.
-            rune["rune"]["isRune"] = rune["rune"].pop("isrune")
-            # colloq and plaintext are always(?) null, and don"t appear in static data.
-            rune.pop("colloq")
-            rune.pop("plaintext")
+            for rune_id, rune in body["data"].items():
+                rune = RuneDto(rune)
+                body["data"][rune_id] = rune
+                rune["id"] = int(rune_id)
+                # TODO: Sanitizer?
+                rune["sanitizedDescription"] = rune["description"]
+                # Some DDragon stats begin with "r", but they don"t in static data.
+                rune["stats"] = {k.strip("r"): v for k, v in rune["stats"].items()}
+                # isrune on DDragon is isRune on static data.
+                rune["rune"]["isRune"] = rune["rune"].pop("isrune")
+                # colloq and plaintext are always(?) null, and don"t appear in static data.
+                rune.pop("colloq")
+                rune.pop("plaintext")
 
         body["region"] = query["platform"].region.value
         body["locale"] = locale

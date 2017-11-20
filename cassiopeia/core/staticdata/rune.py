@@ -19,27 +19,9 @@ class RuneListData(CoreDataList):
     _renamed = {"included_data": "includedData"}
 
 
-class MetadataData(CoreData):
-    _renamed = {}
-
-
-class RuneStatsData(CoreData):
-    _renamed = {}
-
-
 class RuneData(CoreData):
     _dto_type = dto.RuneDto
-    _renamed = {"metadata": "rune", "sanitized_description": "sanitizedDescription", "included_data": "includedData"}
-
-    def __call__(self, **kwargs):
-        if "rune" in kwargs:
-            self.metadata = MetadataData(**kwargs.pop("rune"))
-        if "stats" in kwargs:
-            self.stats = RuneStatsData(**kwargs.pop("stats"))
-        if "image" in kwargs:
-            self.image = ImageData(**kwargs.pop("image"))
-        super().__call__(**kwargs)
-        return self
+    _renamed = {"longDesc": "longDescription", "shortDesc": "shortDescription", "endOfGameStatDescs": "endOfGameStatDescriptions", "included_data": "includedData"}
 
 
 ##############
@@ -87,270 +69,6 @@ class Runes(CassiopeiaList):
     def included_data(self) -> Set[str]:
         """A set of tags to return additonal information for this champion when it's loaded."""
         return self._data[RuneListData].includedData
-
-
-class RuneStats(CassiopeiaObject):
-    _data_types = {RuneStatsData}
-
-    @property
-    def percent_time_dead_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].percentTimeDeadModPerLevel
-
-    @property
-    def percent_armor_penetration_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].percentArmorPenetrationModPerLevel
-
-    @property
-    def percent_crit_damage_mod(self) -> float:
-        return self._data[RuneStatsData].percentCritDamageMod
-
-    @property
-    def percent_spell_block_mod(self) -> float:
-        return self._data[RuneStatsData].percentSpellBlockMod
-
-    @property
-    def percent_hp_regen_mod(self) -> float:
-        return self._data[RuneStatsData].percentHpRegenMod
-
-    @property
-    def percent_movement_speed_mod(self) -> float:
-        return self._data[RuneStatsData].percentMovementSpeedMod
-
-    @property
-    def flat_spell_block_mod(self) -> float:
-        return self._data[RuneStatsData].flatSpellBlockMod
-
-    @property
-    def flat_energy_regen_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flatEnergyRegenModPerLevel
-
-    @property
-    def flat_energy_pool_mod(self) -> float:
-        return self._data[RuneStatsData].flatEnergyPoolMod
-
-    @property
-    def flat_magic_penetration_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flatMagicPenetrationModPerLevel
-
-    @property
-    def percent_life_steal_mod(self) -> float:
-        return self._data[RuneStatsData].percentLifeStealMod
-
-    @property
-    def flat_mp_pool_mod(self) -> float:
-        return self._data[RuneStatsData].flatMpPoolMod
-
-    @property
-    def percent_cooldown_mod(self) -> float:
-        return self._data[RuneStatsData].percentCooldownMod
-
-    @property
-    def percent_magic_penetration_mod(self) -> float:
-        return self._data[RuneStatsData].percentMagicPenetrationMod
-
-    @property
-    def flat_armor_penetration_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flatArmorPenetrationModPerLevel
-
-    @property
-    def flat_movement_speed_mod(self) -> float:
-        return self._data[RuneStatsData].flatMovementSpeedMod
-
-    @property
-    def flat_time_dead_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flatTimeDeadModPerLevel
-
-    @property
-    def flat_armor_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flatArmorModPerLevel
-
-    @property
-    def percent_attack_speed_mod(self) -> float:
-        return self._data[RuneStatsData].percentAttackSpeedMod
-
-    @property
-    def flat_dodge_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flatDodgeModPerLevel
-
-    @property
-    def percent_magic_damage_mod(self) -> float:
-        return self._data[RuneStatsData].percentMagicDamageMod
-
-    @property
-    def percent_block_mod(self) -> float:
-        return self._data[RuneStatsData].percentBlockMod
-
-    @property
-    def flat_dodge_mod(self) -> float:
-        return self._data[RuneStatsData].flatDodgeMod
-
-    @property
-    def flat_energy_regen_mod(self) -> float:
-        return self._data[RuneStatsData].flatEnergyRegenMod
-
-    @property
-    def flat_hp_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flatHpModPerLevel
-
-    @property
-    def percent_attack_speed_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].percentAttackSpeedModPerLevel
-
-    @property
-    def percent_spell_vamp_mod(self) -> float:
-        return self._data[RuneStatsData].percentSpellVampMod
-
-    @property
-    def flat_mp_regen_mod(self) -> float:
-        return self._data[RuneStatsData].flatMpRegenMod
-
-    @property
-    def percent_hp_pool_mod(self) -> float:
-        return self._data[RuneStatsData].percentHpPoolMod
-
-    @property
-    def percent_dodge_mod(self) -> float:
-        return self._data[RuneStatsData].percentDodgeMod
-
-    @property
-    def flat_attack_speed_mod(self) -> float:
-        return self._data[RuneStatsData].flatAttackSpeedMod
-
-    @property
-    def flat_armor_mod(self) -> float:
-        return self._data[RuneStatsData].flatArmorMod
-
-    @property
-    def flat_magic_damage_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flatMagicDamageModPerLevel
-
-    @property
-    def flat_hp_regen_mod(self) -> float:
-        return self._data[RuneStatsData].flatHpRegenMod
-
-    @property
-    def percent_physical_damage_mod(self) -> float:
-        return self._data[RuneStatsData].percentPhysicalDamageMod
-
-    @property
-    def flat_crit_chance_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flatCritChanceModPerLevel
-
-    @property
-    def flat_spell_block_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flatSpellBlockModPerLevel
-
-    @property
-    def percent_time_dead_mod(self) -> float:
-        return self._data[RuneStatsData].percentTimeDeadMod
-
-    @property
-    def flat_block_mod(self) -> float:
-        return self._data[RuneStatsData].flatBlockMod
-
-    @property
-    def percent_mp_pool_mod(self) -> float:
-        return self._data[RuneStatsData].percentMpPoolMod
-
-    @property
-    def flat_magic_damage_mod(self) -> float:
-        return self._data[RuneStatsData].flatMagicDamageMod
-
-    @property
-    def percent_mp_regen_mod(self) -> float:
-        return self._data[RuneStatsData].percentMpRegenMod
-
-    @property
-    def percent_movement_speed_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].percentMovementSpeedModPerLevel
-
-    @property
-    def percent_cooldown_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].percentCooldownModPerLevel
-
-    @property
-    def flat_mp_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flatMpModPerLevel
-
-    @property
-    def flat_energy_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flatEnergyModPerLevel
-
-    @property
-    def flat_physical_damage_mod(self) -> float:
-        return self._data[RuneStatsData].flatPhysicalDamageMod
-
-    @property
-    def flat_hp_regen_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flatHpRegenModPerLevel
-
-    @property
-    def flat_crit_damage_mod(self) -> float:
-        return self._data[RuneStatsData].flatCritDamageMod
-
-    @property
-    def percent_armor_mod(self) -> float:
-        return self._data[RuneStatsData].percentArmorMod
-
-    @property
-    def flat_magic_penetration_mod(self) -> float:
-        return self._data[RuneStatsData].flatMagicPenetrationMod
-
-    @property
-    def percent_crit_chance_mod(self) -> float:
-        return self._data[RuneStatsData].percentCritChanceMod
-
-    @property
-    def flat_physical_damage_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flatPhysicalDamageModPerLevel
-
-    @property
-    def percent_armor_penetration_mod(self) -> float:
-        return self._data[RuneStatsData].percentArmorPenetrationMod
-
-    @property
-    def percent_exp_bonus(self) -> float:
-        return self._data[RuneStatsData].percentExpBonus
-
-    @property
-    def flat_mp_regen_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flatMpRegenModPerLevel
-
-    @property
-    def percent_magic_penetration_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].percentMagicPenetrationModPerLevel
-
-    @property
-    def flat_time_dead_mod(self) -> float:
-        return self._data[RuneStatsData].flatTimeDeadMod
-
-    @property
-    def flat_movement_speed_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flatMovementSpeedModPerLevel
-
-    @property
-    def flat_gold_per_10_mod(self) -> float:
-        return self._data[RuneStatsData].flatGoldPer_10Mod
-
-    @property
-    def flat_armor_penetration_mod(self) -> float:
-        return self._data[RuneStatsData].flatArmorPenetrationMod
-
-    @property
-    def flat_crit_damage_mod_per_level(self) -> float:
-        return self._data[RuneStatsData].flatCritDamageModPerLevel
-
-    @property
-    def flat_hp_pool_mod(self) -> float:
-        return self._data[RuneStatsData].flatHpPoolMod
-
-    @property
-    def flat_crit_chance_mod(self) -> float:
-        return self._data[RuneStatsData].flatCritChanceMod
-
-    @property
-    def flat_exp_bonus(self) -> float:
-        return self._data[RuneStatsData].flatExpBonus
 
 
 @searchable({str: ["name", "tags", "type", "region", "platform", "locale"], int: ["id"], RuneType: ["type"], Region: ["region"], Platform: ["platform"]})
@@ -405,20 +123,23 @@ class Rune(CassiopeiaGhost):
         """The locale for this rune."""
         return self._data[RuneData].locale or self.region.default_locale
 
-    @lazy_property
+    @property
     def included_data(self) -> Set[str]:
-        """The region for this rune."""
+        """A set of tags to return additonal information for this champion when it's loaded."""
         return self._data[RuneData].includedData
 
     @CassiopeiaGhost.property(RuneData)
     @ghost_load_on
-    def tier(self) -> int:
-        return self._data[RuneData].metadata.tier
-
-    @CassiopeiaGhost.property(RuneData)
-    @ghost_load_on
     def type(self) -> RuneType:
-        return RuneType(self._data[RuneData].metadata.type)
+        rune_types = {
+            "80": RuneType.precision,
+            "81": RuneType.domination,
+            "82": RuneType.sorcery,
+            "83": RuneType.inspiration,
+            "84": RuneType.resolve,
+            "91": RuneType.precision
+        }
+        return rune_types[str(self.id)[:2]]
 
     @CassiopeiaGhost.property(RuneData)
     @ghost_load_on
@@ -434,31 +155,25 @@ class Rune(CassiopeiaGhost):
 
     @CassiopeiaGhost.property(RuneData)
     @ghost_load_on
-    def description(self) -> int:
-        """The rune's description."""
-        return self._data[RuneData].description
+    def short_description(self) -> str:
+        return self._data[RuneData].short_description
 
     @CassiopeiaGhost.property(RuneData)
     @ghost_load_on
-    def sanitized_description(self) -> int:
-        """The rune's sanitized description."""
-        return self._data[RuneData].sanitizedDescription
+    def long_description(self) -> str:
+        return self._data[RuneData].long_description
 
     @CassiopeiaGhost.property(RuneData)
     @ghost_load_on
-    def stats(self) -> RuneStats:
-        return RuneStats.from_data(self._data[RuneData].stats)
-
-    @CassiopeiaGhost.property(RuneData)
-    @ghost_load_on
-    def tags(self) -> List[str]:
-        return self._data[RuneData].id
+    def end_of_game_descriptions(self) -> List[str]:
+        return self._data[RuneData].endOfGameDescriptions
 
     @CassiopeiaGhost.property(RuneData)
     @ghost_load_on
     @lazy
     def image(self) -> Image:
         """The image information for this rune."""
+        raise NotImplemented  # TODO
         image = Image.from_data(self._data[RuneData].image)
         image(version=self.version)
         return image

@@ -234,10 +234,11 @@ class MasteryTree(Enum):
 
 
 class RuneType(Enum):
-    mark = "red"
-    seal = "yellow"
-    glyph = "blue"
-    quint = "black"
+    precision = "Precision"
+    domination = "Domination"
+    sorcery = "Sorcery"
+    inspiration = "Inspiration"
+    resolve = "Resolve"
 
 
 class Tier(Enum):

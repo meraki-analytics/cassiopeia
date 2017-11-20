@@ -143,7 +143,8 @@ class ProfileIcon(CassiopeiaGhost):
             module_directory, _ = os.path.split(module_directory)  # Go up one directory
             module_directory, _ = os.path.split(module_directory)  # Go up another directory
             filename = os.path.join(module_directory, "profile_icon_names.json")
-            _profile_icon_names = json.load(open(filename))
+            with open(filename) as f:
+                _profile_icon_names = json.load(f)
             _profile_icon_names = {int(key): value for key, value in _profile_icon_names.items()}
         try:
             return _profile_icon_names[self._data[ProfileIconData].id]
