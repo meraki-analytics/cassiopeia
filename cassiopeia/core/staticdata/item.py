@@ -28,7 +28,8 @@ class ItemStatsData(CoreData):
     _renamed = {"PercentCritDamageMod": "percentCriticalStrikeDamage", "PercentSpellBlockMod": "percentMagicResist", "PercentHPRegenMod": "percentHealthRegen", "PercentMovementSpeedMod": "percentMovespeed", "FlatSpellBlockMod": "magicResist", "FlatCritDamageMod": "criticalStrikeDamage", "FlatEnergyPoolMod": "energy", "PercentLifeStealMod": "lifeSteal", "FlatMPPoolMod": "mana", "FlatMovementSpeedMod": "movespeed", "PercentAttackSpeedMod": "percentAttackSpeed", "FlatBlockMod": "block", "PercentBlockMod": "percentBlock", "FlatEnergyRegenMod": "energyRegen", "PercentSpellVampMod": "spellVamp", "FlatMPRegenMod": "manaRegen", "PercentDodgeMod": "dodge", "FlatAttackSpeedMod": "attackSpeed", "FlatArmorMod": "armor", "FlatHPRegenMod": "healthRegen", "PercentMagicDamageMod": "percentAbilityPower", "PercentMPPoolMod": "percentMana", "FlatMagicDamageMod": "abilityPower", "PercentMPRegenMod": "percentManaRegen", "PercentPhysicalDamageMod": "percentAttackDamage", "FlatPhysicalDamageMod": "attackDamage", "PercentHPPoolMod": "percentHealth", "PercentArmorMod": "percentArmor", "PercentEXPBonus": "percentExpBonus", "FlatHPPoolMod": "health", "FlatCritChanceMod": "criticalStrikeChance", "FlatEXPBonus": "expBonus"}
 
     def __call__(self, **kwargs):
-        self.critical_strike_chance =  kwargs.pop("FlatCritChanceMod") + kwargs.pop("PercentCritChanceMod")
+        if "flatCritChanceMode" in kwargs and "percentCritChanceMod" in kwargs:
+            self.critical_strike_chance =  kwargs.pop("flatCritChanceMod") + kwargs.pop("percentCritChanceMod")
         super().__call__(**kwargs)
         return self
 

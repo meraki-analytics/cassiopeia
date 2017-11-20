@@ -180,6 +180,14 @@ class CassiopeiaPipelineObject(CassiopeiaObject, metaclass=GetFromPipeline):
     def __get_query_from_kwargs__(cls, **kwargs):
         return kwargs
 
+    def to_dict(self):
+        d = {}
+        for data_type in self._data_types:
+            attrs = {attrname for attrname in dir(self._data[data_type])} - {attrname for attrname in dir(data_type)}
+            for attr in attrs:
+                d[attr] = getattr(self._data[data_type], attr)
+        return d
+
 
 class CassiopeiaGhost(CassiopeiaPipelineObject, Ghost):
     def __load__(self, load_group: CoreData = None) -> None:
