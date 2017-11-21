@@ -225,6 +225,7 @@ class GameMode(Enum):
     urf = "URF"
     doom_bots = "DOOMBOTSTEEMO"
     star_guardian = "STARGUARDIAN"
+    project = "PROJECT"
 
 
 class MasteryTree(Enum):

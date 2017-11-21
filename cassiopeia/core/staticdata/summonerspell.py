@@ -29,7 +29,7 @@ class LevelTipData(CoreData):
 
 class SummonerSpellData(CoreData):
     _dto_type = dto.SummonerSpellDto
-    _renamed = {"maxrank": "maxRank", "cooldown": "cooldowns", "cost": "costs", "effect": "effects", "costType": "resource"}
+    _renamed = {"maxrank": "maxRank", "cooldown": "cooldowns", "cost": "costs", "effect": "effects", "costType": "resource", "included_data": "includedData"}
 
     def __call__(self, **kwargs):
         if "vars" in kwargs:
