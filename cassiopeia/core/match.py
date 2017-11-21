@@ -150,8 +150,8 @@ class ParticipantData(CoreData):
 
     def __call__(self, **kwargs):
         if "stats" in kwargs:
-            if "perk0" in kwargs["stats"]:  # Assume all the rest are too
-                stats = kwargs.pop("stats")
+            stats = kwargs.pop("stats")
+            if "perk0" in stats:  # Assume all the rest are too
                 self.runes = {
                     stats.pop("perk0"): [stats.pop("perk0Var1"), stats.pop("perk0Var2"), stats.pop("perk0Var3")],
                     stats.pop("perk1"): [stats.pop("perk1Var1"), stats.pop("perk1Var2"), stats.pop("perk1Var3")],
