@@ -40,28 +40,12 @@ def _choose_staticdata_version(match):
 
 class MatchListData(CoreDataList):
     _dto_type = dto.MatchListDto
-    _renamed = {"champion": "championIds"}
-
-    def __call__(self, **kwargs):
-        if "season" in kwargs:
-            self.seasons = {Season.from_id(season) for season in kwargs["season"]}
-        if "queue" in kwargs:
-            self.queues = {Queue.from_id(queue) for queue in kwargs["queue"]}
-        super().__call__(**kwargs)
-        return self
+    _renamed = {"champion": "championIds", "queue": "queues", "season": "seasons"}
 
 
 class MatchListGenerator(DataObjectGenerator):
     _dto_type = dto.MatchListDtoGenerator
-    _renamed = {"champion": "championIds"}
-
-    def __call__(self, **kwargs):
-        if "season" in kwargs:
-            self.seasons = {Season.from_id(season) for season in kwargs["season"]}
-        if "queue" in kwargs:
-            self.queues = {Queue.from_id(queue) for queue in kwargs["queue"]}
-        super().__call__(**kwargs)
-        return self
+    _renamed = {"champion": "championIds", "queue": "queues", "season": "seasons"}
 
 
 class PositionData(CoreData):
@@ -69,15 +53,7 @@ class PositionData(CoreData):
 
 
 class EventData(CoreData):
-    _renamed = {"eventType": "type", "teamId": "team", "pointCaptured": "capturedPoint", "assistingParticipantIds": "assistingParticipants", "skillSlot": "skill"}
-
-    def __call__(self, **kwargs):
-        if "position" in kwargs:
-            self.position = PositionData(**kwargs.pop("position"))
-        if "teamId" in kwargs:
-            self.team = Side(kwargs.pop("teamId"))
-        super().__call__(**kwargs)
-        return self
+    _renamed = {"eventType": "type", "teamId": "side", "pointCaptured": "capturedPoint", "assistingParticipantIds": "assistingParticipants", "skillSlot": "skill"}
 
 
 class ParticipantFrameData(CoreData):
@@ -127,16 +103,6 @@ class ParticipantTimelineData(CoreData):
         #timeline.setDamageTakenDifference(getStatTotals(item.getDamageTakenDiffPerMinDeltas(), durationInSeconds));
         #timeline.setExperience(getStatTotals(item.getXpPerMinDeltas(), durationInSeconds));
         #timeline.setExperienceDifference(getStatTotals(item.getXpDiffPerMinDeltas(), durationInSeconds));
-        if "lane" in kwargs:
-            self.lane = Lane.from_match_naming_scheme(kwargs.pop("lane"))
-        if "role" in kwargs:
-            role = kwargs.pop("role")
-            if role == "NONE":
-                self.role = None
-            elif role == "SOLO":
-                self.role = "SOLO"
-            else:
-                self.role = Role.from_match_naming_scheme(role)
         super().__call__(**kwargs)
         return self
 
@@ -212,19 +178,9 @@ class MatchReferenceData(CoreData):
 
 class MatchData(CoreData):
     _dto_type = dto.MatchDto
-    _renamed = {"gameId": "id", "gameVersion": "version"}
+    _renamed = {"gameId": "id", "gameVersion": "version", "gameMode": "mode", "gameType": "type"}
 
     def __call__(self, **kwargs):
-        if "seasonId" in kwargs:
-            self.season = Season.from_id(kwargs.pop("seasonId"))
-        if "queueId" in kwargs:
-            self.queue = Queue.from_id(kwargs.pop("queueId"))
-        if "platformId" in kwargs:
-            self.platform = Platform(kwargs.pop("platformId"))
-        if "gameMode" in kwargs:
-            self.mode = GameMode(kwargs.pop("gameMode"))
-        if "gameType" in kwargs:
-            self.type = GameType(kwargs.pop("gameType"))
         if "gameCreation" in kwargs:
             self.creation = datetime.datetime.fromtimestamp(kwargs["gameCreation"] / 1000)
         if "gameDuration" in kwargs:
@@ -634,11 +590,20 @@ class ParticipantTimeline(CassiopeiaObject):
     # TODO Add lane and role enums and make things searchable by them
     @property
     def lane(self) -> str:
-        return self._data[ParticipantTimelineData].lane
+        return Lane.from_match_naming_scheme(self._data[ParticipantTimelineData].lane)
 
     @property
-    def role(self) -> str:
-        return self._data[ParticipantTimelineData].role
+    def role(self) -> Union[str, Role]:
+        role = self._data[ParticipantTimelineData].role
+        if role == "NONE":
+            role = None
+        elif role == "SOLO":
+            role = "SOLO"
+        elif role == "DUO":
+            role = "DUO"
+        else:
+            role = Role.from_match_naming_scheme(role)
+        return role
 
     @property
     def id(self) -> int:
@@ -1207,13 +1172,13 @@ class Match(CassiopeiaGhost):
     @ghost_load_on
     @lazy
     def season(self) -> Season:
-        return self._data[MatchData].season_id
+        return Season.from_id(self._data[MatchData].seasonId)
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on
     @lazy
     def queue(self) -> Queue:
-        return self._data[MatchData].queue_id
+        return Queue.from_id(self._data[MatchData].queueId)
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on
@@ -1291,7 +1256,7 @@ class Match(CassiopeiaGhost):
     @ghost_load_on
     @lazy
     def mode(self) -> GameMode:
-        return self._data[MatchData].mode
+        return GameMode(self._data[MatchData].mode)
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on
@@ -1304,7 +1269,7 @@ class Match(CassiopeiaGhost):
     @ghost_load_on
     @lazy
     def type(self) -> GameType:
-        return self._data[MatchData].type
+        return GameType(self._data[MatchData].type)
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on
