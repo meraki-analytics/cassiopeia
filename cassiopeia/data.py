@@ -392,6 +392,7 @@ class Queue(Enum):
     coop_ai_intro_fives = "BOT_5X5_INTRO"  # 830
     coop_ai_beginner_fives = "BOT_5X5_BEGINNER"  # 840
     coop_ai_intermediate_fives = "BOT_5X5_INTERMEDIATE"  # 850
+    project = "PROJECT"  # 910
     nexus_siege = "NEXUS_SIEGE"  # 940
     doom_bots_difficult = "NIGHTMARE_BOT_5X5_VOTE"  # 950
     doom_bots = "NIGHTMARE_BOT_5X5"  # 960
@@ -458,6 +459,7 @@ QUEUE_IDS = {
     Queue.coop_ai_intro_fives: 830,  # Summoner's Rift    Co-op vs. AI Intro Bot games
     Queue.coop_ai_beginner_fives: 840,  # Summoner's Rift    Co-op vs. AI Beginner Bot games
     Queue.coop_ai_intermediate_fives: 850,  # Summoner's Rift    Co-op vs. AI Intermediate Bot games
+    Queue.project: 910,
     Queue.nexus_siege: 940,  # Summoner's Rift    Nexus Siege games
     Queue.doom_bots_difficult: 950,  # Summoner's Rift    Doom Bots games /w difficulty voting
     Queue.doom_bots: 960,  # Summoner's Rift    Doom Bots games
