@@ -234,7 +234,7 @@ class MasteryTree(Enum):
     resolve = "Resolve"
 
 
-class RuneType(Enum):
+class RunePath(Enum):
     precision = "Precision"
     domination = "Domination"
     sorcery = "Sorcery"

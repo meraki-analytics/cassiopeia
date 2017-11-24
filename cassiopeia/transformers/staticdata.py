@@ -64,7 +64,7 @@ class StaticDataTransformer(DataTransformer):
     def rune_list_dto_to_data(self, value: RuneListDto, context: PipelineContext = None) -> RuneListData:
         data = deepcopy(value)
 
-        data["data"] = [self.rune_dto_to_data(c) for c in data["data"].values()]
+        data["data"] = [self.rune_dto_to_data(c) for c in data["data"]]
         for c in data["data"]:
             c(region=data["region"], locale=data["locale"], version=data["version"], includedData=data["includedData"])
 

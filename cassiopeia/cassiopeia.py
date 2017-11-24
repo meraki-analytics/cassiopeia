@@ -101,27 +101,27 @@ def get_champion(key: Union[str, int], region: Union[Region, str] = None) -> Cha
     return get_champions(region=region)[key]
 
 
-def get_champions(region: Union[Region, str] = None) -> List[Champion]:
+def get_champions(region: Union[Region, str] = None) -> Champions:
     return Champions(region=region)
 
 
-def get_runes(region: Union[Region, str] = None) -> List[Rune]:
+def get_runes(region: Union[Region, str] = None) -> Runes:
     return Runes(region=region)
 
 
-def get_summoner_spells(region: Union[Region, str] = None) -> List[SummonerSpell]:
+def get_summoner_spells(region: Union[Region, str] = None) -> SummonerSpells:
     return SummonerSpells(region=region)
 
 
-def get_items(region: Union[Region, str] = None) -> List[Item]:
+def get_items(region: Union[Region, str] = None) -> Items:
     return Items(region=region)
 
 
-def get_maps(region: Union[Region, str] = None) -> List[Map]:
+def get_maps(region: Union[Region, str] = None) -> Maps:
     return Maps(region=region)
 
 
-def get_profile_icons(region: Union[Region, str] = None) -> List[ProfileIcon]:
+def get_profile_icons(region: Union[Region, str] = None) -> ProfileIcons:
     return ProfileIcons(region=region)
 
 

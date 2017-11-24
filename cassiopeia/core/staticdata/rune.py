@@ -3,8 +3,8 @@ from typing import List, Set, Union
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
-from ...data import Region, Platform, RuneType
-from ..common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
+from ...data import Region, Platform, RunePath
+from ..common import CoreData, CoreDataList, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
 from .common import ImageData, Sprite, Image
 from ...dto.staticdata import rune as dto
 
@@ -70,8 +70,32 @@ class Runes(CassiopeiaList):
         """A set of tags to return additonal information for this champion when it's loaded."""
         return self._data[RuneListData].includedData
 
+    @property
+    def precision(self) -> List["Rune"]:
+        return self.filter(lambda rune: rune.path == RunePath.precision)
 
-@searchable({str: ["name", "tags", "type", "region", "platform", "locale"], int: ["id"], RuneType: ["type"], Region: ["region"], Platform: ["platform"]})
+    @property
+    def dominion(self) -> List["Rune"]:
+        return self.filter(lambda rune: rune.path == RunePath.dominion)
+
+    @property
+    def sorcery(self) -> List["Rune"]:
+        return self.filter(lambda rune: rune.path == RunePath.sorcery)
+
+    @property
+    def resolve(self) -> List["Rune"]:
+        return self.filter(lambda rune: rune.path == RunePath.resolve)
+
+    @property
+    def inspiration(self) -> List["Rune"]:
+        return self.filter(lambda rune: rune.path == RunePath.inspiration)
+
+    @property
+    def keystones(self) -> List["Rune"]:
+        return self.filter(lambda rune: rune.is_keystone)
+
+
+@searchable({str: ["name", "tags", "path", "region", "platform", "locale"], int: ["id"], RunePath: ["path"], Region: ["region"], Platform: ["platform"]})
 class Rune(CassiopeiaGhost):
     _data_types = {RuneData}
 
@@ -130,16 +154,17 @@ class Rune(CassiopeiaGhost):
 
     @CassiopeiaGhost.property(RuneData)
     @ghost_load_on
-    def type(self) -> RuneType:
-        rune_types = {
-            "80": RuneType.precision,
-            "81": RuneType.domination,
-            "82": RuneType.sorcery,
-            "83": RuneType.inspiration,
-            "84": RuneType.resolve,
-            "91": RuneType.precision
-        }
-        return rune_types[str(self.id)[:2]]
+    def path(self) -> RunePath:
+        return RunePath(self._data[RuneData].path)
+
+    @CassiopeiaGhost.property(RuneData)
+    @ghost_load_on
+    def tier(self) -> int:
+        return self._data[RuneData].tier
+
+    @property
+    def is_keystone(self) -> bool:
+        return self.tier == 0
 
     @CassiopeiaGhost.property(RuneData)
     @ghost_load_on
