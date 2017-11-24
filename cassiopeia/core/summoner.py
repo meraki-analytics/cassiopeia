@@ -59,7 +59,7 @@ class Summoner(CassiopeiaGhost):
         if account and isinstance(account, Account):
             self.__class__.account.fget._lazy_set(self, account)
         elif account is not None:
-            kwargs["account_id"] = account
+            kwargs["accountId"] = account
         super().__init__(**kwargs)
 
     @classmethod

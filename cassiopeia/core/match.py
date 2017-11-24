@@ -17,6 +17,34 @@ from .staticdata.item import Item
 from .staticdata.map import Map
 
 
+def load_match_on_attributeerror(method):
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        try:
+            return method(self, *args, **kwargs)
+        except AttributeError:  # teamId
+            # The match has only partially loaded this participant and it doesn't have all it's data, so load the full match
+            match = getattr(self, f"_{self.__class__.__name__}__match")
+            if not match._Ghost__is_loaded(MatchData):
+                match.__load__(MatchData)
+                match._Ghost__set_loaded(MatchData)
+            if isinstance(self, Participant):
+                old_participant = self
+            elif isinstance(self, ParticipantStats):
+                old_participant = getattr(self, f"_{self.__class__.__name__}__participant")
+            else:
+                raise RuntimeError("Impossible!")
+            for participant in match.participants:
+                if participant.summoner.name == old_participant.summoner.name:
+                    if isinstance(self, Participant):
+                        self._data[ParticipantData] = participant._data[ParticipantData]
+                    elif isinstance(self, ParticipantStats):
+                        self._data[ParticipantStatsData] = participant.stats._data[ParticipantStatsData]
+                    return method(self, *args, **kwargs)
+        return method(self, *args, **kwargs)
+    return wrapper
+
+
 def _choose_staticdata_version(match):
     # If we want to pull the data for the correct version, we need to pull the entire match data.
     # However, we can use the creation date (which comes with a matchref) and get the ~ patch and therefore extract the version from the patch.
@@ -159,7 +187,7 @@ class TeamData(CoreData):
 
 
 class MatchReferenceData(CoreData):
-    _renamed = {"accountId": "account_id", "gameId": "id", "champion": "championId"}
+    _renamed = {"account_id": "accountId", "gameId": "id", "champion": "championId"}
 
     def __call__(self, **kwargs):
         if "season" in kwargs:
@@ -331,7 +359,7 @@ class MatchHistory(CassiopeiaLazyList):
 
     @lazy_property
     def summoner(self) -> Summoner:
-        return Summoner(account=self._data[MatchListGenerator].account_id, region=self.region)
+        return Summoner(account=self._data[MatchListGenerator].accountId, region=self.region)
 
     @lazy_property
     def region(self) -> Region:
@@ -643,96 +671,127 @@ class ParticipantStats(CassiopeiaObject):
     _data_types = {ParticipantStatsData}
 
     @classmethod
-    def from_data(cls, data: ParticipantStatsData, match: "Match"):
+    def from_data(cls, data: ParticipantStatsData, match: "Match", participant: "Participant"):
         self = super().from_data(data)
         self.__match = match
+        self.__participant = participant
         return self
 
     @property
+    @load_match_on_attributeerror
+    def kda(self) -> float:
+        try:
+            return (self.kills + self.assists) / self.deaths
+        except ZeroDivisionError:
+            return self.kills + self.assists
+
+    @property
+    @load_match_on_attributeerror
     def physical_damage_dealt(self) -> int:
         return self._data[ParticipantStatsData].physicalDamageDealt
 
     @property
+    @load_match_on_attributeerror
     def magic_damage_dealt(self) -> int:
         return self._data[ParticipantStatsData].magicDamageDealt
 
     @property
+    @load_match_on_attributeerror
     def neutral_minions_killed_team_jungle(self) -> int:
         return self._data[ParticipantStatsData].neutralMinionsKilledTeamJungle
 
     @property
+    @load_match_on_attributeerror
     def total_player_score(self) -> int:
         return self._data[ParticipantStatsData].totalPlayerScore
 
     @property
+    @load_match_on_attributeerror
     def deaths(self) -> int:
         return self._data[ParticipantStatsData].deaths
 
     @property
+    @load_match_on_attributeerror
     def win(self) -> bool:
         return self._data[ParticipantStatsData].win
 
     @property
+    @load_match_on_attributeerror
     def neutral_minions_killed_enemy_jungle(self) -> int:
         return self._data[ParticipantStatsData].neutralMinionsKilledEnemyJungle
 
     @property
+    @load_match_on_attributeerror
     def altars_captured(self) -> int:
         return self._data[ParticipantStatsData].altarsCaptured
 
     @property
+    @load_match_on_attributeerror
     def largest_critical_strike(self) -> int:
         return self._data[ParticipantStatsData].largestCriticalStrike
 
     @property
+    @load_match_on_attributeerror
     def total_damage_dealt(self) -> int:
         return self._data[ParticipantStatsData].totalDamageDealt
 
     @property
+    @load_match_on_attributeerror
     def magic_damage_dealt_to_champions(self) -> int:
         return self._data[ParticipantStatsData].magicDamageDealtToChampions
 
     @property
+    @load_match_on_attributeerror
     def vision_wards_bought_in_game(self) -> int:
         return self._data[ParticipantStatsData].visionWardsBoughtInGame
 
     @property
+    @load_match_on_attributeerror
     def damage_dealt_to_objectives(self) -> int:
         return self._data[ParticipantStatsData].damageDealtToObjectives
 
     @property
+    @load_match_on_attributeerror
     def largest_killing_spree(self) -> int:
         return self._data[ParticipantStatsData].largestKillingSpree
 
     @property
+    @load_match_on_attributeerror
     def quadra_kills(self) -> int:
         return self._data[ParticipantStatsData].quadraKills
 
     @property
+    @load_match_on_attributeerror
     def team_objective(self) -> int:
         return self._data[ParticipantStatsData].teamObjective
 
     @property
+    @load_match_on_attributeerror
     def total_time_crowd_control_dealt(self) -> int:
         return self._data[ParticipantStatsData].totalTimeCrowdControlDealt
 
     @property
+    @load_match_on_attributeerror
     def longest_time_spent_living(self) -> int:
         return self._data[ParticipantStatsData].longestTimeSpentLiving
 
     @property
+    @load_match_on_attributeerror
     def wards_killed(self) -> int:
         return self._data[ParticipantStatsData].wardsKilled
 
     @property
+    @load_match_on_attributeerror
     def first_tower_assist(self) -> bool:
         return self._data[ParticipantStatsData].firstTowerAssist
 
     @property
+    @load_match_on_attributeerror
     def first_tower_kill(self) -> bool:
         return self._data[ParticipantStatsData].firstTowerKill
 
-    @property
+    @lazy_property
+    @load_match_on_attributeerror
     def items(self) -> List[Item]:
         ids = [self._data[ParticipantStatsData].item0,
                self._data[ParticipantStatsData].item1,
@@ -746,198 +805,224 @@ class ParticipantStats(CassiopeiaObject):
         return SearchableList([Item(id=id, version=version, region=self.__match.region) for id in ids if id])
 
     @property
+    @load_match_on_attributeerror
     def first_blood_assist(self) -> bool:
         return self._data[ParticipantStatsData].firstBloodAssist
 
     @property
+    @load_match_on_attributeerror
     def vision_score(self) -> int:
         return self._data[ParticipantStatsData].visionScore
 
     @property
+    @load_match_on_attributeerror
     def wards_placed(self) -> int:
         return self._data[ParticipantStatsData].wardsPlaced
 
     @property
+    @load_match_on_attributeerror
     def turret_kills(self) -> int:
         return self._data[ParticipantStatsData].turretKills
 
     @property
+    @load_match_on_attributeerror
     def triple_kills(self) -> int:
         return self._data[ParticipantStatsData].tripleKills
 
     @property
+    @load_match_on_attributeerror
     def damage_self_mitigated(self) -> int:
         return self._data[ParticipantStatsData].damageSelfMitigated
 
     @property
+    @load_match_on_attributeerror
     def champion_level(self) -> int:
         return self._data[ParticipantStatsData].championLevel
 
     @property
+    @load_match_on_attributeerror
     def node_neutralize_assist(self) -> int:
         return self._data[ParticipantStatsData].nodeNeutralizeAssist
 
     @property
+    @load_match_on_attributeerror
     def first_inhibitor_kill(self) -> bool:
         return self._data[ParticipantStatsData].firstInhibitorKill
 
     @property
+    @load_match_on_attributeerror
     def gold_earned(self) -> int:
         return self._data[ParticipantStatsData].goldEarned
 
     @property
+    @load_match_on_attributeerror
     def magical_damage_taken(self) -> int:
         return self._data[ParticipantStatsData].magicalDamageTaken
 
     @property
+    @load_match_on_attributeerror
     def kills(self) -> int:
         return self._data[ParticipantStatsData].kills
 
     @property
+    @load_match_on_attributeerror
     def double_kills(self) -> int:
         return self._data[ParticipantStatsData].doubleKills
 
     @property
+    @load_match_on_attributeerror
     def node_capture_assist(self) -> int:
         return self._data[ParticipantStatsData].nodeCaptureAssist
 
     @property
+    @load_match_on_attributeerror
     def true_damage_taken(self) -> int:
         return self._data[ParticipantStatsData].trueDamageTaken
 
     @property
+    @load_match_on_attributeerror
     def node_neutralize(self) -> int:
         return self._data[ParticipantStatsData].nodeNeutralize
 
     @property
+    @load_match_on_attributeerror
     def first_inhibitor_assist(self) -> bool:
         return self._data[ParticipantStatsData].firstInhibitorAssist
 
     @property
+    @load_match_on_attributeerror
     def assists(self) -> int:
         return self._data[ParticipantStatsData].assists
 
     @property
+    @load_match_on_attributeerror
     def unreal_kills(self) -> int:
         return self._data[ParticipantStatsData].unrealKills
 
     @property
+    @load_match_on_attributeerror
     def neutral_minions_killed(self) -> int:
         return self._data[ParticipantStatsData].neutralMinionsKilled
 
     @property
+    @load_match_on_attributeerror
     def objective_player_score(self) -> int:
         return self._data[ParticipantStatsData].objectivePlayerScore
 
     @property
+    @load_match_on_attributeerror
     def combat_player_score(self) -> int:
         return self._data[ParticipantStatsData].combatPlayerScore
 
     @property
+    @load_match_on_attributeerror
     def damage_dealt_to_turrets(self) -> int:
         return self._data[ParticipantStatsData].damageDealtToTurrets
 
     @property
+    @load_match_on_attributeerror
     def altars_neutralized(self) -> int:
         return self._data[ParticipantStatsData].altarsNeutralized
 
     @property
+    @load_match_on_attributeerror
     def physical_damage_dealt_to_champions(self) -> int:
         return self._data[ParticipantStatsData].physicalDamageDealtToChampions
 
     @property
+    @load_match_on_attributeerror
     def gold_spent(self) -> int:
         return self._data[ParticipantStatsData].goldSpent
 
     @property
+    @load_match_on_attributeerror
     def true_damage_dealt(self) -> int:
         return self._data[ParticipantStatsData].trueDamageDealt
 
     @property
+    @load_match_on_attributeerror
     def true_damage_dealt_to_champions(self) -> int:
         return self._data[ParticipantStatsData].trueDamageDealtToChampions
 
     @property
+    @load_match_on_attributeerror
     def id(self) -> int:
         return self._data[ParticipantStatsData].id
 
     @property
+    @load_match_on_attributeerror
     def penta_kills(self) -> int:
         return self._data[ParticipantStatsData].pentaKills
 
     @property
+    @load_match_on_attributeerror
     def total_heal(self) -> int:
         return self._data[ParticipantStatsData].totalHeal
 
     @property
+    @load_match_on_attributeerror
     def total_minions_killed(self) -> int:
         return self._data[ParticipantStatsData].totalMinionsKilled
 
     @property
+    @load_match_on_attributeerror
     def first_blood_kill(self) -> bool:
         return self._data[ParticipantStatsData].firstBloodKill
 
     @property
+    @load_match_on_attributeerror
     def node_capture(self) -> int:
         return self._data[ParticipantStatsData].nodeCapture
 
     @property
+    @load_match_on_attributeerror
     def largest_multi_kill(self) -> int:
         return self._data[ParticipantStatsData].largestMultiKill
 
     @property
+    @load_match_on_attributeerror
     def sight_wards_bought_in_game(self) -> int:
         return self._data[ParticipantStatsData].sightWardsBoughtInGame
 
     @property
+    @load_match_on_attributeerror
     def total_damage_dealt_to_champions(self) -> int:
         return self._data[ParticipantStatsData].totalDamageDealtToChampions
 
     @property
+    @load_match_on_attributeerror
     def total_units_healed(self) -> int:
         return self._data[ParticipantStatsData].totalUnitsHealed
 
     @property
+    @load_match_on_attributeerror
     def inhibitor_kills(self) -> int:
         return self._data[ParticipantStatsData].inhibitorKills
 
     @property
+    @load_match_on_attributeerror
     def total_score_rank(self) -> int:
         return self._data[ParticipantStatsData].totalScoreRank
 
     @property
+    @load_match_on_attributeerror
     def total_damage_taken(self) -> int:
         return self._data[ParticipantStatsData].totalDamageTaken
 
     @property
+    @load_match_on_attributeerror
     def killing_sprees(self) -> int:
         return self._data[ParticipantStatsData].killingSprees
 
     @property
+    @load_match_on_attributeerror
     def time_CCing_others(self) -> int:
         return self._data[ParticipantStatsData].time_CCingOthers
 
     @property
+    @load_match_on_attributeerror
     def physical_damage_taken(self) -> int:
         return self._data[ParticipantStatsData].physicalDamageTaken
-
-
-def load_match_on_attributeerror(method):
-    @functools.wraps(method)
-    def wrapper(self, *args, **kwargs):
-        try:
-            return method(self, *args, **kwargs)
-        except AttributeError:  # teamId
-            # The match has only partially loaded this participant and it doesn't have all it's data, so load the full match
-            if not self._Participant__match._Ghost__is_loaded(MatchData):
-                self._Participant__match.__load__(MatchData)
-                self._Participant__match._Ghost__set_loaded(MatchData)
-            for participant in self._Participant__match.participants:
-                if participant.summoner.name == self.summoner.name:
-                    self._data[ParticipantData] = participant._data[ParticipantData]
-                    return method(self, *args, **kwargs)
-        return method(self, *args, **kwargs)
-    return wrapper
 
 
 @searchable({str: ["summoner", "champion", "stats", "runes", "side", "summoner_spell_d", "summoner_spell_f"], Summoner: ["summoner"], Champion: ["champion"], Side: ["side"], Rune: ["runes"], SummonerSpell: ["summoner_spell_d", "summoner_spell_f"]})
@@ -960,7 +1045,7 @@ class Participant(CassiopeiaObject):
     @lazy_property
     @load_match_on_attributeerror
     def stats(self) -> ParticipantStats:
-        return ParticipantStats.from_data(self._data[ParticipantData].stats, match=self.__match)
+        return ParticipantStats.from_data(self._data[ParticipantData].stats, match=self.__match, participant=self)
 
     @property
     def id(self) -> int:
@@ -1026,15 +1111,12 @@ class Participant(CassiopeiaObject):
             kwargs["name"] = self._data[ParticipantData].summonerName
         except AttributeError:
             pass
-        from .summoner import Summoner, ProfileIcon
+        from .summoner import Summoner
         kwargs["account"] = self._data[ParticipantData].accountId
         kwargs["region"] = Platform(self._data[ParticipantData].currentPlatformId).region
-        # TODO Add profile icon
-        #try:
-        #    kwargs["profile_icon"] = ProfileIcon(id=self._data[ParticipantData].profileIconId)
-        #except AttributeError:
-        #    pass
-        return Summoner(**kwargs)
+        summoner = Summoner(**kwargs)
+        summoner(profileIconId=self._data[ParticipantData].profileIconId)
+        return summoner
 
     @property
     def team(self) -> "Team":
@@ -1138,13 +1220,12 @@ class Match(CassiopeiaGhost):
 
     @classmethod
     def from_match_reference(cls, ref: MatchReferenceData):
-        # TODO Somehow put in ref.lane, ref.role, and ref.champion_id
         instance = cls(id=ref.id, region=ref.region)
         # The below line is necessary because it's possible to pull this match from the cache (which has Match core objects in it).
         # In that case, the data will already be loaded and we don't want to overwrite anything.
         if not hasattr(instance._data[MatchData], "participants"):
-            participant = {"participantId": 1, "championId": ref.championId}
-            player = {"participantId": 1, "accountId": ref.account_id, "currentPlatformId": ref.platform}
+            participant = {"participantId": 1, "championId": ref.championId, "stats": {"lane": ref.lane, "role": ref.role}}
+            player = {"participantId": 1, "accountId": ref.accountId, "currentPlatformId": ref.platform}
             instance(season=ref.season, queue=ref.queue, creation=ref.creation)
             instance._data[MatchData](participants=[participant],
                                       participantIdentities=[{"participantId": 1, "player": player, "bot": False}])
@@ -1210,10 +1291,15 @@ class Match(CassiopeiaGhost):
                 if not match._Ghost__is_loaded(MatchData):
                     match.__load__(MatchData)
                     match._Ghost__set_loaded(MatchData)  # __load__ doesn't trigger __set_loaded. is this a "bug"?
-                match.__participants = [None for _ in match._data[MatchData].participants]
                 for i, p in enumerate(match._data[MatchData].participants):
                     participant = Participant.from_data(p, match=self)
-                    match.__participants[i] = participant
+                    # If we already have this participant in the list, replace it so it stays in the same position
+                    for j, pold in enumerate(self.__participants):
+                        if pold._data[ParticipantData].accountId == participant._data[ParticipantData].accountId:
+                            self.__participants[j] = participant
+                            break
+                    else:
+                        self.__participants.append(participant)
 
             # Yield the rest of the participants
             for participant in match.__participants[yielded_one:]:
