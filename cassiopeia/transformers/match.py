@@ -117,7 +117,7 @@ class MatchTransformer(DataTransformer):
                     # The bug occurs when a match was already cached and it then get's pulled from a match history object;
                     #  the bug was that the first summoner was getting overwritten,
                     #  although it could have been a different summoner.
-                    if match._data[MatchData].participants[0].summonerId == summoner.id:
+                    if match.participants[0].summoner.account.id == summoner.account.id:
                         match.participants[0].__class__.summoner.fget._lazy_set(match.participants[0], summoner)
                 yield match
         generator = match_generator(value._generator, summoner=value._summoner)

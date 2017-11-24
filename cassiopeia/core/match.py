@@ -1115,7 +1115,10 @@ class Participant(CassiopeiaObject):
         kwargs["account"] = self._data[ParticipantData].accountId
         kwargs["region"] = Platform(self._data[ParticipantData].currentPlatformId).region
         summoner = Summoner(**kwargs)
-        summoner(profileIconId=self._data[ParticipantData].profileIconId)
+        try:
+            summoner(profileIconId=self._data[ParticipantData].profileIconId)
+        except AttributeError:
+            pass
         return summoner
 
     @property
