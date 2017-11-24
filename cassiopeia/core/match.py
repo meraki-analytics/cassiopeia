@@ -24,14 +24,14 @@ def load_match_on_attributeerror(method):
             return method(self, *args, **kwargs)
         except AttributeError:  # teamId
             # The match has only partially loaded this participant and it doesn't have all it's data, so load the full match
-            match = getattr(self, f"_{self.__class__.__name__}__match")
+            match = getattr(self, "_{}__match".format(self.__class__.__name__))
             if not match._Ghost__is_loaded(MatchData):
                 match.__load__(MatchData)
                 match._Ghost__set_loaded(MatchData)
             if isinstance(self, Participant):
                 old_participant = self
             elif isinstance(self, ParticipantStats):
-                old_participant = getattr(self, f"_{self.__class__.__name__}__participant")
+                old_participant = getattr(self, "_{}__participant".format(self.__class__.__name__))
             else:
                 raise RuntimeError("Impossible!")
             for participant in match.participants:
