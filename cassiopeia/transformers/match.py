@@ -113,7 +113,12 @@ class MatchTransformer(DataTransformer):
                 #    match = summoner.match_history[0]
                 #    p = match.participants[name]  # This will work without loading the summoner because the name was provided
                 if summoner is not None:
-                    match.participants[0].__class__.summoner.fget._lazy_set(match.participants[0], summoner)
+                    # This is complicated. Trust me... See issues by r000t in discord and on github.
+                    # The bug occurs when a match was already cached and it then get's pulled from a match history object;
+                    #  the bug was that the first summoner was getting overwritten,
+                    #  although it could have been a different summoner.
+                    if match._data[MatchData].participants[0].summonerId == summoner.id:
+                        match.participants[0].__class__.summoner.fget._lazy_set(match.participants[0], summoner)
                 yield match
         generator = match_generator(value._generator, summoner=value._summoner)
         return MatchHistory.from_generator(generator=generator, **kwargs)
