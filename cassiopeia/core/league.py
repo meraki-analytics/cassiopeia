@@ -287,7 +287,9 @@ class League(CassiopeiaGhost):
     def tier(self) -> Tier:
         return Tier(self._data[LeagueListData].tier)
 
-    @lazy_property
+    @CassiopeiaGhost.property(LeagueListData)
+    @ghost_load_on
+    @lazy
     def queue(self) -> Queue:
         return Queue(self._data[LeagueListData].queue)
 

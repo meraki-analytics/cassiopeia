@@ -85,7 +85,7 @@ class EventData(CoreData):
 
 
 class ParticipantFrameData(CoreData):
-    _renamed = {"totalGold": "goldEarned", "participantId": "participant_id", "currentGold": "gold", "minionsKilled": "creepScore", "Xp": "experience", "jungleMinionsKilled": "NeutralMinionsKilled"}
+    _renamed = {"totalGold": "goldEarned", "minionsKilled": "creepScore", "Xp": "experience", "jungleMinionsKilled": "NeutralMinionsKilled"}
 
     def __call__(self, **kwargs):
         if "position" in kwargs:
@@ -95,19 +95,15 @@ class ParticipantFrameData(CoreData):
 
 
 class FrameData(CoreData):
-    _renamed = {"participantFrames": "_participant_frames", "events": "_events"}
+    _renamed = {}
 
     def __call__(self, **kwargs):
         if "events" in kwargs:
             self.events = [EventData(**event) for event in kwargs.pop("events")]
-        # TODO Implement participant frames here
-        #if "participantFrames" in kwargs:
+        if "participantFrames" in kwargs:
+            self.participantFrames = {int(key): ParticipantFrameData(**pframe) for key, pframe in kwargs.pop("participantFrames").items()}
         super().__call__(**kwargs)
         return self
-
-    #@property
-    #def participant_frames(self) -> Dict[int, ParticipantFrameData]:
-    #    return {k: ParticipantFrameData(**v) for k, v in self._participant_frames.items()}
 
 
 class TimelineData(CoreData):
@@ -122,7 +118,7 @@ class TimelineData(CoreData):
 
 
 class ParticipantTimelineData(CoreData):
-    _renamed = {"participantId": "id", "csDiffPerMinDeltas": "cs_diff_per_min_deltas", "goldPerMinDeltas": "gold_per_min_deltas", "xpDiffPerMinDeltas": "xp_pdiff_per_min_deltas", "creepsPerMinDeltas": "creeps_per_min_deltas", "damageTakenDiffPerMinDeltas": "damage_taken_diff_per_min_deltas", "damageTakenPerMinDeltas": "damage_taken_per_min_deltas"}
+    _renamed = {"participantId": "id"}
 
     def __call__(self, **kwargs):
         #timeline.setCreepScore(getStatTotals(item.getCreepsPerMinDeltas(), durationInSeconds));
@@ -522,16 +518,16 @@ class ParticipantFrame(CassiopeiaObject):
     _data_types = {ParticipantFrameData}
 
     @property
-    def total_gold(self) -> int:
-        return self._data[ParticipantFrameData].total_gold
+    def gold_earned(self) -> int:
+        return self._data[ParticipantFrameData].goldEarned
 
     @property
     def team_score(self) -> int:
-        return self._data[ParticipantFrameData].team_score
+        return self._data[ParticipantFrameData].teamScore
 
     @property
     def participant_id(self) -> int:
-        return self._data[ParticipantFrameData].participant_id
+        return self._data[ParticipantFrameData].participantId
 
     @property
     def level(self) -> int:
@@ -539,27 +535,27 @@ class ParticipantFrame(CassiopeiaObject):
 
     @property
     def current_gold(self) -> int:
-        return self._data[ParticipantFrameData].current_gold
+        return self._data[ParticipantFrameData].currentGold
 
     @property
-    def minions_killed(self) -> int:
-        return self._data[ParticipantFrameData].minions_killed
+    def creep_score(self) -> int:
+        return self._data[ParticipantFrameData].creepScore
 
     @property
     def dominion_score(self) -> int:
-        return self._data[ParticipantFrameData].dominion_score
+        return self._data[ParticipantFrameData].dominionScore
 
     @property
     def position(self) -> Position:
         return Position.from_data(self._data[ParticipantFrameData].position)
 
     @property
-    def xp(self) -> int:
-        return self._data[ParticipantFrameData].xp
+    def experience(self) -> int:
+        return self._data[ParticipantFrameData].experience
 
     @property
-    def jungle_minions_killed(self) -> int:
-        return self._data[ParticipantFrameData].jungle_minions_killed
+    def neutral_minions_killed(self) -> int:
+        return self._data[ParticipantFrameData].neutralMinionsKilled
 
 
 class Frame(CassiopeiaObject):
@@ -571,7 +567,7 @@ class Frame(CassiopeiaObject):
 
     @property
     def participant_frames(self) -> Dict[int, ParticipantFrame]:
-        return SearchableDictionary({k: ParticipantFrame.from_data(frame) for k, frame in self._data[FrameData].participant_frames.items()})
+        return SearchableDictionary({k: ParticipantFrame.from_data(frame) for k, frame in self._data[FrameData].participantFrames.items()})
 
     @property
     def events(self) -> List[Event]:
@@ -615,7 +611,21 @@ class Timeline(CassiopeiaGhost):
 class ParticipantTimeline(CassiopeiaObject):
     _data_types = {ParticipantTimelineData}
 
-    # TODO Add lane and role enums and make things searchable by them
+    @classmethod
+    def from_data(cls, data: CoreData, match: "Match"):
+        self = super().from_data(data)
+        self.__match = match
+        return self
+
+    @property
+    def frames(self):
+        these = []
+        for frame in self.__match.timeline.frames:
+            for pid, pframe in frame.participant_frames.items():
+                if pid == self.id:
+                    these.append(pframe)
+        return these
+
     @property
     def lane(self) -> str:
         return Lane.from_match_naming_scheme(self._data[ParticipantTimelineData].lane)
@@ -639,31 +649,31 @@ class ParticipantTimeline(CassiopeiaObject):
 
     @property
     def cs_diff_per_min_deltas(self) -> Dict[str, float]:
-        return self._data[ParticipantTimelineData].cs_diff_per_min_deltas
+        return self._data[ParticipantTimelineData].csDiffPerMinDeltas
 
     @property
     def gold_per_min_deltas(self) -> Dict[str, float]:
-        return self._data[ParticipantTimelineData].gold_per_min_deltas
+        return self._data[ParticipantTimelineData].goldPerMinDeltas
 
     @property
     def xp_diff_per_min_deltas(self) -> Dict[str, float]:
-        return self._data[ParticipantTimelineData].xp_diff_per_min_deltas
+        return self._data[ParticipantTimelineData].xp_diffPerMinDeltas
 
     @property
     def creeps_per_min_deltas(self) -> Dict[str, float]:
-        return self._data[ParticipantTimelineData].creeps_per_min_deltas
+        return self._data[ParticipantTimelineData].creepsPerMinDeltas
 
     @property
     def xp_per_min_deltas(self) -> Dict[str, float]:
-        return self._data[ParticipantTimelineData].xp_per_min_deltas
+        return self._data[ParticipantTimelineData].xpPerMinDeltas
 
     @property
     def damage_taken_per_min_deltas(self) -> Dict[str, float]:
-        return self._data[ParticipantTimelineData].damage_taken_per_min_deltas
+        return self._data[ParticipantTimelineData].damageTakenPerMinDeltas
 
     @property
     def damage_taken_diff_per_min_deltas(self) -> Dict[str, float]:
-        return self._data[ParticipantTimelineData].damage_taken_diff_per_min_deltas
+        return self._data[ParticipantTimelineData].damageTakenDiffPerMinDeltas
 
 
 @searchable({str: ["items"], Item: ["items"]})
@@ -1042,6 +1052,14 @@ class Participant(CassiopeiaObject):
         version = ".".join(version) + ".1"  # Always use x.x.1 because I don't know how to figure out what the last version number should be.
         return version
 
+    @property
+    def lane(self):
+        return self.timeline.lane
+
+    @property
+    def role(self):
+        return self.timeline.role
+
     @lazy_property
     @load_match_on_attributeerror
     def stats(self) -> ParticipantStats:
@@ -1066,7 +1084,7 @@ class Participant(CassiopeiaObject):
     @lazy_property
     @load_match_on_attributeerror
     def timeline(self) -> ParticipantTimeline:
-        return ParticipantTimeline.from_data(self._data[ParticipantData].timeline)
+        return ParticipantTimeline.from_data(self._data[ParticipantData].timeline, match=self.__match)
 
     @lazy_property
     @load_match_on_attributeerror
