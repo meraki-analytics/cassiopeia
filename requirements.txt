@@ -1,6 +1,6 @@
 flake8
 pytest
-merakicommons
+merakicommons>=1.04
 datapipelines
 pycurl
 Pillow

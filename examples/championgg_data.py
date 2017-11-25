@@ -22,6 +22,13 @@ where `"CHAMPIONGG_KEY"` should be replaced with your champion.gg api key or wit
 import cassiopeia as cass
 from cassiopeia import Champion
 
+config = cass.get_default_config()
+config["pipeline"]["ChampionGG"] =  {
+        "package": "cassiopeia_championgg",
+        "api_key": "CHAMPIONGG_KEY"
+    }
+cass.apply_settings(config)
+
 
 def get_champions():
     annie = Champion(name="Annie", id=1, region="NA")

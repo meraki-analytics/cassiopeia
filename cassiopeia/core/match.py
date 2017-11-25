@@ -6,9 +6,10 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableLazyList, SearchableDictionary
 
 from .. import configuration
-from ..data import Region, Platform, Tier, GameType, GameMode, Queue, Side, Season, Patch, Lane, Role
+from ..data import Region, Platform, Tier, GameType, GameMode, Queue, Side, Season, Lane, Role
 from .common import CoreData, CoreDataList, DataObjectGenerator, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, provide_default_region, ghost_load_on
 from ..dto import match as dto
+from .patch import Patch
 from .summoner import Summoner
 from .staticdata.champion import Champion
 from .staticdata.rune import Rune

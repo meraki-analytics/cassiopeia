@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 
 install_requires = [
     "datapipelines",
-    "merakicommons",
+    "merakicommons>=1.0.4",
     "Pillow",
     "pycurl"
 ]

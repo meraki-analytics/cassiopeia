@@ -213,6 +213,15 @@ class CassiopeiaPipelineObject(CassiopeiaObject, metaclass=GetFromPipeline):
     def __get_query_from_kwargs__(cls, **kwargs):
         return kwargs
 
+    def __hash__(self):
+        return hash(tuple(sorted(self.__get_query__().items())))
+
+    def __eq__(self, other) -> bool:
+        return hash(self) == hash(other)
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
 
 class CassiopeiaGhost(CassiopeiaPipelineObject, Ghost):
     def __load__(self, load_group: CoreData = None) -> None:
