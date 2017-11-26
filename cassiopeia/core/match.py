@@ -847,8 +847,8 @@ class ParticipantStats(CassiopeiaObject):
 
     @property
     @load_match_on_attributeerror
-    def champion_level(self) -> int:
-        return self._data[ParticipantStatsData].championLevel
+    def level(self) -> int:
+        return self._data[ParticipantStatsData].champLevel
 
     @property
     @load_match_on_attributeerror

@@ -214,7 +214,11 @@ class CassiopeiaPipelineObject(CassiopeiaObject, metaclass=GetFromPipeline):
         return kwargs
 
     def __hash__(self):
-        return hash(tuple(sorted(self.__get_query__().items())))
+        stuff = sorted(self.__get_query__().items())
+        for i, (key, value) in enumerate(stuff):
+            if isinstance(value, set):
+                stuff[i] = (key, tuple(value))
+        return hash(tuple(stuff))
 
     def __eq__(self, other) -> bool:
         return hash(self) == hash(other)

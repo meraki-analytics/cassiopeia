@@ -50,6 +50,8 @@ class Patch(object):
 
     @classmethod
     def from_date(cls, date: Union[datetime.datetime], region: Union[Region, str] = None) -> "Patch":
+        if not cls.__patches:
+            cls.__load__()
         if region is None:
             region = configuration.settings.default_region
         if not isinstance(region, Region):
