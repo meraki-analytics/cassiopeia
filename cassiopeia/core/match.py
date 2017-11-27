@@ -84,6 +84,12 @@ class PositionData(CoreData):
 class EventData(CoreData):
     _renamed = {"eventType": "type", "teamId": "side", "pointCaptured": "capturedPoint", "assistingParticipantIds": "assistingParticipants", "skillSlot": "skill"}
 
+    def __call__(self, **kwargs):
+        if "position" in kwargs:
+            self.position = PositionData(**kwargs.pop("position"))
+        super().__call__(**kwargs)
+        return self
+
 
 class ParticipantFrameData(CoreData):
     _renamed = {"totalGold": "goldEarned", "minionsKilled": "creepScore", "Xp": "experience", "jungleMinionsKilled": "NeutralMinionsKilled"}
@@ -408,6 +414,9 @@ class MatchHistory(CassiopeiaLazyList):
 class Position(CassiopeiaObject):
     _data_types = {PositionData}
 
+    def __str__(self):
+        return "<Position ({}, {})>".format(self.x, self.y)
+
     @property
     def x(self) -> int:
         return self._data[PositionData].x
@@ -427,23 +436,23 @@ class Event(CassiopeiaObject):
 
     @property
     def tower_type(self) -> str:
-        return self._data[EventData].tower_type
+        return self._data[EventData].towerType
 
     @property
     def team_id(self) -> int:
-        return self._data[EventData].team_id
+        return self._data[EventData].teamId
 
     @property
     def ascended_type(self) -> str:
-        return self._data[EventData].ascended_type
+        return self._data[EventData].ascendedType
 
     @property
     def killer_id(self) -> int:
-        return self._data[EventData].killer_id
+        return self._data[EventData].killerId
 
     @property
     def level_up_type(self) -> str:
-        return self._data[EventData].level_up_type
+        return self._data[EventData].levelUpType
 
     @property
     def captured_point(self) -> str:
@@ -455,11 +464,11 @@ class Event(CassiopeiaObject):
 
     @property
     def ward_type(self) -> str:
-        return self._data[EventData].ward_type
+        return self._data[EventData].wardType
 
     @property
     def monster_type(self) -> str:
-        return self._data[EventData].monster_type
+        return self._data[EventData].monsterType
 
     @property
     def type(self) -> List[str]:
@@ -472,7 +481,7 @@ class Event(CassiopeiaObject):
 
     @property
     def victim_id(self) -> int:
-        return self._data[EventData].victim_id
+        return self._data[EventData].victimId
 
     @property
     def timestamp(self) -> int:
@@ -480,7 +489,7 @@ class Event(CassiopeiaObject):
 
     @property
     def after_id(self) -> int:
-        return self._data[EventData].after_id
+        return self._data[EventData].afterId
 
     @property
     def monster_sub_type(self) -> str:
@@ -492,19 +501,19 @@ class Event(CassiopeiaObject):
 
     @property
     def item_id(self) -> int:
-        return self._data[EventData].item_id
+        return self._data[EventData].itemId
 
     @property
     def participant_id(self) -> int:
-        return self._data[EventData].participant_id
+        return self._data[EventData].participantId
 
     @property
     def building_type(self) -> str:
-        return self._data[EventData].building_type
+        return self._data[EventData].buildingType
 
     @property
     def creator_id(self) -> int:
-        return self._data[EventData].creator_id
+        return self._data[EventData].creatorId
 
     @property
     def position(self) -> Position:
@@ -512,7 +521,7 @@ class Event(CassiopeiaObject):
 
     @property
     def before_id(self) -> int:
-        return self._data[EventData].before_id
+        return self._data[EventData].beforeId
 
 
 class ParticipantFrame(CassiopeiaObject):
@@ -626,6 +635,43 @@ class ParticipantTimeline(CassiopeiaObject):
                 if pid == self.id:
                     these.append(pframe)
         return these
+
+    @property
+    def events(self):
+        my_events = []
+        timeline = self.__match.timeline
+        for frame in timeline.frames:
+            for event in frame.events:
+                try:
+                    if event.participant_id == self.id:
+                        my_events.append(event)
+                except AttributeError:
+                    pass
+                try:
+                    if event.creator_id == self.id:
+                        my_events.append(event)
+                except AttributeError:
+                    pass
+                try:
+                    if event.killer_id == self.id:
+                        my_events.append(event)
+                except AttributeError:
+                    pass
+                try:
+                    if event.victim_id == self.id:
+                        my_events.append(event)
+                except AttributeError:
+                    pass
+                try:
+                    if self.id in event.assisting_participants:
+                        my_events.append(event)
+                except AttributeError:
+                    pass
+        return SearchableList(my_events)
+
+    @property
+    def champion_kills(self):
+        return self.events.filter(lambda event: event.type == "CHAMPION_KILL" and event.killer_id == self.id)
 
     @property
     def lane(self) -> str:
@@ -1061,6 +1107,15 @@ class Participant(CassiopeiaObject):
     def role(self):
         return self.timeline.role
 
+    @property
+    def skill_order(self):
+        skill_events = self.timeline.events.filter(lambda event: event.type == "SKILL_LEVEL_UP")
+        skill_events.sort(key=lambda event: event.timestamp)
+        skills = [event.skill - 1 for event in skill_events]
+        spells = [self.champion.spells["Q"], self.champion.spells["W"], self.champion.spells["E"], self.champion.spells["R"]]
+        skills = [spells[skill] for skill in skills]
+        return skills
+
     @lazy_property
     @load_match_on_attributeerror
     def stats(self) -> ParticipantStats:
@@ -1085,7 +1140,9 @@ class Participant(CassiopeiaObject):
     @lazy_property
     @load_match_on_attributeerror
     def timeline(self) -> ParticipantTimeline:
-        return ParticipantTimeline.from_data(self._data[ParticipantData].timeline, match=self.__match)
+        timeline = ParticipantTimeline.from_data(self._data[ParticipantData].timeline, match=self.__match)
+        timeline(id=self.id)
+        return timeline
 
     @lazy_property
     @load_match_on_attributeerror
@@ -1390,3 +1447,37 @@ class Match(CassiopeiaGhost):
     @lazy
     def creation(self) -> datetime.datetime:
         return self._data[MatchData].creation
+
+    def kills_heatmap(self):
+        if self.map.name == "Summoner's Rift":
+            rx0, ry0, rx1, ry1 = 0, 0, 14820, 14881
+        elif self.map.name == "Howling Abyss":
+            rx0, ry0, rx1, ry1 = -28, -19, 12849, 12858
+        else:
+            raise NotImplemented
+
+        imx0, imy0, imx1, imy1 = self.map.image.image.getbbox()
+
+        def position_to_map_image_coords(position):
+            x, y = position.x, position.y
+            x -= rx0
+            x /= (rx1 - rx0)
+            x *= (imx1 - imx0)
+            y -= ry0
+            y /= (ry1 - ry0)
+            y *= (imy1 - imy0)
+            return x, y
+
+        import matplotlib.pyplot as plt
+        size = 8
+        plt.figure(figsize=(size, size))
+        plt.imshow(self.map.image.image.rotate(-90))
+        for p in self.participants:
+            for kill in p.timeline.champion_kills:
+                x, y = position_to_map_image_coords(kill.position)
+                if p.team.side == Side.blue:
+                    plt.scatter([x], [y], c="b", s=size * 10)
+                else:
+                    plt.scatter([x], [y], c="r", s=size * 10)
+        plt.axis('off')
+        plt.show()
