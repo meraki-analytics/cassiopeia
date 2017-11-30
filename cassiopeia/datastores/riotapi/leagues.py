@@ -66,28 +66,6 @@ class LeaguesAPI(RiotAPIService):
 
     # Leagues
 
-    _validate_get_leagues_query_by_summoner = Query. \
-        has("summoner.id").as_(int).also. \
-        has("platform").as_(Platform)
-
-    @get.register(LeaguesListDto)
-    @validate_query(_validate_get_leagues_query_by_summoner, convert_region_to_platform)
-    def get_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LeaguesListDto:
-        url = "https://{platform}.api.riotgames.com/lol/league/v3/leagues/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
-        try:
-            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "leagues/by-summoner/summonerId {}".format(query["platform"].value)))
-        except APINotFoundError as error:
-            raise NotFoundError(str(error)) from error
-
-        data = {"leagues": data}
-        data["region"] = query["platform"].region.value
-        data["summonerId"] = query["summoner.id"]
-        for league in data["leagues"]:
-            league["region"] = data["region"]
-            for entry in league["entries"]:
-                entry["region"] = data["region"]
-        return LeaguesListDto(data)
-
     _validate_get_leagues_query = Query. \
         has("id").as_(str).also. \
         has("platform").as_(Platform)
@@ -104,6 +82,7 @@ class LeaguesAPI(RiotAPIService):
         data["region"] = query["platform"].region.value
         for entry in data["entries"]:
             entry["region"] = data["region"]
+            entry["tier"] = data["tier"]
         return LeagueListDto(data)
 
     _validate_get_many_leagues_by_summoner_query = Query. \
