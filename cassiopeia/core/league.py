@@ -141,7 +141,11 @@ class LeagueEntry(CassiopeiaGhost):
 
     @lazy_property
     def tier(self) -> Tier:
-        return Tier(self._data[LeaguePositionData].tier)
+        if hasattr(self._data[LeaguePositionData], "tier"):
+            return Tier(self._data[LeaguePositionData].tier)
+        else:
+            return None
+        #/by-summoner/{summonerId} is deprecated 1/10/18, no need for if statement after
 
     @lazy_property
     def division(self) -> Division:
@@ -190,6 +194,9 @@ class LeagueEntry(CassiopeiaGhost):
     def league_points(self) -> int:
         return self._data[LeaguePositionData].leaguePoints
 
+    @property
+    def inactive(self) -> bool:
+        return self._data[LeaguePositionData].inactive
 
 class LeagueEntries(CassiopeiaList):
     _data_types = {LeaguePositionsData}
