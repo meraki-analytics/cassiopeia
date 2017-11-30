@@ -142,7 +142,7 @@ class LeagueEntry(CassiopeiaGhost):
     @lazy_property
     def tier(self) -> Tier:
         if hasattr(self._data[LeaguePositionData], "tier"):
-            return self._data[LeaguePositionData].tier
+            return Tier(self._data[LeaguePositionData].tier)
         else:
             return None
         #/by-summoner/{summonerId} is deprecated 1/10/18, no need for if statement after
