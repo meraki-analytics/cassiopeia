@@ -24,7 +24,7 @@ class ChampionMasteryListData(CoreDataList):
 
 class ChampionMasteryData(CoreData):
     _dto_type = ChampionMasteryDto
-    _renamed = {"chestGranted": "chest_granted", "championLevel": "level", "championPoints": "points", "championId": "champion_id", "playerId": "summoner_id", "championPointsUntilNextLevel": "points_until_next_level", "championPointsSinceLastLevel": "points_since_last_level", "lastPlayTime": "last_played"}
+    _renamed = {"championLevel": "level", "championPoints": "points", "playerId": "summonerId", "championPointsUntilNextLevel": "pointsUntilNextLevel", "championPointsSinceLastLevel": "pointsSinceLastLevel", "lastPlayTime": "lastPlayed"}
 
 
 ##############
@@ -51,17 +51,9 @@ class ChampionMasteries(CassiopeiaList):
     def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, int, str], region: Union[Region, str]) -> dict:
         query = {"region": region}
         if isinstance(summoner, Summoner):
-            from .summoner import SummonerData
-            summoner_data = summoner._data[SummonerData]
-            try:
-                query["summoner.id"] = summoner_data.id
-            except AttributeError:
-                try:
-                    query["summoner.account.id"] = summoner_data.account_id
-                except AttributeError:
-                    query["summoner.name"] = summoner_data.name
+            query["summoner.id"] = summoner.id
         elif isinstance(summoner, str):
-            query["summoner.name"] = summoner
+            query["summoner.id"] = Summoner(name=summoner, region=region).id
         else:  # int
             query["summoner.id"] = summoner
         return query
@@ -161,19 +153,19 @@ class ChampionMastery(CassiopeiaGhost):
     @lazy
     def champion(self) -> Champion:
         """Champion for this entry."""
-        return Champion(id=self._data[ChampionMasteryData].champion_id, region=self.region, version=get_latest_version(self.region, endpoint="champion"))
+        return Champion(id=self._data[ChampionMasteryData].championId, region=self.region, version=get_latest_version(self.region, endpoint="champion"))
 
     @CassiopeiaGhost.property(ChampionMasteryData)
     @lazy
     def summoner(self) -> Summoner:
         """Summoner for this entry."""
-        return Summoner(id=self._data[ChampionMasteryData].summoner_id, region=self.region)
+        return Summoner(id=self._data[ChampionMasteryData].summonerId, region=self.region)
 
     @CassiopeiaGhost.property(ChampionMasteryData)
     @ghost_load_on
     def chest_granted(self) -> bool:
         """Is chest granted for this champion or not in current season?"""
-        return self._data[ChampionMasteryData].chest_granted
+        return self._data[ChampionMasteryData].chestGranted
 
     @CassiopeiaGhost.property(ChampionMasteryData)
     @ghost_load_on
@@ -191,17 +183,17 @@ class ChampionMastery(CassiopeiaGhost):
     @ghost_load_on
     def points_until_next_level(self) -> int:
         """Number of points needed to achieve next level. Zero if player reached maximum champion level for this champion."""
-        return self._data[ChampionMasteryData].points_until_next_level
+        return self._data[ChampionMasteryData].pointsUntilNextLevel
 
     @CassiopeiaGhost.property(ChampionMasteryData)
     @ghost_load_on
     def points_since_last_level(self) -> int:
         """Number of points earned since current level has been achieved. Zero if player reached maximum champion level for this champion."""
-        return self._data[ChampionMasteryData].points_since_last_level
+        return self._data[ChampionMasteryData].pointsSinceLastLevel
 
     @CassiopeiaGhost.property(ChampionMasteryData)
     @ghost_load_on
     @lazy
     def last_played(self) -> datetime.datetime:
         """Last time this champion was played by this player."""
-        return datetime.datetime.fromtimestamp(self._data[ChampionMasteryData].last_played / 1000)
+        return datetime.datetime.utcfromtimestamp(self._data[ChampionMasteryData].lastPlayed / 1000)
