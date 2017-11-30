@@ -58,6 +58,7 @@ class Summoner(CassiopeiaGhost):
             kwargs["name"] = name
         if account and isinstance(account, Account):
             self.__class__.account.fget._lazy_set(self, account)
+            kwargs["accountId"] = account.id
         elif account is not None:
             kwargs["accountId"] = account
         super().__init__(**kwargs)
@@ -83,7 +84,7 @@ class Summoner(CassiopeiaGhost):
         except AttributeError:
             pass
         try:
-            query["account.id"] = self._data[SummonerData].accountId
+            query["account.id"] = self._data[SummonerData].account.id
         except AttributeError:
             pass
         try:
@@ -92,6 +93,41 @@ class Summoner(CassiopeiaGhost):
             pass
         assert "id" in query or "name" in query or "account.id" in query
         return query
+
+    def __eq__(self, other: "Summoner"):
+        if not isinstance(other, Summoner):
+            return False
+        q1 = self.__get_query__()
+        q2 = other.__get_query__()
+        if q1["region"] == q2["region"]:
+            if "id" in q1 and "id" in q2:
+                if q1["id"] == q2["id"]:
+                    return True
+            elif "account.id" in q1 and "account.id" in q2:
+                if q1["account.id"] == q2["account.id"]:
+                    return True
+            elif "name" in q1 and "name" in q2:
+                if q1["name"] == q2["name"]:
+                    return True
+        else:
+            return False
+
+    def __str__(self):
+        s = "<Summoner id={id}, account={{account}}, name={{name}}>"
+        try:
+            s = s.format(id=self._data[SummonerData].id)
+        except AttributeError:
+            s = s.format(id="?")
+        s = s.replace("{name}", "{{name}}")
+        try:
+            s = s.format(account=self._data[SummonerData].account.id)
+        except AttributeError:
+            s = s.format(account="?")
+        try:
+            s = s.format(name=self._data[SummonerData].name)
+        except AttributeError:
+            s = s.format(name="?")
+        return s
 
     @property
     def exists(self):
@@ -142,7 +178,7 @@ class Summoner(CassiopeiaGhost):
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on
     def revision_date(self) -> datetime.date:
-        return datetime.datetime.fromtimestamp(self._data[SummonerData].revisionDate / 1000).date()
+        return datetime.datetime.utcfromtimestamp(self._data[SummonerData].revisionDate / 1000).date()
 
     @property
     def match_history_uri(self) -> str:
