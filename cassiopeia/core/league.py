@@ -140,6 +140,10 @@ class LeagueEntry(CassiopeiaGhost):
         return self._data[LeaguePositionData].name
 
     @lazy_property
+    def tier(self) -> Tier:
+        return Tier(self._data[LeaguePositionData].tier)
+
+    @lazy_property
     def division(self) -> Division:
         return Division(self._data[LeaguePositionData].division)
 
