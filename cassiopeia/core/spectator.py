@@ -121,8 +121,13 @@ class Participant(CassiopeiaObject):
         return self._data[CurrentGameParticipantData].isBot
 
     @property
-    def team(self) -> "Team":
-        raise NotImplemented  # TODO
+    def team(self) -> Side:
+        return Side(self._data[CurrentGameParticipantData].teamId)
+
+    @property
+    def side(self) -> Side:
+        """Alias for team"""
+        return Side(self._data[CurrentGameParticipantData].teamId)
 
     @property
     def summoner_spell_d(self) -> SummonerSpell:
