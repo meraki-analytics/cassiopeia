@@ -1,12 +1,14 @@
 from time import time
 from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator, Union
 import datetime
-import copy
+import math
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError, validate_query
+
+from ... import utctimestamp
 from .common import RiotAPIService, APINotFoundError
 from ...data import Platform, Season, Queue, SEASON_IDS, QUEUE_IDS
-from ...dto.match import MatchDto, MatchListDto, MatchListDtoGenerator, TimelineDto
+from ...dto.match import MatchDto, MatchListDto, TimelineDto
 from ..uniquekeys import convert_region_to_platform
 
 T = TypeVar("T")
@@ -77,10 +79,10 @@ class MatchAPI(RiotAPIService):
     _validate_get_match_list_query = Query. \
         has("account.id").as_(int).also. \
         has("platform").as_(Platform).also. \
-        can_have("beginTime").as_(int).also. \
+        has("beginTime").as_(int).also. \
         can_have("endTime").as_(int).also. \
-        can_have("beginIndex").as_(int).also. \
-        can_have("endIndex").as_(int).also. \
+        has("beginIndex").as_(int).also. \
+        has("maxNumberOfMatches").as_(float).also. \
         can_have("seasons").as_(Iterable).also. \
         can_have("champion.ids").as_(Iterable).also. \
         can_have("queues").as_(Iterable)
@@ -90,17 +92,40 @@ class MatchAPI(RiotAPIService):
     def get_match_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MatchListDto:
         params = {}
 
-        if "beginIndex" in query:
+        riot_index_interval = 100
+        riot_date_interval = datetime.timedelta(days=7)
+
+        begin_time = query["beginTime"]  # type: datetime.datetime
+        end_time = query.get("endTime", datetime.datetime.now())
+        if not isinstance(begin_time, datetime.datetime):
+            begin_time = datetime.datetime.utcfromtimestamp(begin_time / 1000)
+        if not isinstance(end_time, datetime.datetime):
+            end_time = datetime.datetime.utcfromtimestamp(end_time / 1000)
+
+        def determine_calling_method(begin_time, end_time) -> str:
+            """Returns either "by_date" or "by_index"."""
+            matches_per_date_interval = 10  # This is an assumption
+            seconds_per_day = (60 * 60 * 24)
+            riot_date_interval_in_days = riot_date_interval.total_seconds() / seconds_per_day  # in units of days
+            npulls_by_date = (end_time - begin_time).total_seconds() / seconds_per_day / riot_date_interval_in_days
+            npulls_by_index = (datetime.datetime.now() - begin_time).total_seconds() / seconds_per_day / riot_date_interval_in_days * matches_per_date_interval / riot_index_interval
+            if math.ceil(npulls_by_date) < math.ceil(npulls_by_index):
+                by = "by_date"
+            else:
+                by = "by_index"
+            return by
+
+        calling_method = determine_calling_method(begin_time, end_time)
+
+        if calling_method == "by_date":
+            params["beginTime"] = int(utctimestamp(begin_time) * 1000)
+            if "endTime" in query:
+                params["endTime"] = min(int((utctimestamp(begin_time + riot_date_interval)) * 1000), query["endTime"])
+            else:
+                params["endTime"] = int((utctimestamp(begin_time + riot_date_interval)) * 1000)
+        else:
             params["beginIndex"] = query["beginIndex"]
-
-        if "endIndex" in query:
-            params["endIndex"] = query["endIndex"]
-
-        if "beginTime" in query:
-            params["beginTime"] = query["beginTime"]
-
-        if "endTime" in query:
-            params["endTime"] = query["endTime"]
+            params["endIndex"] = query["beginIndex"] + min(riot_index_interval, query["maxNumberOfMatches"])
 
         if "seasons" in query:
             seasons = {Season(season) for season in query["seasons"]}
@@ -123,154 +148,25 @@ class MatchAPI(RiotAPIService):
         url = "https://{platform}.api.riotgames.com/lol/match/v3/matchlists/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=query["account.id"])
         try:
             data = self._get(url, params, self._get_rate_limiter(query["platform"], "matchlists/by-account/accountId"))
-        except APINotFoundError as error:
-            raise NotFoundError(str(error)) from error
+        except APINotFoundError:
+            data = {"matches": []}
 
         data["accountId"] = query["account.id"]
         data["region"] = query["platform"].region.value
-        if "beginIndex" in query:
-            data["beginIndex"] = query["beginIndex"]
-        if "endIndex" in query:
-            data["endIndex"] = query["endIndex"]
         data["season"] = seasons
         data["champion"] = champions
         data["queue"] = queues
+        if calling_method == "by_index":
+            data["beginIndex"] = params["beginIndex"]
+            data["endIndex"] = params["endIndex"]
+            data["maxNumberOfMatches"] = query["maxNumberOfMatches"]
+        else:
+            data["beginTime"] = params["beginTime"]
+            data["endTime"] = params["endTime"]
         for match in data["matches"]:
             match["accountId"] = query["account.id"]
             match["region"] = data["region"]
         return MatchListDto(data)
-
-    _validate_get_match_list_generator_query = Query. \
-        has("account.id").as_(int).also. \
-        has("platform").as_(Platform).also. \
-        can_have("beginTime").as_(int).also. \
-        can_have("endTime").as_(int).also. \
-        can_have("beginIndex").as_(int).also. \
-        can_have("endIndex").as_(int).also. \
-        can_have("seasons").as_(Iterable).also. \
-        can_have("champion.ids").as_(Iterable).also. \
-        can_have("queues").as_(Iterable)
-
-    @get.register(MatchListDtoGenerator)
-    @validate_query(_validate_get_match_list_generator_query, convert_region_to_platform)
-    def get_match_list_generator(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MatchListDtoGenerator:
-        original_query = copy.deepcopy(query)
-        begin_time = original_query.get("beginTime", None)
-        end_time = original_query.get("endTime", None)
-        begin_index = original_query.get("beginIndex", None)
-        end_index = original_query.get("endIndex", None)
-
-        if begin_time is not None:
-            begin_time = datetime.datetime.fromtimestamp(begin_time / 1000)
-        if end_time is not None:
-            end_time = datetime.datetime.fromtimestamp(end_time / 1000)
-
-        # Create the generator that will populate the match history object.
-        now = datetime.datetime.now() - datetime.timedelta(seconds=30)
-        def generate_matchlists(begin_index: Union[int, None] = None, end_index: Union[int, None] = None, begin_time: Union[datetime.datetime, None] = None, end_time: Union[datetime.datetime, None] = None):
-            # Shouldn't this be done in the Riot API data source? No, because it doesn't supply convenience data like this.
-
-            assert (begin_time is None and end_time is None) or (begin_time is not None and end_time is not None)
-            assert (begin_index is None and end_index is None) or (begin_index is not None and end_index is not None)
-            if begin_time is None and begin_index is None:
-                begin_index = 0
-
-            number_of_requested_matches = float("inf") if end_index is None else end_index - begin_index
-            number_of_initial_matches_to_skip = 0
-
-            index_interval_size = 100
-            datetime_interval_size = datetime.timedelta(days=7) - datetime.timedelta(hours=1)  # Use hours=1 to account for daylight savings... This isn't perfect efficient but it will work for now I guess...
-
-            # There is one weird special case that occurs when all of these are true:
-            # 1) beginTime is after the summoner's most recent match
-            # 2) beginIndex > 0
-            # 3) the endTime - beginTime range is more than one week
-            if begin_time is not None and end_time is not None and begin_index is not None and \
-                begin_time < now and \
-                begin_index > 0 and \
-                end_time - begin_time > datetime_interval_size:
-                number_of_initial_matches_to_skip = begin_index
-                begin_index = 0
-
-            # Now we need to potentially break up the time interval into one-week periods, and the indexes into intervals of 100.
-            # We stop looking for matches when we have the number of requested matches, or when the date interval is complete.
-            pulled_matches = 0 - number_of_initial_matches_to_skip
-            _begin_time = begin_time
-            _end_time = end_time
-            _begin_index = begin_index
-            _end_index = end_index
-            while pulled_matches < number_of_requested_matches and \
-                (begin_time is None or end_time - _begin_time > datetime.timedelta(days=0)):
-                if begin_time is not None and end_time is not None and _end_time - _begin_time > datetime_interval_size:
-                    _end_time = _begin_time + datetime_interval_size
-                if begin_index is not None and end_index is not None and _end_index - _begin_index > index_interval_size:
-                    _end_index = _begin_index + index_interval_size
-                if begin_time is not None and end_time is not None:
-                    query["beginTime"] = int(_begin_time.timestamp() * 1000)
-                    query["endTime"] = int(_end_time.timestamp() * 1000)
-                elif begin_index is not None:
-                    query["beginIndex"] = _begin_index
-                    if end_index is not None:
-                        query["endIndex"] = _end_index
-                    else:
-                        query["endIndex"] = _begin_index + index_interval_size
-                try:
-                    data = self.get_match_list(query=query)
-                    #data = configuration.settings.pipeline.get(type=MatchListData, query=query)
-                except NotFoundError:
-                    data = {"matches": []}
-                for matchdto in data["matches"]:
-                    pulled_matches += 1
-                    if pulled_matches > 0:
-                        yield  matchdto
-                    if pulled_matches == number_of_requested_matches:
-                        break
-
-                if _begin_index is not None and len(data) < index_interval_size:
-                    # Stop because the API returned less data than we asked for, and so there isn't any more left
-                    break
-                _begin_time = _end_time
-                _end_time = end_time
-                if _begin_index is not None:
-                    _begin_index = _begin_index + len(data)
-                _end_index = end_index
-                if number_of_requested_matches == float("inf") and begin_time is None and len(data) == 0:
-                    # Stop because we ran out of data
-                    break
-
-        generator = generate_matchlists(begin_index, end_index, begin_time, end_time)
-        result = {"generator": generator}
-
-        # Create/add the metadata/kwargs
-        if "seasons" in query:
-            seasons = {Season(season) for season in query["seasons"]}
-        else:
-            seasons = set()
-
-        if "champion.ids" in query:
-            champions = query["champion.ids"]
-        else:
-            champions = set()
-
-        if "queues" in query:
-            queues = {Queue(queue) for queue in query["queues"]}
-        else:
-            queues = set()
-
-        result["accountId"] = query["account.id"]
-        result["region"] = query["platform"].region.value
-        if "beginIndex" in query:
-            result["beginIndex"] = query["beginIndex"]
-        if "endIndex" in query:
-            result["endIndex"] = query["endIndex"]
-        result["season"] = seasons
-        result["champion"] = champions
-        result["queue"] = queues
-
-        generator = MatchListDtoGenerator(result)
-        generator._summoner = query.get("summoner", None)  # Tack the summoner on to the generator... See notes in transformers/match.py
-        return generator
-
 
     _validate_get_many_match_list_query = Query. \
         has("account.ids").as_(Iterable).also. \

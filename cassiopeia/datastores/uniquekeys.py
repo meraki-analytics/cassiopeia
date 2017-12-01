@@ -2106,7 +2106,7 @@ def for_summoner(summoner: Summoner) -> List[Tuple]:
     except AttributeError:
         pass
     try:
-        keys.append((summoner.platform.value, summoner._data[SummonerData].account_id))
+        keys.append((summoner.platform.value, summoner._data[SummonerData].account.id))
     except AttributeError:
         pass
     return keys

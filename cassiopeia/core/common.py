@@ -1,6 +1,6 @@
 from abc import abstractmethod, abstractclassmethod
 import types
-from typing import Mapping, Set, Union, Optional, Type, Generator
+from typing import Mapping, Set, Union, Optional, Type
 import functools
 import logging
 from enum import Enum
@@ -99,12 +99,6 @@ class CoreDataList(list, CoreData):
     def __init__(self, *args, **kwargs):
         list.__init__(self, *args)
         CoreData.__init__(self, **kwargs)
-
-
-class DataObjectGenerator(CoreData):
-    def __init__(self, generator: Generator = None, **kwargs):
-        self._generator = generator
-        super().__init__(**kwargs)
 
 
 class CassiopeiaObject(object):
@@ -220,10 +214,13 @@ class CassiopeiaPipelineObject(CassiopeiaObject, metaclass=GetFromPipeline):
                 stuff[i] = (key, tuple(value))
         return hash(tuple(stuff))
 
-    def __eq__(self, other) -> bool:
-        return hash(self) == hash(other)
+    def __eq__(self, other: "CassiopeiaPipelineObject") -> bool:
+        if not isinstance(other, self.__class__):  # Using isinstance here seems bad
+            return False
+        else:
+            return hash(self) == hash(other)
 
-    def __ne__(self, other) -> bool:
+    def __ne__(self, other: "CassiopeiaPipelineObject") -> bool:
         return not self == other
 
 

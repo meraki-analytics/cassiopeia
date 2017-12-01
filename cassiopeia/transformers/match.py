@@ -3,8 +3,8 @@ from copy import deepcopy
 
 from datapipelines import DataTransformer, PipelineContext
 
-from ..core.match import MatchData, MatchListData, MatchListGenerator, MatchReferenceData, TimelineData, Match, MatchHistory, Timeline
-from ..dto.match import MatchDto, MatchListDto, MatchListDtoGenerator, MatchReferenceDto, TimelineDto
+from ..core.match import MatchData, MatchListData, MatchReferenceData, TimelineData, Match, MatchHistory, Timeline
+from ..dto.match import MatchDto, MatchListDto, MatchReferenceDto, TimelineDto
 
 T = TypeVar("T")
 F = TypeVar("F")
@@ -32,21 +32,25 @@ class MatchTransformer(DataTransformer):
     def matchlist_dto_to_data(self, value: MatchListDto, context: PipelineContext = None) -> MatchListData:
         data = deepcopy(value)
         data = data["matches"]
-        return MatchListData([self.match_reference_dto_to_data(match) for match in data], region=value["region"])
+        kwargs = {
+            "region": value["region"],
+            "accountId": value["accountId"],
+            "season": value["season"],
+            "queue": value["queue"],
+            "champion": value["champion"],
+        }
+        if "beginIndex" in value:
+            kwargs["beginIndex"] = value["beginIndex"]
+            kwargs["endIndex"] = value["endIndex"]
+            kwargs["maxNumberOfMatches"] = value.get("maxNumberOfMatches", None),
+        if "beginTime" in value:
+            kwargs["beginTime"] = value["beginTime"]
+            kwargs["endTime"] = value["endTime"]
+        return MatchListData([self.match_reference_dto_to_data(match) for match in data], **kwargs)
 
     @transform.register(TimelineDto, TimelineData)
     def timeline_dto_to_data(self, value: TimelineDto, context: PipelineContext = None) -> TimelineData:
         return TimelineData(**value)
-
-    @transform.register(MatchListDtoGenerator, MatchListGenerator)
-    def matchlist_generator_dto_to_data(self, value: MatchListDtoGenerator, context: PipelineContext = None) -> MatchListGenerator:
-        def match_dto_to_data_generator(generator):
-            for matchrefdto in generator:
-                yield self.match_reference_dto_to_data(matchrefdto)
-        generator = match_dto_to_data_generator(value.pop("generator"))
-        generator = MatchListGenerator(generator=generator, **value)
-        generator._summoner = value._summoner  # Tack the summoner on to the generator... See notes in data -> core transformer
-        return generator
 
     # Data to Core
 
@@ -61,64 +65,3 @@ class MatchTransformer(DataTransformer):
     #@transform.register(TimelineData, Timeline)
     def timeline_data_to_core(self, value: TimelineData, context: PipelineContext = None) -> Timeline:
         return Timeline.from_data(value)
-
-    @transform.register(MatchListGenerator, MatchHistory)
-    def matchlist_generator_to_matchhistory(self, value: MatchListGenerator, context: PipelineContext = None) -> MatchHistory:
-        kwargs = {}
-        try:
-            kwargs["account_id"] = value.accountId
-        except AttributeError:
-            pass
-        try:
-            kwargs["region"] = value.region
-        except AttributeError:
-            pass
-        try:
-            kwargs["end_time"] = value.endTime
-        except AttributeError:
-            pass
-        try:
-            kwargs["begin_time"] = value.beginTime
-        except AttributeError:
-            pass
-        try:
-            kwargs["end_index"] = value.endIndex
-        except AttributeError:
-            pass
-        try:
-            kwargs["begin_index"] = value.beginIndex
-        except AttributeError:
-            pass
-        try:
-            kwargs["seasons"] = value.seasons
-        except AttributeError:
-            pass
-        try:
-            kwargs["queues"] = value.queues
-        except AttributeError:
-            pass
-        try:
-            kwargs["champions"] = value.championIds
-        except AttributeError:
-            pass
-
-        def match_generator(gen, summoner):
-            for matchrefdata in gen:
-                match = Match.from_match_reference(matchrefdata)
-                # We have a summoner object (probably) already created, and if one was passed in then this is pretty crucial to:
-                # Put the summoner object that this match history was instantiated with into the participant[0] so that searchable
-                # list syntax on e.g. the name will work without loading the summoner.
-                # For example:
-                #    summoner = Summoner(name=name, account=account, id=id, region=region)
-                #    match = summoner.match_history[0]
-                #    p = match.participants[name]  # This will work without loading the summoner because the name was provided
-                if summoner is not None:
-                    # This is complicated. Trust me... See issues by r000t in discord and on github.
-                    # The bug occurs when a match was already cached and it then get's pulled from a match history object;
-                    #  the bug was that the first summoner was getting overwritten,
-                    #  although it could have been a different summoner.
-                    if match.participants[0].summoner.account.id == summoner.account.id:
-                        match.participants[0].__class__.summoner.fget._lazy_set(match.participants[0], summoner)
-                yield match
-        generator = match_generator(value._generator, summoner=value._summoner)
-        return MatchHistory.from_generator(generator=generator, **kwargs)

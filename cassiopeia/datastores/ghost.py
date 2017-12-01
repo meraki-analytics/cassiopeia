@@ -1,10 +1,13 @@
-from typing import Type, TypeVar, MutableMapping, Any, Iterable
+from typing import Type, TypeVar, MutableMapping, Any, Iterable, Union
+import datetime
+import copy
 
 from datapipelines import DataSource, PipelineContext, Query, validate_query
 
+from .. import utctimestamp
 from ..data import Platform, Queue
-from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, MasterLeague, League
-from ..core.match import Timeline
+from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, MasterLeague, League, MatchHistory
+from ..core.match import Timeline, MatchListData
 from .riotapi.staticdata import _get_latest_version, _get_default_locale
 from .uniquekeys import convert_region_to_platform
 
@@ -291,3 +294,88 @@ class UnloadedGhostStore(DataSource):
         query["region"] = query.pop("platform").region
         query["id"] = query.pop("id")
         return League._construct_normally(**query)
+
+    @get.register(MatchHistory)
+    @validate_query(_validate_get_match_history_query, convert_region_to_platform)
+    def get_match_history(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MatchHistory:
+        original_query = copy.deepcopy(query)
+        region = query["region"]
+        account_id = query["account.id"]
+        begin_index = query.get("beginIndex", 0)
+        end_index = query.get("endIndex", None)
+        begin_time = query.get("beginTime", 0)  # Defaults to start of summoner's match history
+        end_time = query.get("endTime", None)  # Defaults to now; end_time > begin_time
+        queues = query.get("queues", {})
+        seasons = query.get("seasons", {})
+        champion_ids = query.get("champion.ids", {})
+
+        max_number_of_requested_matches = float("inf") if end_index is None else end_index - begin_index
+
+        # Convert times to datetimes
+        begin_time = datetime.datetime.utcfromtimestamp(begin_time / 1000)
+        if end_time is not None:
+            end_time = datetime.datetime.utcfromtimestamp(end_time / 1000)
+            assert end_time > begin_time
+
+        # Create the generator that will populate the match history object.
+        def generate_matchlists(begin_index: int, max_number_of_requested_matches: int = None, begin_time: datetime.datetime = None, end_time: Union[datetime.datetime, None] = None):
+            _begin_index = begin_index
+            _begin_time = begin_time
+
+            pulled_matches = 0
+            while pulled_matches < max_number_of_requested_matches:
+                new_query = {
+                    "region": region,
+                    "account.id": account_id,
+                    "queues": queues,
+                    "seasons": seasons,
+                    "champion.ids": champion_ids,
+                    "beginIndex": _begin_index,
+                    "beginTime": int(utctimestamp(_begin_time) * 1000),
+                    "maxNumberOfMatches": max_number_of_requested_matches
+                }
+                if "endTime" in original_query:
+                    new_query["endTime"] = original_query["endTime"]
+
+                data = context.get(context.Keys.PIPELINE).get(MatchListData, query=new_query)
+                match = None
+                for matchrefdata in data:
+                    match = Match.from_match_reference(matchrefdata)
+                    pulled_matches += 1
+                    if pulled_matches > 0 and (end_time is None or match.creation < end_time) and match.creation > begin_time:
+                        yield  match
+                    if pulled_matches >= max_number_of_requested_matches:
+                        break
+
+                matches_pulled_this_iteration = len(data)
+                if hasattr(data, "endIndex"):
+                    expected_pulled_matches_this_iteration = data.endIndex - data.beginIndex
+                else:
+                    expected_pulled_matches_this_iteration = None
+                if expected_pulled_matches_this_iteration is not None and matches_pulled_this_iteration < expected_pulled_matches_this_iteration:
+                    # Stop because the API returned less data than we asked for, and so there isn't any more left
+                    break
+
+                if end_time is not None and match is not None and match.creation >= end_time:
+                    # Stop because we have gotten all the matches in the requested time range
+                    break
+
+                if hasattr(data, "endIndex"):
+                    _begin_index = data.endIndex
+                # else: Don't update it
+                if hasattr(data, "endTime"):
+                    _begin_time = datetime.datetime.utcfromtimestamp(data.endTime / 1000)
+                # else: Don't update it
+                max_number_of_requested_matches -= len(data)
+
+                if end_time is not None and _begin_time >= end_time:
+                    # Stop because we have gotten all the matches in the requested time range
+                    break
+
+        generator = generate_matchlists(begin_index, max_number_of_requested_matches, begin_time, end_time)
+
+        generator = MatchHistory.from_generator(generator=generator, account_id=account_id, region=region,
+                                                begin_index=begin_index, end_index=end_index,
+                                                begin_time=begin_time, end_time=end_time,
+                                                queues=queues, seasons=seasons, champions=champion_ids)
+        return generator

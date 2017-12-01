@@ -20,9 +20,9 @@ class Patch(object):
 
     def __init__(self, region: Union[str, Region], season: str, name: str, start: Union[datetime.datetime, float], end: Optional[Union[datetime.datetime, float]]):
         if not isinstance(start, datetime.datetime):
-            start = datetime.datetime.fromtimestamp(start)
+            start = datetime.datetime.utcfromtimestamp(start)
         if end is not None and not isinstance(end, datetime.datetime):
-            end = datetime.datetime.fromtimestamp(end)
+            end = datetime.datetime.utcfromtimestamp(end)
         if not isinstance(region, Region):
             region = Region(region)
         self._region = region
@@ -70,10 +70,10 @@ class Patch(object):
         for i, patch in enumerate(patches):
             for region in Region:
                 start = patch["start"].get(region, patch["start"]["NA"])
-                start = datetime.datetime.fromtimestamp(start)
+                start = datetime.datetime.utcfromtimestamp(start)
                 end = patch["end"].get(region, patch["end"]["NA"])
                 if end is not None:
-                    end = datetime.datetime.fromtimestamp(end)
+                    end = datetime.datetime.utcfromtimestamp(end)
                 cls.__patches[region][i] = Patch(region=region, season=patch["season"], name=patch["name"], start=start, end=end)
 
     @property

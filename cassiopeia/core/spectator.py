@@ -265,7 +265,7 @@ class CurrentMatch(CassiopeiaGhost):
     @CassiopeiaGhost.property(CurrentGameInfoData)
     @ghost_load_on
     def creation(self) -> datetime.datetime:
-        return datetime.datetime.fromtimestamp(self._data[CurrentGameInfoData].creation / 1000)
+        return datetime.datetime.utcfromtimestamp(self._data[CurrentGameInfoData].creation / 1000)
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
     @ghost_load_on

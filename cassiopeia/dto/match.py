@@ -9,10 +9,6 @@ class MatchListDto(DtoObject):
     pass
 
 
-class MatchListDtoGenerator(DtoObject):
-    pass
-
-
 class MatchDto(DtoObject):
     pass
 
