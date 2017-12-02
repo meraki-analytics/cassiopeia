@@ -4,7 +4,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList
 
 from ...data import Resource, Region, Platform, GameMode
-from ..common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
+from ..common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, get_latest_version, provide_default_region, ghost_load_on
 from .common import ImageData, Image, Sprite
 from ...dto.staticdata import summonerspell as dto
 
@@ -47,11 +47,11 @@ class SummonerSpellData(CoreData):
 ##############
 
 
-class SummonerSpells(CassiopeiaList):
+class SummonerSpells(CassiopeiaLazyList):
     _data_types = {SummonerSpellListData}
 
     @provide_default_region
-    def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+    def __init__(self, *, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if included_data is None:
             included_data = {"all"}
         if locale is None and region is not None:
@@ -59,7 +59,7 @@ class SummonerSpells(CassiopeiaList):
         kwargs = {"region": region, "included_data": included_data, "locale": locale}
         if version:
             kwargs["version"] = version
-        super().__init__(*args, **kwargs)
+        CassiopeiaObject.__init__(self, **kwargs)
 
     @lazy_property
     def region(self) -> Region:
@@ -145,6 +145,13 @@ class SummonerSpell(CassiopeiaGhost):
         if hasattr(self._data[SummonerSpellData], "name"):
             query["name"] = self._data[SummonerSpellData].name
         return query
+
+    def __eq__(self, other: "SummonerSpell"):
+        if not isinstance(other, SummonerSpell):
+            return False
+        q1 = self.__get_query__()
+        q2 = other.__get_query__()
+        return q1 == q2
 
     @lazy_property
     def region(self) -> Region:

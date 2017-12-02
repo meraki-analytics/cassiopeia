@@ -4,7 +4,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
 from ...data import Region, Platform
-from ..common import CoreData, CassiopeiaGhost, CoreDataList, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
+from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CoreDataList, CassiopeiaLazyList, get_latest_version, provide_default_region, ghost_load_on
 from .common import ImageData, Sprite, Image
 from ...dto.staticdata import map as dto
 
@@ -35,17 +35,17 @@ class MapData(CoreData):
 ##############
 
 
-class Maps(CassiopeiaList):
+class Maps(CassiopeiaLazyList):
     _data_types = {MapListData}
 
     @provide_default_region
-    def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None):
+    def __init__(self, *, region: Union[Region, str] = None, version: str = None, locale: str = None):
         if locale is None and region is not None:
             locale = Region(region).default_locale
         kwargs = {"region": region, "locale": locale}
         if version is not None:
             kwargs["version"] = version
-        super().__init__(*args, **kwargs)
+        CassiopeiaObject.__init__(self, **kwargs)
 
     @lazy_property
     def region(self) -> Region:
@@ -93,6 +93,13 @@ class Map(CassiopeiaGhost):
         if hasattr(self._data[MapData], "name"):
             query["name"] = self.name
         return query
+
+    def __eq__(self, other: "Map"):
+        if not isinstance(other, Map):
+            return False
+        q1 = self.__get_query__()
+        q2 = other.__get_query__()
+        return q1 == q2
 
     @lazy_property
     def region(self) -> Region:

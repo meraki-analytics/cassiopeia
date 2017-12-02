@@ -4,7 +4,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList
 
 from ...data import Region, Platform
-from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CoreDataList, get_latest_version, CassiopeiaList, provide_default_region, ghost_load_on
+from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CoreDataList, get_latest_version, CassiopeiaLazyList, provide_default_region, ghost_load_on
 from .common import ImageData, Sprite, Image
 from .map import Map
 from ...dto.staticdata import item as dto
@@ -67,11 +67,11 @@ class ItemData(CoreData):
 ##############
 
 
-class Items(CassiopeiaList):
+class Items(CassiopeiaLazyList):
     _data_types = {ItemListData}
 
     @provide_default_region
-    def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+    def __init__(self, *, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if included_data is None:
             included_data = {"all"}
         if locale is None and region is not None:
@@ -79,7 +79,7 @@ class Items(CassiopeiaList):
         kwargs = {"region": region, "included_data": included_data, "locale": locale}
         if version:
             kwargs["version"] = version
-        super().__init__(*args, **kwargs)
+        CassiopeiaObject.__init__(self, **kwargs)
 
     @lazy_property
     def region(self) -> Region:
@@ -287,6 +287,13 @@ class Item(CassiopeiaGhost):
         if hasattr(self._data[ItemData], "name"):
             query["name"] = self._data[ItemData].name
         return query
+
+    def __eq__(self, other: "Item"):
+        if not isinstance(other, Item):
+            return False
+        q1 = self.__get_query__()
+        q2 = other.__get_query__()
+        return q1 == q2
 
     @lazy_property
     def region(self) -> Region:

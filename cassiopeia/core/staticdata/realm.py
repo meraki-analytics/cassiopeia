@@ -18,31 +18,6 @@ class RealmData(CoreData):
     _renamed = {"lg": "legacyMode", "dd": "latestDataDragon", "l": "language", "n": "latestVersions",
                 "profileiconmax": "maxProfileIconId", "v": "version", "css": "cssVersion"}
 
-    #@property
-    #def max_profile_icon_id(self) -> int:
-    #    """Special behavior number identifying the largest profile icon ID that can be used under 500. Any profile icon that is requested between this number and 500 should be mapped to 0."""
-    #    return self._dto["profileiconmax"]
-
-    #@property
-    #def store(self) -> str:
-    #    """Additional API data drawn from other sources that may be related to Data Dragon functionality."""
-    #    return self._dto["store"]
-
-    #@property
-    #def version(self) -> str:
-    #    """Current version of this file for this realm."""
-    #    return self._dto["v"]
-
-    #@property
-    #def cdn(self) -> str:
-    #    """The base CDN URL."""
-    #    return self._dto["cdn"]
-
-    #@property
-    #def css_version(self) -> str:
-    #    """Latest changed version of Dragon Magics CSS file."""
-    #    return self._dto["css"]
-
 
 ##############
 # Core Types #

@@ -169,7 +169,7 @@ class StaticDataTransformer(DataTransformer):
     def champion_data_to_core(self, value: ChampionData, context: PipelineContext = None) -> Champion:
         return Champion.from_data(value, loaded_groups={ChampionData})
 
-    @transform.register(ChampionListData, Champions)
+    #@transform.register(ChampionListData, Champions)
     def champion_list_data_to_core(self, value: ChampionListData, context: PipelineContext = None) -> Champions:
         return Champions.from_data(*[self.champion_data_to_core(c) for c in value], region=value.region, version=value.version, locale=value.locale, included_data=value.includedData)
 
@@ -179,7 +179,7 @@ class StaticDataTransformer(DataTransformer):
     def rune_data_to_core(self, value: RuneData, context: PipelineContext = None) -> Rune:
         return Rune.from_data(value)
 
-    @transform.register(RuneListData, Runes)
+    #@transform.register(RuneListData, Runes)
     def rune_list_data_to_core(self, value: RuneListData, context: PipelineContext = None) -> Runes:
         return Runes.from_data(*[self.rune_data_to_core(r) for r in value], region=value.region, version=value.version, locale=value.locale, included_data=value.includedData)
 
@@ -189,7 +189,7 @@ class StaticDataTransformer(DataTransformer):
     def item_data_to_core(self, value: ItemData, context: PipelineContext = None) -> Item:
         return Item.from_data(value)
 
-    @transform.register(ItemListData, Items)
+    #@transform.register(ItemListData, Items)
     def item_list_data_to_core(self, value: ItemListData, context: PipelineContext = None) -> Items:
         return Items.from_data(*(self.item_data_to_core(i) for i in value), region=value.region, version=value.version, locale=value.locale, included_data=value.includedData)
 
@@ -199,7 +199,7 @@ class StaticDataTransformer(DataTransformer):
     def summoner_spell_data_to_core(self, value: SummonerSpellData, context: PipelineContext = None) -> SummonerSpell:
         return SummonerSpell.from_data(value)
 
-    @transform.register(SummonerSpellListData, SummonerSpells)
+    #@transform.register(SummonerSpellListData, SummonerSpells)
     def summoner_spell_list_data_to_core(self, value: SummonerSpellListData, context: PipelineContext = None) -> SummonerSpells:
         return SummonerSpells.from_data(*[self.summoner_spell_data_to_core(s) for s in value], region=value.region, version=value.version, locale=value.locale, included_data=value.includedData)
 
@@ -209,20 +209,20 @@ class StaticDataTransformer(DataTransformer):
     def map_data_to_core(self, value: MapData, context: PipelineContext = None) -> Map:
         return Map.from_data(value)
 
-    @transform.register(MapListData, Maps)
+    #@transform.register(MapListData, Maps)
     def map_list_data_to_core(self, value: MapListData, context: PipelineContext = None) -> Maps:
         return Maps.from_data(*[self.map_data_to_core(m) for m in value], region=value.region, version=value.version, locale=value.locale)
 
     # Version
 
-    @transform.register(VersionListData, Versions)
+    #@transform.register(VersionListData, Versions)
     def version_list_data_to_core(self, value: VersionListData, context: PipelineContext = None) -> Versions:
         version = Versions.from_data(*value, region=value.region)
         return version
 
     # Realm
 
-    @transform.register(RealmData, Realms)
+    #@transform.register(RealmData, Realms)
     def realm_data_to_core(self, value: RealmData, context: PipelineContext = None) -> Realms:
         realms = Realms.from_data(value)
         realms(region=value.region)
@@ -230,13 +230,13 @@ class StaticDataTransformer(DataTransformer):
 
     # Languages
 
-    @transform.register(LanguagesData, Locales)
+    #@transform.register(LanguagesData, Locales)
     def languages_data_to_core(self, value: LanguagesData, context: PipelineContext = None) -> Locales:
         return Locales.from_data(*value, region=value.region)
 
     # Language Strings
 
-    @transform.register(LanguageStringsData, LanguageStrings)
+    #@transform.register(LanguageStringsData, LanguageStrings)
     def language_strings_data_to_core(self, value: LanguageStringsData, context: PipelineContext = None) -> LanguageStrings:
         return LanguageStrings.from_data(value)
 
@@ -246,6 +246,6 @@ class StaticDataTransformer(DataTransformer):
     def profile_icon_data_to_core(self, value: ProfileIconData, context: PipelineContext = None) -> ProfileIcon:
         return ProfileIcon.from_data(value)
 
-    @transform.register(ProfileIconListData, ProfileIcons)
+    #@transform.register(ProfileIconListData, ProfileIcons)
     def profile_icon_list_data_to_core(self, value: ProfileIconListData, context: PipelineContext = None) -> ProfileIcons:
         return ProfileIcons.from_data(*[self.profile_icon_data_to_core(profile_icon) for profile_icon in value], region=value.region, version=value.version, locale=value.locale)

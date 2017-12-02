@@ -121,6 +121,13 @@ class LeagueEntry(CassiopeiaGhost):
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform}
 
+    def __eq__(self, other: "LeagueEntry"):
+        if not isinstance(other, LeagueEntry):
+            return False
+        q1 = self.__get_query__()
+        q2 = other.__get_query__()
+        return q1 == q2 and self.summoner == other.summoner and self.queue == other.queue and self.name == other.name
+
     @lazy_property
     def region(self) -> Region:
         """The region for this champion."""
@@ -193,6 +200,7 @@ class LeagueEntry(CassiopeiaGhost):
     @property
     def inactive(self) -> bool:
         return self._data[LeaguePositionData].inactive
+
 
 class LeagueEntries(CassiopeiaList):
     _data_types = {LeaguePositionsData}
@@ -270,6 +278,13 @@ class League(CassiopeiaGhost):
     def __get_query__(self):
         return {"id": self.id, "region": self.region, "platform": self.platform}
 
+    def __eq__(self, other: "League"):
+        if not isinstance(other, League):
+            return False
+        q1 = self.__get_query__()
+        q2 = other.__get_query__()
+        return q1 == q2
+
     def __getitem__(self, item):
         return self.entries[item]
 
@@ -335,6 +350,13 @@ class ChallengerLeague(CassiopeiaGhost):
     def __len__(self):
         return len(self.entries)
 
+    def __eq__(self, other: "ChallengerLeague"):
+        if not isinstance(other, ChallengerLeague):
+            return False
+        q1 = self.__get_query__()
+        q2 = other.__get_query__()
+        return q1 == q2
+
     @lazy_property
     def region(self) -> Region:
         return Region(self._data[ChallengerLeagueListData].region)
@@ -383,6 +405,13 @@ class MasterLeague(CassiopeiaGhost):
 
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform, "queue": self.queue}
+
+    def __eq__(self, other: "MasterLeague"):
+        if not isinstance(other, MasterLeague):
+            return False
+        q1 = self.__get_query__()
+        q2 = other.__get_query__()
+        return q1 == q2
 
     def __getitem__(self, item):
         return self.entries[item]

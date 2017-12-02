@@ -1,6 +1,6 @@
 from abc import abstractmethod, abstractclassmethod
 import types
-from typing import Mapping, Set, Union, Optional, Type
+from typing import Mapping, Set, Union, Optional, Type, Generator
 import functools
 import logging
 from enum import Enum
@@ -316,6 +316,12 @@ class CassiopeiaLazyList(SearchableLazyList, CassiopeiaPipelineObject):
     @classmethod
     def from_data(cls, *args, **kwargs):
         return cls._construct_normally(*args, **kwargs)
+
+    @classmethod
+    def from_generator(cls, generator: Generator, **kwargs):
+        self = cls.__new__(cls)
+        CassiopeiaLazyList.__init__(self, generator=generator, **kwargs)
+        return self
 
     def __hash__(self):
         return id(self)

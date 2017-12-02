@@ -1273,6 +1273,13 @@ class Match(CassiopeiaGhost):
                                       participantIdentities=[{"participantId": 1, "player": player, "bot": False}])
         return instance
 
+    def __eq__(self, other: "Match"):
+        if not isinstance(other, Match):
+            return False
+        q1 = self.__get_query__()
+        q2 = other.__get_query__()
+        return q1 == q2
+
     @lazy_property
     def region(self) -> Region:
         """The region for this match."""

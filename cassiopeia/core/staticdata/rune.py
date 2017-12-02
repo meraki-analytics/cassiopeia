@@ -4,8 +4,8 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
 from ...data import Region, Platform, RunePath
-from ..common import CoreData, CoreDataList, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
-from .common import ImageData, Sprite, Image
+from ..common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, get_latest_version, provide_default_region, ghost_load_on
+from .common import Sprite, Image
 from ...dto.staticdata import rune as dto
 
 
@@ -29,11 +29,11 @@ class RuneData(CoreData):
 ##############
 
 
-class Runes(CassiopeiaList):
+class Runes(CassiopeiaLazyList):
     _data_types = {RuneListData}
 
     @provide_default_region
-    def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+    def __init__(self, *, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if included_data is None:
             included_data = {"all"}
         if locale is None and region is not None:
@@ -41,7 +41,7 @@ class Runes(CassiopeiaList):
         kwargs = {"region": region, "included_data": included_data, "locale": locale}
         if version:
             kwargs["version"] = version
-        super().__init__(*args, **kwargs)
+        CassiopeiaObject.__init__(self, **kwargs)
 
     @lazy_property
     def region(self) -> Region:
@@ -121,6 +121,13 @@ class Rune(CassiopeiaGhost):
         if hasattr(self._data[RuneData], "name"):
             query["name"] = self._data[RuneData].name
         return query
+
+    def __eq__(self, other: "Rune"):
+        if not isinstance(other, Rune):
+            return False
+        q1 = self.__get_query__()
+        q2 = other.__get_query__()
+        return q1 == q2
 
     @lazy_property
     def region(self) -> Region:

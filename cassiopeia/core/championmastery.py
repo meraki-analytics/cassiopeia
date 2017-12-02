@@ -141,6 +141,11 @@ class ChampionMastery(CassiopeiaGhost):
             data = ChampionMasteryTransformer.champion_mastery_dto_to_data(None, dto)
             self.__load_hook__(load_group, data)
 
+    def __eq__(self, other: "ChampionMastery"):
+        if not isinstance(other, ChampionMastery):
+            return False
+        return self.region == other.region and self.champion == other.champion and self.summoner == other.summoner
+
     @property
     def region(self) -> Region:
         return Region(self._data[ChampionMasteryData].region)

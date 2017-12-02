@@ -452,15 +452,6 @@ class Cache(DataSource, DataSink):
     def put_many_languages(self, items: Iterable[Locales], context: PipelineContext = None) -> None:
         self._put_many(Locales, items, uniquekeys.for_languages, context=context)
 
-    @get.register(LanguagesData)
-    @validate_query(uniquekeys.validate_languages_query, uniquekeys.convert_region_to_platform)
-    def get_languages_data(self, query: Mapping[str, Any], context: PipelineContext = None) -> LanguagesData:
-        result = self.get_languages(query=query, context=context)
-        if result._data[LanguagesData] is not None and result._Ghost__is_loaded(LanguagesData):
-            return result._data[LanguagesData]
-        else:
-            raise NotFoundError
-
     # Language strings
 
     @get.register(LanguageStrings)
@@ -742,15 +733,6 @@ class Cache(DataSource, DataSink):
     @put_many.register(Versions)
     def put_many_versions(self, items: Iterable[Versions], context: PipelineContext = None) -> None:
         self._put_many(Versions, items, uniquekeys.for_versions, context=context)
-
-    @get.register(VersionListData)
-    @validate_query(uniquekeys.validate_versions_query, uniquekeys.convert_region_to_platform)
-    def get_versions_data(self, query: Mapping[str, Any], context: PipelineContext = None) -> VersionListData:
-        result = self.get_versions(query=query, context=context)
-        if result._data[VersionListData] is not None and result._Ghost__is_loaded(VersionListData):
-            return result._data[VersionListData]
-        else:
-            raise NotFoundError
 
     ##############
     # Status API #

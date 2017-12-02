@@ -7,7 +7,7 @@ from merakicommons.container import searchable, SearchableList, SearchableDictio
 from ... import configuration
 from ...data import Resource, Region, Platform, GameMode
 from ..champion import ChampionStatusData
-from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, CoreDataList, get_latest_version, provide_default_region, ghost_load_on
+from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, CoreDataList, get_latest_version, provide_default_region, ghost_load_on
 from .common import ImageData, Image, Sprite
 from .map import Map
 from ...dto.staticdata import champion as dto
@@ -122,11 +122,11 @@ class ChampionData(CoreData):
 ##############
 
 
-class Champions(CassiopeiaList):
+class Champions(CassiopeiaLazyList):
     _data_types = {ChampionListData}
 
     @provide_default_region
-    def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+    def __init__(self, *, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if included_data is None:
             included_data = {"all"}
         if locale is None and region is not None:
@@ -134,7 +134,7 @@ class Champions(CassiopeiaList):
         kwargs = {"region": region, "included_data": included_data, "locale": locale}
         if version:
             kwargs["version"] = version
-        super().__init__(*args, **kwargs)
+        CassiopeiaObject.__init__(self, **kwargs)
 
     @lazy_property
     def region(self) -> Region:
@@ -581,6 +581,13 @@ class Champion(CassiopeiaGhost):
         if hasattr(self._data[ChampionData], "name"):
             query["name"] = self._data[ChampionData].name
         return query
+
+    def __eq__(self, other: "Champion"):
+        if not isinstance(other, Champion):
+            return False
+        q1 = self.__get_query__()
+        q2 = other.__get_query__()
+        return q1 == q2
 
     # What do we do about params like this that can exist in both data objects?
     # They will be set on both data objects always, so we can choose either one to return.

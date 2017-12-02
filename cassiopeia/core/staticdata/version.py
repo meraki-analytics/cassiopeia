@@ -4,7 +4,7 @@ from merakicommons.cache import lazy_property
 
 from ...data import Region, Platform
 from ...dto.staticdata.version import VersionListDto
-from ..common import CoreDataList, CassiopeiaList, provide_default_region
+from ..common import CoreDataList, CassiopeiaObject, CassiopeiaLazyList, provide_default_region
 
 
 class VersionListData(CoreDataList):
@@ -12,13 +12,13 @@ class VersionListData(CoreDataList):
     _renamed = {}
 
 
-class Versions(CassiopeiaList):
+class Versions(CassiopeiaLazyList):
     _data_types = {VersionListData}
 
     @provide_default_region
-    def __init__(self, *args, region: Union[Region, str] = None):
+    def __init__(self, *, region: Union[Region, str] = None):
         kwargs = {"region": region}
-        super().__init__(*args, **kwargs)
+        CassiopeiaObject.__init__(self, **kwargs)
 
     @lazy_property
     def region(self) -> Region:

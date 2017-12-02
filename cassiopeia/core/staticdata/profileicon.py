@@ -8,7 +8,7 @@ from merakicommons.container import searchable
 from ... import configuration
 from ...data import Region, Platform
 from ...dto.staticdata.profileicon import ProfileIconDetailsDto, ProfileIconDataDto
-from ..common import CoreData, CoreDataList, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
+from ..common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, get_latest_version, provide_default_region, ghost_load_on
 
 
 try:
@@ -39,21 +39,21 @@ class ProfileIconData(CoreData):
 ##############
 
 
-class ProfileIcons(CassiopeiaList):
-    _data_types = {ProfileIconData}
+class ProfileIcons(CassiopeiaLazyList):
+    _data_types = {ProfileIconListData}
 
     @provide_default_region
-    def __init__(self, *args, region: Union[Region, str] = None, version: str = None, locale: str = None):
+    def __init__(self, *, region: Union[Region, str] = None, version: str = None, locale: str = None):
         kwargs = {"region": region}
         if version is not None:
             kwargs["version"] = version
         if locale is not None:
             kwargs["locale"] = locale
-        super().__init__(*args, **kwargs)
+        CassiopeiaObject.__init__(self, **kwargs)
 
     @lazy_property
     def region(self) -> Region:
-        return Region(self._data[ProfileIconData].region)
+        return Region(self._data[ProfileIconListData].region)
 
     @lazy_property
     def platform(self) -> Platform:
@@ -62,15 +62,15 @@ class ProfileIcons(CassiopeiaList):
     @property
     def version(self) -> str:
         try:
-            return self._data[ProfileIconData].version
+            return self._data[ProfileIconListData].version
         except AttributeError:
             version = get_latest_version(region=self.region, endpoint="profileicon")
             self(version=version)
-            return self._data[ProfileIconData].version
+            return self._data[ProfileIconListData].version
 
     @property
     def locale(self) -> str:
-        return self._data[ProfileIconData].locale
+        return self._data[ProfileIconListData].locale
 
 
 @searchable({int: ["id"], str: ["name", "url"], PILImage: ["image"]})
@@ -97,6 +97,11 @@ class ProfileIcon(CassiopeiaGhost):
         except AttributeError:
             pass
         return query
+
+    def __eq__(self, other: "ProfileIcon"):
+        if not isinstance(other, ProfileIcon):
+            return False
+        return self.region == other.region and self.id == other.id
 
     def __load_hook__(self, load_group, data) -> None:
         def find_matching_attribute(datalist, attrname, attrvalue):
@@ -147,8 +152,8 @@ class ProfileIcon(CassiopeiaGhost):
                 _profile_icon_names = json.load(f)
             _profile_icon_names = {int(key): value for key, value in _profile_icon_names.items()}
         try:
-            return _profile_icon_names[self._data[ProfileIconData].id]
-        except AttributeError:
+            return _profile_icon_names[self._data[ProfileIconData].id] or None
+        except KeyError:
             return None
 
     @CassiopeiaGhost.property(ProfileIconData)

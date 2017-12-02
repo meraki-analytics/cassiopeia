@@ -7,6 +7,7 @@ def get_locales():
     print(locales)
     for locale in locales:
         print(locale)
+    print(locales)
 
 
 if __name__ == "__main__":

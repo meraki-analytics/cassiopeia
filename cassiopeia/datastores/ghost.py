@@ -6,8 +6,16 @@ from datapipelines import DataSource, PipelineContext, Query, validate_query
 
 from .. import utctimestamp
 from ..data import Platform, Queue
-from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, MasterLeague, League, MatchHistory
+from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions
 from ..core.match import Timeline, MatchListData
+from ..core.staticdata.item import ItemListData
+from ..core.staticdata.champion import ChampionListData, ChampionData
+from ..core.staticdata.map import MapListData
+from ..core.staticdata.profileicon import ProfileIconListData
+from ..core.staticdata.language import LanguagesData
+from ..core.staticdata.rune import RuneListData
+from ..core.staticdata.summonerspell import SummonerSpellListData
+from ..core.staticdata.version import VersionListData
 from .riotapi.staticdata import _get_latest_version, _get_default_locale
 from .uniquekeys import convert_region_to_platform
 
@@ -337,7 +345,7 @@ class UnloadedGhostStore(DataSource):
                 if "endTime" in original_query:
                     new_query["endTime"] = original_query["endTime"]
 
-                data = context.get(context.Keys.PIPELINE).get(MatchListData, query=new_query)
+                data = context[context.Keys.PIPELINE].get(MatchListData, query=new_query)
                 match = None
                 for matchrefdata in data:
                     match = Match.from_match_reference(matchrefdata)
@@ -379,3 +387,121 @@ class UnloadedGhostStore(DataSource):
                                                 begin_time=begin_time, end_time=end_time,
                                                 queues=queues, seasons=seasons, champions=champion_ids)
         return generator
+
+    @get.register(Items)
+    @validate_query(_validate_get_items_query, convert_region_to_platform)
+    def get_items(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Items:
+        def items_generator(query):
+            data = context[context.Keys.PIPELINE].get(ItemListData, query)
+            for itemdata in data:
+                item = Item.from_data(itemdata)
+                yield item
+        kwargs = {
+            "region": query["region"],
+            "version": query["version"],
+            "locale": query["locale"],
+            "included_data": query["includedData"],
+        }
+        return Items.from_generator(generator=items_generator(query), **kwargs)
+
+    @get.register(Champions)
+    @validate_query(_validate_get_champions_query, convert_region_to_platform)
+    def get_champions(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Champions:
+        def champions_generator(query):
+            data = context[context.Keys.PIPELINE].get(ChampionListData, query)
+            for champion_data in data:
+                champion = Champion.from_data(champion_data, loaded_groups={ChampionData})
+                yield champion
+        kwargs = {
+            "region": query["region"],
+            "version": query["version"],
+            "locale": query["locale"],
+            "included_data": query["includedData"],
+        }
+        return Champions.from_generator(generator=champions_generator(query), **kwargs)
+
+    @get.register(Maps)
+    @validate_query(_validate_get_maps_query, convert_region_to_platform)
+    def get_maps(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Maps:
+        def maps_generator(query):
+            data = context[context.Keys.PIPELINE].get(MapListData, query)
+            for map_data in data:
+                map = Map.from_data(map_data)
+                yield map
+        kwargs = {
+            "region": query["region"],
+            "version": query["version"],
+            "locale": query["locale"]
+        }
+        return Maps.from_generator(generator=maps_generator(query), **kwargs)
+
+    @get.register(ProfileIcons)
+    @validate_query(_validate_get_profile_icons_query, convert_region_to_platform)
+    def get_profile_icons(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ProfileIcons:
+        def profile_icons_generator(query):
+            data = context[context.Keys.PIPELINE].get(ProfileIconListData, query)
+            for profile_icon_data in data:
+                profile_icon = ProfileIcon.from_data(profile_icon_data)
+                yield profile_icon
+        kwargs = {
+            "region": query["region"],
+            "version": query["version"],
+            "locale": query["locale"]
+        }
+        return ProfileIcons.from_generator(generator=profile_icons_generator(query), **kwargs)
+
+    @get.register(Locales)
+    @validate_query(_validate_get_languages_query, convert_region_to_platform)
+    def get_locales(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Locales:
+        def locales_generator(query):
+            data = context[context.Keys.PIPELINE].get(LanguagesData, query)
+            for locale in data:
+                yield locale
+        kwargs = {
+            "region": query["region"]
+        }
+        return Locales.from_generator(generator=locales_generator(query), **kwargs)
+
+    @get.register(Runes)
+    @validate_query(_validate_get_runes_query, convert_region_to_platform)
+    def get_runes(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Runes:
+        def runes_generator(query):
+            data = context[context.Keys.PIPELINE].get(RuneListData, query)
+            for runedata in data:
+                rune = Rune.from_data(runedata)
+                yield rune
+        kwargs = {
+            "region": query["region"],
+            "version": query["version"],
+            "locale": query["locale"],
+            "included_data": query["includedData"],
+        }
+        return Runes.from_generator(generator=runes_generator(query), **kwargs)
+
+    @get.register(SummonerSpells)
+    @validate_query(_validate_get_summoner_spells_query, convert_region_to_platform)
+    def get_summoner_spells(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> SummonerSpells:
+        def summoner_spells_generator(query):
+            data = context[context.Keys.PIPELINE].get(SummonerSpellListData, query)
+            for summoner_spelldata in data:
+                summoner_spell = SummonerSpell.from_data(summoner_spelldata)
+                yield summoner_spell
+        kwargs = {
+            "region": query["region"],
+            "version": query["version"],
+            "locale": query["locale"],
+            "included_data": query["includedData"],
+        }
+        return SummonerSpells.from_generator(generator=summoner_spells_generator(query), **kwargs)
+
+    @get.register(Versions)
+    @validate_query(_validate_get_versions_query, convert_region_to_platform)
+    def get_versions(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Versions:
+        def versions_generator(query):
+            data = context[context.Keys.PIPELINE].get(VersionListData, query)
+            for version in data:
+                yield version
+        kwargs = {
+            "region": query["region"]
+        }
+        return Versions.from_generator(generator=versions_generator(query), **kwargs)

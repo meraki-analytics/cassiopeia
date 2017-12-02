@@ -76,6 +76,9 @@ def convert_region_to_platform(query: MutableMapping[str, Any]) -> None:
     if "regions" in query and "platforms" not in query:
         query["platforms"] = _region_to_platform_generator(query["regions"])
 
+    if "region" in query and not isinstance(query["region"], Region):
+        query["region"] = Region(query["region"])
+
 
 #######
 # DTO #
