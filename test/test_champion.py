@@ -7,23 +7,23 @@ from .constants import CHAMP_NAME
 
 
 def test_returns_correct_type():
-    champ = cassiopeia.get_champion(CHAMP_NAME)
-    all_champs = cassiopeia.get_champions()
+    champion = cassiopeia.get_champion(CHAMP_NAME, region="NA")
+    champions = cassiopeia.get_champions(region="NA")
 
-    assert isinstance(champ, cassiopeia.Champion)
-    assert isinstance(all_champs, SearchableList)
-    assert all(isinstance(c, cassiopeia.Champion) for c in all_champs)
+    assert isinstance(champion, cassiopeia.Champion)
+    assert isinstance(champions, SearchableList)
+    assert all(isinstance(c, cassiopeia.Champion) for c in champions)
 
 
 def test_raises_with_unknown_champion():
     with pytest.raises(SearchError):
-        cassiopeia.get_champion('nonexistant champ')
+        cassiopeia.get_champion('nonexistant champ', region="NA")
 
 
 def test_champion_and_champions_return_same_data():
-    champions = cassiopeia.get_champions()
+    champions = cassiopeia.get_champions(region="NA")
 
-    champ = champions[0]
-    from_get_champion = cassiopeia.get_champion(champ.name)
+    champion = champions[0]
+    from_get_champion = cassiopeia.get_champion(champion.name, region="NA")
 
-    assert champ.__dict__ == from_get_champion.__dict__
+    assert champion == from_get_champion

@@ -1,4 +1,7 @@
+import datetime
+
 import cassiopeia
+from cassiopeia import Region, Platform
 import pytest
 
 from merakicommons.container import SearchableList
@@ -8,57 +11,40 @@ from .constants import CHAMP_NAME, SUMMONER_NAME, UNKNOWN_SUMMONER_NAME
 
 
 def test_masteries_correct_type():
-    # TODO: Once get_champion_masteries works with passing a name,
-    #       replace this with get_champion_masteries(SUMMONER_NAME)
-    summoner = cassiopeia.get_summoner(name=SUMMONER_NAME)
-    champ_masteries = cassiopeia.get_champion_masteries(summoner.id)
+    summoner = cassiopeia.get_summoner(name=SUMMONER_NAME, region="NA")
+    champ_masteries = cassiopeia.get_champion_masteries(summoner=summoner.id, region="NA")
 
     assert isinstance(champ_masteries, SearchableList)
     assert all(isinstance(cm, cassiopeia.ChampionMastery) for cm in champ_masteries)
 
 
-def test_returns_empty_list_with_unknown_summoner():
-    # TODO: Also do this with name, once it's implemented (see above)
-    cm = cassiopeia.get_champion_masteries(123901923180391)
-    assert cm == []
-
-
-# def test_masteries_with_id_or_summoner():
-    # TODO
-    # Comment out these tests once get_champion_masteries supports
-    # retrieving mastery through name or summoner again
-    # (currently only supports it through ID)
-
-    # summ = cassiopeia.get_summoner(name=SUMMONER_NAME)
-
-    # from_summoner = set(cassiopeia.get_champion_masteries(summ))
-    # from_id = set(cassiopeia.get_champion_masteries(summ.id))
-    # from_name = set(cassiopeia.get_champion_masteries(summ.name))
-
-    # assert from_summoner == from_id
-    # assert from_id == from_name
+def test_masteries_contains_all_champions():
+    champions = cassiopeia.get_champions(region="NA")
+    summoner = cassiopeia.get_summoner(name=SUMMONER_NAME, region="NA")
+    champ_masteries = cassiopeia.get_champion_masteries(summoner=summoner.id, region="NA")
+    for cm in champ_masteries:
+        assert cm.champion in champions
+    for champion in champions:
+        assert champion in champ_masteries
 
 
 def test_mastery_return():
-    summ = cassiopeia.get_summoner(name=SUMMONER_NAME)
-    champ = cassiopeia.get_champion(CHAMP_NAME)
-    champ_mastery = cassiopeia.get_champion_mastery(summ.id, champion=champ)
+    summoner = cassiopeia.get_summoner(name=SUMMONER_NAME, region="NA")
+    champion = cassiopeia.get_champion(CHAMP_NAME, region="NA")
+    champion_mastery = cassiopeia.get_champion_mastery(summoner=summoner.id, champion=champion, region="NA")
 
-    assert isinstance(champ_mastery, cassiopeia.ChampionMastery)
-    assert isinstance(champ_mastery.summoner, cassiopeia.Summoner)
-    assert isinstance(champ_mastery.champion, cassiopeia.Champion)
+    assert isinstance(champion_mastery, cassiopeia.ChampionMastery)
+    assert isinstance(champion_mastery.summoner, cassiopeia.Summoner)
+    assert isinstance(champion_mastery.champion, cassiopeia.Champion)
 
-    assert champ_mastery.summoner.name == SUMMONER_NAME
-    assert champ_mastery.champion.name == CHAMP_NAME
+    assert champion_mastery.summoner == summoner
+    assert champion_mastery.champion == champion
 
-
-def test_mastery_returns_correct_data():
-    summoner = cassiopeia.get_summoner(name=SUMMONER_NAME)
-    masteries = cassiopeia.get_champion_masteries(summoner.id)
-    on_champ = masteries[0]
-
-    from_single_call = cassiopeia.get_champion_mastery(SUMMONER_NAME, on_champ.champion)
-
-    #assert on_champ._data[cassiopeia.core.championmastery.ChampionMasteryData]._dto == from_single_call._data[cassiopeia.core.championmastery.ChampionMasteryData]._dto
-    assert on_champ.points == from_single_call.points
-
+    assert isinstance(champion_mastery.platform, Platform)
+    assert isinstance(champion_mastery.region, Region)
+    assert isinstance(champion_mastery.chest_granted, bool)
+    assert isinstance(champion_mastery.last_played, datetime.datetime)
+    assert isinstance(champion_mastery.level, int) and champion_mastery.level <= 7
+    assert isinstance(champion_mastery.points, int)
+    assert isinstance(champion_mastery.points_since_last_level, int)
+    assert isinstance(champion_mastery.points_until_next_level, int)
