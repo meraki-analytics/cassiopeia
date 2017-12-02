@@ -27,7 +27,7 @@ class FeaturedGamesData(CoreDataList):
 
 
 class CurrentGameParticipantData(CoreData):
-    _renamed = {"spell1Id": "summonerSpellFId", "spell2Id": "summonerSpellDId"}
+    _renamed = {"spell1Id": "summonerSpellFId", "spell2Id": "summonerSpellDId", "teamId": "side"}
 
     def __call__(self, **kwargs):
         if "perks" in kwargs:
@@ -37,7 +37,7 @@ class CurrentGameParticipantData(CoreData):
 
 
 class TeamData(CoreData):
-    _renamed = {}
+    _renamed = {"teamId": "side"}
 
 
 class CurrentGameInfoData(CoreData):
@@ -52,8 +52,8 @@ class CurrentGameInfoData(CoreData):
 
     @property
     def teams(self) -> List[TeamData]:
-        blue_team = {"participants": [], "bans": []}
-        red_team = {"participants": [], "bans": []}
+        blue_team = {"participants": [], "bans": [], "teamId": 100}
+        red_team = {"participants": [], "bans": [], "teamId": 200}
         for p in self.participants:
             if Side(p["teamId"]) is Side.blue:
                 p = CurrentGameParticipantData(**p)
@@ -100,42 +100,49 @@ class Participant(CassiopeiaObject):
     _data_types = {CurrentGameParticipantData}
 
     @classmethod
-    def from_data(cls, data: CoreData, region: Region):
+    def from_data(cls, data: CoreData, match: "CurrentMatch"):
         self = super().from_data(data)
-        self.__region = region
+        self.__match = match
         return self
 
     @property
     def champion(self) -> Champion:
-        return Champion(id=self._data[CurrentGameParticipantData].championId, region=self.__region, version=get_latest_version(self.__region, endpoint="champion"))
+        return Champion(id=self._data[CurrentGameParticipantData].championId, region=self.__match.region, version=get_latest_version(region=self.__match.region, endpoint="champion"))
 
     @property
     def summoner(self) -> Summoner:
-        ProfileIcon(id=self._data[CurrentGameParticipantData].profileIconId, region=self.__region)
+        ProfileIcon(id=self._data[CurrentGameParticipantData].profileIconId, region=self.__match.region)
         if hasattr(self._data[CurrentGameParticipantData], "summonerId"):
-            return Summoner(id=self._data[CurrentGameParticipantData].summonerId, name=self._data[CurrentGameParticipantData].summonerName, region=self.__region)
+            return Summoner(id=self._data[CurrentGameParticipantData].summonerId, name=self._data[CurrentGameParticipantData].summonerName, region=self.__match.region)
         else:
-            return Summoner(name=self._data[CurrentGameParticipantData].summonerName, region=self.__region)
+            return Summoner(name=self._data[CurrentGameParticipantData].summonerName, region=self.__match.region)
 
     @property
     def runes(self) -> List[Rune]:
-        return SearchableList([Rune(id=rune_id, region=self.__region, version=get_latest_version(self.__region, endpoint="rune")) for rune_id in self._data[CurrentGameParticipantData].runes])
+        return SearchableList([Rune(id=rune_id, region=self.__match.region, version=get_latest_version(region=self.__match.region, endpoint="rune")) for rune_id in self._data[CurrentGameParticipantData].runes])
 
     @property
     def is_bot(self) -> bool:
         return self._data[CurrentGameParticipantData].isBot
 
     @property
+    def side(self) -> Side:
+        return Side(self._data[CurrentGameParticipantData].side)
+
+    @property
     def team(self) -> "Team":
-        raise NotImplemented  # TODO
+        if self.side == Side.blue:
+            return self.__match.blue_team
+        else:
+            return self.__match.red_team
 
     @property
     def summoner_spell_d(self) -> SummonerSpell:
-        return SummonerSpell(id=self._data[CurrentGameParticipantData].summonerSpellDId, region=self.__region, version=get_latest_version(self.__region, endpoint="summoner"))
+        return SummonerSpell(id=self._data[CurrentGameParticipantData].summonerSpellDId, region=self.__match.region, version=get_latest_version(region=self.__match.region, endpoint="summoner"))
 
     @property
     def summoner_spell_f(self) -> SummonerSpell:
-        return SummonerSpell(id=self._data[CurrentGameParticipantData].summonerSpellFId, region=self.__region, version=get_latest_version(self.__region, endpoint="summoner"))
+        return SummonerSpell(id=self._data[CurrentGameParticipantData].summonerSpellFId, region=self.__match.region, version=get_latest_version(region=self.__match.region, endpoint="summoner"))
 
 
 @searchable({})
@@ -143,18 +150,22 @@ class Team(CassiopeiaObject):
     _data_types = {TeamData}
 
     @classmethod
-    def from_data(cls, data: CoreData, region: Region):
+    def from_data(cls, data: CoreData, match: "CurrentMatch"):
         self = super().from_data(data)
-        self.__region = region
+        self.__match = match
         return self
 
     @lazy_property
     def participants(self) -> List[Participant]:
-        return SearchableList([Participant.from_data(p, region=self.__region) for p in self._data[TeamData].participants])
+        return SearchableList([Participant.from_data(p, match=self.__match) for p in self._data[TeamData].participants])
 
     @lazy_property
     def bans(self) -> Dict[int, Champion]:
-        return {pick: Champion(id=championId, region=self.__region, version=get_latest_version(self.__region, endpoint="champion")) for pick, championId in self._data[TeamData].bans.items()}
+        return {pick: Champion(id=championId, region=self.__match.region, version=get_latest_version(region=self.__match.region, endpoint="champion")) for pick, championId in self._data[TeamData].bans.items()}
+
+    @property
+    def side(self) -> Side:
+        return Side(self._data[TeamData].side)
 
 
 @searchable({})
@@ -226,7 +237,7 @@ class CurrentMatch(CassiopeiaGhost):
     @ghost_load_on
     @lazy
     def teams(self) -> List[Team]:
-        return SearchableList([Team.from_data(team, region=self.region) for team in self._data[CurrentGameInfoData].teams])
+        return SearchableList([Team.from_data(team, match=self) for team in self._data[CurrentGameInfoData].teams])
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
     @ghost_load_on
