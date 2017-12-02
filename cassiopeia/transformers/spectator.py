@@ -35,7 +35,7 @@ class SpectatorTransformer(DataTransformer):
         summoner = Summoner(name=value.teams[0].participants[0].summoner_name, region=value.region)
         return CurrentMatch.from_data(value, summoner=summoner)
 
-    @transform.register(FeaturedGamesData, FeaturedMatches)
+    #@transform.register(FeaturedGamesData, FeaturedMatches)
     def featured_games_data_to_core(self, value: FeaturedGamesData, context: PipelineContext = None) -> FeaturedMatches:
         from ..core.summoner import Summoner
         matches = []

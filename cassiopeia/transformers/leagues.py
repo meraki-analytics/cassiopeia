@@ -61,7 +61,7 @@ class LeagueTransformer(DataTransformer):
         data = deepcopy(value)
         return LeagueEntry.from_data(data)
 
-    @transform.register(LeaguePositionsData, LeagueEntries)
+    #@transform.register(LeaguePositionsData, LeagueEntries)
     def league_positions_data_to_core(self, value: LeaguePositionsData, context: PipelineContext = None) -> LeagueEntries:
         data = deepcopy(value)
         return LeagueEntries.from_data(*[LeagueTransformer.league_position_data_to_core(self, position) for position in data], summoner=value.summoner_id, region=value.region)

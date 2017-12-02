@@ -5,7 +5,7 @@ from merakicommons.container import searchable, SearchableList
 
 from .. import configuration
 from ..data import Region, Platform, Tier, Division, Queue
-from .common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, provide_default_region, ghost_load_on
+from .common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, provide_default_region, ghost_load_on
 from ..dto.league import LeaguePositionDto, LeaguePositionsDto,  LeaguesListDto, LeagueListDto, MiniSeriesDto, ChallengerLeagueListDto, MasterLeagueListDto
 from .summoner import Summoner
 
@@ -204,17 +204,14 @@ class LeagueEntry(CassiopeiaGhost):
         return self._data[LeaguePositionData].inactive
 
 
-class LeagueEntries(CassiopeiaList):
+class LeagueEntries(CassiopeiaLazyList):
     _data_types = {LeaguePositionsData}
 
     @provide_default_region
-    def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None):
-        super().__init__(*args, region=region)
-        if isinstance(summoner, str):
-            summoner = Summoner(name=summoner, region=region)
-        elif isinstance(summoner, int):
-            summoner = Summoner(id=summoner, region=region)
+    def __init__(self, *, summoner: Summoner, region: Union[Region, str] = None):
         self.__summoner = summoner
+        kwargs = {"region": region}
+        CassiopeiaObject.__init__(self, **kwargs)
 
     @classmethod
     @provide_default_region

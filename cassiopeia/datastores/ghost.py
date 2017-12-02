@@ -6,9 +6,11 @@ from datapipelines import DataSource, PipelineContext, Query, validate_query
 
 from .. import utctimestamp
 from ..data import Platform, Queue
-from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions, ChampionMasteries
+from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions, ChampionMasteries, LeagueEntries, FeaturedMatches
 from ..core.match import Timeline, MatchListData
 from ..core.championmastery import ChampionMasteryListData
+from ..core.league import LeaguePositionsData, LeagueEntry
+from ..core.spectator import FeaturedGamesData
 from ..core.staticdata.item import ItemListData
 from ..core.staticdata.champion import ChampionListData, ChampionData
 from ..core.staticdata.map import MapListData
@@ -538,3 +540,30 @@ class UnloadedGhostStore(DataSource):
             "summoner": Summoner(id=query["summoner.id"], region=query["region"])
         }
         return ChampionMasteries.from_generator(generator=champion_masteries_generator(query), **kwargs)
+
+    @get.register(LeagueEntries)
+    @validate_query(_validate_get_league_entries_query, convert_region_to_platform)
+    def get_league_entries(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LeagueEntries:
+        def league_entries_generator(query):
+            data = context[context.Keys.PIPELINE].get(LeaguePositionsData, query)
+            for position_data in data:
+                position = LeagueEntry.from_data(position_data)
+                yield position
+        kwargs = {
+            "region": query["region"],
+            "summoner": Summoner(id=query["summoner.id"], region=query["region"])
+        }
+        return LeagueEntries.from_generator(generator=league_entries_generator(query), **kwargs)
+
+    @get.register(FeaturedMatches)
+    @validate_query(_validate_get_featured_matches_query, convert_region_to_platform)
+    def get_featured_matches(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> FeaturedMatches:
+        def featured_matches_generator(query):
+            data = context[context.Keys.PIPELINE].get(FeaturedGamesData, query)
+            for match_data in data:
+                match = CurrentMatch.from_data(match_data, summoner=None)
+                yield match
+        kwargs = {
+            "region": query["region"]
+        }
+        return FeaturedMatches.from_generator(generator=featured_matches_generator(query), **kwargs)

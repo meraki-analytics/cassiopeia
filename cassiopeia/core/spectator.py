@@ -3,10 +3,10 @@ import datetime
 
 from datapipelines import NotFoundError
 from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable, SearchableList, SearchableDictionary
+from merakicommons.container import searchable, SearchableList
 
 from ..data import Region, Platform, GameMode, GameType, Queue, Side
-from .common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaList, get_latest_version, provide_default_region, ghost_load_on
+from .common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, get_latest_version, provide_default_region, ghost_load_on
 from ..dto import spectator as dto
 from .staticdata.profileicon import ProfileIcon
 from .staticdata.champion import Champion
@@ -74,8 +74,13 @@ class CurrentGameInfoData(CoreData):
 ##############
 
 
-class FeaturedMatches(CassiopeiaList):
+class FeaturedMatches(CassiopeiaLazyList):
     _data_types = {FeaturedGamesData}
+
+    @provide_default_region
+    def __init__(self, *, region: Union[Region, str] = None):
+        kwargs = {"region": region}
+        CassiopeiaObject.__init__(self, **kwargs)
 
     @lazy_property
     def region(self) -> Region:

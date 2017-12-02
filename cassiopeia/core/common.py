@@ -278,22 +278,6 @@ class CassiopeiaGhost(CassiopeiaPipelineObject, Ghost):
         self._data[load_group] = data
 
 
-class CassiopeiaList(SearchableList, CassiopeiaPipelineObject):
-    def __init__(self, *args, **kwargs):
-        SearchableList.__init__(self, args)
-        CassiopeiaObject.__init__(self, **kwargs)
-
-    @classmethod
-    def from_data(cls, *args, **kwargs):
-        return cls._construct_normally(*args, **kwargs)
-
-    def __hash__(self):
-        return id(self)
-
-    def __str__(self):
-        return SearchableList.__str__(self)
-
-
 class CassiopeiaLazyList(SearchableLazyList, CassiopeiaPipelineObject):
     def __init__(self, *args, **kwargs):
         if "generator" in kwargs:
