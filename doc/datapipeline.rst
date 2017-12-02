@@ -5,7 +5,7 @@ Data Pipeline
 
 The data pipeline is a fundamental piece of Cass. It controls the flow of data into and out of an in-memory cache, your databases, the Riot API, and any other data sources/sinks you provide.
 
-The data pipeline consists of a list of ``DataSource``s and ``DataSink``s. A ``DataSource`` is any entity that *provides* data (for example, the Riot API and databases are both data sources). A ``DataSink`` is any entity that *stores* data (databases are also data sinks). Any entity that is a data sink will almost certainly be a data source as well. We refer to an entity that is both a data source and data sink as a data *store*.
+The data pipeline consists of a list of ``DataSource``\s and ``DataSink``\s. A ``DataSource`` is any entity that *provides* data (for example, the Riot API and databases are both data sources). A ``DataSink`` is any entity that *stores* data (databases are also data sinks). Any entity that is a data sink will almost certainly be a data source as well. We refer to an entity that is both a data source and data sink as a data *store*.
 
 The data sources and sinks are *ordered* in the data pipeline, and their order determines the order in which data is requested. Generally speaking, slower data stores / sinks should go towards the end of the pipeline.
 
@@ -17,7 +17,7 @@ Each data sink has expiration periods defined for each type of data it accepts. 
 
 A few notes: 1) Users can force all expired objects in data sinks to be removed using ``settings.pipeline.expire()``. 2) Individual data sinks handle their own expirations, so if you write a database, you must decide how to handle expirations for data in your database.
 
-Below is an example (which tuses more data stores than Cass uses by default):
+Below is an example (which uses more datastores than Cass uses by default):
 
 .. code-block:: json
 
@@ -26,7 +26,7 @@ Below is an example (which tuses more data stores than Cass uses by default):
         "Cache": {},
 
         "SimpleKVDiskStore": {
-          "package": "cassiopeia-datastores.diskstore.diskstore"
+          "package": "cassiopeia_diskstore"
         },
 
         "DDragon": {},
@@ -37,7 +37,7 @@ Below is an example (which tuses more data stores than Cass uses by default):
 
         "ChampionGG": {
           "package": "cassiopeia_championgg",
-          "api_key": "CHAMPIONGG_KEY"
+          "api_key": "CHAMPIONGG_KEY"  # See api.champion.gg
         }
     }
 
@@ -64,43 +64,39 @@ The in-memory cache, simply called the cache, is a data store and provides fast 
 
 The cache should be the first element in your pipeline.
 
-It takes one optional parameter, which is a mapping of expiration times (in seconds or ``datetime.timedelta`` if set programmatically) for each data type stored in the cache. Valid type names and their defaults are below (a value of ``-1`` means "do not expire" and ``0`` means "do not store in the data sink):
+It takes one optional parameter (called ``expirations``), which is a mapping of expiration times (in seconds or ``datetime.timedelta`` if set programmatically) for each data type stored in the cache. Valid type names and their defaults are below (a value of ``-1`` means "do not expire" and ``0`` means "do not store in the data sink):
 
 .. code-block:: python
 
-    Realms: datetime.timedelta(hours=6)
-    Versions: datetime.timedelta(hours=6)
-    Champion: datetime.timedelta(days=20)
-    Mastery: datetime.timedelta(days=20)
-    Rune: datetime.timedelta(days=20)
-    Item: datetime.timedelta(days=20)
-    SummonerSpell: datetime.timedelta(days=20)
-    Map: datetime.timedelta(days=20)
-    ProfileIcon: datetime.timedelta(days=20)
-    Locales: datetime.timedelta(days=20)
-    LanguageStrings: datetime.timedelta(days=20)
-    SummonerSpells: datetime.timedelta(days=20)
-    Items: datetime.timedelta(days=20)
-    Champions: datetime.timedelta(days=20)
-    Masteries: datetime.timedelta(days=20)
-    Runes: datetime.timedelta(days=20)
-    Maps: datetime.timedelta(days=20)
-    ProfileIcons: datetime.timedelta(days=20)
-    ChampionMastery: datetime.timedelta(days=7)
-    ChampionMasteries: datetime.timedelta(days=7)
-    LeagueEntries: datetime.timedelta(hours=6)
-    League: datetime.timedelta(hours=6)
-    ChallengerLeague: datetime.timedelta(hours=6)
-    MasterLeague: datetime.timedelta(hours=6)
-    Match: datetime.timedelta(days=3)
-    Timeline: datetime.timedelta(days=1)
-    MasteryPage: datetime.timedelta(days=1)
-    MasteryPages: datetime.timedelta(days=1)
-    RunePage: datetime.timedelta(days=1)
-    RunePages: datetime.timedelta(days=1)
-    Summoner: datetime.timedelta(days=1)
-    ShardStatus: datetime.timedelta(hours=1)
-    CurrentMatch: datetime.timedelta(hours=0.5)
+    ChampionStatusData: datetime.timedelta(hours=6),
+    ChampionStatusListData: datetime.timedelta(hours=6),
+    Realms: datetime.timedelta(hours=6),
+    Versions: datetime.timedelta(hours=6),
+    Champion: datetime.timedelta(days=20),
+    Rune: datetime.timedelta(days=20),
+    Item: datetime.timedelta(days=20),
+    SummonerSpell: datetime.timedelta(days=20),
+    Map: datetime.timedelta(days=20),
+    ProfileIcon: datetime.timedelta(days=20),
+    Locales: datetime.timedelta(days=20),
+    LanguageStrings: datetime.timedelta(days=20),
+    SummonerSpells: datetime.timedelta(days=20),
+    Items: datetime.timedelta(days=20),
+    Champions: datetime.timedelta(days=20),
+    Runes: datetime.timedelta(days=20),
+    Maps: datetime.timedelta(days=20),
+    ProfileIcons: datetime.timedelta(days=20),
+    ChampionMastery: datetime.timedelta(days=7),
+    ChampionMasteries: datetime.timedelta(days=7),
+    LeagueEntries: datetime.timedelta(hours=6),
+    League: datetime.timedelta(hours=6),
+    ChallengerLeague: datetime.timedelta(hours=6),
+    MasterLeague: datetime.timedelta(hours=6),
+    Match: datetime.timedelta(days=3),
+    Timeline: datetime.timedelta(days=1),
+    Summoner: datetime.timedelta(days=1),
+    ShardStatus: datetime.timedelta(hours=1),
+    CurrentMatch: datetime.timedelta(hours=0.5),
     FeaturedMatches: datetime.timedelta(hours=0.5)
 
 TODO: The cache currently does not automatically expire its data, so it's possible to run out of memory. To prevent this, users can trigger an expiration of all data or all data of one type by using the method ``settings.pipeline.expire``. We will fix this so that the cache does automatically expire it's data, but we haven't gotten to it yet. Using the ``expire`` method is a temporary workaround.
@@ -128,6 +124,11 @@ Simple Disk Database
 
 This is a simple filesystem database, and is therefore both a data source and data sink. It is not provided by Cass by default, and needs to be installed separately. See :ref:`plugins` for more information.
 
+
+SQLAlchemy Database Support
+"""""""""""""""""""""""""""
+
+This is a database system that supports all databases that `SQLAlchemy <https://www.sqlalchemy.org/>`_ supports. It is not provided by Cass by default, and needs to be installed separately. See :ref:`plugins` for more information.
 
 ChampionGG
 """"""""""

@@ -1247,7 +1247,7 @@ class Team(CassiopeiaObject):
         return SearchableList([Participant.from_data(p, match=self.__match) for p in self._data[TeamData].participants])
 
 
-@searchable({str: ["participants", "region", "platform", "season", "queue", "mode", "map", "type"], Region: ["region"], Platform: ["platform"], Season: ["season"], Queue: ["queue"], GameMode: ["mode"], Map: ["map"], GameType: ["type"], Item: ["participants"], Champion: ["participants"]})
+@searchable({str: ["participants", "region", "platform", "season", "queue", "mode", "map", "type"], Region: ["region"], Platform: ["platform"], Season: ["season"], Queue: ["queue"], GameMode: ["mode"], Map: ["map"], GameType: ["type"], Item: ["participants"], Champion: ["participants"], Patch: ["patch"]})
 class Match(CassiopeiaGhost):
     _data_types = {MatchData}
 

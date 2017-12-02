@@ -8,17 +8,17 @@ Example usage of the two interfaces:
 .. code-block:: python
 
     import cassiopeia as cass
-    kalturi = cass.get_summoner(name="Kalturi")
+    kalturi = cass.get_summoner(name="Kalturi", region="NA")
 
     from cassiopeia import Summoner
-    kalturi = Summoner(name="Kalturi")
+    kalturi = Summoner(name="Kalturi", region="NA")
 
 Also note that many types can be pulled from ``Summoner`` objects. This is the preferred way to interact with these types. They are listed below:
 
 .. code-block:: python
 
     from cassiopeia import Summoner
-    kalturi = Summoner(name="Kalturi")
+    kalturi = Summoner(name="Kalturi", region="NA")
     kalturi.champion_masteries
     kalturi.match_history
     kalturi.current_match
@@ -28,7 +28,7 @@ Also note that many types can be pulled from ``Summoner`` objects. This is the p
 Methods and Class Constructors
 ------------------------------
 
-See on the links below for the method and class names for each type.
+See the links below for the method and class names for each type.
 
 .. toctree::
 

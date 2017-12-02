@@ -38,7 +38,7 @@ def print_newest_match(name: str, account: int, id: int, region: str):
     match = match_history[0]
     print('Match ID:', match.id)
 
-    p = match.participants[name]
+    p = match.participants[summoner]
     print("\nSince the match was created from a matchref, we only know one participant:")
     #print(p.summoner.name, 'playing', p.champion.name)
     print(p.id, p.summoner.region, p.summoner.account.id, p.summoner.name, p.summoner.id, p.champion.id)

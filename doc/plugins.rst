@@ -21,7 +21,7 @@ To enable this plugin, add the following to your settings' data pipeline:
 
 .. code-block:: json
 
-  "pipline": {
+  "pipeline": {
     ...,
     "ChampionGG": {
       "package": "cassiopeia_championgg",
@@ -44,7 +44,7 @@ To enable this plugin, add the following to your settings' data pipeline between
 
 .. code-block:: json
 
-  "pipline": {
+  "pipeline": {
     ...,
     "SimpleKVDiskStore": {
       "package": "cassiopeia_diskstore",
@@ -57,41 +57,73 @@ The ``"path"`` parameter specifies a directory path where the data will be store
 
 .. code-block:: python
 
-    RealmDto: datetime.timedelta(hours=6)
-    VersionListDto: datetime.timedelta(hours=6)
-    ChampionDto: -1
-    ChampionListDto: -1
-    MasteryDto: -1
-    MasteryListDto: -1
-    RuneDto: -1
-    RuneListDto: -1
-    ItemDto: -1
-    ItemListDto: -1
-    SummonerSpellDto: -1
-    SummonerSpellListDto: -1
-    MapDto: -1
-    MapListDto: -1
-    ProfileIconDetailsDto: -1
-    ProfileIconDataDto: -1
-    LanguagesDto: -1
-    LanguageStringsDto: -1
-    ChampionStatusDto: datetime.timedelta(days=1)
-    ChampionStatusListDto: datetime.timedelta(days=1)
-    ChampionMasteryDto: datetime.timedelta(days=7)
-    ChampionMasteryListDto: datetime.timedelta(days=7)
-    LeaguePositionsDto: datetime.timedelta(hours=6)
-    LeagueListDto: datetime.timedelta(hours=6)
-    ChallengerLeagueListDto: datetime.timedelta(hours=6)
-    MasterLeagueListDto: datetime.timedelta(hours=6)
-    MatchDto: -1
-    TimelineDto: -1
-    MasteryPageDto: datetime.timedelta(days=1)
-    MasteryPagesDto: datetime.timedelta(days=1)
-    RunePageDto: datetime.timedelta(days=1)
-    RunePagesDto: datetime.timedelta(days=1)
-    SummonerDto: datetime.timedelta(days=1)
-    ShardStatusDto: datetime.timedelta(hours=1)
-    CurrentGameInfoDto: datetime.timedelta(hours=0.5)
-    FeaturedGamesDto: datetime.timedelta(hours=0.5)
+    RealmDto: datetime.timedelta(hours=6),
+    VersionListDto: datetime.timedelta(hours=6),
+    ChampionDto: -1,
+    ChampionListDto: -1,
+    RuneDto: -1,
+    RuneListDto: -1,
+    ItemDto: -1,
+    ItemListDto: -1,
+    SummonerSpellDto: -1,
+    SummonerSpellListDto: -1,
+    MapDto: -1,
+    MapListDto: -1,
+    ProfileIconDetailsDto: -1,
+    ProfileIconDataDto: -1,
+    LanguagesDto: -1,
+    LanguageStringsDto: -1,
+    ChampionStatusDto: datetime.timedelta(days=1),
+    ChampionStatusListDto: datetime.timedelta(days=1),
+    ChampionMasteryDto: datetime.timedelta(days=7),
+    ChampionMasteryListDto: datetime.timedelta(days=7),
+    LeaguePositionsDto: datetime.timedelta(hours=6),
+    LeagueListDto: datetime.timedelta(hours=6),
+    ChallengerLeagueListDto: datetime.timedelta(hours=6),
+    MasterLeagueListDto: datetime.timedelta(hours=6),
+    MatchDto: -1,
+    TimelineDto: -1,
+    SummonerDto: datetime.timedelta(days=1),
+    ShardStatusDto: datetime.timedelta(hours=1),
+    CurrentGameInfoDto: datetime.timedelta(hours=0.5),
+    FeaturedGamesDto: datetime.timedelta(hours=0.5),
+    PatchListDto: datetime.timedelta(days=1)
 
 TODO: The diskstore currently does not automatically expire its data, so it's possible to use more disk space than necessary. To prevent this, users can trigger an expiration of all data or all data of one type by using the method ``settings.pipeline.expire``. We will fix this so that the diskstore does automatically expire it's data, but we haven't gotten to it yet. Using the ``expire`` method is a temporary workaround.
+
+
+SQLAlchemy Database Support
+---------------------------
+
+Install by running ``pip install cassiopeia-sqlalchemy``.
+
+This plugin provides a disk-database. It is especially useful for staticdata, which never changes. It works for all data types except ``MatchHistory``.
+
+To enable this plugin, add the following to your settings' data pipeline between the ``Cache`` and ``DDragon`` stores:
+
+.. code-block:: json
+
+  "pipeline": {
+    ...,
+    "SQLStore": {
+       "package":"cassiopeia-diskstores.sqlstore.sqlstore",
+       "connection_string": "<your connection string>"
+    }
+    ...
+  }
+
+The ``"connection_string"`` should be your SQLAlchemy connection string (`see <http://docs.sqlalchemy.org/en/latest/core/engines.html>`_). There is also another optional ``"expirations"`` parameter that is left out of the above example for clarity. The ``"expirations"`` parameter is a mapping of type names to expiration periods analogous to those for the cache. The allowed type names and default values are below (a value of ``-1`` means "do not expire" and ``0`` means "do not store in the data sink):
+
+.. code-block:: python
+
+    ChampionDto: datetime.timedelta(days=1),
+    ChampionMasteryDto: datetime.timedelta(days=7),
+    MatchDto: -1,
+    TimelineDto: -1,
+    SummonerDto: datetime.timedelta(days=1),
+    CurrentGameInfoDto: datetime.timedelta(hours=0.5),
+    LeagueListDto:datetime.timedelta(hours=6),
+    LeaguePositionsDto: datetime.timedelta(hours=6),
+    ShardStatusDto: datetime.timedelta(hours=1),
+
+This store only supports the above types (for now).

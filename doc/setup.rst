@@ -37,9 +37,9 @@ Google can probably give you more information as well, and note that the path na
 
 Setting Your API Key and Other Settings
 =======================================
-By default, Cass pulls your API key from an environment variable called ``RIOT_API_KEY``. You can modify this behavior by creating a your own configuration for Cass (see :ref:`settings` for more info).
+By default, Cass pulls your API key from an environment variable called ``RIOT_API_KEY``. You can modify this behavior by calling ``cass.set_riot_api_key(...)`` or by creating a your own configuration for Cass (see :ref:`settings` for more info). However, we encourage new users to use Cass's default configuration.
 
-To create an environment variable on Windows, follow the directions `here <https://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/sysdm_advancd_environmnt_addchange_variable.mspx?mfr=true>`_. On Linux or Mac, add ``export RIOT_API_KEY='<YOUR_API_KEY>'`` to the end of your shell rc file (this should be ``~/.bashrc`` for most), where ``<YOUR_API_KEY>`` is your Riot-issued API key. Then your terminal/IDE.
+To create an environment variable on Windows, follow the directions `here <https://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/sysdm_advancd_environmnt_addchange_variable.mspx?mfr=true>`_. On Linux or Mac, add ``export RIOT_API_KEY='<YOUR_API_KEY>'`` to the end of your shell rc file (this should be ``~/.bashrc`` for most), where ``<YOUR_API_KEY>`` is your Riot-issued API key. Then restart your terminal/IDE.
 
 
 Plugins

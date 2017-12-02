@@ -11,7 +11,7 @@ There are a few major parts that make Cass work, with minor parts that go along 
 Two Interfaces
 """"""""""""""
 
-Cass has two interfaces that work nearly identically. Depending on your coding style, you can choose the one that you prefer. One uses ``.get_...`` methods to get objects, while the other prefers constructors to create objects. Both are equally good. As an example, both ``cass.get_summoner(name="Kalturi")`` and ``Summoner(name="Kalturi")`` work exactly the same.
+Cass has two interfaces that work nearly identically. Depending on your coding style, you can choose the one that you prefer. One uses ``.get_...`` methods to get objects, while the other prefers constructors to create objects. Both are equally good. As an example, both ``cass.get_summoner(name="Kalturi", region="NA")`` and ``Summoner(name="Kalturi", region="NA")`` work exactly the same.
 
 
 Settings
@@ -25,11 +25,11 @@ There are a few settings in Cass that should be modified, and more that can be m
 Ghost Loading
 """""""""""""
 
-A *ghost object* is an object that can be instantiated without all of its data. It is therefore a shadow of itself, or a *ghost*. Ghost objects know how to load the rest of their data using what they were given at init. This is what allows you to write ``kalturi = Summoner(name="Kalturi")`` followed by ``kalturi.level``. The latter will trigger a call to the data pipeline (discussed below) to pull the rest of the data for ``kalturi`` by using ``kalturi.name``.
+A *ghost object* is an object that can be instantiated without all of its data. It is therefore a shadow of itself, or a *ghost*. Ghost objects know how to load the rest of their data using what they were given at init. This is what allows you to write ``kalturi = Summoner(name="Kalturi", region="NA")`` followed by ``kalturi.level``. The latter will trigger a call to the data pipeline (discussed below) to pull the rest of the data for ``kalturi`` by using ``kalturi.name``.
 
-Most top-level objects in Cass are ghost objects and therefore know how to load their own data. Lists of things (e.g. ``Champions``) are not ghost objects, and instead load their data immediately (this is due to some issues with caching unloaded lists and the objects contained in those lists). The ``MatchHistory`` type works a bit differently (see below).
+Most top-level objects in Cass are ghost objects and therefore know how to load their own data.
 
-For developers who are interested, the implementation for ghost objects can be found in our Meraki Commons repository on GitHub.
+For developers who are interested, the implementation for ghost objects can be found in our ``merakicommons`` repository on GitHub.
 
 
 .. _data-pipeline:
@@ -57,7 +57,15 @@ Most lists, dictionaries, and sets (all of which are containers) can be searched
 
 .. code-block:: python
 
-    a_teemo_game = Summoner(account=27994129).match_history["Teemo"]
+    a_teemo_game = Summoner(account=27994129, region="NA").match_history["Teemo"]
+
+You can also search using objects rather than strings:
+
+.. code-block:: python
+
+    all_champions = Champions(region="NA")
+    teemo = all_champions["Teemo"]
+    a_teemo_game = Summoner(account=27994129, region="NA").match_history[teemo]
 
 All matches in a summoner's match history where ``Teemo`` was in the game can be found by using ``.filter`` rather than the ``[...]`` syntax:
 
@@ -73,12 +81,20 @@ You can also index on items in a match. For example:
 
 will find a game in the summoner's match history where someone ended the game with a Sightstone (or Ruby Sightstone) in their inventory.
 
+Below is a final (very convenient) snippit that allows you to get your participant in a match:
+
+.. code-block:: python
+
+    me = Summoner(name="Kalturi", region="NA")
+    match = me.match_history[0]
+    champion_played = match.participants[me].champion
+
 Searchable containers are extremely powerful and are one of the reasons why writing code using Cass is both fun and intuitive.
 
 
-Match History
-"""""""""""""
+Match Histories Work Slightly Differently
+"""""""""""""""""""""""""""""""""""""""""
 
-The match history of summoners is handled slightly differently than most objects in Cass. Most importantly, it is not Cached or stored in databases we create. This is largely because the logic for doing so is non-trivial, and we haven't implemented it yet -- although we hope to. Therefore match histories are requested from the Riot API every time the method is called. Users are encouraged to cache the results themselves if they wish.
+The match history of a summoner is handled slightly differently than most objects in Cass. Most importantly, it is not Cached or stored in databases we create. This is largely because the logic for doing so is non-trivial, and we haven't implemented it yet -- although we hope to. Therefore match histories are requested from the Riot API every time the method is called. You are encouraged to cache the results yourself if you wish.
 
 Match histories are also lazily loaded.

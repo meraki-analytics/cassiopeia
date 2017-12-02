@@ -5,11 +5,13 @@ Settings
 
 That are many settings in Cassiopeia that control how the framework works, and more settings will be added as the code is expanded.
 
-Use ``cass.apply_settings(...)`` and pass in a ``json`` filename, a dictionary, or a ``cassiopeia.Settings`` object to set Cass's parameters. Cass will use its own default settings if you do not run ``cass.apply_settings``. (The file ``cassiopeia/configuration/default.json`` should always contain what Cass uses as it's default settings; this file is not used directly and is only used for documentation and as an example.)
+Use ``cass.apply_settings(...)`` and pass in a ``json`` filename, a dictionary, or a ``cassiopeia.Settings`` object to set Cass's parameters. Cass will use its own default settings if you do not run ``cass.apply_settings``.
 
-The most important settings are the Riot API key and the default region. Both of these can be set programmatically, and if not set they will be read from your settings.
+The method ``cass.get_default_config()`` will return a dictionary that contains the default settings that Cass uses. You can call this method, modify the returned dictionary, then pass it to ``cass.apply_settings`` to overwrite the default settings.
 
-Each setting is explained below, and should be added as separate entries to your settings.
+The most important setting is your Riot API key. It can be set programmatically (which will override the value specified in the settings).
+
+Each setting is explained below, and should be added as separate entries to your settings dictionary/json.
 
 
 Globals
@@ -20,6 +22,20 @@ The ``"default_region"`` setting should be set to the string version of the regi
 The ``"version_from_match"`` variable determines which version of the static data for matches is loaded (this includes, for example, the items for each participant). Valid values are ``"version"``, ``"patch"``, and ``null``. If set to ``"version"``, the static data for the match's version will be loaded correctly; however, this requires pulling the match data for all matches. If you only want to use match reference data (and will not pull the full data for every match), you should use either ``"patch"`` or ``null``. ``"patch"`` will make a reasonable attempt to get the match's correct version based on its creation date (which is provided in the match reference data); however, if you pull a summoner's full match history, you will pull many versions of the static data, which may take a long time. In addition, the patch dates / times may be slightly off and may depend on the region. For small applications that barely uses the static data, pulling multiple versions of the static data is likely overkill. If that is the case, you should set this variable to ``null``, in which case the static data for the most recent version will be used; this, however, could result in missing or incorrect data if parts of the static data are accessed that have changed from patch to patch. The default is to use the patch if the match hasn't yet been loaded, which is a nice compromise between ensuring you, the user, always have correct data while also preventing new users from pulling a massive amount of unnecessary match data. It's likely that the patch dates aren't perfect, so be aware of this and please report and inconsistencies.
 
 The ``"enable_ghost_loading"`` setting should be set to ``true`` if you want to enable ghost loading (highly recommended). The default is ``true``. See :ref:`ghost_loading` for information about ghost loading.
+
+Below is an example:
+
+.. code-block:: json
+
+    {
+        ...,
+        "global": {
+            "version_from_match": "patch",
+            "default_region": null,
+            "enable_ghost_loading": true
+        }
+        ...
+    }
 
 
 Data Pipeline
@@ -36,7 +52,7 @@ The ``"api_key"`` should be set to your Riot API key. You can instead supply an 
 
 The ``"limit_sharing"`` variable specifies what fraction of your API key should be used for your server. This is useful when you have multiple servers that you want to split your API key over. The default (if not set) is ``1.0``, and valid values are between ``0.0`` and ``1.0``.
 
-The ``request_by_id`` variable determines whether the Riot API will request static data and champion statuses by id when a single piece of data is accessed, or whether it will request all the champions/items/etc when one is asked for. The default is ``True``, meaning that individual elements will be requested one at a time. Be aware that you may quickly hit your rate limit if you aren't careful (luckily, by default, Cass also uses the DDragon data source, which bypasses this rate limit issue for static data; see more below).
+The ``request_by_id`` variable determines whether the Riot API will request static data and champion statuses by id when a single piece of data is accessed, or whether it will request all the champions/items/etc when one is asked for. The default is ``True``, meaning that individual elements will be requested one at a time. Be aware that you may quickly hit your rate limit if you aren't careful (luckily, by default, Cass also uses the `DDragon <http://cassiopeia.readthedocs.io/en/latest/datapipeline.html#data-dragon>`_ data source, which bypasses this rate limit issue for static data).
 
 Request Handling
 """"""""""""""""
@@ -85,6 +101,50 @@ Below is an example, and these settings are the default if any value is not spec
           "timeout": {
               "strategy": "throw"
           }
+        }
+    }
+
+An alternative setting for ``request_error_handling`` is below, which will retry 50x errors:
+
+.. code-block:: json
+
+    "request_error_handling": {
+        "404": {
+            "strategy": "throw"
+        },
+        "429": {
+            "service": {
+                "strategy": "exponential_backoff",
+                "initial_backoff": 1.0,
+                "backoff_factor": 2.0,
+                "max_attempts": 4
+            },
+            "method": {
+                "strategy": "retry_from_headers",
+                "max_attempts": 5
+            },
+            "application": {
+                "strategy": "retry_from_headers",
+                "max_attempts": 5
+            }
+        },
+        "500": {
+            "strategy": "exponential_backoff",
+            "initial_backoff": 1.0,
+            "backoff_factor": 2.0,
+            "max_attempts": 4
+        },
+        "503": {
+            "strategy": "exponential_backoff",
+            "initial_backoff": 1.0,
+            "backoff_factor": 2.0,
+            "max_attempts": 4
+        },
+        "timeout": {
+            "strategy": "throw"
+        },
+        "403": {
+            "strategy": "throw"
         }
     }
 
