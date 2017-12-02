@@ -5,7 +5,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
 from ..data import Region, Platform
-from .common import CoreData, CassiopeiaGhost, CassiopeiaList, CoreDataList, get_latest_version, provide_default_region, ghost_load_on
+from .common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, CoreDataList, get_latest_version, provide_default_region, ghost_load_on
 from ..dto.championmastery import ChampionMasteryDto
 from .staticdata.champion import Champion
 from .summoner import Summoner
@@ -32,19 +32,14 @@ class ChampionMasteryData(CoreData):
 ##############
 
 
-class ChampionMasteries(CassiopeiaList):
+class ChampionMasteries(CassiopeiaLazyList):
     _data_types = {ChampionMasteryListData}
 
     @provide_default_region
-    def __init__(self, *args, summoner: Union[Summoner, int, str], region: Union[Region, str] = None, _account_id: int = None):
-        super().__init__(*args, region=region)
-        if _account_id is not None:
-            summoner = Summoner(account=_account_id, region=region)
-        elif isinstance(summoner, str):
-            summoner = Summoner(name=summoner, region=region)
-        elif isinstance(summoner, int):
-            summoner = Summoner(id=summoner, region=region)
+    def __init__(self, *, summoner: Summoner, region: Union[Region, str] = None):
         self.__summoner = summoner
+        kwargs = {"region": region}
+        CassiopeiaObject.__init__(self, **kwargs)
 
     @classmethod
     @provide_default_region
@@ -145,6 +140,8 @@ class ChampionMastery(CassiopeiaGhost):
         if not isinstance(other, ChampionMastery):
             return False
         return self.region == other.region and self.champion == other.champion and self.summoner == other.summoner
+
+    __hash__ = CassiopeiaGhost.__hash__
 
     @property
     def region(self) -> Region:

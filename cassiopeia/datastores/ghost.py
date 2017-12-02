@@ -6,8 +6,9 @@ from datapipelines import DataSource, PipelineContext, Query, validate_query
 
 from .. import utctimestamp
 from ..data import Platform, Queue
-from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions
+from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions, ChampionMasteries
 from ..core.match import Timeline, MatchListData
+from ..core.championmastery import ChampionMasteryListData
 from ..core.staticdata.item import ItemListData
 from ..core.staticdata.champion import ChampionListData, ChampionData
 from ..core.staticdata.map import MapListData
@@ -505,3 +506,35 @@ class UnloadedGhostStore(DataSource):
             "region": query["region"]
         }
         return Versions.from_generator(generator=versions_generator(query), **kwargs)
+
+    @get.register(ChampionMasteries)
+    @validate_query(_validate_get_champion_masteries_query, convert_region_to_platform)
+    def get_versions(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionMasteries:
+        def champion_masteries_generator(query):
+            from ..transformers.championmastery import ChampionMasteryTransformer
+            all_champion_ids = [champion.id for champion in Champions(region=query["region"])]
+            data = context[context.Keys.PIPELINE].get(ChampionMasteryListData, query)
+            for champion_mastery_data in data:
+                champion_mastery = ChampionMastery.from_data(champion_mastery_data)
+                all_champion_ids.remove(champion_mastery.champion.id)
+                yield champion_mastery
+            for unfound_id in all_champion_ids:
+                dto = {
+                    "championId": unfound_id,
+                    "playerId": query["summoner.id"],
+                    "championLevel": 0,
+                    "chestGranted": False,
+                    "championPoints": 0,
+                    "championPointsUntilNextLevel": 1800,
+                    "championPointsSinceLastLevel": 0,
+                    "lastPlayTime": None,
+                    "region": query["region"]
+                }
+                champion_mastery_data = ChampionMasteryTransformer.champion_mastery_dto_to_data(None, dto)
+                champion_mastery = ChampionMastery.from_data(champion_mastery_data)
+                yield champion_mastery
+        kwargs = {
+            "region": query["region"],
+            "summoner": Summoner(id=query["summoner.id"], region=query["region"])
+        }
+        return ChampionMasteries.from_generator(generator=champion_masteries_generator(query), **kwargs)

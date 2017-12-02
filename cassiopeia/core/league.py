@@ -128,6 +128,8 @@ class LeagueEntry(CassiopeiaGhost):
         q2 = other.__get_query__()
         return q1 == q2 and self.summoner == other.summoner and self.queue == other.queue and self.name == other.name
 
+    __hash__ = CassiopeiaGhost.__hash__
+
     @lazy_property
     def region(self) -> Region:
         """The region for this champion."""
@@ -285,6 +287,8 @@ class League(CassiopeiaGhost):
         q2 = other.__get_query__()
         return q1 == q2
 
+    __hash__ = CassiopeiaGhost.__hash__
+
     def __getitem__(self, item):
         return self.entries[item]
 
@@ -357,6 +361,8 @@ class ChallengerLeague(CassiopeiaGhost):
         q2 = other.__get_query__()
         return q1 == q2
 
+    __hash__ = CassiopeiaGhost.__hash__
+
     @lazy_property
     def region(self) -> Region:
         return Region(self._data[ChallengerLeagueListData].region)
@@ -412,6 +418,8 @@ class MasterLeague(CassiopeiaGhost):
         q1 = self.__get_query__()
         q2 = other.__get_query__()
         return q1 == q2
+
+    __hash__ = CassiopeiaGhost.__hash__
 
     def __getitem__(self, item):
         return self.entries[item]

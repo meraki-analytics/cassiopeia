@@ -587,7 +587,17 @@ class Champion(CassiopeiaGhost):
             return False
         q1 = self.__get_query__()
         q2 = other.__get_query__()
-        return q1 == q2
+        if q1["region"] == q2["region"]:
+            if "id" in q1 and "id" in q2:
+                if q1["id"] == q2["id"]:
+                    return True
+            elif "name" in q1 and "name" in q2:
+                if q1["name"] == q2["name"]:
+                    return True
+        else:
+            return False
+
+    __hash__ = CassiopeiaGhost.__hash__
 
     # What do we do about params like this that can exist in both data objects?
     # They will be set on both data objects always, so we can choose either one to return.

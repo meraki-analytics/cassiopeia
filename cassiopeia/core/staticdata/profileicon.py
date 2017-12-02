@@ -103,6 +103,8 @@ class ProfileIcon(CassiopeiaGhost):
             return False
         return self.region == other.region and self.id == other.id
 
+    __hash__ = CassiopeiaGhost.__hash__
+
     def __load_hook__(self, load_group, data) -> None:
         def find_matching_attribute(datalist, attrname, attrvalue):
             for item in datalist:

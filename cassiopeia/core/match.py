@@ -1280,6 +1280,8 @@ class Match(CassiopeiaGhost):
         q2 = other.__get_query__()
         return q1 == q2
 
+    __hash__ = CassiopeiaGhost.__hash__
+
     @lazy_property
     def region(self) -> Region:
         """The region for this match."""
