@@ -126,6 +126,7 @@ class MatchAPI(RiotAPIService):
         else:
             params["beginIndex"] = query["beginIndex"]
             params["endIndex"] = query["beginIndex"] + min(riot_index_interval, query["maxNumberOfMatches"])
+            params["endIndex"] = int(params["endIndex"])
 
         if "seasons" in query:
             seasons = {Season(season) for season in query["seasons"]}

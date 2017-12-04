@@ -333,6 +333,9 @@ class UnloadedGhostStore(DataSource):
             _begin_index = begin_index
             _begin_time = begin_time
 
+            if isinstance(max_number_of_requested_matches, int):
+                max_number_of_requested_matches = float(max_number_of_requested_matches)
+
             pulled_matches = 0
             while pulled_matches < max_number_of_requested_matches:
                 new_query = {
