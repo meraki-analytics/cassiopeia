@@ -97,8 +97,6 @@ SQLAlchemy Database Support
 
 Install by running ``pip install cassiopeia-sqlalchemy``.
 
-This plugin provides a disk-database. It is especially useful for staticdata, which never changes. It works for all data types except ``MatchHistory``.
-
 To enable this plugin, add the following to your settings' data pipeline between the ``Cache`` and ``DDragon`` stores:
 
 .. code-block:: json
@@ -125,5 +123,7 @@ The ``"connection_string"`` should be your SQLAlchemy connection string (`see <h
     LeagueListDto:datetime.timedelta(hours=6),
     LeaguePositionsDto: datetime.timedelta(hours=6),
     ShardStatusDto: datetime.timedelta(hours=1),
+
+Some objects share the same expiration time: ``FeaturedGamesDto`` shares expiration of ``CurrentGameInfoDto``, ``ChallengerLeagueListDto`` and ``MasterLeagueListDto`` share expiration of ``LeagueListDto``, ``ChampionMasteryListDto`` shares expiration of ``ChampionMasteryDto``, and ``ChampionListDto`` shares expiration of ``ChampionDto``. Only the latter in each category need to be set.
 
 This store only supports the above types (for now).
