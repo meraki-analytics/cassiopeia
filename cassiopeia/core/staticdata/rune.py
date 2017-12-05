@@ -123,19 +123,18 @@ class Rune(CassiopeiaGhost):
         return query
 
     def __eq__(self, other: "Rune"):
-        if not isinstance(other, Rune):
+        if not isinstance(other, Rune) or self.region != other.region:
             return False
-        q1 = self.__get_query__()
-        q2 = other.__get_query__()
-        if q1["region"] == q2["region"]:
-            if "id" in q1 and "id" in q2:
-                if q1["id"] == q2["id"]:
-                    return True
-            elif "name" in q1 and "name" in q2:
-                if q1["name"] == q2["name"]:
-                    return True
+        s = {}
+        o = {}
+        if hasattr(self._data[RuneData], "id"): s["id"] = self.id
+        if hasattr(other._data[RuneData], "id"): o["id"] = other.id
+        if hasattr(self._data[RuneData], "name"): s["name"] = self.name
+        if hasattr(other._data[RuneData], "name"): o["name"] = other.name
+        if any(s.get(key, "s") == o.get(key, "o") for key in s):
+            return True
         else:
-            return False
+            return self.id == other.id
 
     __hash__ = CassiopeiaGhost.__hash__
 

@@ -95,22 +95,20 @@ class Summoner(CassiopeiaGhost):
         return query
 
     def __eq__(self, other: "Summoner"):
-        if not isinstance(other, Summoner):
+        if not isinstance(other, Summoner) or self.region != other.region:
             return False
-        q1 = self.__get_query__()
-        q2 = other.__get_query__()
-        if q1["region"] == q2["region"]:
-            if "id" in q1 and "id" in q2:
-                if q1["id"] == q2["id"]:
-                    return True
-            elif "account.id" in q1 and "account.id" in q2:
-                if q1["account.id"] == q2["account.id"]:
-                    return True
-            elif "name" in q1 and "name" in q2:
-                if q1["name"] == q2["name"]:
-                    return True
+        s = {}
+        o = {}
+        if hasattr(self._data[SummonerData], "id"): s["id"] = self.id
+        if hasattr(other._data[SummonerData], "id"): o["id"] = other.id
+        if hasattr(self._data[SummonerData], "name"): s["name"] = self.name
+        if hasattr(other._data[SummonerData], "name"): o["name"] = other.name
+        if hasattr(self._data[SummonerData], "account"): s["account.id"] = self.account.id
+        if hasattr(other._data[SummonerData], "account"): o["account.id"] = other.account.id
+        if any(s.get(key, "s") == o.get(key, "o") for key in s):
+            return True
         else:
-            return False
+            return self.id == other.id
 
     def __str__(self):
         s = "<Summoner id={id}, account={{account}}, name={{name}}>"

@@ -137,9 +137,9 @@ class ChampionMastery(CassiopeiaGhost):
             self.__load_hook__(load_group, data)
 
     def __eq__(self, other: "ChampionMastery"):
-        if not isinstance(other, ChampionMastery):
+        if not isinstance(other, ChampionMastery) or self.region != other.region:
             return False
-        return self.region == other.region and self.champion == other.champion and self.summoner == other.summoner
+        return self.champion == other.champion and self.summoner == other.summoner
 
     __hash__ = CassiopeiaGhost.__hash__
 

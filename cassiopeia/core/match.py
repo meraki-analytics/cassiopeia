@@ -1274,11 +1274,9 @@ class Match(CassiopeiaGhost):
         return instance
 
     def __eq__(self, other: "Match"):
-        if not isinstance(other, Match):
+        if not isinstance(other, Match) or self.region != other.region:
             return False
-        q1 = self.__get_query__()
-        q2 = other.__get_query__()
-        return q1 == q2
+        return self.id == other.id
 
     __hash__ = CassiopeiaGhost.__hash__
 

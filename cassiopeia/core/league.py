@@ -122,11 +122,9 @@ class LeagueEntry(CassiopeiaGhost):
         return {"region": self.region, "platform": self.platform}
 
     def __eq__(self, other: "LeagueEntry"):
-        if not isinstance(other, LeagueEntry):
+        if not isinstance(other, LeagueEntry) or self.region != other.region:
             return False
-        q1 = self.__get_query__()
-        q2 = other.__get_query__()
-        return q1 == q2 and self.summoner == other.summoner and self.queue == other.queue and self.name == other.name
+        return self.summoner == other.summoner and self.queue == other.queue and self.name == other.name
 
     __hash__ = CassiopeiaGhost.__hash__
 
@@ -278,11 +276,9 @@ class League(CassiopeiaGhost):
         return {"id": self.id, "region": self.region, "platform": self.platform}
 
     def __eq__(self, other: "League"):
-        if not isinstance(other, League):
+        if not isinstance(other, League) or self.region != other.region:
             return False
-        q1 = self.__get_query__()
-        q2 = other.__get_query__()
-        return q1 == q2
+        return self.id == other.id
 
     __hash__ = CassiopeiaGhost.__hash__
 
@@ -352,11 +348,9 @@ class ChallengerLeague(CassiopeiaGhost):
         return len(self.entries)
 
     def __eq__(self, other: "ChallengerLeague"):
-        if not isinstance(other, ChallengerLeague):
+        if not isinstance(other, ChallengerLeague) or self.region != other.region:
             return False
-        q1 = self.__get_query__()
-        q2 = other.__get_query__()
-        return q1 == q2
+        return self.queue == other.queue
 
     __hash__ = CassiopeiaGhost.__hash__
 
@@ -410,11 +404,9 @@ class MasterLeague(CassiopeiaGhost):
         return {"region": self.region, "platform": self.platform, "queue": self.queue}
 
     def __eq__(self, other: "MasterLeague"):
-        if not isinstance(other, MasterLeague):
+        if not isinstance(other, MasterLeague) or self.region != other.region:
             return False
-        q1 = self.__get_query__()
-        q2 = other.__get_query__()
-        return q1 == q2
+        return self.queue == other.queue
 
     __hash__ = CassiopeiaGhost.__hash__
 

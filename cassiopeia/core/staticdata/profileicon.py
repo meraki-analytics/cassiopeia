@@ -99,9 +99,9 @@ class ProfileIcon(CassiopeiaGhost):
         return query
 
     def __eq__(self, other: "ProfileIcon"):
-        if not isinstance(other, ProfileIcon):
+        if not isinstance(other, ProfileIcon) or self.region != other.region:
             return False
-        return self.region == other.region and self.id == other.id
+        return self.id == other.id
 
     __hash__ = CassiopeiaGhost.__hash__
 
