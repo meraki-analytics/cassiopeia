@@ -21,7 +21,7 @@ from ..core.staticdata import Champion, Rune, Item, SummonerSpell, Map, Locales,
 from ..core.status import ShardStatus
 from ..core.match import Match, MatchHistory, Timeline
 from ..core.summoner import Summoner
-from ..core.spectator import CurrentMatch, FeaturedMatches
+from ..core.spectator import CurrentMatch, FeaturedMatches, CurrentGameParticipantData
 
 from ..core.staticdata.champion import ChampionData
 from ..core.staticdata.item import ItemData
@@ -2042,7 +2042,10 @@ validate_many_current_match_query = Query. \
 
 
 def for_current_match(current_match_info: CurrentMatch) -> List[Tuple[str, int]]:
-    return [(current_match_info.platform, current_match_info._CurrentMatch__summoner.id)]
+    # Reach into the data for the summoner ids so we don't create the Summoner objects
+    # This stores the current match for every summoner in the match, so if a different summoner is
+    #  requested, the match isn't pulled a second time.
+    return [(current_match_info.platform.value, participant._data[CurrentGameParticipantData].summonerId) for participant in current_match_info.participants] + [(current_match_info.platform.value, current_match_info.id)]
 
 
 def for_current_match_query(query: Query) -> List[Tuple[str, int]]:
