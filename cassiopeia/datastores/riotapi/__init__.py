@@ -16,6 +16,7 @@ def _default_services(api_key: str, limiting_share: float = 1.0, request_by_id: 
     from .spectator import SpectatorAPI
     from .status import StatusAPI
     from .leagues import LeaguesAPI
+    from .thirdpartycode import ThirdPartyCodeAPI
 
     app_rate_limiter = RiotAPIRateLimiter(limiting_share=limiting_share)
 
@@ -29,7 +30,8 @@ def _default_services(api_key: str, limiting_share: float = 1.0, request_by_id: 
         MatchAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, request_error_handling=request_error_handling, http_client=client),
         SpectatorAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, request_error_handling=request_error_handling, http_client=client),
         StatusAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, request_error_handling=request_error_handling, http_client=client),
-        LeaguesAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, request_error_handling=request_error_handling, http_client=client)
+        LeaguesAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, request_error_handling=request_error_handling, http_client=client),
+        ThirdPartyCodeAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, request_error_handling=request_error_handling, http_client=client)
     }
 
     return services

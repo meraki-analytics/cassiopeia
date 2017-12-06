@@ -6,7 +6,7 @@ from datapipelines import DataSource, PipelineContext, Query, validate_query
 
 from .. import utctimestamp
 from ..data import Platform, Queue
-from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions, ChampionMasteries, LeagueEntries, FeaturedMatches
+from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions, ChampionMasteries, LeagueEntries, FeaturedMatches, VerificationString
 from ..core.match import Timeline, MatchListData
 from ..core.championmastery import ChampionMasteryListData
 from ..core.league import LeaguePositionsData, LeagueEntry
@@ -186,6 +186,10 @@ class UnloadedGhostStore(DataSource):
         or_("name").as_(str).also. \
         has("platform").as_(Platform)
 
+    _validate_get_verification_string_query = Query. \
+        has("platform").as_(Platform).also. \
+        has("summoner.id").as_(int)
+
     @get.register(Champion)
     @validate_query(_validate_get_champion_query, convert_region_to_platform)
     def get_champion(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Champion:
@@ -305,6 +309,13 @@ class UnloadedGhostStore(DataSource):
         query["region"] = query.pop("platform").region
         query["id"] = query.pop("id")
         return League._construct_normally(**query)
+
+    @get.register(VerificationString)
+    @validate_query(_validate_get_verification_string_query, convert_region_to_platform)
+    def get_verification_string(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> VerificationString:
+        query["region"] = query.pop("platform").region
+        query["summoner"] = Summoner(id=query.pop("summoner.id"), region=query["region"])
+        return VerificationString._construct_normally(**query)
 
     @get.register(MatchHistory)
     @validate_query(_validate_get_match_history_query, convert_region_to_platform)

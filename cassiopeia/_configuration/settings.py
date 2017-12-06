@@ -108,7 +108,7 @@ def enable_ghost_transformers(riotapi_transformers: List[CompositeDataTransforme
     # Enable the data -> core transformers for ghost objects
 
     # First, find all the transformer objects in te composite data transformer(s)
-    from ..transformers import ChampionMasteryTransformer, LeagueTransformer, MatchTransformer, SpectatorTransformer, StaticDataTransformer, StatusTransformer, SummonerTransformer
+    from ..transformers import ChampionMasteryTransformer, LeagueTransformer, MatchTransformer, SpectatorTransformer, StaticDataTransformer, StatusTransformer, SummonerTransformer, ThirdPartyCodeTransformer
     data_transformers = set([transformer
                              for composite_transformer in riotapi_transformers
                              for transformer in composite_transformer._transformers.values()
@@ -151,6 +151,9 @@ def enable_ghost_transformers(riotapi_transformers: List[CompositeDataTransforme
         elif isinstance(transformer, SummonerTransformer):
             from ..core.summoner import SummonerData, Summoner
             register_transformer_conversion(transformer, SummonerData, Summoner)
+        elif isinstance(transformer, ThirdPartyCodeTransformer):
+            from ..core.thirdpartycode import VerificationStringData, VerificationString
+            register_transformer_conversion(transformer, VerificationStringData, VerificationString)
 
     # Re-init the composite transformers to redefine their transformers
     for composite_transformer in riotapi_transformers:

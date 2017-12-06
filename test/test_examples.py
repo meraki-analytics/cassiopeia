@@ -2,7 +2,7 @@ from collections import Counter
 import random
 
 import cassiopeia as cass
-from cassiopeia import Season, Queue, Summoner, Match, Champion, Champions, ChampionMastery, Item, Items, LanguageStrings, Map, Locales, Runes, Rune, RunePath, ShardStatus, FeaturedMatches, SummonerSpell, SummonerSpells, GameMode
+from cassiopeia import Season, Queue, Summoner, Match, Champion, Champions, ChampionMastery, Item, Items, LanguageStrings, Map, Locales, Runes, Rune, RunePath, ShardStatus, FeaturedMatches, SummonerSpell, SummonerSpells, GameMode, VerificationString
 
 
 def test_versions():
@@ -240,6 +240,14 @@ def test_summoner():
     "Profile icon name:", summoner.profile_icon.name
     "Profile icon URL:", summoner.profile_icon.url
     "Profile icon image:", summoner.profile_icon.image
+
+
+def test_verification_string():
+    summoner = Summoner(id=21359666, region="NA")
+    vs1 = summoner.verification_string
+    vs = VerificationString(summoner=summoner, region="NA")
+    vs2 = vs.string
+    assert vs1 == vs2
 
 
 def test_summonerspells():

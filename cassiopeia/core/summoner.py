@@ -215,3 +215,9 @@ class Summoner(CassiopeiaGhost):
     def rank_last_season(self):
         most_recent_match = self.match_history[0]
         return most_recent_match.participants[self.name].rankLastSeason
+
+    @property
+    def verification_string(self) -> str:
+        from .thirdpartycode import VerificationString
+        vs = VerificationString(summoner=self, region=self.region)
+        return vs.string

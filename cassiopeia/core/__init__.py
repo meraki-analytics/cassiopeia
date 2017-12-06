@@ -6,3 +6,4 @@ from .spectator import CurrentMatch, FeaturedMatches
 from .status import ShardStatus
 from .league import ChallengerLeague, MasterLeague, SummonerLeagues, LeagueEntries, League
 from .patch import Patch
+from .thirdpartycode import VerificationString

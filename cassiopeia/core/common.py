@@ -35,8 +35,7 @@ def provide_default_region(method):
                     region = platform.region
                 else:
                     region = Platform(platform).region
-        else:
-            if region is not None and not isinstance(region, Region):
+        elif not isinstance(region, Region):
                 region = Region(region)
         if region is not None:  # region can still be None if the configuration doesn't have a default
             kwargs["region"] = region.value

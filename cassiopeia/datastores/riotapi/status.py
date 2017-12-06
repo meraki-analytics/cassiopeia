@@ -59,13 +59,11 @@ class StatusAPI(RiotAPIService):
                 platform = Platform(platform.upper())
                 url = "https://{platform}.api.riotgames.com/lol/status/v3/shard-data".format(platform=platform.value.lower())
                 try:
-                    data = self._get(url, {}, self._get_rate_limiter(query["platform"], "status"))
+                    data = self._get(url, {}, self._get_rate_limiter(platform, "status"))
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
                 data["region"] = platform.region.value
-                data["locale"] = query["locale"] if "locale" in query else platform.default_locale
-                data["includedData"] = query["includedData"]
                 yield ShardStatusDto(data)
 
         return generator()
