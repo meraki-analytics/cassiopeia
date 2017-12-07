@@ -638,6 +638,14 @@ class ParticipantTimeline(CassiopeiaObject):
         return self.events.filter(lambda event: event.type == "CHAMPION_KILL" and event.killer_id == self.id)
 
     @property
+    def champion_deaths(self):
+        return self.events.filter(lambda event: event.type == "CHAMPION_KILL" and event.victim_id == self.id)
+
+    @property
+    def champion_assists(self):
+        return self.events.filter(lambda event: event.type == "CHAMPION_KILL" and self.id in event.assisting_participants)
+
+    @property
     def lane(self) -> str:
         return Lane.from_match_naming_scheme(self._data[ParticipantTimelineData].lane)
 
