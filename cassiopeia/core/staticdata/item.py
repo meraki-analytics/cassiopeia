@@ -363,12 +363,18 @@ class Item(CassiopeiaGhost):
     @CassiopeiaGhost.property(ItemData)
     @ghost_load_on
     def builds_into(self) -> List["Item"]:
-        return self._data[ItemData].builds_into
+        if hasattr(self._data[ItemData], "buildsInto"):
+            return SearchableList([Item(id=id_, region=self.region) for id_ in self._data[ItemData].buildsInto])
+        else:
+            return SearchableList([])
 
     @CassiopeiaGhost.property(ItemData)
     @ghost_load_on
     def builds_from(self) -> List["Item"]:
-        return self._data[ItemData].builds_from
+        if hasattr(self._data[ItemData], "buildsFrom"):
+            return SearchableList([Item(id=id_, region=self.region) for id_ in self._data[ItemData].buildsFrom])
+        else:
+            return SearchableList([])
 
     @CassiopeiaGhost.property(ItemData)
     @ghost_load_on

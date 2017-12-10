@@ -162,10 +162,6 @@ class ParticipantData(CoreData):
         if "player" in kwargs:
             for key, value in kwargs.pop("player").items():
                 kwargs[key] = value
-        if "platformId" in kwargs:
-            if kwargs["platformId"] == "NA":
-                kwargs["platformId"] = "NA1"
-            self.platform = Platform(kwargs.pop("platformId"))
         super().__call__(**kwargs)
         return self
 
@@ -1174,6 +1170,13 @@ class Participant(CassiopeiaObject):
             return self.__match.blue_team
         else:
             return self.__match.red_team
+
+    @property
+    def enemy_team(self) -> "Team":
+        if self.side == Side.blue:
+            return self.__match.red_team
+        else:
+            return self.__match.blue_team
 
 
 @searchable({str: ["participants"], bool: ["win"]})

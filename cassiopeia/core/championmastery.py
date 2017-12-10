@@ -84,7 +84,7 @@ class ChampionMastery(CassiopeiaGhost):
                 summoner = Summoner(name=summoner, region=region)
                 self.__class__.summoner.fget._lazy_set(self, summoner)
             else:  # int
-                kwargs["summoner_id"] = summoner
+                kwargs["summonerId"] = summoner
 
         if champion is not None:
             if isinstance(champion, Champion):
@@ -93,7 +93,7 @@ class ChampionMastery(CassiopeiaGhost):
                 champion = Champion(name=champion, region=self.region, version=get_latest_version(self.region, endpoint="champion"))
                 self.__class__.champion.fget._lazy_set(self, champion)
             else:  # int
-                kwargs["champion_id"] = champion
+                kwargs["championId"] = champion
 
         super().__init__(**kwargs)
 
