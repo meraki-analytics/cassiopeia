@@ -1341,7 +1341,7 @@ class Match(CassiopeiaGhost):
                     yield match.__participants[0]
                 except IndexError:
                     p = match._data[MatchData].participants[0]
-                    participant = Participant.from_data(p, match=self)
+                    participant = Participant.from_data(p, match=match)
                     match.__participants.append(participant)
                     yield participant
 
@@ -1350,16 +1350,16 @@ class Match(CassiopeiaGhost):
             if empty_match or yielded_one or len(match.__participants) < len(match._data[MatchData].participants):
                 if not match._Ghost__is_loaded(MatchData):
                     match.__load__(MatchData)
-                    match._Ghost__set_loaded(MatchData)  # __load__ doesn't trigger __set_loaded. is this a "bug"?
+                    match._Ghost__set_loaded(MatchData)  # __load__ doesn't trigger __set_loaded.
                 for i, p in enumerate(match._data[MatchData].participants):
-                    participant = Participant.from_data(p, match=self)
+                    participant = Participant.from_data(p, match=match)
                     # If we already have this participant in the list, replace it so it stays in the same position
-                    for j, pold in enumerate(self.__participants):
-                        if pold._data[ParticipantData].accountId == participant._data[ParticipantData].accountId:
-                            self.__participants[j] = participant
+                    for j, pold in enumerate(match.__participants):
+                        if pold._data[ParticipantData].accountId == participant._data[ParticipantData].currentAccountId:
+                            match.__participants[j] = participant
                             break
                     else:
-                        self.__participants.append(participant)
+                        match.__participants.append(participant)
 
             # Yield the rest of the participants
             for participant in match.__participants[yielded_one:]:

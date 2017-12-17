@@ -101,8 +101,8 @@ class Summoner(CassiopeiaGhost):
         o = {}
         if hasattr(self._data[SummonerData], "id"): s["id"] = self.id
         if hasattr(other._data[SummonerData], "id"): o["id"] = other.id
-        if hasattr(self._data[SummonerData], "name"): s["name"] = self.name
-        if hasattr(other._data[SummonerData], "name"): o["name"] = other.name
+        if hasattr(self._data[SummonerData], "name"): s["name"] = self.sanitized_name
+        if hasattr(other._data[SummonerData], "name"): o["name"] = other.sanitized_name
         if hasattr(self._data[SummonerData], "account"): s["account.id"] = self.account.id
         if hasattr(other._data[SummonerData], "account"): o["account.id"] = other.account.id
         if any(s.get(key, "s") == o.get(key, "o") for key in s):
@@ -162,6 +162,10 @@ class Summoner(CassiopeiaGhost):
     @ghost_load_on
     def name(self) -> str:
         return self._data[SummonerData].name
+
+    @property
+    def sanitized_name(self) -> str:
+        return self.name.replace(" ", "").lower()
 
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on

@@ -109,6 +109,8 @@ class GameMode(Enum):
     doom_bots = "DOOMBOTSTEEMO"
     star_guardian = "STARGUARDIAN"
     project = "PROJECT"
+    overcharge = "OVERCHARGE"
+    all_random_urf_snow = "SNOWURF"
 
 
 class MasteryTree(Enum):
@@ -281,6 +283,8 @@ class Queue(Enum):
     doom_bots = "NIGHTMARE_BOT_5X5"  # 960
     guardian_invasion_normal = "INVASION_NORMAL"  # 980
     guardian_invasion_onslaught = "INVASION_ONSLAUGHT"  # 990
+    overcharge = "OVERCHARGE"  # 1000
+    all_random_urf_snow = "SNOWURF"  # 1010
 
     def from_id(id: int):
         return {i: season for season, i in QUEUE_IDS.items()}[id]
@@ -348,6 +352,8 @@ QUEUE_IDS = {
     Queue.doom_bots: 960,  # Summoner's Rift    Doom Bots games
     Queue.guardian_invasion_normal: 980,  # Valoran City Park    Star Guardian Invasion: Normal games
     Queue.guardian_invasion_onslaught: 990,  # Valoran City Park    Star Guardian Invasion: Onslaught games
+    Queue.overcharge: 1000,  # Overcharge, PROJECT: Hunters games
+    Queue.all_random_urf_snow: 1010,  # Summoner's Rift, Snow ARURF games
 }
 
 RANKED_QUEUES = {
