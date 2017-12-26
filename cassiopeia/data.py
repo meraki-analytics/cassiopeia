@@ -289,6 +289,10 @@ class Queue(Enum):
     def from_id(id: int):
         return {i: season for season, i in QUEUE_IDS.items()}[id]
 
+    @property
+    def id(self):
+        return QUEUE_IDS[self]
+
 
 QUEUE_IDS = {
     Queue.custom: 0,  # Custom games
