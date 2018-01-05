@@ -24,7 +24,7 @@ class ChampionMasteryListData(CoreDataList):
 
 class ChampionMasteryData(CoreData):
     _dto_type = ChampionMasteryDto
-    _renamed = {"championLevel": "level", "championPoints": "points", "playerId": "summonerId", "championPointsUntilNextLevel": "pointsUntilNextLevel", "championPointsSinceLastLevel": "pointsSinceLastLevel", "lastPlayTime": "lastPlayed"}
+    _renamed = {"championLevel": "level", "championPoints": "points", "playerId": "summonerId", "championPointsUntilNextLevel": "pointsUntilNextLevel", "championPointsSinceLastLevel": "pointsSinceLastLevel", "lastPlayTime": "lastPlayed", "tokensEarned": "tokens"}
 
 
 ##############
@@ -130,6 +130,7 @@ class ChampionMastery(CassiopeiaGhost):
                 "chestGranted": False,
                 "championPoints": 0,
                 "championPointsUntilNextLevel": 1800,
+                "tokensEarned": 0,
                 "championPointsSinceLastLevel": 0,
                 "lastPlayTime": None
             }
@@ -186,6 +187,12 @@ class ChampionMastery(CassiopeiaGhost):
     def points_until_next_level(self) -> int:
         """Number of points needed to achieve next level. Zero if player reached maximum champion level for this champion."""
         return self._data[ChampionMasteryData].pointsUntilNextLevel
+
+    @CassiopeiaGhost.property(ChampionMasteryData)
+    @ghost_load_on
+    def tokens(self) -> int:
+        """Number of tokens earned toward next mastery level."""
+        return self._data[ChampionMasteryData].tokens
 
     @CassiopeiaGhost.property(ChampionMasteryData)
     @ghost_load_on
