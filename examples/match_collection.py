@@ -3,7 +3,7 @@ from sortedcontainers import SortedList
 import datetime
 
 from cassiopeia.core import Summoner, MatchHistory, Match
-from cassiopeia.data import Queue, Patch
+from cassiopeia import Queue, Patch
 
 
 def filter_match_history(summoner, patch):

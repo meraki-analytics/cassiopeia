@@ -84,7 +84,9 @@ class HTTPClient(object):
             with ExitStack() as stack:
                 # Enter each context manager / rate limiter
                 limiters = [stack.enter_context(rate_limiter) for rate_limiter in rate_limiters]
+                exit_limiters = stack.pop_all().__exit__
                 status_code = HTTPClient._execute(curl, connection is None)
+            exit_limiters(None, None, None)
         else:
             status_code = HTTPClient._execute(curl, connection is None)
 

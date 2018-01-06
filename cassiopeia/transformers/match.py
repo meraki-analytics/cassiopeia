@@ -30,8 +30,6 @@ class MatchTransformer(DataTransformer):
 
     @transform.register(MatchListDto, MatchListData)
     def matchlist_dto_to_data(self, value: MatchListDto, context: PipelineContext = None) -> MatchListData:
-        data = deepcopy(value)
-        data = data["matches"]
         kwargs = {
             "region": value["region"],
             "accountId": value["accountId"],
@@ -46,7 +44,7 @@ class MatchTransformer(DataTransformer):
         if "beginTime" in value:
             kwargs["beginTime"] = value["beginTime"]
             kwargs["endTime"] = value["endTime"]
-        return MatchListData([self.match_reference_dto_to_data(match) for match in data], **kwargs)
+        return MatchListData([self.match_reference_dto_to_data(match) for match in value["matches"]], **kwargs)
 
     @transform.register(TimelineDto, TimelineData)
     def timeline_dto_to_data(self, value: TimelineDto, context: PipelineContext = None) -> TimelineData:
