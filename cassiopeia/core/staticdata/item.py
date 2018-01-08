@@ -44,7 +44,7 @@ class ItemData(CoreData):
 
     def __call__(self, **kwargs):
         if "image" in kwargs:
-            self.image = ImageData(**kwargs["image"])
+            self.image = ImageData(**kwargs.pop("image"))
         if "gold" in kwargs:
             self.gold = GoldData(**kwargs.pop("gold"))
         if "into" in kwargs:

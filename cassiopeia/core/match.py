@@ -186,6 +186,12 @@ class MatchReferenceData(CoreData):
     def __call__(self, **kwargs):
         if "timestamp" in kwargs:
             self.creation = datetime.datetime.utcfromtimestamp(kwargs.pop("timestamp") / 1000)
+
+            # Set lane and role if they are missing from the data
+            if "lane" not in kwargs:
+                kwargs["lane"] = None
+            if "role" not in kwargs:
+                kwargs["role"] = None
         super().__call__(**kwargs)
         return self
 
