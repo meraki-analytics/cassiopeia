@@ -218,7 +218,8 @@ class Role(Enum):
 class Queue(Enum):
     custom = "CUSTOM"  # 0
     depreciated_blind_fives = "NORMAL_5x5_BLIND"  # 2
-    depreciated_ranked_solo_fives = "RANKED_SOLO_5x5"  # 4
+    depreciated_ranked_solo_fives = "CLASSIC"  # 4
+    #depreciated_classic = "CLASSIC" #4
     depreciated_ranked_premade_fives = "RANKED_PREMADE_5x5"  # 6
     depreciated_coop_ai_fives = "BOT_5x5"  # 7
     depreciated_blind_threes = "NORMAL_3x3"  # 8
@@ -249,7 +250,7 @@ class Queue(Enum):
     ascension = "ASCENSION_5x5"  # 96
     hexakill_twisted_treeline = "HEXAKILL"  # 98
     aram_butchers_bridge = "BILGEWATER_ARAM_5x5"  # 100
-    poro_king = "KING_PORO_5x5"  # 300
+    depreciated_poro_king = "KING_PORO_5x5"  # 300
     nemesis_draft = "COUNTER_PICK"  # 310
     black_market_brawlers = "BILGEWATER_5x5"  # 313
     depreciated_nexus_siege = "SIEGE"  # 315
@@ -278,6 +279,7 @@ class Queue(Enum):
     coop_ai_beginner_fives = "BOT_5X5_BEGINNER"  # 840
     coop_ai_intermediate_fives = "BOT_5X5_INTERMEDIATE"  # 850
     project = "PROJECT"  # 910
+    poro_king = "KINGPORO" #920
     nexus_siege = "NEXUS_SIEGE"  # 940
     doom_bots_difficult = "NIGHTMARE_BOT_5X5_VOTE"  # 950
     doom_bots = "NIGHTMARE_BOT_5X5"  # 960
@@ -298,6 +300,7 @@ QUEUE_IDS = {
     Queue.custom: 0,  # Custom games
     Queue.depreciated_blind_fives: 2,  # Summoner's Rift    5v5 Blind Pick games    Deprecated in patch 7.19 in favor of queueId 430
     Queue.depreciated_ranked_solo_fives: 4,  # Summoner's Rift    5v5 Ranked Solo games    Deprecated in favor of queueId 420
+    #Queue.depreciated_classic: 4,
     Queue.depreciated_ranked_premade_fives: 6,  # Summoner's Rift    5v5 Ranked Premade games    Game mode deprecated
     Queue.depreciated_coop_ai_fives: 7,  # Summoner's Rift    Co-op vs AI games    Deprecated in favor of queueId 32 and 33
     Queue.depreciated_blind_threes: 8,  # Twisted Treeline    3v3 Normal games    Deprecated in patch 7.19 in favor of queueId 460
@@ -327,7 +330,7 @@ QUEUE_IDS = {
     Queue.ascension: 96,  # Crystal Scar    Ascension games
     Queue.hexakill_twisted_treeline: 98,  # Twisted Treeline    6v6 Hexakill games
     Queue.aram_butchers_bridge: 100,  # Butcher's Bridge    5v5 ARAM games
-    Queue.poro_king: 300,  # Howling Abyss    King Poro games
+    Queue.depreciated_poro_king: 300,  # Howling Abyss    King Poro games    Deprecated in patch 7.19 in favor of queueId 920
     Queue.nemesis_draft: 310,  # Summoner's Rift    Nemesis games
     Queue.black_market_brawlers: 313,  # Summoner's Rift    Black Market Brawlers games
     Queue.depreciated_nexus_siege: 315,  # Summoner's Rift    Nexus Siege games    Deprecated in patch 7.19 in favor of queueId 940
@@ -351,6 +354,7 @@ QUEUE_IDS = {
     Queue.coop_ai_beginner_fives: 840,  # Summoner's Rift    Co-op vs. AI Beginner Bot games
     Queue.coop_ai_intermediate_fives: 850,  # Summoner's Rift    Co-op vs. AI Intermediate Bot games
     Queue.project: 910,
+    Queue.poro_king: 920, # Howling Abyss    Legend of the Poro King
     Queue.nexus_siege: 940,  # Summoner's Rift    Nexus Siege games
     Queue.doom_bots_difficult: 950,  # Summoner's Rift    Doom Bots games /w difficulty voting
     Queue.doom_bots: 960,  # Summoner's Rift    Doom Bots games
