@@ -219,6 +219,7 @@ class Queue(Enum):
     custom = "CUSTOM"  # 0
     depreciated_blind_fives = "NORMAL_5x5_BLIND"  # 2
     depreciated_ranked_solo_fives = "RANKED_SOLO_5x5"  # 4
+    depreciated_classic = "CLASSIC" #4
     depreciated_ranked_premade_fives = "RANKED_PREMADE_5x5"  # 6
     depreciated_coop_ai_fives = "BOT_5x5"  # 7
     depreciated_blind_threes = "NORMAL_3x3"  # 8
