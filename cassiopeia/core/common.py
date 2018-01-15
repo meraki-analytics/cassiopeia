@@ -224,6 +224,10 @@ class CassiopeiaPipelineObject(CassiopeiaObject, metaclass=GetFromPipeline):
 
 
 class CassiopeiaGhost(CassiopeiaPipelineObject, Ghost):
+    def load(self) -> "CassiopeiaGhost":
+        self.__load__()
+        return self
+
     def __load__(self, load_group: CoreData = None) -> None:
         if load_group is None:  # Load all groups
             if self._Ghost__all_loaded:
