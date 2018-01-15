@@ -157,6 +157,8 @@ class Season(Enum):
     season_6 = "SEASON2016"
     preseason_7 = "PRESEASON2017"
     season_7 = "SEASON2017"
+    preseason_8 = "PRESEASON2018"
+    season_8 = "SEASON2018"
 
     def from_id(id: int):
         return {i: season for season, i in SEASON_IDS.items()}[id]
@@ -172,7 +174,9 @@ SEASON_IDS = {
     Season.preseason_6: 6,
     Season.season_6: 7,
     Season.preseason_7: 8,
-    Season.season_7: 9
+    Season.season_7: 9,
+    Season.preseason_8: 10,
+    Season.season_8: 11
 }
 
 
@@ -219,7 +223,6 @@ class Queue(Enum):
     custom = "CUSTOM"  # 0
     depreciated_blind_fives = "NORMAL_5x5_BLIND"  # 2
     depreciated_ranked_solo_fives = "CLASSIC"  # 4
-    #depreciated_classic = "CLASSIC" #4
     depreciated_ranked_premade_fives = "RANKED_PREMADE_5x5"  # 6
     depreciated_coop_ai_fives = "BOT_5x5"  # 7
     depreciated_blind_threes = "NORMAL_3x3"  # 8
@@ -262,7 +265,6 @@ class Queue(Enum):
 
     # TODO Evidently we originally had 420 as the commented out queue name below, but it may have changed?
     # TODO But the queue name sent to the Leagues endpoint needs to be RANKED_SOLO_5x5 for ranked solo games.
-    #ranked_solo_fives = "TEAM_BUILDER_RANKED_SOLO"  # 420
     ranked_solo_fives = "RANKED_SOLO_5x5"  # 420
 
     blind_fives = "NORMAL_5V5_BLIND_PICK"  # 430
@@ -279,7 +281,7 @@ class Queue(Enum):
     coop_ai_beginner_fives = "BOT_5X5_BEGINNER"  # 840
     coop_ai_intermediate_fives = "BOT_5X5_INTERMEDIATE"  # 850
     project = "PROJECT"  # 910
-    poro_king = "KINGPORO" #920
+    poro_king = "KINGPORO"  # 920
     nexus_siege = "NEXUS_SIEGE"  # 940
     doom_bots_difficult = "NIGHTMARE_BOT_5X5_VOTE"  # 950
     doom_bots = "NIGHTMARE_BOT_5X5"  # 960
@@ -300,7 +302,6 @@ QUEUE_IDS = {
     Queue.custom: 0,  # Custom games
     Queue.depreciated_blind_fives: 2,  # Summoner's Rift    5v5 Blind Pick games    Deprecated in patch 7.19 in favor of queueId 430
     Queue.depreciated_ranked_solo_fives: 4,  # Summoner's Rift    5v5 Ranked Solo games    Deprecated in favor of queueId 420
-    #Queue.depreciated_classic: 4,
     Queue.depreciated_ranked_premade_fives: 6,  # Summoner's Rift    5v5 Ranked Premade games    Game mode deprecated
     Queue.depreciated_coop_ai_fives: 7,  # Summoner's Rift    Co-op vs AI games    Deprecated in favor of queueId 32 and 33
     Queue.depreciated_blind_threes: 8,  # Twisted Treeline    3v3 Normal games    Deprecated in patch 7.19 in favor of queueId 460
@@ -354,7 +355,7 @@ QUEUE_IDS = {
     Queue.coop_ai_beginner_fives: 840,  # Summoner's Rift    Co-op vs. AI Beginner Bot games
     Queue.coop_ai_intermediate_fives: 850,  # Summoner's Rift    Co-op vs. AI Intermediate Bot games
     Queue.project: 910,
-    Queue.poro_king: 920, # Howling Abyss    Legend of the Poro King
+    Queue.poro_king: 920,  # Howling Abyss    Legend of the Poro King
     Queue.nexus_siege: 940,  # Summoner's Rift    Nexus Siege games
     Queue.doom_bots_difficult: 950,  # Summoner's Rift    Doom Bots games /w difficulty voting
     Queue.doom_bots: 960,  # Summoner's Rift    Doom Bots games

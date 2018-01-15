@@ -138,6 +138,10 @@ class LeagueEntry(CassiopeiaGhost):
         """The platform for this champion."""
         return self.region.platform
 
+    @property
+    def league_id(self) -> str:
+        return self._data[LeaguePositionData].leagueId
+
     @lazy_property
     def queue(self) -> Queue:
         return Queue(self._data[LeaguePositionData].queue)
@@ -297,7 +301,7 @@ class League(CassiopeiaGhost):
         return self.region.platform
 
     @property
-    def id(self) -> Tier:
+    def id(self) -> str:
         return self._data[LeagueListData].id
 
     @CassiopeiaGhost.property(LeagueListData)

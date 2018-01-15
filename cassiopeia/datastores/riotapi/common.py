@@ -36,7 +36,9 @@ _ERROR_CODES = {
     415: RuntimeError,
     429: RuntimeError,
     500: APIError,
-    503: APIError
+    502: APIError,
+    503: APIError,
+    504: APIError
 }
 
 T = TypeVar("T")
@@ -139,20 +141,32 @@ class RiotAPIService(DataSource):
             },
             "403": {
                 "strategy": "throw"
+            },
+            "504": {
+                "strategy": "exponential_backoff",
+                "initial_backoff": 1.0,
+                "backoff_factor": 2.0,
+                "max_attempts": 4
+            },
+            "502": {
+                "strategy": "exponential_backoff",
+                "initial_backoff": 1.0,
+                "backoff_factor": 2.0,
+                "max_attempts": 4
             }
         }
         if request_error_handling is None:
             request_error_handling = default_request_error_handling
         else:
-            def recursive_update(d, u):
+            def recursive_setdefault(d, u):
                 for k, v in u.items():
                     if isinstance(v, collections.Mapping):
-                        r = recursive_update(d.get(k, {}), v)
-                        d[k] = r
+                        r = recursive_setdefault(d.get(k, {}), v)
+                        d.setdefault(k, r)
                     else:
-                        d[k] = u[k]
+                        d.setdefault(k, u[k])
                 return d
-            recursive_update(request_error_handling, default_request_error_handling)
+            recursive_setdefault(request_error_handling, default_request_error_handling)
 
         new_handler_instance = {
             "throw": lambda **init_args: ThrowException(),
@@ -312,7 +326,7 @@ class ExponentialBackoff(FailedRequestHandler):
         if self.attempts >= self.max_attempts:
             self.stop = True
             raise error
-        print("INFO: Unexpected {} rate limit, backing off for {} seconds.".format(headers.get('X-Rate-Limit-Type', 'service'), self.backoff))
+        print("INFO: Unexpected {} error ({}), backing off for {} seconds.".format(headers.get('X-Rate-Limit-Type', 'service'), error.code, self.backoff))
         time.sleep(self.backoff)
         self.backoff = self.backoff * self.factor
         self.attempts += 1
