@@ -83,7 +83,7 @@ class CoreData(object):
                         if isinstance(vi, CoreData):
                             new_v[k] = vi.to_dict()
                         else:
-                            new_v[k] = v
+                            new_v[k] = vi
                     v = new_v
                 else:
                     v = [vi.to_dict() if isinstance(vi, CoreData) else vi for vi in v]
