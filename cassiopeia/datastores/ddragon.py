@@ -377,7 +377,12 @@ class DDragon(DataSource):
             find = "name", query["name"]
         else:
             raise RuntimeError("Impossible!")
-        rune = find_matching_attribute(runes["data"].values(), *find)
+        if isinstance(runes["data"], list):
+            rune = find_matching_attribute(runes["data"], *find)
+        elif isinstance(runes["data"], dict):
+            rune = find_matching_attribute(runes["data"].values(), *find)
+        else:
+            raise ValueError("The runes data from DDragon came back in an unexpected format. Please report this on Github!")
         if rune is None:
             raise NotFoundError
         rune["region"] = query["platform"].region.value
