@@ -363,13 +363,15 @@ class UnloadedGhostStore(DataSource):
                     new_query["endTime"] = original_query["endTime"]
 
                 data = context[context.Keys.PIPELINE].get(MatchListData, query=new_query)
-                match = None
+                matchrefdata = None
                 for matchrefdata in data:
-                    match = Match.from_match_reference(matchrefdata)
                     pulled_matches += 1
-                    if pulled_matches > 0 and (end_time is None or match.creation < end_time) and match.creation > begin_time:
+                    if pulled_matches > 0 and (end_time is None or matchrefdata.creation < end_time) and matchrefdata.creation > begin_time:
+                        match = Match.from_match_reference(matchrefdata)
                         yield  match
                     if pulled_matches >= max_number_of_requested_matches:
+                        break
+                    if begin_time is not None and matchrefdata.creation <= begin_time:
                         break
 
                 matches_pulled_this_iteration = len(data)
@@ -381,7 +383,7 @@ class UnloadedGhostStore(DataSource):
                     # Stop because the API returned less data than we asked for, and so there isn't any more left
                     break
 
-                if end_time is not None and match is not None and match.creation >= end_time:
+                if end_time is not None and matchrefdata is not None and matchrefdata.creation >= end_time:
                     # Stop because we have gotten all the matches in the requested time range
                     break
 
@@ -390,10 +392,13 @@ class UnloadedGhostStore(DataSource):
                 # else: Don't update it
                 if hasattr(data, "endTime"):
                     _begin_time = datetime.datetime.utcfromtimestamp(data.endTime / 1000)
+                    temp = _begin_time
+                else:
+                    temp = matchrefdata.creation
                 # else: Don't update it
                 max_number_of_requested_matches -= len(data)
 
-                if end_time is not None and _begin_time >= end_time:
+                if begin_time is not None and temp <= begin_time:
                     # Stop because we have gotten all the matches in the requested time range
                     break
 
