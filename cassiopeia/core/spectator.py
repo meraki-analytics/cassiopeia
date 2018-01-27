@@ -52,8 +52,8 @@ class CurrentGameInfoData(CoreData):
 
     @property
     def teams(self) -> List[TeamData]:
-        blue_team = {"participants": [], "bans": [], "teamId": 100}
-        red_team = {"participants": [], "bans": [], "teamId": 200}
+        blue_team = {"participants": [], "bans": {}, "teamId": 100}
+        red_team = {"participants": [], "bans": {}, "teamId": 200}
         for p in self.participants:
             if Side(p["teamId"]) is Side.blue:
                 p = CurrentGameParticipantData(**p)
@@ -63,9 +63,9 @@ class CurrentGameInfoData(CoreData):
                 red_team["participants"].append(p)
         for b in self.bannedChampions:
             if Side(b["teamId"]) is Side.blue:
-                blue_team["bans"].append(b)
+                blue_team["bans"][b["pickTurn"]] = b["championId"]
             elif Side(b["teamId"]) is Side.red:
-                red_team["bans"].append(b)
+                red_team["bans"][b["pickTurn"]] = b["championId"]
         return [TeamData(**blue_team), TeamData(**red_team)]
 
 
