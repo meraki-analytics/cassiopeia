@@ -401,7 +401,8 @@ class Skin(CassiopeiaObject):
     _data_types = {SkinData}
 
     def __init__(self, **kwargs):
-        self.__champion_key = kwargs.pop("champion_key")
+        if "champion_key" in kwargs:
+            self.__champion_key = kwargs.pop("champion_key")
         super().__init__(**kwargs)
 
     @property
