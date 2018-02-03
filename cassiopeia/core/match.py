@@ -246,12 +246,11 @@ class MatchHistory(CassiopeiaLazyList):
     """The match history for a summoner. By default, this will return the entire match history."""
     _data_types = {MatchListData}
 
-    @provide_default_region
-    def __init__(self, *, summoner: Union[Summoner, str, int], region: Union[Region, str] = None, begin_index: int = None, end_index: int = None, begin_time: datetime.datetime = None, end_time: datetime.datetime = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
+    def __init__(self, *, summoner: Summoner, begin_index: int = None, end_index: int = None, begin_time: datetime.datetime = None, end_time: datetime.datetime = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
         assert end_index is None or end_index > begin_index
         if begin_time is not None and end_time is not None and begin_time > end_time:
             raise ValueError("`end_time` should be greater than `begin_time`")
-        kwargs = {"region": region}
+        kwargs = {"region": summoner.region}
         kwargs["queues"] = queues or []
         kwargs["seasons"] = seasons or []
         champions = champions or []
@@ -264,26 +263,16 @@ class MatchHistory(CassiopeiaLazyList):
         if end_time is not None and not isinstance(end_time, (int, float)):
             end_time = int(utctimestamp(end_time) * 1000)
         kwargs["end_time"] = end_time
-        if isinstance(summoner, int):
-            summoner = Summoner(id=summoner, region=region)
-        elif isinstance(summoner, str):
-            summoner = Summoner(name=summoner, region=region)
         assert isinstance(summoner, Summoner)
         self.__account_id_callable = lambda: summoner.account.id
         CassiopeiaObject.__init__(self, **kwargs)
 
     @classmethod
     @provide_default_region
-    def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, str, int], region: Union[Region, str] = None, begin_index: int = None, end_index: int = None, begin_time: datetime.datetime = None, end_time: datetime.datetime = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
-        query = {"region": region}
-        if isinstance(summoner, Summoner):
-            query["account.id"] = summoner.account.id
-        elif isinstance(summoner, str):
-            summoner = Summoner(name=summoner, region=region)
-            query["account.id"] = summoner.account.id
-        else:  # int
-            summoner = Summoner(id=summoner, region=region)
-            query["account.id"] = summoner.account.id
+    def __get_query_from_kwargs__(cls, *, summoner: Summoner, begin_index: int = None, end_index: int = None, begin_time: datetime.datetime = None, end_time: datetime.datetime = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
+        assert isinstance(summoner, Summoner)
+        query = {"region": summoner.region}
+        query["account.id"] = summoner.account.id
 
         if begin_index is not None:
             query["beginIndex"] = begin_index
@@ -314,9 +303,8 @@ class MatchHistory(CassiopeiaLazyList):
         return query
 
     @classmethod
-    def from_generator(cls, generator: Generator, account_id: int, **kwargs):
+    def from_generator(cls, generator: Generator, summoner: Summoner, **kwargs):
         self = cls.__new__(cls)
-        summoner = Summoner(account=Account(id=account_id), region=kwargs["region"])
         kwargs["summoner"] = summoner
         CassiopeiaLazyList.__init__(self, generator=generator, **kwargs)
         return self

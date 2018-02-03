@@ -26,7 +26,7 @@ def test_match():
 
     summoner = Summoner(name=name, account=account, id=id, region=region)
 
-    match_history = cass.get_match_history(summoner, seasons={Season.season_7}, queues={Queue.ranked_solo_fives}, region=region)
+    match_history = cass.get_match_history(summoner, queues={Queue.ranked_solo_fives})
     match_history = summoner.match_history
     match_history(seasons={Season.season_7}, queues={Queue.ranked_solo_fives})
 
@@ -127,7 +127,7 @@ def test_languagestrings():
 
 
 def test_leagues():
-    summoner_name = "Kalturi"
+    summoner_name = "Spartan324"
     region = "NA"
     summoner = Summoner(name=summoner_name, region=region)
     "Name:", summoner.name

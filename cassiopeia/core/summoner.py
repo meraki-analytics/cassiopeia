@@ -196,7 +196,7 @@ class Summoner(CassiopeiaGhost):
     @property
     def match_history(self) -> "MatchHistory":
         from .match import MatchHistory
-        return MatchHistory(summoner=self, region=self.region)
+        return MatchHistory(summoner=self)
 
     @property
     def current_match(self) -> "CurrentMatch":

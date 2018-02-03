@@ -10,7 +10,7 @@ def filter_match_history(summoner, patch):
     end_time = patch.end
     if end_time is None:
         end_time = datetime.datetime.now()
-    match_history = MatchHistory(summoner=summoner, region=summoner.region, queues={Queue.aram}, begin_time=patch.start, end_time=end_time)
+    match_history = MatchHistory(summoner=summoner, queues={Queue.aram}, begin_time=patch.start, end_time=end_time)
     return match_history
 
 

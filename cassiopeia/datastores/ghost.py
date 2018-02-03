@@ -6,7 +6,7 @@ from datapipelines import DataSource, PipelineContext, Query, validate_query
 
 from .. import utctimestamp
 from ..data import Platform, Queue
-from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions, ChampionMasteries, LeagueEntries, FeaturedMatches, VerificationString
+from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions, ChampionMasteries, LeagueEntries, FeaturedMatches, VerificationString, Account
 from ..core.match import Timeline, MatchListData
 from ..core.championmastery import ChampionMasteryListData
 from ..core.league import LeaguePositionsData, LeagueEntry
@@ -325,8 +325,8 @@ class UnloadedGhostStore(DataSource):
         account_id = query["account.id"]
         begin_index = query.get("beginIndex", 0)
         end_index = query.get("endIndex", None)
-        begin_time = query.get("beginTime", 0)  # Defaults to start of summoner's match history
-        end_time = query.get("endTime", None)  # Defaults to now; end_time > begin_time
+        first_requested_dt = query.get("beginTime", 0)  # (begin_time) Defaults to start of summoner's match history
+        most_recent_requested_dt = query.get("endTime", None)  # (end_time) Defaults to now; end_time > begin_time
         queues = query.get("queues", {})
         seasons = query.get("seasons", {})
         champion_ids = query.get("champion.ids", {})
@@ -334,15 +334,15 @@ class UnloadedGhostStore(DataSource):
         max_number_of_requested_matches = float("inf") if end_index is None else end_index - begin_index
 
         # Convert times to datetimes
-        begin_time = datetime.datetime.utcfromtimestamp(begin_time / 1000)
-        if end_time is not None:
-            end_time = datetime.datetime.utcfromtimestamp(end_time / 1000)
-            assert end_time > begin_time
+        first_requested_dt = datetime.datetime.utcfromtimestamp(first_requested_dt / 1000)
+        if most_recent_requested_dt is not None:
+            most_recent_requested_dt = datetime.datetime.utcfromtimestamp(most_recent_requested_dt / 1000)
+            assert most_recent_requested_dt > first_requested_dt
 
         # Create the generator that will populate the match history object.
-        def generate_matchlists(begin_index: int, max_number_of_requested_matches: int = None, begin_time: datetime.datetime = None, end_time: Union[datetime.datetime, None] = None):
+        def generate_matchlists(begin_index: int, max_number_of_requested_matches: int = None, first_requested_dt: datetime.datetime = None, most_recent_requested_dt: Union[datetime.datetime, None] = None):
             _begin_index = begin_index
-            _begin_time = begin_time
+            _current_first_requested_dt = first_requested_dt
 
             if isinstance(max_number_of_requested_matches, int):
                 max_number_of_requested_matches = float(max_number_of_requested_matches)
@@ -356,7 +356,7 @@ class UnloadedGhostStore(DataSource):
                     "seasons": seasons,
                     "champion.ids": champion_ids,
                     "beginIndex": _begin_index,
-                    "beginTime": int(utctimestamp(_begin_time) * 1000),
+                    "beginTime": int(utctimestamp(_current_first_requested_dt) * 1000),
                     "maxNumberOfMatches": max_number_of_requested_matches
                 }
                 if "endTime" in original_query:
@@ -366,12 +366,12 @@ class UnloadedGhostStore(DataSource):
                 matchrefdata = None
                 for matchrefdata in data:
                     pulled_matches += 1
-                    if pulled_matches > 0 and (end_time is None or matchrefdata.creation < end_time) and matchrefdata.creation > begin_time:
+                    if pulled_matches > 0 and (most_recent_requested_dt is None or matchrefdata.creation < most_recent_requested_dt) and matchrefdata.creation > first_requested_dt:
                         match = Match.from_match_reference(matchrefdata)
                         yield  match
                     if pulled_matches >= max_number_of_requested_matches:
                         break
-                    if begin_time is not None and matchrefdata.creation <= begin_time:
+                    if first_requested_dt is not None and matchrefdata.creation <= first_requested_dt:
                         break
 
                 matches_pulled_this_iteration = len(data)
@@ -383,30 +383,33 @@ class UnloadedGhostStore(DataSource):
                     # Stop because the API returned less data than we asked for, and so there isn't any more left
                     break
 
-                if end_time is not None and matchrefdata is not None and matchrefdata.creation >= end_time:
+                if most_recent_requested_dt is not None and matchrefdata is not None and matchrefdata.creation >= most_recent_requested_dt:
                     # Stop because we have gotten all the matches in the requested time range
                     break
 
+                # Update the "start" values for the next iteration of calls
                 if hasattr(data, "endIndex"):
                     _begin_index = data.endIndex
-                # else: Don't update it
-                if hasattr(data, "endTime"):
-                    _begin_time = datetime.datetime.utcfromtimestamp(data.endTime / 1000)
-                    temp = _begin_time
+                # else: Don't update _begin_index
+                if hasattr(data, "beginTime"):
+                    _current_first_requested_dt = datetime.datetime.utcfromtimestamp(data.beginTime / 1000)
+                    _earliest_dt_in_current_match_history = _current_first_requested_dt
                 else:
-                    temp = matchrefdata.creation
-                # else: Don't update it
+                    _earliest_dt_in_current_match_history = matchrefdata.creation
+                # else: Don't update _current_first_requested_dt
                 max_number_of_requested_matches -= len(data)
 
-                if begin_time is not None and temp <= begin_time:
+                if first_requested_dt is not None and _earliest_dt_in_current_match_history <= first_requested_dt:
                     # Stop because we have gotten all the matches in the requested time range
                     break
 
-        generator = generate_matchlists(begin_index, max_number_of_requested_matches, begin_time, end_time)
+        generator = generate_matchlists(begin_index, max_number_of_requested_matches, first_requested_dt, most_recent_requested_dt)
 
-        generator = MatchHistory.from_generator(generator=generator, account_id=account_id, region=region,
+        summoner = Summoner(account=Account(id=account_id), region=region)
+        generator = MatchHistory.from_generator(generator=generator, summoner=summoner,
                                                 begin_index=begin_index, end_index=end_index,
-                                                begin_time=begin_time, end_time=end_time,
+                                                begin_time=first_requested_dt,
+                                                end_time=most_recent_requested_dt,
                                                 queues=queues, seasons=seasons, champions=champion_ids)
         return generator
 

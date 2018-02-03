@@ -12,9 +12,9 @@ def print_newest_match(name: str, account: int, id: int, region: str):
 
     # A MatchHistory is a lazy list, meaning it's elements only get loaded as-needed.
 
-    # match_history = cass.get_match_history(summoner, seasons={Season.season_7}, queues={Queue.ranked_solo_fives})
+    # match_history = cass.get_match_history(summoner=summoner, seasons={Season.season_8}, queues={Queue.ranked_solo_fives})
     match_history = summoner.match_history
-    match_history(seasons={Season.season_7}, queues={Queue.ranked_solo_fives})
+    match_history(seasons={Season.season_8}, queues={Queue.ranked_solo_fives})
 
     # Load the entire match history by iterating over all its elements so that we know how long it is.
     # Unfortunately since we are iterating over the match history and accessing the summoner's champion for each match,
