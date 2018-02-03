@@ -1,16 +1,17 @@
 import functools
+import arrow
 import datetime
 from typing import List, Dict, Set, Union, Generator
 
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableLazyList, SearchableDictionary
 
-from .. import configuration, utctimestamp
+from .. import configuration
 from ..data import Region, Platform, Tier, GameType, GameMode, Queue, Side, Season, Lane, Role
 from .common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, provide_default_region, ghost_load_on
 from ..dto import match as dto
 from .patch import Patch
-from .summoner import Summoner, Account
+from .summoner import Summoner
 from .staticdata.champion import Champion
 from .staticdata.rune import Rune
 from .staticdata.summonerspell import SummonerSpell
@@ -185,7 +186,7 @@ class MatchReferenceData(CoreData):
 
     def __call__(self, **kwargs):
         if "timestamp" in kwargs:
-            self.creation = datetime.datetime.utcfromtimestamp(kwargs.pop("timestamp") / 1000)
+            self.creation = arrow.get(kwargs.pop("timestamp") / 1000)
 
             # Set lane and role if they are missing from the data
             if "lane" not in kwargs:
@@ -202,7 +203,7 @@ class MatchData(CoreData):
 
     def __call__(self, **kwargs):
         if "gameCreation" in kwargs:
-            self.creation = datetime.datetime.utcfromtimestamp(kwargs["gameCreation"] / 1000)
+            self.creation = arrow.get(kwargs["gameCreation"] / 1000)
         if "gameDuration" in kwargs:
             self.duration = datetime.timedelta(seconds=kwargs["gameDuration"])
 
@@ -246,7 +247,7 @@ class MatchHistory(CassiopeiaLazyList):
     """The match history for a summoner. By default, this will return the entire match history."""
     _data_types = {MatchListData}
 
-    def __init__(self, *, summoner: Summoner, begin_index: int = None, end_index: int = None, begin_time: datetime.datetime = None, end_time: datetime.datetime = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
+    def __init__(self, *, summoner: Summoner, begin_index: int = None, end_index: int = None, begin_time: arrow.Arrow = None, end_time: arrow.Arrow = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
         assert end_index is None or end_index > begin_index
         if begin_time is not None and end_time is not None and begin_time > end_time:
             raise ValueError("`end_time` should be greater than `begin_time`")
@@ -258,10 +259,10 @@ class MatchHistory(CassiopeiaLazyList):
         kwargs["begin_index"] = begin_index
         kwargs["end_index"] = end_index
         if begin_time is not None and not isinstance(begin_time, (int, float)):
-            begin_time = int(utctimestamp(begin_time) * 1000)
+            begin_time = begin_time.timestamp * 1000
         kwargs["begin_time"] = begin_time
         if end_time is not None and not isinstance(end_time, (int, float)):
-            end_time = int(utctimestamp(end_time) * 1000)
+            end_time = end_time.timestamp * 1000
         kwargs["end_time"] = end_time
         assert isinstance(summoner, Summoner)
         self.__account_id_callable = lambda: summoner.account.id
@@ -269,7 +270,7 @@ class MatchHistory(CassiopeiaLazyList):
 
     @classmethod
     @provide_default_region
-    def __get_query_from_kwargs__(cls, *, summoner: Summoner, begin_index: int = None, end_index: int = None, begin_time: datetime.datetime = None, end_time: datetime.datetime = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
+    def __get_query_from_kwargs__(cls, *, summoner: Summoner, begin_index: int = None, end_index: int = None, begin_time: arrow.Arrow = None, end_time: arrow.Arrow = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
         assert isinstance(summoner, Summoner)
         query = {"region": summoner.region}
         query["account.id"] = summoner.account.id
@@ -281,13 +282,13 @@ class MatchHistory(CassiopeiaLazyList):
             query["endIndex"] = end_index
 
         if begin_time is not None:
-            if isinstance(begin_time, datetime.datetime):
-                begin_time = int(utctimestamp(begin_time) * 1000)
+            if isinstance(begin_time, arrow.Arrow):
+                begin_time = begin_time.timestamp * 1000
             query["beginTime"] = begin_time
 
         if end_time is not None:
-            if isinstance(end_time, datetime.datetime):
-                end_time = int(utctimestamp(end_time) * 1000)
+            if isinstance(end_time, arrow.Arrow):
+                end_time = end_time.timestamp * 1000
             query["endTime"] = end_time
 
         if queues is not None:
@@ -353,16 +354,16 @@ class MatchHistory(CassiopeiaLazyList):
             return None
 
     @property
-    def begin_time(self) -> datetime.datetime:
+    def begin_time(self) -> arrow.Arrow:
         time = self._data[MatchListData].begin_time
         if time is not None:
-            return datetime.datetime.utcfromtimestamp(time / 1000)
+            return arrow.get(time / 1000)
 
     @property
-    def end_time(self) -> datetime.datetime:
+    def end_time(self) -> arrow.Arrow:
         time = self._data[MatchListData].end_time
         if time is not None:
-            return datetime.datetime.utcfromtimestamp(time / 1000)
+            return arrow.get(time / 1000)
 
 
 class Position(CassiopeiaObject):
@@ -1420,7 +1421,7 @@ class Match(CassiopeiaGhost):
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on
     @lazy
-    def creation(self) -> datetime.datetime:
+    def creation(self) -> arrow.Arrow:
         return self._data[MatchData].creation
 
     @property

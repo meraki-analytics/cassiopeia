@@ -1,10 +1,3 @@
-import calendar
-import datetime
-
-def utctimestamp(dt: datetime.datetime):
-    # This is necessary because the datetime module doesn't deal with timezones well.
-    return calendar.timegm(dt.utctimetuple())
-
 # Initialize the settings singleton
 from ._configuration import get_default_config, Settings, CassiopeiaConfiguration as _CassiopeiaConfiguration
 configuration = _CassiopeiaConfiguration()

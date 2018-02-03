@@ -1,11 +1,11 @@
 from time import time
 from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator, Union
+import arrow
 import datetime
 import math
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError, validate_query
 
-from ... import utctimestamp
 from .common import RiotAPIService, APINotFoundError
 from ...data import Platform, Season, Queue, SEASON_IDS, QUEUE_IDS
 from ...dto.match import MatchDto, MatchListDto, TimelineDto
@@ -95,12 +95,12 @@ class MatchAPI(RiotAPIService):
         riot_index_interval = 100
         riot_date_interval = datetime.timedelta(days=7)
 
-        begin_time = query["beginTime"]  # type: datetime.datetime
-        end_time = query.get("endTime", datetime.datetime.now())
-        if not isinstance(begin_time, datetime.datetime):
-            begin_time = datetime.datetime.utcfromtimestamp(begin_time / 1000)
-        if not isinstance(end_time, datetime.datetime):
-            end_time = datetime.datetime.utcfromtimestamp(end_time / 1000)
+        begin_time = query["beginTime"]  # type: arrow.Arrow
+        end_time = query.get("endTime", arrow.now())  # type: arrow.Arrow
+        if isinstance(begin_time, int):
+            begin_time = arrow.get(begin_time / 1000)
+        if isinstance(end_time, int):
+            end_time = arrow.get(end_time / 1000)
 
         def determine_calling_method(begin_time, end_time) -> str:
             """Returns either "by_date" or "by_index"."""
@@ -108,7 +108,7 @@ class MatchAPI(RiotAPIService):
             seconds_per_day = (60 * 60 * 24)
             riot_date_interval_in_days = riot_date_interval.total_seconds() / seconds_per_day  # in units of days
             npulls_by_date = (end_time - begin_time).total_seconds() / seconds_per_day / riot_date_interval_in_days
-            npulls_by_index = (datetime.datetime.now() - begin_time).total_seconds() / seconds_per_day / riot_date_interval_in_days * matches_per_date_interval / riot_index_interval
+            npulls_by_index = (arrow.now() - begin_time).total_seconds() / seconds_per_day / riot_date_interval_in_days * matches_per_date_interval / riot_index_interval
             if math.ceil(npulls_by_date) < math.ceil(npulls_by_index):
                 by = "by_date"
             else:
@@ -118,11 +118,11 @@ class MatchAPI(RiotAPIService):
         calling_method = determine_calling_method(begin_time, end_time)
 
         if calling_method == "by_date":
-            params["beginTime"] = int(utctimestamp(begin_time) * 1000)
+            params["beginTime"] = begin_time.timestamp * 1000
             if "endTime" in query:
-                params["endTime"] = min(int((utctimestamp(begin_time + riot_date_interval)) * 1000), query["endTime"])
+                params["endTime"] = min((begin_time + riot_date_interval).timestamp * 1000, query["endTime"])
             else:
-                params["endTime"] = int((utctimestamp(begin_time + riot_date_interval)) * 1000)
+                params["endTime"] = (begin_time + riot_date_interval).timestamp * 1000
         else:
             params["beginIndex"] = query["beginIndex"]
             params["endIndex"] = query["beginIndex"] + min(riot_index_interval, query["maxNumberOfMatches"])

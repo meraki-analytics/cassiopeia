@@ -3,3 +3,4 @@ pytest
 merakicommons
 datapipelines
 Pillow
+arrow

@@ -1,10 +1,9 @@
 from typing import Type, TypeVar, MutableMapping, Any, Iterable, Union
-import datetime
+import arrow
 import copy
 
 from datapipelines import DataSource, PipelineContext, Query, validate_query
 
-from .. import utctimestamp
 from ..data import Platform, Queue
 from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions, ChampionMasteries, LeagueEntries, FeaturedMatches, VerificationString, Account
 from ..core.match import Timeline, MatchListData
@@ -334,13 +333,13 @@ class UnloadedGhostStore(DataSource):
         max_number_of_requested_matches = float("inf") if end_index is None else end_index - begin_index
 
         # Convert times to datetimes
-        first_requested_dt = datetime.datetime.utcfromtimestamp(first_requested_dt / 1000)
+        first_requested_dt = arrow.get(first_requested_dt / 1000)
         if most_recent_requested_dt is not None:
-            most_recent_requested_dt = datetime.datetime.utcfromtimestamp(most_recent_requested_dt / 1000)
+            most_recent_requested_dt = arrow.get(most_recent_requested_dt / 1000)
             assert most_recent_requested_dt > first_requested_dt
 
         # Create the generator that will populate the match history object.
-        def generate_matchlists(begin_index: int, max_number_of_requested_matches: int = None, first_requested_dt: datetime.datetime = None, most_recent_requested_dt: Union[datetime.datetime, None] = None):
+        def generate_matchlists(begin_index: int, max_number_of_requested_matches: int = None, first_requested_dt: arrow.Arrow = None, most_recent_requested_dt: Union[arrow.Arrow, None] = None):
             _begin_index = begin_index
             _current_first_requested_dt = first_requested_dt
 
@@ -356,7 +355,7 @@ class UnloadedGhostStore(DataSource):
                     "seasons": seasons,
                     "champion.ids": champion_ids,
                     "beginIndex": _begin_index,
-                    "beginTime": int(utctimestamp(_current_first_requested_dt) * 1000),
+                    "beginTime": _current_first_requested_dt.timestamp * 1000,
                     "maxNumberOfMatches": max_number_of_requested_matches
                 }
                 if "endTime" in original_query:
@@ -392,7 +391,7 @@ class UnloadedGhostStore(DataSource):
                     _begin_index = data.endIndex
                 # else: Don't update _begin_index
                 if hasattr(data, "beginTime"):
-                    _current_first_requested_dt = datetime.datetime.utcfromtimestamp(data.beginTime / 1000)
+                    _current_first_requested_dt = arrow.get(data.beginTime / 1000)
                     _earliest_dt_in_current_match_history = _current_first_requested_dt
                 else:
                     _earliest_dt_in_current_match_history = matchrefdata.creation

@@ -4,10 +4,11 @@ from typing import Mapping, Set, Union, Optional, Type, Generator
 import functools
 import logging
 from enum import Enum
+import arrow
 import datetime
 
 from merakicommons.ghost import Ghost, ghost_load_on as _ghost_load_on
-from merakicommons.container import SearchableList, SearchableLazyList
+from merakicommons.container import SearchableLazyList
 
 from .. import configuration
 from ..data import Region, Platform
@@ -321,7 +322,7 @@ class CassiopeiaJsonEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Enum):
             return obj.name
-        elif isinstance(obj, datetime.datetime):
+        elif isinstance(obj, (datetime.datetime, arrow.Arrow)):
             return obj.isoformat()
         elif isinstance(obj, datetime.timedelta):
             return obj.seconds

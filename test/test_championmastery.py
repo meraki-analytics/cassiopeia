@@ -1,4 +1,4 @@
-import datetime
+import arrow
 
 import cassiopeia
 from cassiopeia import Region, Platform
@@ -43,7 +43,7 @@ def test_mastery_return():
     assert isinstance(champion_mastery.platform, Platform)
     assert isinstance(champion_mastery.region, Region)
     assert isinstance(champion_mastery.chest_granted, bool)
-    assert isinstance(champion_mastery.last_played, datetime.datetime)
+    assert isinstance(champion_mastery.last_played, arrow.Arrow)
     assert isinstance(champion_mastery.level, int) and champion_mastery.level <= 7
     assert isinstance(champion_mastery.points, int)
     assert isinstance(champion_mastery.points_since_last_level, int)

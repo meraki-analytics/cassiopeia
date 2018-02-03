@@ -1,3 +1,4 @@
+import arrow
 import datetime
 from typing import Union
 
@@ -180,7 +181,7 @@ class Summoner(CassiopeiaGhost):
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on
     def revision_date(self) -> datetime.date:
-        return datetime.datetime.utcfromtimestamp(self._data[SummonerData].revisionDate / 1000).date()
+        return arrow.get(self._data[SummonerData].revisionDate / 1000).date()
 
     @property
     def match_history_uri(self) -> str:

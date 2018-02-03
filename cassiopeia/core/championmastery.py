@@ -1,4 +1,4 @@
-import datetime
+import arrow
 from typing import Union
 
 from merakicommons.cache import lazy, lazy_property
@@ -66,7 +66,7 @@ class ChampionMasteries(CassiopeiaLazyList):
         return self.__summoner
 
 
-@searchable({str: ["champion", "summoner"], int: ["points", "level"], bool: ["chest_granted"], datetime.datetime: ["last_played"], Champion: ["champion"], Summoner: ["summoner"]})
+@searchable({str: ["champion", "summoner"], int: ["points", "level"], bool: ["chest_granted"], arrow.Arrow: ["last_played"], Champion: ["champion"], Summoner: ["summoner"]})
 class ChampionMastery(CassiopeiaGhost):
     _data_types = {ChampionMasteryData}
 
@@ -203,6 +203,6 @@ class ChampionMastery(CassiopeiaGhost):
     @CassiopeiaGhost.property(ChampionMasteryData)
     @ghost_load_on
     @lazy
-    def last_played(self) -> datetime.datetime:
+    def last_played(self) -> arrow.Arrow:
         """Last time this champion was played by this player."""
-        return datetime.datetime.utcfromtimestamp(self._data[ChampionMasteryData].lastPlayed / 1000)
+        return arrow.get(self._data[ChampionMasteryData].lastPlayed / 1000)

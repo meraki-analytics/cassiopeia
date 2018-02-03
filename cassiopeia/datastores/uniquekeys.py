@@ -1,5 +1,4 @@
 from typing import Tuple, Set, Union, MutableMapping, Any, Mapping, Iterable, Generator, List
-import datetime
 
 from datapipelines import Query, PipelineContext, QueryValidationError
 

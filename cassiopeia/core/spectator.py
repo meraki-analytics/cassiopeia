@@ -1,4 +1,5 @@
 from typing import List, Dict, Union
+import arrow
 import datetime
 
 from datapipelines import NotFoundError
@@ -280,8 +281,8 @@ class CurrentMatch(CassiopeiaGhost):
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
     @ghost_load_on
-    def creation(self) -> datetime.datetime:
-        return datetime.datetime.utcfromtimestamp(self._data[CurrentGameInfoData].creation / 1000)
+    def creation(self) -> arrow.Arrow:
+        return arrow.get(self._data[CurrentGameInfoData].creation / 1000)
 
     @CassiopeiaGhost.property(CurrentGameInfoData)
     @ghost_load_on

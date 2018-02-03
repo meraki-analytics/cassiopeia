@@ -28,17 +28,17 @@ class PatchSource(DataSource):
     def get_many(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> Iterable[T]:
         pass
 
-    #############
-    # Champions #
-    #############
+    ##############
+    # Patch List #
+    ##############
 
     @get.register(PatchListDto)
-    def get_champion_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> PatchListDto:
+    def get_patch_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> PatchListDto:
         # See: https://rawgit.com/
-        url = "https://cdn.rawgit.com/meraki-analytics/cassiopeia/6c3d0ce5/cassiopeia/patches.json"
+        url = "https://rawgit.com/CommunityDragon/Data/master/patches.json"
         try:
             body = self._client.get(url)[0]
         except HTTPError as e:
             raise NotFoundError(str(e)) from e
 
-        return PatchListDto({"patches": body})
+        return PatchListDto(**body)

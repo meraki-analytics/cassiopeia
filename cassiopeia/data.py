@@ -1,4 +1,5 @@
 from enum import Enum
+import arrow
 
 
 class Region(Enum):
@@ -21,6 +22,23 @@ class Region(Enum):
     @property
     def default_locale(self) -> str:
         return DEFAULT_LOCALE[self]
+
+    @property
+    def timezone(self) -> str:
+        tzs = {
+            'NA': 'GMT-8',
+            'LAN': 'GMT-7',
+            'LAS': 'GMT-5',
+            'BR': 'GMT-4',
+            'EUW': 'GMT-2',
+            'TR': 'GMT-0',
+            'EUNE': 'GMT+1',
+            'RU': 'GMT+3',
+            'KR': 'GMT+6',
+            'JP': 'GMT+7',
+            'OCE': 'GMT+8',
+        }
+        return tzs[self.value]
 
 
 class Platform(Enum):
@@ -162,6 +180,18 @@ class Season(Enum):
 
     def from_id(id: int):
         return {i: season for season, i in SEASON_IDS.items()}[id]
+
+    def start(self, region: Region) -> arrow.Arrow:
+        from .core import Patch
+        for patch in Patch._Patch__patches[region]:
+            if patch.season == self:
+                return patch.start
+
+    def end(self, region: Region) -> arrow.Arrow:
+        from .core import Patch
+        for patch in reversed(Patch._Patch__patches[region]):
+            if patch.season == self:
+                return patch.end
 
 
 SEASON_IDS = {
