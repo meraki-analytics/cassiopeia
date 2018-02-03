@@ -33,7 +33,7 @@ class LevelTipData(CoreData):
 
 
 class ChampionSpellData(CoreData):
-    _renamed = {"vars": "variables", "maxrank": "maxRank", "cooldown": "cooldowns", "cost": "costs", "effect": "effects", "costType": "resource"}
+    _renamed = {"vars": "variables", "maxrank": "maxRank", "cooldown": "cooldowns", "cost": "costs", "effect": "effects", "costType": "resource", "keyboardKey": "keyboard_key"}
 
     def __call__(self, *args, **kwargs):
         if "leveltip" in kwargs:
@@ -197,7 +197,7 @@ class SpellVars(CassiopeiaObject):
         return self._data[SpellVarsData].key
 
 
-@searchable({str: ["name", "key", "keywords"]})
+@searchable({str: ["name", "key", "keywords", "keyboard_key"]})
 class ChampionSpell(CassiopeiaObject):
     _data_types = {ChampionSpellData}
 
@@ -285,6 +285,11 @@ class ChampionSpell(CassiopeiaObject):
     def name(self) -> str:
         """The spell's name."""
         return self._data[ChampionSpellData].name
+
+    @property
+    def keyboard_key(self) -> str:
+        """Q, W, E, or R"""
+        return self._data[ChampionSpellData].keyboard_key
 
 
 @searchable({str: ["type", "items"], Item: ["items"]})
@@ -765,7 +770,12 @@ class Champion(CassiopeiaGhost):
     @lazy
     def spells(self) -> List[ChampionSpell]:
         """This champion's spells."""
-        return SearchableList(ChampionSpell.from_data(spell) for spell in self._data[ChampionData].spells)
+        keys = {0: "Q", 1: "W", 2: "E", 3: "R"}
+        spells = []
+        for i, spell in enumerate(self._data[ChampionData].spells):
+            spell.keyboard_key = keys[i]
+            spells.append(ChampionSpell.from_data(spell))
+        return SearchableList(spells)
 
     @CassiopeiaGhost.property(ChampionData)
     @ghost_load_on
