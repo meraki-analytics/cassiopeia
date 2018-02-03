@@ -19,17 +19,41 @@ class TranslationData(CoreData):
 class MessageData(CoreData):
     _renamed = {"created_at": "created", "updated_at": "updated"}
 
+    def __call__(self, **kwargs):
+        if "translations" in kwargs:
+            self.translations = [TranslationData(**translation) for translation in kwargs.pop("translations")]
+        super().__call__(**kwargs)
+        return self
+
 
 class IncidentData(CoreData):
     _renamed = {"created_at": "created"}
+
+    def __call__(self, **kwargs):
+        if "updates" in kwargs:
+            self.updates = [MessageData(**update) for update in kwargs.pop("updates")]
+        super().__call__(**kwargs)
+        return self
 
 
 class ServiceData(CoreData):
     _renamed = {}
 
+    def __call__(self, **kwargs):
+        if "incidents" in kwargs:
+            self.incidents = [IncidentData(**incident) for incident in kwargs.pop("incidents")]
+        super().__call__(**kwargs)
+        return self
+
 
 class ShardStatusData(CoreData):
     _renamed = {"region_tag": "platform"}
+
+    def __call__(self, **kwargs):
+        if "services" in kwargs:
+            self.services = [ServiceData(**service) for service in kwargs.pop("services")]
+        super().__call__(**kwargs)
+        return self
 
 
 ##############
