@@ -35,7 +35,7 @@ class PatchSource(DataSource):
     @get.register(PatchListDto)
     def get_patch_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> PatchListDto:
         # See: https://rawgit.com/
-        url = "https://rawgit.com/CommunityDragon/Data/master/patches.json"
+        url = "https://cdn.rawgit.com/meraki-analytics/cassiopeia/662a3edf/cassiopeia/patches.json"
         try:
             body = self._client.get(url)[0]
         except HTTPError as e:

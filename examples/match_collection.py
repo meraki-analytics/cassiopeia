@@ -1,6 +1,6 @@
 import random
 from sortedcontainers import SortedList
-import datetime
+import arrow
 
 from cassiopeia.core import Summoner, MatchHistory, Match
 from cassiopeia import Queue, Patch
@@ -9,7 +9,7 @@ from cassiopeia import Queue, Patch
 def filter_match_history(summoner, patch):
     end_time = patch.end
     if end_time is None:
-        end_time = datetime.datetime.now()
+        end_time = arrow.now()
     match_history = MatchHistory(summoner=summoner, queues={Queue.aram}, begin_time=patch.start, end_time=end_time)
     return match_history
 
