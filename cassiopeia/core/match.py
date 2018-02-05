@@ -210,7 +210,7 @@ class MatchData(CoreData):
         if "participants" in kwargs:
             for participant in kwargs["participants"]:
                 for pid in kwargs["participantIdentities"]:
-                    if participant["participantId"] == pid["participantId"]:
+                    if participant["participantId"] == pid["participantId"] and "player" in participant and "player" in pid:
                         participant["player"] =  pid["player"]
                         break
             self.participants = []
@@ -1350,7 +1350,7 @@ class Match(CassiopeiaGhost):
                     participant = Participant.from_data(p, match=match)
                     # If we already have this participant in the list, replace it so it stays in the same position
                     for j, pold in enumerate(match.__participants):
-                        if pold._data[ParticipantData].accountId == participant._data[ParticipantData].currentAccountId:
+                        if hasattr(pold._data[ParticipantData], "accountId") and hasattr(participant._data[ParticipantData], "accountId") and pold._data[ParticipantData].accountId == participant._data[ParticipantData].currentAccountId:
                             match.__participants[j] = participant
                             break
                     else:
