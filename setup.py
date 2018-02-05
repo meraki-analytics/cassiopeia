@@ -9,7 +9,8 @@ install_requires = [
     "datapipelines>=1.0.5",
     "merakicommons>=1.0.3",
     "Pillow",
-    "pycurl"
+    "pycurl",
+    "arrow"
 ]
 
 # Require python 3.6

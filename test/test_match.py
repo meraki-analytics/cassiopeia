@@ -32,3 +32,9 @@ def test_match_correct_return():
     assert isinstance(match_from_id, cassiopeia.Match)
     assert first_match.id == match_from_id.id
     assert first_match == match_from_id
+
+
+def test_match_participant_search():
+    summoner = cassiopeia.Summoner(name='Kejorn', region='NA')
+    match = summoner.match_history[0]
+    p = match.participants[summoner]

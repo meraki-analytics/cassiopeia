@@ -210,7 +210,7 @@ class MatchData(CoreData):
         if "participants" in kwargs:
             for participant in kwargs["participants"]:
                 for pid in kwargs["participantIdentities"]:
-                    if participant["participantId"] == pid["participantId"] and "player" in participant and "player" in pid:
+                    if participant["participantId"] == pid["participantId"] and "player" in pid:
                         participant["player"] =  pid["player"]
                         break
             self.participants = []
