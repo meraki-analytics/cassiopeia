@@ -197,17 +197,18 @@ class Rune(CassiopeiaGhost):
     @CassiopeiaGhost.property(RuneData)
     @ghost_load_on
     def short_description(self) -> str:
-        return self._data[RuneData].short_description
+        return self._data[RuneData].shortDescription
 
     @CassiopeiaGhost.property(RuneData)
     @ghost_load_on
     def long_description(self) -> str:
-        return self._data[RuneData].long_description
+        return self._data[RuneData].longDescription
 
-    @CassiopeiaGhost.property(RuneData)
-    @ghost_load_on
-    def end_of_game_descriptions(self) -> List[str]:
-        return self._data[RuneData].endOfGameDescriptions
+    #@CassiopeiaGhost.property(RuneData)
+    #@ghost_load_on
+    #def end_of_game_stat_descriptions(self) -> List[str]:
+    #    print(self._data[RuneData].to_dict().keys())
+    #    return self._data[RuneData].endOfGameStatDescriptions
 
     @CassiopeiaGhost.property(RuneData)
     @ghost_load_on
