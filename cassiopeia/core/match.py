@@ -266,6 +266,7 @@ class MatchHistory(CassiopeiaLazyList):
         kwargs["end_time"] = end_time
         assert isinstance(summoner, Summoner)
         self.__account_id_callable = lambda: summoner.account.id
+        self.__summoner = summoner
         CassiopeiaObject.__init__(self, **kwargs)
 
     @classmethod
@@ -307,8 +308,21 @@ class MatchHistory(CassiopeiaLazyList):
     def from_generator(cls, generator: Generator, summoner: Summoner, **kwargs):
         self = cls.__new__(cls)
         kwargs["summoner"] = summoner
+        self.__summoner = summoner
         CassiopeiaLazyList.__init__(self, generator=generator, **kwargs)
         return self
+
+    def __call__(self, **kwargs) -> "MatchHistory":
+        # summoner, begin_index, end_index, begin_time, end_time, queues, seasons, champions
+        kwargs.setdefault("summoner", self.__summoner)
+        kwargs.setdefault("begin_index", self.begin_index)
+        kwargs.setdefault("end_index", self.end_index)
+        kwargs.setdefault("begin_time", self.begin_time)
+        kwargs.setdefault("end_time", self.end_time)
+        kwargs.setdefault("queues", self.queues)
+        kwargs.setdefault("seasons", self.seasons)
+        kwargs.setdefault("champions", self.champions)
+        return MatchHistory(**kwargs)
 
     @property
     def _account_id(self):

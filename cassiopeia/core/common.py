@@ -107,7 +107,25 @@ class CassiopeiaObject(object):
     def __init__(self, **kwargs):
         # Note: Dto names are not allowed to be passed in.
         self._data = {_type: None for _type in self._data_types}
-        self(**kwargs)
+        # Re-implement __call__ code here so that __call__ can be overridden in subclasses
+        results = {_type: {}  for _type in self._data_types}
+        found = False
+        for key, value in kwargs.items():
+            # We don't know which type to put the piece of data under, so put it in any type that supports this key
+            for _type in self._data_types:
+                if issubclass(_type, CoreData) or key in dir(_type):
+                    results[_type][key] = value
+                    found = True
+            if not found:
+                # The user passed in a value that we don't know anything about -- raise a warning.
+                LOGGER.warning("When initializing {}, key `{}` is not in type(s) {}. Not set.".format(self.__class__.__name__, key, self._data_types))
+
+        # Now that we've parsed the data and know where to put it all, we can update our data.
+        for _type, insert_this in results.items():
+            if self._data[_type] is not None:
+                self._data[_type] = self._data[_type](**insert_this)
+            else:
+                self._data[_type] = _type(**insert_this)
 
     def __str__(self) -> str:
         # This is a bit strange because we'll print a list of dict-like objects rather than one joined dict, but we've decided it's appropriate.
