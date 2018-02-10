@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 
 install_requires = [
     "datapipelines>=1.0.5",
-    "merakicommons>=1.0.3",
+    "merakicommons>=1.0.4",
     "Pillow",
     "pycurl",
     "arrow"
@@ -19,7 +19,7 @@ if sys.version_info.major != 3 and sys.version_info.minor != 6:
 
 setup(
     name="cassiopeia",
-    version="3.0.16",
+    version="3.0.17",
     author="Jason Maldonis; Rob Rua",
     author_email="team@merakianalytics.com",
     url="https://github.com/meraki-analytics/cassiopeia",

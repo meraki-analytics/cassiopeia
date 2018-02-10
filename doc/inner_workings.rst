@@ -57,7 +57,7 @@ Most lists, dictionaries, and sets (all of which are containers) can be searched
 
 .. code-block:: python
 
-    a_teemo_game = Summoner(account=27994129, region="NA").match_history["Teemo"]
+    a_teemo_game = Summoner(account=50330641, region="NA").match_history["Teemo"]
 
 You can also search using objects rather than strings:
 
@@ -65,13 +65,15 @@ You can also search using objects rather than strings:
 
     all_champions = Champions(region="NA")
     teemo = all_champions["Teemo"]
-    a_teemo_game = Summoner(account=27994129, region="NA").match_history[teemo]
+    a_teemo_game = Summoner(account=50330641, region="NA").match_history[teemo]
 
-All matches in a summoner's match history where ``Teemo`` was in the game can be found by using ``.filter`` rather than the ``[...]`` syntax:
+All matches in a summoner's match history where ``Teemo`` was in the game can be found by using ``.search`` rather than the ``[...]`` syntax:
 
 .. code-block:: python
 
-    all_teemo_games = Summoner(account=27994129).match_history.filter("Teemo")
+    # We will truncate the summoner's match history so we don't pull thousands of matches
+    match_history = Summoner(account=50330641, region="NA").match_history(begin_time=Patch.from_str("8.1", region="NA").start)
+    all_teemo_games = match_history.search("Teemo")
 
 You can also index on items in a match. For example:
 
