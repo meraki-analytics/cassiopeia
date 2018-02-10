@@ -681,7 +681,7 @@ class ParticipantTimeline(CassiopeiaObject):
 
     @property
     def xp_diff_per_min_deltas(self) -> Dict[str, float]:
-        return self._data[ParticipantTimelineData].xp_diffPerMinDeltas
+        return self._data[ParticipantTimelineData].xpDiffPerMinDeltas
 
     @property
     def creeps_per_min_deltas(self) -> Dict[str, float]:
