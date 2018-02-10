@@ -178,6 +178,10 @@ class Season(Enum):
     preseason_8 = "PRESEASON2018"
     season_8 = "SEASON2018"
 
+    @property
+    def id(self):
+        return SEASON_IDS[self]
+
     def from_id(id: int):
         return {i: season for season, i in SEASON_IDS.items()}[id]
 

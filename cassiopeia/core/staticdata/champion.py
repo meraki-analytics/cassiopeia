@@ -41,9 +41,9 @@ class ChampionSpellData(CoreData):
         if "vars" in kwargs:
             self.variables =  [SpellVarsData(**v) for v in kwargs.pop("vars")]
         if "image" in kwargs:
-            self.image =  ImageData(**kwargs.pop("image"))
+            self.image =  ImageData(version=kwargs["version"], **kwargs.pop("image"))
         if "altimages" in kwargs:
-            self.alternative_images =  [ImageData(**alt) for alt in kwargs.pop("altimages")]
+            self.alternative_images = [ImageData(version=kwargs["version"], **alt) for alt in kwargs.pop("altimages")]
         super().__call__(**kwargs)
         return self
 
@@ -112,7 +112,8 @@ class ChampionData(CoreData):
         if "passive" in kwargs:
             self.passive = PassiveData(**kwargs.pop("passive"))
         if "spells" in kwargs:
-            self.spells = [ChampionSpellData(**spell) for spell in kwargs.pop("spells")]
+            version = kwargs.get("version", get_latest_version(kwargs["region"], endpoint="champion"))
+            self.spells = [ChampionSpellData(version=version, **spell) for spell in kwargs.pop("spells")]
         super().__call__(**kwargs)
         return self
 
