@@ -1,6 +1,7 @@
+[![MIT Licensed](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/meraki-analytics/orianna/blob/master/LICENSE.txt)
 [![Documentation Status](https://readthedocs.org/projects/cassiopeia/badge/?version=latest)](http://cassiopeia.readthedocs.org/en/latest/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1170907.svg)](https://doi.org/10.5281/zenodo.1170907)
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YXG2BV4Z2RZTE)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-
 
 # Cassiopeia
 
@@ -66,6 +67,11 @@ Feel free to send pull requests or to contact us via github or [discord](https:/
 ## Bugs
 If you find bugs please let us know via an issue or pull request. If you would like to help maintain Cassiopeia, let us know and we will invite you to our discord server.
 
+## Citing Orianna
+If you used Cassiopeia for your research, please [cite the project](https://doi.org/10.5281/zenodo.1169621).
+
+## Support Us
+If you've loved using Cassiopeia, consider supporting us through [PayPal](https://www.paypal.me/merakianalytics) or [Patreon](https://www.patreon.com/merakianalytics).
 
 ## Disclaimer
 Cassiopeia isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.
