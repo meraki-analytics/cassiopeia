@@ -245,6 +245,8 @@ class CassiopeiaPipelineObject(CassiopeiaObject, metaclass=GetFromPipeline):
 class CassiopeiaGhost(CassiopeiaPipelineObject, Ghost):
     def load(self) -> "CassiopeiaGhost":
         self.__load__()
+        for load_group in self._Ghost__load_groups:
+            self._Ghost__set_loaded(load_group)  # __load__ doesn't trigger __set_loaded.
         return self
 
     def __load__(self, load_group: CoreData = None) -> None:
