@@ -66,7 +66,7 @@ Feel free to send pull requests or to contact us via github or [discord](https:/
 ## Bugs
 If you find bugs please let us know via an issue or pull request. If you would like to help maintain Cassiopeia, let us know and we will invite you to our discord server.
 
-## Citing Orianna
+## Citing Cassiopeia
 If you used Cassiopeia for your research, please [cite the project](https://doi.org/10.5281/zenodo.1169621).
 
 ## Support Us
