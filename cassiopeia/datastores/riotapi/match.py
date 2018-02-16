@@ -166,7 +166,7 @@ class MatchAPI(RiotAPIService):
             data["endTime"] = params["endTime"]
         for match in data["matches"]:
             match["accountId"] = query["account.id"]
-            match["region"] = data["region"]
+            match["region"] = Platform(match["platformId"]).region.value
         return MatchListDto(data)
 
     _validate_get_many_match_list_query = Query. \
