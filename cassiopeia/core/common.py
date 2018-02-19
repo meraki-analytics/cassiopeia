@@ -6,6 +6,7 @@ import logging
 from enum import Enum
 import arrow
 import datetime
+import inspect
 
 from merakicommons.ghost import Ghost, ghost_load_on as _ghost_load_on
 from merakicommons.container import SearchableLazyList
@@ -23,27 +24,35 @@ def ghost_load_on(method):
     return _ghost_load_on(AttributeError)(method)
 
 
+def add_region_to_kwargs(kwargs):
+    region = kwargs.pop("region", None)
+    platform = kwargs.pop("platform", None)
+    if region is None:
+        if platform is None:
+            region = configuration.settings.default_region
+        else:
+            if isinstance(platform, Platform):
+                region = platform.region
+            else:
+                region = Platform(platform).region
+    elif not isinstance(region, Region):
+        region = Region(region)
+    if region is not None:  # region can still be None if the configuration doesn't have a default
+        kwargs["region"] = region.value
+    return kwargs
+
+
 def provide_default_region(method):
     @functools.wraps(method)
-    def default_region_wrapper(self=None, *args, **kwargs):
-        region = kwargs.pop("region", None)
-        platform = kwargs.pop("platform", None)
-        if region is None:
-            if platform is None:
-                region = configuration.settings.default_region
-            else:
-                if isinstance(platform, Platform):
-                    region = platform.region
-                else:
-                    region = Platform(platform).region
-        elif not isinstance(region, Region):
-                region = Region(region)
-        if region is not None:  # region can still be None if the configuration doesn't have a default
-            kwargs["region"] = region.value
-        if self is not None:
-                return method(self, *args, **kwargs)
-        else:
-            return method(*args, **kwargs)
+    def default_region_wrapper(*args, **kwargs):
+        kwargs = add_region_to_kwargs(kwargs)
+        return method(*args, **kwargs)
+    #def default_region_wrapper(self=None, *args, **kwargs):
+    #    kwargs = add_region_to_kwargs(kwargs)
+    #    if self is not None:
+    #        return method(self, *args, **kwargs)
+    #    else:
+    #        return method(*args, **kwargs)
     return default_region_wrapper
 
 
@@ -195,8 +204,9 @@ class CassiopeiaObject(object):
 
 
 class GetFromPipeline(type):
-    @provide_default_region
     def __call__(cls: "CassiopeiaPipelineObject", *args, **kwargs):
+        if 'region' in inspect.signature(cls.__get_query_from_kwargs__).parameters:
+            kwargs = add_region_to_kwargs(kwargs)
         pipeline = configuration.settings.pipeline
         query = cls.__get_query_from_kwargs__(**kwargs)
         if hasattr(cls, "version") and query.get("version", None) is None and cls.__name__ not in ["Realms", "Match"]:
@@ -244,6 +254,8 @@ class CassiopeiaPipelineObject(CassiopeiaObject, metaclass=GetFromPipeline):
 
 class CassiopeiaGhost(CassiopeiaPipelineObject, Ghost):
     def load(self) -> "CassiopeiaGhost":
+        if self._Ghost__all_loaded:
+            return self
         self.__load__()
         for load_group in self._Ghost__load_groups:
             self._Ghost__set_loaded(load_group)  # __load__ doesn't trigger __set_loaded.

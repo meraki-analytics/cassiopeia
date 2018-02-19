@@ -187,6 +187,8 @@ class Season(Enum):
 
     def start(self, region: Region) -> arrow.Arrow:
         from .core import Patch
+        if Patch._Patch__patches is None:
+            Patch.__load__()
         for patch in Patch._Patch__patches[region]:
             if patch.season == self:
                 return patch.start

@@ -270,7 +270,6 @@ class MatchHistory(CassiopeiaLazyList):
         CassiopeiaObject.__init__(self, **kwargs)
 
     @classmethod
-    @provide_default_region
     def __get_query_from_kwargs__(cls, *, summoner: Summoner, begin_index: int = None, end_index: int = None, begin_time: arrow.Arrow = None, end_time: arrow.Arrow = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
         assert isinstance(summoner, Summoner)
         query = {"region": summoner.region}
