@@ -253,7 +253,7 @@ class SummonerLeagues(SearchableList):
     """A helper class that is simply a searchable list but that also provides the below convenience methods."""
     @property
     def fives(self):
-        return self[Queue.ranked_flex_fives]
+        return self[Queue.ranked_solo_fives]
 
     @property
     def flex(self):
