@@ -213,6 +213,8 @@ class Division(Enum):
 class Rank:
     def __init__(self, tier: Tier, division: Division):
         self.tuple = (tier, division)
+        self.tier = tier
+        self.division = division
 
     def __str__(self):
         return "<{} {}>".format(self.tuple[0], self.tuple[1])
