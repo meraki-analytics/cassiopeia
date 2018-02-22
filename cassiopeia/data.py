@@ -155,6 +155,26 @@ class Tier(Enum):
     bronze = "BRONZE"
     unranked = "UNRANKED"
 
+    def __str__(self):
+        return self.name.title()
+
+    @staticmethod
+    def _order():
+        return {Tier.challenger: 7, Tier.master: 6, Tier.diamond: 5,
+                Tier.platinum: 4, Tier.gold: 3, Tier.silver: 2, Tier.bronze: 1}
+
+    def __lt__(self, other):
+        return self._order()[self] < other._order()[other]
+
+    def __gt__(self, other):
+        return self._order()[self] > other._order()[other]
+
+    def __le__(self, other):
+        return self._order()[self] <= other._order()[other]
+
+    def __ge__(self, other):
+        return self._order()[self] >= other._order()[other]
+
 
 class Division(Enum):
     one = "I"
@@ -162,6 +182,51 @@ class Division(Enum):
     three = "III"
     four = "IV"
     five = "V"
+
+    def __str__(self):
+        return self.value
+
+    @staticmethod
+    def _order():
+        return {Division.one: 5, Division.two: 4, Division.three: 3, Division.four: 2, Division.five: 1}
+
+    def __lt__(self, other):
+        return self._order()[self] < other._order()[other]
+
+    def __gt__(self, other):
+        return self._order()[self] > other._order()[other]
+
+    def __le__(self, other):
+        return self._order()[self] <= other._order()[other]
+
+    def __ge__(self, other):
+        return self._order()[self] >= other._order()[other]
+
+
+class Rank:
+    def __init__(self, tier: Tier, division: Division):
+        self.tuple = (tier, division)
+
+    def __str__(self):
+        return "<{} {}>".format(self.tuple[0], self.tuple[1])
+
+    def __eq__(self, other):
+        return self.tuple == other.tuple
+
+    def __ne__(self, other):
+        return self.tuple != other.tuple
+
+    def __lt__(self, other):
+        return self.tuple < other.tuple
+
+    def __gt__(self, other):
+        return self.tuple > other.tuple
+
+    def __le__(self, other):
+        return self.tuple <= other.tuple
+
+    def __ge__(self, other):
+        return self.tuple >= other.tuple
 
 
 class Season(Enum):

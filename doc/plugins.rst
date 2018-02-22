@@ -95,7 +95,7 @@ TODO: The diskstore currently does not automatically expire its data, so it's po
 SQLAlchemy Database Support
 ---------------------------
 
-Install by running ``pip install cassiopeia-sqlalchemy``.
+Install by running ``pip install cassiopeia-sqlstore``.
 
 To enable this plugin, add the following to your settings' data pipeline between the ``Cache`` and ``DDragon`` stores:
 

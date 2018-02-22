@@ -6,7 +6,7 @@ from datapipelines import NotFoundError
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
-from ..data import Region, Platform
+from ..data import Region, Platform, Rank
 from .common import CoreData, CassiopeiaObject, CassiopeiaGhost, provide_default_region, ghost_load_on
 from .staticdata import ProfileIcon
 from ..dto.summoner import SummonerDto
@@ -226,3 +226,10 @@ class Summoner(CassiopeiaGhost):
         from .thirdpartycode import VerificationString
         vs = VerificationString(summoner=self, region=self.region)
         return vs.string
+
+    @lazy_property
+    def ranks(self):
+        ranks = {}
+        for position in self.league_positions:
+            ranks[position.queue] = Rank(tier=position.tier, division=position.division)
+        return ranks
