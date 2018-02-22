@@ -5,7 +5,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
 from ... import configuration
-from ...data import Resource, Region, Platform, GameMode
+from ...data import Resource, Region, Platform, GameMode, Key
 from ..champion import ChampionStatusData
 from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, CoreDataList, get_latest_version, provide_default_region, ghost_load_on
 from .common import ImageData, Image, Sprite
@@ -198,7 +198,7 @@ class SpellVars(CassiopeiaObject):
         return self._data[SpellVarsData].key
 
 
-@searchable({str: ["name", "key", "keywords", "keyboard_key"]})
+@searchable({str: ["name", "key", "keywords"], Key: ["keyboard_key"]})
 class ChampionSpell(CassiopeiaObject):
     _data_types = {ChampionSpellData}
 
@@ -288,9 +288,9 @@ class ChampionSpell(CassiopeiaObject):
         return self._data[ChampionSpellData].name
 
     @property
-    def keyboard_key(self) -> str:
+    def keyboard_key(self) -> Key:
         """Q, W, E, or R"""
-        return self._data[ChampionSpellData].keyboard_key
+        return Key(self._data[ChampionSpellData].keyboard_key)
 
 
 @searchable({str: ["type", "items"], Item: ["items"]})

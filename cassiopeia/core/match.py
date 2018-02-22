@@ -7,7 +7,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableLazyList, SearchableDictionary
 
 from .. import configuration
-from ..data import Region, Platform, Tier, GameType, GameMode, Queue, Side, Season, Lane, Role
+from ..data import Region, Platform, Tier, GameType, GameMode, Queue, Side, Season, Lane, Role, Key
 from .common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, provide_default_region, ghost_load_on
 from ..dto import match as dto
 from .patch import Patch
@@ -1088,7 +1088,7 @@ class Participant(CassiopeiaObject):
         skill_events = self.timeline.events.filter(lambda event: event.type == "SKILL_LEVEL_UP")
         skill_events.sort(key=lambda event: event.timestamp)
         skills = [event.skill - 1 for event in skill_events]
-        spells = [self.champion.spells["Q"], self.champion.spells["W"], self.champion.spells["E"], self.champion.spells["R"]]
+        spells = [self.champion.spells[Key("Q")], self.champion.spells[Key("W")], self.champion.spells[Key("E")], self.champion.spells[Key("R")]]
         skills = [spells[skill] for skill in skills]
         return skills
 

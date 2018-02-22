@@ -89,6 +89,13 @@ DEFAULT_LOCALE = {
 }
 
 
+class Key(Enum):
+    Q = "Q"
+    W = "W"
+    E = "E"
+    R = "R"
+
+
 class Resource(Enum):
     mana = "Mana"
     courage = "Courage"
