@@ -1,6 +1,6 @@
 [![MIT Licensed](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/meraki-analytics/orianna/blob/master/LICENSE.txt)
 [![Documentation Status](https://readthedocs.org/projects/cassiopeia/badge/?version=latest)](http://cassiopeia.readthedocs.org/en/latest/)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1170907.svg)](https://doi.org/10.5281/zenodo.1170907)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1170906.svg)](https://doi.org/10.5281/zenodo.1170906)
 
 # Cassiopeia
 
@@ -67,7 +67,7 @@ Feel free to send pull requests or to contact us via github or [discord](https:/
 If you find bugs please let us know via an issue or pull request. If you would like to help maintain Cassiopeia, let us know and we will invite you to our discord server.
 
 ## Citing Cassiopeia
-If you used Cassiopeia for your research, please [cite the project](https://doi.org/10.5281/zenodo.1170907).
+If you used Cassiopeia for your research, please [cite the project](https://doi.org/10.5281/zenodo.1170906).
 
 ## Support Us
 If you've loved using Cassiopeia, consider supporting us through [PayPal](https://www.paypal.me/merakianalytics) or [Patreon](https://www.patreon.com/merakianalytics).
