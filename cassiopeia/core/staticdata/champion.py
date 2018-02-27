@@ -87,7 +87,7 @@ class SkinData(CoreData):
 
 
 class StatsData(CoreData):
-    _renamed = {"armorperlevel": "armorPerLevel", "hpperlevel": "healthPerLevel", "attackdamage": "attack_damage", "mpperlevel": "manaPerLevel", "attackspeedoffset": "attack_speed_offset", "hp": "health", "hpregenperlevel": "health_regenPerLevel", "attackspeedperlevel": "percent_attack_speedPerLevel", "attackrange": "attack_range", "attackdamageperlevel": "attack_damagePerLevel", "mpregenperlevel": "mana_regenPerLevel", "mp": "mana", "spellblockperlevel": "magicResistPerLevel", "crit": "critical_strike_chance", "mpregen": "manaRegen", "spellblock": "magicResist", "hpregen": "healthRegen", "critperlevel": "criticalStrikeChancePerLevel"}
+    _renamed = {"armorperlevel": "armorPerLevel", "hpperlevel": "healthPerLevel", "attackdamage": "attackDamage", "mpperlevel": "manaPerLevel", "attackspeedoffset": "attack_speed_offset", "hp": "health", "hpregenperlevel": "health_regenPerLevel", "attackspeedperlevel": "percent_attack_speedPerLevel", "attackrange": "attack_range", "attackdamageperlevel": "attack_damagePerLevel", "mpregenperlevel": "mana_regenPerLevel", "mp": "mana", "spellblockperlevel": "magicResistPerLevel", "crit": "critical_strike_chance", "mpregen": "manaRegen", "spellblock": "magicResist", "hpregen": "healthRegen", "critperlevel": "criticalStrikeChancePerLevel"}
 
 
 class InfoData(CoreData):
