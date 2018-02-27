@@ -331,25 +331,25 @@ class Role(Enum):
 # https://github.com/stelar7/L4J8/blob/master/src/main/java/no/stelar7/api/l4j8/basic/constants/types/GameQueueType.java
 class Queue(Enum):
     custom = "CUSTOM"  # 0
-    depreciated_blind_fives = "NORMAL_5x5_BLIND"  # 2
-    depreciated_ranked_solo_fives = "CLASSIC"  # 4
-    depreciated_ranked_premade_fives = "RANKED_PREMADE_5x5"  # 6
-    depreciated_coop_ai_fives = "BOT_5x5"  # 7
-    depreciated_blind_threes = "NORMAL_3x3"  # 8
-    depreciated_ranked_premade_threes = "RANKED_PREMADE_3x3"  # 9
-    depreciated_ranked_flex_threes = "RANKED_FLEX_TT"  # 9  # There are two different queue names with ID 9... This one was replaced with queue 470. There is therefore no corresponding queue with ID 9 for this Queue, and instead the Queue with ID 470 will be used when this name is requested, even for very old games.
-    depreciated_draft_fives = "NORMAL_5x5_DRAFT"  # 14
-    depreciated_blind_dominion = "ODIN_5x5_BLIND"  # 16
-    depreciated_draft_dominion = "ODIN_5x5_DRAFT"  # 17
-    depreciated_coop_ai_dominion = "BOT_ODIN_5x5"  # 25
-    depreciated_coop_ai_intro_fives = "BOT_5x5_INTRO"  # 31
-    depreciated_coop_ai_beginner_fives = "BOT_5x5_BEGINNER"  # 32
-    depreciated_coop_ai_intermediate_fives = "BOT_5x5_INTERMEDIATE"  # 33
-    depreciated_ranked_team_threes = "RANKED_TEAM_3x3"  # 41
-    depreciated_ranked_team_fives = "RANKED_TEAM_5x5"  # 42
-    depreciated_coop_ai_threes = "BOT_TT_3x3"  # 52
-    depreciated_team_builder_fives = "GROUP_FINDER_5x5"  # 61
-    depreciated_aram = "ARAM_5x5"  # 65
+    deprecated_blind_fives = "NORMAL_5x5_BLIND"  # 2
+    deprecated_ranked_solo_fives = "CLASSIC"  # 4
+    deprecated_ranked_premade_fives = "RANKED_PREMADE_5x5"  # 6
+    deprecated_coop_ai_fives = "BOT_5x5"  # 7
+    deprecated_blind_threes = "NORMAL_3x3"  # 8
+    deprecated_ranked_premade_threes = "RANKED_PREMADE_3x3"  # 9
+    deprecated_ranked_flex_threes = "RANKED_FLEX_TT"  # 9  # There are two different queue names with ID 9... This one was replaced with queue 470. There is therefore no corresponding queue with ID 9 for this Queue, and instead the Queue with ID 470 will be used when this name is requested, even for very old games.
+    deprecated_draft_fives = "NORMAL_5x5_DRAFT"  # 14
+    deprecated_blind_dominion = "ODIN_5x5_BLIND"  # 16
+    deprecated_draft_dominion = "ODIN_5x5_DRAFT"  # 17
+    deprecated_coop_ai_dominion = "BOT_ODIN_5x5"  # 25
+    deprecated_coop_ai_intro_fives = "BOT_5x5_INTRO"  # 31
+    deprecated_coop_ai_beginner_fives = "BOT_5x5_BEGINNER"  # 32
+    deprecated_coop_ai_intermediate_fives = "BOT_5x5_INTERMEDIATE"  # 33
+    deprecated_ranked_team_threes = "RANKED_TEAM_3x3"  # 41
+    deprecated_ranked_team_fives = "RANKED_TEAM_5x5"  # 42
+    deprecated_coop_ai_threes = "BOT_TT_3x3"  # 52
+    deprecated_team_builder_fives = "GROUP_FINDER_5x5"  # 61
+    deprecated_aram = "ARAM_5x5"  # 65
     one_for_all = "ONEFORALL_5x5"  # 70
     showdown_1v1 = "FIRSTBLOOD_1x1"  # 72
     showdown_2v2 = "FIRSTBLOOD_2x2"  # 73
@@ -357,21 +357,21 @@ class Queue(Enum):
     urf = "URF_5x5"  # 76
     mirror_mode_fives = "ONEFORALL_MIRRORMODE_5x5"  # 78
     urf_coop_ai = "BOT_URF_5x5"  # 83
-    depreciated_doom_bots_rank_1 = "NIGHTMARE_BOT_5x5_RANK1"  # 91
-    depreciated_doom_bots_rank_2 = "NIGHTMARE_BOT_5x5_RANK2"  # 92
-    depreciated_doom_bots_rank_5 = "NIGHTMARE_BOT_5x5_RANK5"  # 93
+    deprecated_doom_bots_rank_1 = "NIGHTMARE_BOT_5x5_RANK1"  # 91
+    deprecated_doom_bots_rank_2 = "NIGHTMARE_BOT_5x5_RANK2"  # 92
+    deprecated_doom_bots_rank_5 = "NIGHTMARE_BOT_5x5_RANK5"  # 93
     ascension = "ASCENSION_5x5"  # 96
     hexakill_twisted_treeline = "HEXAKILL"  # 98
     aram_butchers_bridge = "BILGEWATER_ARAM_5x5"  # 100
-    depreciated_poro_king = "KING_PORO_5x5"  # 300
+    deprecated_poro_king = "KING_PORO_5x5"  # 300
     nemesis_draft = "COUNTER_PICK"  # 310
     black_market_brawlers = "BILGEWATER_5x5"  # 313
-    depreciated_nexus_siege = "SIEGE"  # 315
+    deprecated_nexus_siege = "SIEGE"  # 315
     definitely_not_dominion = "DEFINITELY_NOT_DOMINION_5x5"  # 317
     all_random_urf = "ARURF_5X5"  # 318
     all_random_summoners_rift = "ARSR_5x5"  # 325
     normal_draft_fives = "TEAM_BUILDER_DRAFT_UNRANKED_5x5"  # 400
-    depreciated_ranked_fives = "TEAM_BUILDER_DRAFT_RANKED_5x5"  # 410
+    deprecated_ranked_fives = "TEAM_BUILDER_DRAFT_RANKED_5x5"  # 410
 
     # TODO Evidently we originally had 420 as the commented out queue name below, but it may have changed?
     # TODO But the queue name sent to the Leagues endpoint needs to be RANKED_SOLO_5x5 for ranked solo games.
@@ -410,24 +410,24 @@ class Queue(Enum):
 
 QUEUE_IDS = {
     Queue.custom: 0,  # Custom games
-    Queue.depreciated_blind_fives: 2,  # Summoner's Rift    5v5 Blind Pick games    Deprecated in patch 7.19 in favor of queueId 430
-    Queue.depreciated_ranked_solo_fives: 4,  # Summoner's Rift    5v5 Ranked Solo games    Deprecated in favor of queueId 420
-    Queue.depreciated_ranked_premade_fives: 6,  # Summoner's Rift    5v5 Ranked Premade games    Game mode deprecated
-    Queue.depreciated_coop_ai_fives: 7,  # Summoner's Rift    Co-op vs AI games    Deprecated in favor of queueId 32 and 33
-    Queue.depreciated_blind_threes: 8,  # Twisted Treeline    3v3 Normal games    Deprecated in patch 7.19 in favor of queueId 460
-    Queue.depreciated_ranked_premade_threes: 9,  # Twisted Treeline    3v3 Ranked Flex games    Deprecated in patch 7.19 in favor of queueId 470
-    Queue.depreciated_draft_fives: 14,  # Summoner's Rift    5v5 Draft Pick games    Deprecated in favor of queueId 400
-    Queue.depreciated_blind_dominion: 16,  # Crystal Scar    5v5 Dominion Blind Pick games    Game mode deprecated
-    Queue.depreciated_draft_dominion: 17,  # Crystal Scar    5v5 Dominion Draft Pick games    Game mode deprecated
-    Queue.depreciated_coop_ai_dominion: 25,  # Crystal Scar    Dominion Co-op vs AI games    Game mode deprecated
-    Queue.depreciated_coop_ai_intro_fives: 31,  # Summoner's Rift    Co-op vs AI Intro Bot games    Deprecated in patch 7.19 in favor of queueId 830
-    Queue.depreciated_coop_ai_beginner_fives: 32,  # Summoner's Rift    Co-op vs AI Beginner Bot games    Deprecated in patch 7.19 in favor of queueId 840
-    Queue.depreciated_coop_ai_intermediate_fives: 33,  # Summoner's Rift    Co-op vs AI Intermediate Bot games    Deprecated in patch 7.19 in favor of queueId 850
-    Queue.depreciated_ranked_team_threes: 41,  # Twisted Treeline    3v3 Ranked Team games    Game mode deprecated
-    Queue.depreciated_ranked_team_fives: 42,  # Summoner's Rift    5v5 Ranked Team games    Game mode deprecated
-    Queue.depreciated_coop_ai_threes: 52,  # Twisted Treeline    Co-op vs AI games    Deprecated in patch 7.19 in favor of queueId 800
-    Queue.depreciated_team_builder_fives: 61,  # Summoner's Rift    5v5 Team Builder games    Game mode deprecated
-    Queue.depreciated_aram: 65,  # Howling Abyss    5v5 ARAM games    Deprecated in patch 7.19 in favor of queueId 450
+    Queue.deprecated_blind_fives: 2,  # Summoner's Rift    5v5 Blind Pick games    Deprecated in patch 7.19 in favor of queueId 430
+    Queue.deprecated_ranked_solo_fives: 4,  # Summoner's Rift    5v5 Ranked Solo games    Deprecated in favor of queueId 420
+    Queue.deprecated_ranked_premade_fives: 6,  # Summoner's Rift    5v5 Ranked Premade games    Game mode deprecated
+    Queue.deprecated_coop_ai_fives: 7,  # Summoner's Rift    Co-op vs AI games    Deprecated in favor of queueId 32 and 33
+    Queue.deprecated_blind_threes: 8,  # Twisted Treeline    3v3 Normal games    Deprecated in patch 7.19 in favor of queueId 460
+    Queue.deprecated_ranked_premade_threes: 9,  # Twisted Treeline    3v3 Ranked Flex games    Deprecated in patch 7.19 in favor of queueId 470
+    Queue.deprecated_draft_fives: 14,  # Summoner's Rift    5v5 Draft Pick games    Deprecated in favor of queueId 400
+    Queue.deprecated_blind_dominion: 16,  # Crystal Scar    5v5 Dominion Blind Pick games    Game mode deprecated
+    Queue.deprecated_draft_dominion: 17,  # Crystal Scar    5v5 Dominion Draft Pick games    Game mode deprecated
+    Queue.deprecated_coop_ai_dominion: 25,  # Crystal Scar    Dominion Co-op vs AI games    Game mode deprecated
+    Queue.deprecated_coop_ai_intro_fives: 31,  # Summoner's Rift    Co-op vs AI Intro Bot games    Deprecated in patch 7.19 in favor of queueId 830
+    Queue.deprecated_coop_ai_beginner_fives: 32,  # Summoner's Rift    Co-op vs AI Beginner Bot games    Deprecated in patch 7.19 in favor of queueId 840
+    Queue.deprecated_coop_ai_intermediate_fives: 33,  # Summoner's Rift    Co-op vs AI Intermediate Bot games    Deprecated in patch 7.19 in favor of queueId 850
+    Queue.deprecated_ranked_team_threes: 41,  # Twisted Treeline    3v3 Ranked Team games    Game mode deprecated
+    Queue.deprecated_ranked_team_fives: 42,  # Summoner's Rift    5v5 Ranked Team games    Game mode deprecated
+    Queue.deprecated_coop_ai_threes: 52,  # Twisted Treeline    Co-op vs AI games    Deprecated in patch 7.19 in favor of queueId 800
+    Queue.deprecated_team_builder_fives: 61,  # Summoner's Rift    5v5 Team Builder games    Game mode deprecated
+    Queue.deprecated_aram: 65,  # Howling Abyss    5v5 ARAM games    Deprecated in patch 7.19 in favor of queueId 450
     Queue.one_for_all: 70,  # Summoner's Rift    One for All games
     Queue.showdown_1v1: 72,  # Howling Abyss    1v1 Snowdown Showdown games
     Queue.showdown_2v2: 73,  # Howling Abyss    2v2 Snowdown Showdown games
@@ -435,21 +435,21 @@ QUEUE_IDS = {
     Queue.urf: 76,  # Summoner's Rift    Ultra Rapid Fire games
     Queue.mirror_mode_fives: 78,  # Summoner's Rift    Mirrored One for All
     Queue.urf_coop_ai: 83,  # Summoner's Rift    Co-op vs AI Ultra Rapid Fire games
-    Queue.depreciated_doom_bots_rank_1: 91,  # Summoner's Rift    Doom Bots Rank 1 games    Deprecated in patch 7.21 in favor of queueId 950
-    Queue.depreciated_doom_bots_rank_2: 92,  # Summoner's Rift    Doom Bots Rank 2 games    Deprecated in patch 7.21 in favor of queueId 950
-    Queue.depreciated_doom_bots_rank_5: 93,  # Summoner's Rift    Doom Bots Rank 5 games    Deprecated in patch 7.21 in favor of queueId 950
+    Queue.deprecated_doom_bots_rank_1: 91,  # Summoner's Rift    Doom Bots Rank 1 games    Deprecated in patch 7.21 in favor of queueId 950
+    Queue.deprecated_doom_bots_rank_2: 92,  # Summoner's Rift    Doom Bots Rank 2 games    Deprecated in patch 7.21 in favor of queueId 950
+    Queue.deprecated_doom_bots_rank_5: 93,  # Summoner's Rift    Doom Bots Rank 5 games    Deprecated in patch 7.21 in favor of queueId 950
     Queue.ascension: 96,  # Crystal Scar    Ascension games
     Queue.hexakill_twisted_treeline: 98,  # Twisted Treeline    6v6 Hexakill games
     Queue.aram_butchers_bridge: 100,  # Butcher's Bridge    5v5 ARAM games
-    Queue.depreciated_poro_king: 300,  # Howling Abyss    King Poro games    Deprecated in patch 7.19 in favor of queueId 920
+    Queue.deprecated_poro_king: 300,  # Howling Abyss    King Poro games    Deprecated in patch 7.19 in favor of queueId 920
     Queue.nemesis_draft: 310,  # Summoner's Rift    Nemesis games
     Queue.black_market_brawlers: 313,  # Summoner's Rift    Black Market Brawlers games
-    Queue.depreciated_nexus_siege: 315,  # Summoner's Rift    Nexus Siege games    Deprecated in patch 7.19 in favor of queueId 940
+    Queue.deprecated_nexus_siege: 315,  # Summoner's Rift    Nexus Siege games    Deprecated in patch 7.19 in favor of queueId 940
     Queue.definitely_not_dominion: 317,  # Crystal Scar    Definitely Not Dominion games
     Queue.all_random_urf: 318,  # Summoner's Rift    All Random URF games
     Queue.all_random_summoners_rift: 325,  # Summoner's Rift    All Random games
     Queue.normal_draft_fives: 400,  # Summoner's Rift    5v5 Draft Pick games
-    Queue.depreciated_ranked_fives: 410,  # Summoner's Rift    5v5 Ranked Dynamic games    Game mode deprecated in patch 6.22
+    Queue.deprecated_ranked_fives: 410,  # Summoner's Rift    5v5 Ranked Dynamic games    Game mode deprecated in patch 6.22
     Queue.ranked_solo_fives: 420,  # Summoner's Rift    5v5 Ranked Solo games
     Queue.blind_fives: 430,  # Summoner's Rift    5v5 Blind Pick games
     Queue.ranked_flex_fives: 440,  # Summoner's Rift    5v5 Ranked Flex games
@@ -476,12 +476,12 @@ QUEUE_IDS = {
 }
 
 RANKED_QUEUES = {
-    Queue.depreciated_ranked_solo_fives,  # Summoner's Rift    5v5 Ranked Solo games    Deprecated in favor of queueId 420
-    Queue.depreciated_ranked_premade_fives,  # Summoner's Rift    5v5 Ranked Premade games    Game mode deprecated
-    Queue.depreciated_ranked_premade_threes,  # Twisted Treeline    3v3 Ranked Flex games    Deprecated in patch 7.19 in favor of queueId 470
-    Queue.depreciated_ranked_team_threes,  # Twisted Treeline    3v3 Ranked Team games    Game mode deprecated
-    Queue.depreciated_ranked_team_fives,  # Summoner's Rift    5v5 Ranked Team games    Game mode deprecated
-    Queue.depreciated_ranked_fives,  # Summoner's Rift    5v5 Ranked Dynamic games    Game mode deprecated in patch 6.22
+    Queue.deprecated_ranked_solo_fives,  # Summoner's Rift    5v5 Ranked Solo games    Deprecated in favor of queueId 420
+    Queue.deprecated_ranked_premade_fives,  # Summoner's Rift    5v5 Ranked Premade games    Game mode deprecated
+    Queue.deprecated_ranked_premade_threes,  # Twisted Treeline    3v3 Ranked Flex games    Deprecated in patch 7.19 in favor of queueId 470
+    Queue.deprecated_ranked_team_threes,  # Twisted Treeline    3v3 Ranked Team games    Game mode deprecated
+    Queue.deprecated_ranked_team_fives,  # Summoner's Rift    5v5 Ranked Team games    Game mode deprecated
+    Queue.deprecated_ranked_fives,  # Summoner's Rift    5v5 Ranked Dynamic games    Game mode deprecated in patch 6.22
     Queue.ranked_solo_fives,  # Summoner's Rift    5v5 Ranked Solo games
     Queue.ranked_flex_fives,  # Summoner's Rift    5v5 Ranked Flex games
     Queue.ranked_flex_threes,  # Twisted Treeline    3v3 Ranked Flex games
