@@ -64,7 +64,7 @@ class Cache(DataSource, DataSink):
     def __init__(self, expirations: Mapping[type, float] = None) -> None:
         self._cache = CommonsCache()
         self._expirations = dict(expirations) if expirations is not None else default_expirations
-        for key, value in self._expirations.items():
+        for key, value in list(self._expirations.items()):
             if isinstance(key, str):
                 new_key = globals()[key]
                 self._expirations[new_key] = self._expirations.pop(key)
@@ -120,9 +120,10 @@ class Cache(DataSource, DataSink):
         except KeyError:
             expire_seconds = -1
 
-        keys = key_function(item)
-        for key in keys:
-            self._cache.put(type, key, item, expire_seconds)
+        if expire_seconds != 0:
+            keys = key_function(item)
+            for key in keys:
+                self._cache.put(type, key, item, expire_seconds)
 
     def _put_many(self, type: Type[T], items: Iterable[T], key_function: Callable[[T], Any], context: PipelineContext = None) -> None:
         expire_seconds = self._expirations.get(type, default_expirations[type])
