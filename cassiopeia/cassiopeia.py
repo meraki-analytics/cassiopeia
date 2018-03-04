@@ -45,21 +45,11 @@ def print_calls(calls: bool, api_key: bool = False):
 
 # Data endpoints
 
-def get_league_positions(summoner: Union[Summoner, int, str], region: Union[Region, str] = None) -> LeagueEntries:
-    if not isinstance(summoner, Summoner):
-        if isinstance(summoner, int):
-            summoner = Summoner(id=summoner, region=region)
-        else:
-            summoner = Summoner(name=summoner, region=region)
+def get_league_positions(summoner: Summoner, region: Union[Region, str] = None) -> LeagueEntries:
     return summoner.league_positions
 
 
-def get_leagues(summoner: Union[Summoner, int, str], region: Union[Region, str] = None) -> SummonerLeagues:
-    if not isinstance(summoner, Summoner):
-        if isinstance(summoner, int):
-            summoner = Summoner(id=summoner, region=region)
-        else:
-            summoner = Summoner(name=summoner, region=region)
+def get_leagues(summoner: Summoner, region: Union[Region, str] = None) -> SummonerLeagues:
     return summoner.leagues
 
 
@@ -71,7 +61,7 @@ def get_challenger_league(queue: Union[Queue, int, str], region: Union[Region, s
     return ChallengerLeague(queue=queue, region=region)
 
 
-def get_match_history(summoner: Union[Summoner, str, int] = None, region: Union[Region, str] = None, begin_index: int = None, end_index: int = None, begin_time: arrow.Arrow = None, end_time: arrow.Arrow = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
+def get_match_history(summoner: Summoner, begin_index: int = None, end_index: int = None, begin_time: arrow.Arrow = None, end_time: arrow.Arrow = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
     return MatchHistory(summoner=summoner, begin_index=begin_index, end_index=end_index, begin_time=begin_time, end_time=end_time, queues=queues, seasons=seasons, champions=champions)
 
 def get_match(id, region: Union[Region, str] = None) -> Match:
@@ -82,15 +72,15 @@ def get_featured_matches(region: Union[Region, str] = None) -> FeaturedMatches:
     return FeaturedMatches(region=region)
 
 
-def get_current_match(summoner: Union[Summoner, int, str], region: Union[Region, str] = None) ->  CurrentMatch:
+def get_current_match(summoner: Summoner, region: Union[Region, str] = None) ->  CurrentMatch:
     return CurrentMatch(summoner=summoner, region=region)
 
 
-def get_champion_masteries(summoner: Union[Summoner, int, str], region: Union[Region, str] = None) -> ChampionMasteries:
+def get_champion_masteries(summoner: Summoner, region: Union[Region, str] = None) -> ChampionMasteries:
     return ChampionMasteries(summoner=summoner, region=region)
 
 
-def get_champion_mastery(summoner: Union[Summoner, int, str], champion: Union[Champion, int, str], region: Union[Region, str] = None) -> ChampionMastery:
+def get_champion_mastery(summoner: Summoner, champion: Union[Champion, int, str], region: Union[Region, str] = None) -> ChampionMastery:
     return ChampionMastery(champion=champion, summoner=summoner, region=region)
 
 
