@@ -307,7 +307,8 @@ class Lane(Enum):
             "BOTTOM": Lane.bot_lane,
             "MIDDLE": Lane.mid_lane,
             "TOP": Lane.top_lane,
-            "JUNGLE": Lane.jungle
+            "JUNGLE": Lane.jungle,
+            "NONE": None
         }[string]
 
 
