@@ -104,7 +104,7 @@ To enable this plugin, add the following to your settings' data pipeline between
   "pipeline": {
     ...,
     "SQLStore": {
-       "package":"cassiopeia-diskstores.sqlstore.sqlstore",
+       "package":"cassiopeia_sqlstore",
        "connection_string": "<your connection string>"
     }
     ...
