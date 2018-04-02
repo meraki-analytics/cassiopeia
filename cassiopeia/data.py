@@ -400,6 +400,7 @@ class Queue(Enum):
     guardian_invasion_onslaught = "INVASION_ONSLAUGHT"  # 990
     overcharge = "OVERCHARGE"  # 1000
     all_random_urf_snow = "SNOWURF"  # 1010
+    one_for_all_rapid = "ONEFORALL_RAPID_5x5" # 1020
 
     def from_id(id: int):
         return {i: season for season, i in QUEUE_IDS.items()}[id]
@@ -474,6 +475,7 @@ QUEUE_IDS = {
     Queue.guardian_invasion_onslaught: 990,  # Valoran City Park    Star Guardian Invasion: Onslaught games
     Queue.overcharge: 1000,  # Overcharge, PROJECT: Hunters games
     Queue.all_random_urf_snow: 1010,  # Summoner's Rift, Snow ARURF games
+    Queue.one_for_all_rapid: 1020, # Summoner's Rift  One for All games (increased gold and exp gain)
 }
 
 RANKED_QUEUES = {
