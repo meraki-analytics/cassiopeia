@@ -399,10 +399,6 @@ class Event(CassiopeiaObject):
     _data_types = {EventData}
 
     @property
-    def type(self) -> str:
-        return self._data[EventData].type
-
-    @property
     def tower_type(self) -> str:
         return self._data[EventData].towerType
 
@@ -452,8 +448,8 @@ class Event(CassiopeiaObject):
         return self._data[EventData].victimId
 
     @property
-    def timestamp(self) -> int:
-        return self._data[EventData].timestamp
+    def timestamp(self) -> datetime.timedelta:
+        return datetime.timedelta(seconds=self._data[EventData].timestamp/1000)
 
     @property
     def after_id(self) -> int:
@@ -461,11 +457,11 @@ class Event(CassiopeiaObject):
 
     @property
     def monster_sub_type(self) -> str:
-        return self._data[EventData].monster_sub_type
+        return self._data[EventData].monsterSubType
 
     @property
     def lane_type(self) -> str:
-        return self._data[EventData].lane_type
+        return self._data[EventData].laneType
 
     @property
     def item_id(self) -> int:
@@ -540,8 +536,8 @@ class Frame(CassiopeiaObject):
     _data_types = {FrameData}
 
     @property
-    def timestamp(self) -> int:
-        return self._data[FrameData].timestamp
+    def timestamp(self) -> datetime.timedelta:
+        return datetime.timedelta(seconds=self._data[FrameData].timestamp/1000)
 
     @property
     def participant_frames(self) -> Dict[int, ParticipantFrame]:

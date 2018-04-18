@@ -385,6 +385,7 @@ class Queue(Enum):
     blood_hunt_assassin = "ASSASSINATE_5x5"  # 600
     dark_star = "DARKSTAR_3x3"  # 610
     ranked_flex_threes = "RANKED_FLEX_TT"  # 470
+    clash = "CLASH"  # 700
     coop_ai_intermediate_threes = "BOT_3X3_INTERMEDIATE"  # 800
     coop_ai_intro_threes = "BOT_3X3_INTRO"  # 810
     coop_ai_beginner_threes = "BOT_3X3_BEGINNER"  # 820
@@ -459,6 +460,7 @@ QUEUE_IDS = {
     Queue.ranked_flex_threes: 470,  # Twisted Treeline    3v3 Ranked Flex games
     Queue.blood_hunt_assassin: 600,  # Summoner's Rift    Blood Hunt Assassin games
     Queue.dark_star: 610,  # Cosmic Ruins    Dark Star games
+    Queue.clash: 700,  # Summoner's Rift    Clash games
     Queue.coop_ai_intermediate_threes: 800,  # Twisted Treeline    Co-op vs. AI Intermediate Bot games
     Queue.coop_ai_intro_threes: 810,  # Twisted Treeline    Co-op vs. AI Intro Bot games
     Queue.coop_ai_beginner_threes: 820,  # Twisted Treeline    Co-op vs. AI Beginner Bot games
