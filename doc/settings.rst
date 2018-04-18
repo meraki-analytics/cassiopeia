@@ -3,7 +3,7 @@
 Settings
 ########
 
-That are many settings in Cassiopeia that control how the framework works, and more settings will be added as the code is expanded.
+There are many settings in Cassiopeia that control how the framework works, and more settings will be added as the code is expanded.
 
 Use ``cass.apply_settings(...)`` and pass in a ``json`` filename, a dictionary, or a ``cassiopeia.Settings`` object to set Cass's parameters. Cass will use its own default settings if you do not run ``cass.apply_settings``.
 
