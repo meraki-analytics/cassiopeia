@@ -88,7 +88,7 @@ class EventData(CoreData):
 
 
 class ParticipantFrameData(CoreData):
-    _renamed = {"totalGold": "goldEarned", "minionsKilled": "creepScore", "xp": "experience", "jungleMinionsKilled": "NeutralMinionsKilled"}
+    _renamed = {"totalGold": "goldEarned", "minionsKilled": "creepScore", "xp": "experience", "jungleMinionsKilled": "neutralMinionsKilled"}
 
     def __call__(self, **kwargs):
         if "position" in kwargs:
