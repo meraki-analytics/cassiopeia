@@ -1159,7 +1159,7 @@ class Participant(CassiopeiaObject):
             kwargs["name"] = self._data[ParticipantData].summonerName
         except AttributeError:
             pass
-        kwargs["account"] = self._data[ParticipantData].accountId
+        kwargs["account"] = self._data[ParticipantData].currentAccountId
         kwargs["region"] = Platform(self._data[ParticipantData].currentPlatformId).region
         summoner = Summoner(**kwargs)
         try:
@@ -1282,7 +1282,7 @@ class Match(CassiopeiaGhost):
         # In that case, the data will already be loaded and we don't want to overwrite anything.
         if not hasattr(instance._data[MatchData], "participants"):
             participant = {"participantId": 1, "championId": ref.championId, "stats": {"lane": ref.lane, "role": ref.role}}
-            player = {"participantId": 1, "accountId": ref.accountId, "currentPlatformId": ref.platform}
+            player = {"participantId": 1, "currentAccountId": ref.accountId, "currentPlatformId": ref.platform}
             instance(season=ref.season, queue=ref.queue, creation=ref.creation)
             instance._data[MatchData](participants=[participant],
                                       participantIdentities=[{"participantId": 1, "player": player, "bot": False}])
