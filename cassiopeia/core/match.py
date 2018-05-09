@@ -1046,7 +1046,7 @@ class ParticipantStats(CassiopeiaObject):
     @property
     @load_match_on_attributeerror
     def time_CCing_others(self) -> int:
-        return self._data[ParticipantStatsData].time_CCingOthers
+        return self._data[ParticipantStatsData].timeCCingOthers
 
     @property
     @load_match_on_attributeerror
