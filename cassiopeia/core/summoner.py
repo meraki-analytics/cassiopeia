@@ -180,8 +180,8 @@ class Summoner(CassiopeiaGhost):
 
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on
-    def revision_date(self) -> datetime.date:
-        return arrow.get(self._data[SummonerData].revisionDate / 1000).date()
+    def revision_date(self) -> datetime.datetime:
+        return arrow.get(self._data[SummonerData].revisionDate / 1000)
 
     @property
     def match_history_uri(self) -> str:
