@@ -14,6 +14,12 @@ class Region(Enum):
     oceania = "OCE"
     turkey = "TR"
     russia = "RU"
+    indonesia = "ID"
+    philippines = "PH"
+    singapore = "SG"
+    thailand = "SG"
+    taiwan = "TW"
+    vietnam = "VN"
 
     @property
     def platform(self) -> "Platform":
@@ -22,6 +28,13 @@ class Region(Enum):
     @property
     def default_locale(self) -> str:
         return DEFAULT_LOCALE[self]
+
+    @staticmethod
+    def from_platform(platform):
+        try:
+            return platform.region
+        except AttributeError:
+            return Platform(platform).region
 
     @property
     def timezone(self) -> str:
@@ -53,6 +66,12 @@ class Platform(Enum):
     oceania = "OC1"
     turkey = "TR1"
     russia = "RU"
+    indonesia = "ID1"
+    philippines = "PH"
+    singapore = "SG"
+    thailand = "TH"
+    taiwan = "TW"
+    vietnam = "VN"
 
     @property
     def region(self) -> "Region":
@@ -61,6 +80,13 @@ class Platform(Enum):
     @property
     def default_locale(self) -> str:
         return DEFAULT_LOCALE[self]
+
+    @staticmethod
+    def from_region(region):
+        try:
+            return region.platform
+        except AttributeError:
+            return Region(region).platform
 
 
 DEFAULT_LOCALE = {
