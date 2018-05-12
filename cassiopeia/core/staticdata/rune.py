@@ -1,11 +1,13 @@
 from typing import List, Set, Union
+from PIL.Image import Image as PILImage
 
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
+from ... import configuration
 from ...data import Region, Platform, RunePath
 from ..common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, get_latest_version, provide_default_region, ghost_load_on
-from .common import Sprite, Image
+from .common import Image
 from ...dto.staticdata import rune as dto
 
 
@@ -22,6 +24,16 @@ class RuneListData(CoreDataList):
 class RuneData(CoreData):
     _dto_type = dto.RuneDto
     _renamed = {"longDesc": "longDescription", "shortDesc": "shortDescription", "endOfGameStatDescs": "endOfGameStatDescriptions", "included_data": "includedData"}
+
+    def __call__(self, **kwargs):
+        if "icon" in kwargs:
+            self.image = RuneImageData(icon=kwargs.pop("icon"))
+        super().__call__(**kwargs)
+        return self
+
+
+class RuneImageData(CoreData):
+    _renamed = {}
 
 
 ##############
@@ -93,6 +105,18 @@ class Runes(CassiopeiaLazyList):
     @property
     def keystones(self) -> List["Rune"]:
         return self.filter(lambda rune: rune.is_keystone)
+
+
+class RuneImage(CassiopeiaObject):
+    _data_types = {RuneImageData}
+
+    @property
+    def url(self) -> str:
+        return "https://ddragon.leagueoflegends.com/cdn/img/{icon}".format(icon=self._data[RuneImageData].icon)
+
+    @lazy_property
+    def image(self) -> PILImage:
+        return configuration.settings.pipeline.get(PILImage, query={"url": self.url})
 
 
 @searchable({str: ["name", "tags", "path", "region", "platform", "locale"], int: ["id"], RunePath: ["path"], Region: ["region"], Platform: ["platform"]})
@@ -215,11 +239,6 @@ class Rune(CassiopeiaGhost):
     @lazy
     def image(self) -> Image:
         """The image information for this rune."""
-        raise NotImplemented  # TODO
-        image = Image.from_data(self._data[RuneData].image)
+        image = RuneImage.from_data(self._data[RuneData].image)
         image(version=self.version)
         return image
-
-    @lazy_property
-    def sprite(self) -> Sprite:
-        return self.image.spriteInfo
