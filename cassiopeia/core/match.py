@@ -1359,7 +1359,7 @@ class Match(CassiopeiaGhost):
                     participant = Participant.from_data(p, match=match)
                     # If we already have this participant in the list, replace it so it stays in the same position
                     for j, pold in enumerate(match.__participants):
-                        if hasattr(pold._data[ParticipantData], "accountId") and hasattr(participant._data[ParticipantData], "accountId") and pold._data[ParticipantData].accountId == participant._data[ParticipantData].currentAccountId:
+                        if hasattr(pold._data[ParticipantData], "currentAccountId") and hasattr(participant._data[ParticipantData], "currentAccountId") and pold._data[ParticipantData].currentAccountId == participant._data[ParticipantData].currentAccountId:
                             match.__participants[j] = participant
                             break
                     else:

@@ -14,12 +14,6 @@ class Region(Enum):
     oceania = "OCE"
     turkey = "TR"
     russia = "RU"
-    indonesia = "ID"
-    philippines = "PH"
-    singapore = "SG"
-    thailand = "SG"
-    taiwan = "TW"
-    vietnam = "VN"
 
     @property
     def platform(self) -> "Platform":
@@ -66,12 +60,6 @@ class Platform(Enum):
     oceania = "OC1"
     turkey = "TR1"
     russia = "RU"
-    indonesia = "ID1"
-    philippines = "PH"
-    singapore = "SG"
-    thailand = "TH"
-    taiwan = "TW"
-    vietnam = "VN"
 
     @property
     def region(self) -> "Region":
