@@ -560,7 +560,7 @@ class Info(CassiopeiaObject):
         return self._data[InfoData].magic
 
 
-@searchable({str: ["name", "key", "title", "region", "platform", "locale", "tags"], int: ["id"], Region: ["region"], Platform: ["platform"], bool: ["free_to_play"]})
+@searchable({str: ["name", "key", "region", "platform", "locale", "tags"], int: ["id"], Region: ["region"], Platform: ["platform"], bool: ["free_to_play"]})
 class Champion(CassiopeiaGhost):
     _data_types = {ChampionData, ChampionStatusData}
 

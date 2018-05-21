@@ -27,3 +27,14 @@ def test_champion_and_champions_return_same_data():
     from_get_champion = cassiopeia.get_champion(champion.name, region="NA")
 
     assert champion == from_get_champion
+
+
+def test_searchable_champion_names():
+    champions = cassiopeia.get_champions(region="NA")
+
+    names = [champion.name for champion in champions]
+    for name in names:
+        champion = champions.find(name)
+        assert champion.name == name
+        champion = champions[name]
+        assert champion.name == name
