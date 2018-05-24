@@ -50,7 +50,7 @@ def load_match_on_attributeerror(method):
 def _choose_staticdata_version(match):
     # If we want to pull the data for the correct version, we need to pull the entire match data.
     # However, we can use the creation date (which comes with a matchref) and get the ~ patch and therefore extract the version from the patch.
-    if configuration.settings.version_from_match == "latest":
+    if configuration.settings.version_from_match is None or configuration.settings.version_from_match == "latest":
         version = None  # Rather than pick the latest version here, let the obj handle it so it knows which endpoint within the realms data to use
     elif configuration.settings.version_from_match == "version" or hasattr(match._data[MatchData], "version"):
         version = match.version
