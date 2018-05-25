@@ -199,7 +199,7 @@ class MatchReferenceData(CoreData):
 
 class MatchData(CoreData):
     _dto_type = dto.MatchDto
-    _renamed = {"gameId": "id", "gameVersion": "version", "gameMode": "mode", "gameType": "type"}
+    _renamed = {"gameId": "id", "gameVersion": "version", "gameMode": "mode", "gameType": "type", "queueId": "queue"}
 
     def __call__(self, **kwargs):
         if "gameCreation" in kwargs:
@@ -1323,7 +1323,7 @@ class Match(CassiopeiaGhost):
     @ghost_load_on
     @lazy
     def queue(self) -> Queue:
-        return Queue.from_id(self._data[MatchData].queueId)
+        return Queue.from_id(self._data[MatchData].queue)
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on
