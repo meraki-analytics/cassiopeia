@@ -1,4 +1,5 @@
 from typing import Dict, List, Set, Union
+from orderedset import OrderedSet
 
 from PIL.Image import Image as PILImage
 from merakicommons.cache import lazy, lazy_property
@@ -562,7 +563,7 @@ class Info(CassiopeiaObject):
 
 @searchable({str: ["name", "key", "region", "platform", "locale", "tags"], int: ["id"], Region: ["region"], Platform: ["platform"], bool: ["free_to_play"]})
 class Champion(CassiopeiaGhost):
-    _data_types = {ChampionData, ChampionStatusData}
+    _data_types = OrderedSet((ChampionData, ChampionStatusData))
 
     @provide_default_region
     def __init__(self, *, id: int = None, name: str = None, key: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
@@ -603,7 +604,23 @@ class Champion(CassiopeiaGhost):
         else:
             return self.id == other.id
 
+    def __str__(self):
+        region = self.region
+        id_ = "?"
+        name = "?"
+        if hasattr(self._data[ChampionData], "id"):
+            id_ = self.id
+        if hasattr(self._data[ChampionData], "name"):
+            name = self.name
+        return "Champion(name='{name}', id={id_}, region='{region}')".format(name=name, id_=id_, region=region.value)
+
     __hash__ = CassiopeiaGhost.__hash__
+
+    def load(self, load_groups: Set = None) -> "Champion":
+        return super().load(load_groups=self._data_types)
+
+    def __load__(self, load_group: CoreData = None, load_groups: Set = None) -> None:
+        return super().__load__(load_group=load_group, load_groups=self._data_types)
 
     # What do we do about params like this that can exist in both data objects?
     # They will be set on both data objects always, so we can choose either one to return.

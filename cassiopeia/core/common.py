@@ -253,19 +253,23 @@ class CassiopeiaPipelineObject(CassiopeiaObject, metaclass=GetFromPipeline):
 
 
 class CassiopeiaGhost(CassiopeiaPipelineObject, Ghost):
-    def load(self) -> "CassiopeiaGhost":
+    def load(self, load_groups: Set = None) -> "CassiopeiaGhost":
+        if load_groups is None:
+            load_groups = self._Ghost__load_groups
         if self._Ghost__all_loaded:
             return self
         self.__load__()
-        for load_group in self._Ghost__load_groups:
+        for load_group in load_groups:
             self._Ghost__set_loaded(load_group)  # __load__ doesn't trigger __set_loaded.
         return self
 
-    def __load__(self, load_group: CoreData = None) -> None:
+    def __load__(self, load_group: CoreData = None, load_groups: Set = None) -> None:
+        if load_groups is None:
+            load_groups = self._Ghost__load_groups
         if load_group is None:  # Load all groups
             if self._Ghost__all_loaded:
                 raise ValueError("object has already been loaded.")
-            for group in self._Ghost__load_groups:
+            for group in load_groups:
                 if not self._Ghost__is_loaded(group):
                     self.__load__(group)
         else:  # Load the specific load group
