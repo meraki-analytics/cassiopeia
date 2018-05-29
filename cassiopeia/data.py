@@ -383,6 +383,7 @@ class Queue(Enum):
     black_market_brawlers = "BILGEWATER_5x5"  # 313
     deprecated_nexus_siege = "SIEGE"  # 315
     definitely_not_dominion = "DEFINITELY_NOT_DOMINION_5x5"  # 317
+    deprecated_all_random_urf = "ARURF_5X5"  # 318
     all_random_summoners_rift = "ARSR_5x5"  # 325
     normal_draft_fives = "TEAM_BUILDER_DRAFT_UNRANKED_5x5"  # 400
     deprecated_ranked_fives = "TEAM_BUILDER_DRAFT_RANKED_5x5"  # 410
@@ -463,6 +464,7 @@ QUEUE_IDS = {
     Queue.black_market_brawlers: 313,  # Summoner's Rift    Black Market Brawlers games
     Queue.deprecated_nexus_siege: 315,  # Summoner's Rift    Nexus Siege games    Deprecated in patch 7.19 in favor of queueId 940
     Queue.definitely_not_dominion: 317,  # Crystal Scar    Definitely Not Dominion games
+    Queue.deprecated_all_random_urf: 318,  # Summoner's Rift    All Random URF games      Game mode deprecated in patch 8.10 in favor is queueId 900
     Queue.all_random_summoners_rift: 325,  # Summoner's Rift    All Random games
     Queue.normal_draft_fives: 400,  # Summoner's Rift    5v5 Draft Pick games
     Queue.deprecated_ranked_fives: 410,  # Summoner's Rift    5v5 Ranked Dynamic games    Game mode deprecated in patch 6.22
