@@ -114,7 +114,9 @@ class ChampionData(CoreData):
             version = kwargs.get("version", get_latest_version(kwargs["region"], endpoint="champion"))
             self.passive = PassiveData(version=version, **kwargs.pop("passive"))
         if "spells" in kwargs:
-            if not version:
+            try:
+                version
+            except NameError:
                 version = kwargs.get("version", get_latest_version(kwargs["region"], endpoint="champion"))
             self.spells = [ChampionSpellData(version=version, **spell) for spell in kwargs.pop("spells")]
         super().__call__(**kwargs)
