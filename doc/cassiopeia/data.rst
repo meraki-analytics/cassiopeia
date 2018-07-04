@@ -9,9 +9,3 @@ These data are available as enums (constants) and can be used to interact with m
     :members:
     :undoc-members:
     :show-inheritance:
-
-
-.. automodule:: cassiopeia.patches
-    :members:
-    :undoc-members:
-    :show-inheritance:

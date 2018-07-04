@@ -13,7 +13,7 @@ Leagues
 .. automethod:: cassiopeia.get_master_league
 
 
-.. autoclass:: cassiopeia.core.league.Leagues
+.. autoclass:: cassiopeia.core.league.SummonerLeagues
     :members:
     :undoc-members:
     :show-inheritance:
@@ -26,13 +26,13 @@ Leagues
     :show-inheritance:
 
 
-.. autoclass:: ChallengerLeague
+.. autoclass:: cassiopeia.core.ChallengerLeague
     :members:
     :undoc-members:
     :show-inheritance:
 
 
-.. autoclass:: MasterLeague
+.. autoclass:: cassiopeia.core.MasterLeague
     :members:
     :undoc-members:
     :show-inheritance:
