@@ -77,7 +77,7 @@ class PassiveData(CoreData):
 
     def __call__(self, **kwargs):
         if "image" in kwargs:
-            self.image = ImageData(**kwargs.pop("image"))
+            self.image = ImageData(version=kwargs["version"], **kwargs.pop("image"))
         super().__call__(**kwargs)
         return self
 
@@ -110,9 +110,13 @@ class ChampionData(CoreData):
         if "skins" in kwargs:
             self.skins = [SkinData(**skin) for skin in kwargs.pop("skins")]
         if "passive" in kwargs:
-            self.passive = PassiveData(**kwargs.pop("passive"))
-        if "spells" in kwargs:
             version = kwargs.get("version", get_latest_version(kwargs["region"], endpoint="champion"))
+            self.passive = PassiveData(version=version, **kwargs.pop("passive"))
+        if "spells" in kwargs:
+            try:
+                version
+            except NameError:
+                version = kwargs.get("version", get_latest_version(kwargs["region"], endpoint="champion"))
             self.spells = [ChampionSpellData(version=version, **spell) for spell in kwargs.pop("spells")]
         super().__call__(**kwargs)
         return self
