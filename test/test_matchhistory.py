@@ -55,6 +55,6 @@ def test_match_history_7():
 
 def test_match_history_8():
     summoner = cass.Summoner(name="chowdog", region="NA")
-    mh = cass.get_match_history(summoner=summoner, begin_index=0, end_index=20)
+    mh = cass.get_match_history(summoner=summoner, begin_index=0, end_index=20, queues={Queue.ranked_solo_fives})
     match = mh[0]
     assert len(match.participants) == 10

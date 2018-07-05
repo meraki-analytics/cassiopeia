@@ -140,6 +140,9 @@ class GameMode(Enum):
     dominion = "ODIN"
     one_for_all = "ONEFORALL"
     tutorial = "TUTORIAL"
+    tutorial_1 = "TUTORIAL_MODULE_1"
+    tutorial_2 = "TUTORIAL_MODULE_2"
+    tutorial_3 = "TUTORIAL_MODULE_3"
     nexus_siege = "SIEGE"
     assassinate = "ASSASSINATE"
     dark_star = "DARKSTAR"
@@ -150,6 +153,7 @@ class GameMode(Enum):
     project = "PROJECT"
     overcharge = "OVERCHARGE"
     all_random_urf_snow = "SNOWURF"
+    practice_tool = "PRACTICETOOL"
 
 
 class MasteryTree(Enum):

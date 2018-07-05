@@ -1,5 +1,4 @@
 from typing import Dict, List, Set, Union
-from orderedset import OrderedSet
 
 from PIL.Image import Image as PILImage
 from merakicommons.cache import lazy, lazy_property
@@ -563,7 +562,7 @@ class Info(CassiopeiaObject):
 
 @searchable({str: ["name", "key", "region", "platform", "locale", "tags"], int: ["id"], Region: ["region"], Platform: ["platform"], bool: ["free_to_play"]})
 class Champion(CassiopeiaGhost):
-    _data_types = OrderedSet((ChampionData, ChampionStatusData))
+    _data_types = (ChampionData, ChampionStatusData)
 
     @provide_default_region
     def __init__(self, *, id: int = None, name: str = None, key: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
