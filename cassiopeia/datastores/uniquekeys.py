@@ -2111,7 +2111,7 @@ def for_summoner(summoner: Summoner) -> List[Tuple]:
     except AttributeError:
         pass
     try:
-        keys.append((summoner.platform.value, summoner._data[SummonerData].account.id))
+        keys.append((summoner.platform.value, "account", summoner._data[SummonerData].account.id))
     except AttributeError:
         pass
     return keys
@@ -2124,7 +2124,7 @@ def for_summoner_query(query: Query) -> List[Tuple]:
     if "name" in query:
         keys.append((query["platform"].value, query["name"]))
     if "account.id" in query:
-        keys.append((query["platform"].value, query["account.id"]))
+        keys.append((query["platform"].value, "account", query["account.id"]))
     return keys
 
 
