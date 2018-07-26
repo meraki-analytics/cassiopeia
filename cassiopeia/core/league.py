@@ -284,6 +284,11 @@ class League(CassiopeiaGhost):
             return False
         return self.id == other.id
 
+    def __str__(self):
+        region = self.region
+        id_ = self.id
+        return "League(id={id_}, region='{region}')".format(id_=id_, region=region.value)
+
     __hash__ = CassiopeiaGhost.__hash__
 
     def __getitem__(self, item):

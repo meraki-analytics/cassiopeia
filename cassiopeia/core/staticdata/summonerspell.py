@@ -160,6 +160,16 @@ class SummonerSpell(CassiopeiaGhost):
         else:
             return self.id == other.id
 
+    def __str__(self):
+        region = self.region
+        id_ = "?"
+        name = "?"
+        if hasattr(self._data[SummonerSpellData], "id"):
+            id_ = self.id
+        if hasattr(self._data[SummonerSpellData], "name"):
+            name = self.name
+        return "SummonerSpell(name='{name}', id={id_}, region='{region}')".format(name=name, id_=id_, region=region.value)
+
     __hash__ = CassiopeiaGhost.__hash__
 
     @lazy_property

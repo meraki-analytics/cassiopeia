@@ -103,6 +103,13 @@ class ProfileIcon(CassiopeiaGhost):
             return False
         return self.id == other.id
 
+    def __str__(self):
+        region = self.region
+        id_ = "?"
+        if hasattr(self._data[ProfileIconData], "id"):
+            id_ = self.id
+        return "ProfileIcon(id={id_}, region='{region}')".format(id_=id_, region=region.value)
+
     __hash__ = CassiopeiaGhost.__hash__
 
     def __load_hook__(self, load_group, data) -> None:

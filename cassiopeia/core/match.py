@@ -243,7 +243,7 @@ class MatchData(CoreData):
 ##############
 
 
-class MatchHistory(CassiopeiaLazyList):
+class MatchHistory(CassiopeiaLazyList):  # type: List[Match]
     """The match history for a summoner. By default, this will return the entire match history."""
     _data_types = {MatchListData}
 
@@ -1292,6 +1292,11 @@ class Match(CassiopeiaGhost):
         if not isinstance(other, Match) or self.region != other.region:
             return False
         return self.id == other.id
+
+    def __str__(self):
+        region = self.region
+        id_ = self.id
+        return "Match(id={id_}, region='{region}')".format(id_=id_, region=region.value)
 
     __hash__ = CassiopeiaGhost.__hash__
 

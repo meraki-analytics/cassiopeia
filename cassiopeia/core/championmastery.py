@@ -142,6 +142,9 @@ class ChampionMastery(CassiopeiaGhost):
             return False
         return self.champion == other.champion and self.summoner == other.summoner
 
+    def __str__(self):
+        return "ChampionMastery(summoner={summoner}, champion={champion})".format(summoner=str(self.summoner), champion=str(self.champion))
+
     __hash__ = CassiopeiaGhost.__hash__
 
     @property
