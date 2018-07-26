@@ -219,7 +219,7 @@ class Summoner(CassiopeiaGhost):
     @lazy_property
     def rank_last_season(self):
         most_recent_match = self.match_history[0]
-        return most_recent_match.participants[self.name].rankLastSeason
+        return most_recent_match.participants[self.name].rank_last_season
 
     @property
     def verification_string(self) -> str:
