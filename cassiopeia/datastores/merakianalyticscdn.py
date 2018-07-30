@@ -13,7 +13,7 @@ except ImportError:
 T = TypeVar("T")
 
 
-class PatchSource(DataSource):
+class MerakiAnalyticsCDN(DataSource):
     def __init__(self, http_client: HTTPClient = None) -> None:
         if http_client is None:
             self._client = HTTPClient()
@@ -34,10 +34,10 @@ class PatchSource(DataSource):
 
     @get.register(PatchListDto)
     def get_patch_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> PatchListDto:
-        # See: https://rawgit.com/
-        url = "https://cdn.rawgit.com/CommunityDragon/Data/b033fdf7/patches.json"
+        url = "https://cdn.merakianalytics.com/riot/lol/resources/patches.json"
         try:
             body = self._client.get(url)[0]
+            body = json.decode(body)
         except HTTPError as e:
             raise NotFoundError(str(e)) from e
 

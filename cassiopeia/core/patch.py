@@ -72,6 +72,14 @@ class Patch(object):
             raise ValueError("Unknown patch date {}".format(date))
 
     @classmethod
+    def latest(cls, region: Union[Region, str] = None) -> "Patch":
+        if isinstance(region, str):
+            region = Region(region)
+        if cls.__patches is None:
+            cls.__load__()
+        return cls.__patches[region][-1]
+
+    @classmethod
     def __load__(cls):
         data = configuration.settings.pipeline.get(PatchListDto, query={})
         patches = data["patches"]
@@ -93,6 +101,10 @@ class Patch(object):
             name = patch["name"]
             end = None
             cls.__patches[region][-1] = Patch(region=region, season=season, name=name, start=start, end=end)
+
+        # Sort each region's patches by start date
+        for region in Region:
+            cls.__patches[region].sort(key=lambda patch: patch.start)
 
     @property
     def region(self):

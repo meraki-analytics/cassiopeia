@@ -33,7 +33,7 @@ def create_pipeline(service_configs: Dict, enable_ghost_loading: bool, verbose: 
         service_transformers = getattr(module, "__transformers__", [])
         transformers.extend(service_transformers)
 
-    from ..datastores import Cache, PatchSource
+    from ..datastores import Cache, MerakiAnalyticsCDN
 
     # Automatically insert the ghost store if it isn't there (and if the setting for ghost loading is on)
     if enable_ghost_loading:
@@ -57,7 +57,7 @@ def create_pipeline(service_configs: Dict, enable_ghost_loading: bool, verbose: 
         # Enable the data -> core transformers for ghost objects
         enable_ghost_transformers(riotapi_transformer)
 
-    services.append(PatchSource())
+    services.append(MerakiAnalyticsCDN())
     pipeline = DataPipeline(services, transformers)
 
     # Manually put the cache on the pipeline.
