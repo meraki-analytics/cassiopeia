@@ -20,7 +20,7 @@ where `"CHAMPIONGG_KEY"` should be replaced with your champion.gg api key or wit
 """
 
 import cassiopeia as cass
-from cassiopeia import Champion
+from cassiopeia import Champion, Role
 
 config = cass.get_default_config()
 config["pipeline"]["ChampionGG"] =  {
@@ -31,29 +31,37 @@ cass.apply_settings(config)
 
 
 def get_champions():
-    annie = Champion(name="Annie", id=1, region="NA")
-    print(annie.name)
+    lux = Champion(name="Lux", id=99, region="NA")
+    print(lux.name)
 
-    print(annie.championgg.win_rate)
-    print(annie.championgg.play_rate)
-    print(annie.championgg.play_rate_by_role)
-    print(annie.championgg.ban_rate)
-    print(annie.championgg.games_played)
-    print(annie.championgg.damage_composition)
-    print(annie.championgg.kills)
-    print(annie.championgg.total_damage_taken)
-    print(annie.championgg.wards_killed)
-    print(annie.championgg.neutral_minions_killed_in_team_jungle)
-    print(annie.championgg.assists)
-    print(annie.championgg.performance_score)
-    print(annie.championgg.neutral_minions_killed_in_enemy_jungle)
-    print(annie.championgg.gold_earned)
-    print(annie.championgg.deaths)
-    print(annie.championgg.minions_killed)
-    print(annie.championgg.total_healed)
-    print(annie.championgg.championgg_metadata["elo"])
-    print(annie.championgg.championgg_metadata["patch"])
+    print(lux.championgg.elo)
+    print(lux.championgg.patch)
 
+    # Lux mid vs. Lux support win rates
+    print(lux.championgg[Role.middle].win_rate)
+    print(lux.championgg[Role.support].win_rate)
+
+    # Print a bunch of data
+    print(lux.championgg[Role.support].play_rate)
+    print(lux.championgg[Role.support].play_rate_by_role)
+    print(lux.championgg[Role.support].ban_rate)
+    print(lux.championgg[Role.support].games_played)
+    print(lux.championgg[Role.support].damage_composition)
+    print(lux.championgg[Role.support].kills)
+    print(lux.championgg[Role.support].total_damage_taken)
+    print(lux.championgg[Role.support].neutral_minions_killed_in_team_jungle)
+    print(lux.championgg[Role.support].assists)
+    print(lux.championgg[Role.support].neutral_minions_killed_in_enemy_jungle)
+    print(lux.championgg[Role.support].gold_earned)
+    print(lux.championgg[Role.support].deaths)
+    print(lux.championgg[Role.support].minions_killed)
+    print(lux.championgg[Role.support].total_healed)
+
+    # Get matchup data for Lux mid
+    # (This takes a minute to run the first time but is ~ instantaneous thereafter)
+    for matchup in lux.championgg[Role.middle].matchups:
+        if matchup.nmatches > 100:
+            print(f"{matchup.enemy.champion.name}: {round(matchup.winrate*100)}%   ({matchup.nmatches} matches analyzed)")
 
 if __name__ == "__main__":
     get_champions()
