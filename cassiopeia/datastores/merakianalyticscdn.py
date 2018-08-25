@@ -9,6 +9,7 @@ try:
     import ujson as json
 except ImportError:
     import json
+    json.decode = json.loads
 
 T = TypeVar("T")
 
