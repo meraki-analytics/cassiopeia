@@ -8,7 +8,6 @@ from .common import RiotAPIService, RiotAPIRateLimiter
 def _default_services(api_key: str, limiting_share: float = 1.0, request_by_id: bool = True, request_error_handling: Dict = None) -> Set[RiotAPIService]:
     from ..common import HTTPClient
     from ..image import ImageDataSource
-    from .staticdata import StaticDataAPI
     from .champion import ChampionAPI
     from .summoner import SummonerAPI
     from .championmastery import ChampionMasteryAPI
@@ -24,7 +23,6 @@ def _default_services(api_key: str, limiting_share: float = 1.0, request_by_id: 
     services = {
         ImageDataSource(client),
         ChampionAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, request_error_handling=request_error_handling, http_client=client),
-        StaticDataAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, request_error_handling=request_error_handling, http_client=client),
         SummonerAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, request_error_handling=request_error_handling, http_client=client),
         ChampionMasteryAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, request_error_handling=request_error_handling, http_client=client),
         MatchAPI(api_key, app_rate_limiter=app_rate_limiter, request_by_id=request_by_id, request_error_handling=request_error_handling, http_client=client),

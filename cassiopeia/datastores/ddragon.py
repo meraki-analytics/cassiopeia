@@ -14,7 +14,7 @@ from ..dto.staticdata.language import LanguagesDto, LanguageStringsDto
 from ..dto.staticdata.realm import RealmDto
 from ..dto.staticdata.map import MapDto, MapListDto
 from .common import HTTPClient, HTTPError
-from .riotapi.staticdata import _get_latest_version
+from .riotapi.common import _get_latest_version
 from .uniquekeys import _hash_included_data, convert_region_to_platform
 
 try:

@@ -18,7 +18,7 @@ from ..core.staticdata.language import LanguagesData
 from ..core.staticdata.rune import RuneListData
 from ..core.staticdata.summonerspell import SummonerSpellListData
 from ..core.staticdata.version import VersionListData
-from .riotapi.staticdata import _get_latest_version, _get_default_locale
+from .riotapi.common import _get_latest_version, _get_default_locale
 from .uniquekeys import convert_region_to_platform
 
 T = TypeVar("T")

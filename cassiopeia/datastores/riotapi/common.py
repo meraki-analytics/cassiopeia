@@ -10,6 +10,17 @@ from merakicommons.ratelimits import FixedWindowRateLimiter, MultiRateLimiter
 
 from ..common import HTTPClient, HTTPError, Curl
 from ...data import Platform
+from ...dto.staticdata.realm import RealmDto
+
+
+def _get_latest_version(query: MutableMapping[str, Any], context: PipelineContext) -> str:
+    pipeline = context[PipelineContext.Keys.PIPELINE]
+    realms = pipeline.get(RealmDto, {"platform": query["platform"]})
+    return realms["v"]
+
+
+def _get_default_locale(query: MutableMapping[str, Any], context: PipelineContext) -> str:
+    return query["platform"].default_locale
 
 
 class APIRequestError(HTTPError):
