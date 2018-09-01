@@ -257,8 +257,8 @@ class Gold(CassiopeiaObject):
         return self._data[GoldData].base
 
     @property
-    def purchaseable(self) -> bool:
-        return self._data[GoldData].purchaseable
+    def purchasable(self) -> bool:
+        return self._data[GoldData].purchasable
 
 
 @searchable({str: ["name", "region", "platform", "locale", "keywords", "maps", "tags", "tier"], int: ["id"], Region: ["region"], Platform: ["platform"], Map: ["maps"]})
