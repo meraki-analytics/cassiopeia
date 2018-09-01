@@ -453,7 +453,7 @@ class Skin(CassiopeiaObject):
     @lazy_property
     def loading_image(self) -> PILImage:
         """The skin's loading screen image."""
-        return configuration.settings.pipeline.get(PILImage, query={"url": self._loading_image_url})
+        return configuration.settings.pipeline.get(PILImage, query={"url": self.loading_image_url})
 
 
 class Stats(CassiopeiaObject):
