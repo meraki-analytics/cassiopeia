@@ -33,7 +33,7 @@ class LevelTipData(CoreData):
 
 
 class ChampionSpellData(CoreData):
-    _renamed = {"vars": "variables", "maxrank": "maxRank", "cooldown": "cooldowns", "cost": "costs", "effect": "effects", "costType": "resource", "keyboardKey": "keyboard_key"}
+    _renamed = {"vars": "variables", "maxrank": "maxRank", "cooldown": "cooldowns", "cost": "costs", "effect": "effects", "costType": "cost_type", "keyboardKey": "keyboard_key"}
 
     def __call__(self, *args, **kwargs):
         if "leveltip" in kwargs:
@@ -224,7 +224,7 @@ class ChampionSpell(CassiopeiaObject):
     @property
     def resource(self) -> Resource:
         """The resource consumed when using this spell."""
-        return Resource(self._data[ChampionSpellData].resource)
+        return Resource(self._data[ChampionSpellData].cost_type)
 
     @lazy_property
     def image_info(self) -> Image:
