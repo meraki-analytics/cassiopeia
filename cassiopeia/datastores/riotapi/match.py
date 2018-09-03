@@ -36,7 +36,8 @@ class MatchAPI(RiotAPIService):
     def get_match(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MatchDto:
         url = "https://{platform}.api.riotgames.com/lol/match/v3/matches/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
         try:
-            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "matches/id"))
+            app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "matches/id")
+            data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -59,7 +60,8 @@ class MatchAPI(RiotAPIService):
             for id in query["ids"]:
                 url = "https://{platform}.api.riotgames.com/lol/match/v3/matches/{id}".format(platform=query["platform"].value.lower(), id=id)
                 try:
-                    data = self._get(url, {}, self._get_rate_limiter(query["platform"], "matches/id"))
+                    app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "matches/id")
+                    data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
                 
@@ -148,7 +150,8 @@ class MatchAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/match/v3/matchlists/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=query["account.id"])
         try:
-            data = self._get(url, params, self._get_rate_limiter(query["platform"], "matchlists/by-account/accountId"))
+            app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "matchlists/by-account/accountId")
+            data = self._get(url, params, app_limiter=app_limiter, method_limiter=method_limiter)
         except APINotFoundError:
             data = {"matches": []}
 
@@ -172,7 +175,6 @@ class MatchAPI(RiotAPIService):
     _validate_get_many_match_list_query = Query. \
         has("account.ids").as_(Iterable).also. \
         has("platform").as_(Platform).also. \
-        can_have("recent").with_default(False).also. \
         can_have("beginTime").as_(int).also. \
         can_have("endTime").as_(int).also. \
         can_have("beginIndex").as_(int).also. \
@@ -184,63 +186,51 @@ class MatchAPI(RiotAPIService):
     @get_many.register(MatchListDto)
     @validate_query(_validate_get_many_match_list_query, convert_region_to_platform)
     def get_many_match_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[MatchListDto, None, None]:
-        if query["recent"]:
-            def generator():
-                for id in query["account.ids"]:
-                    url = "https://{platform}.api.riotgames.com/lol/match/v3/matchlists/by-account/{accountId}/recent".format(platform=query["platform"].value.lower(), accountId=id)
-                    try:
-                        data = self._get(url, {}, self._get_rate_limiter(query["platform"], "matchlists/by-account/accountId/recent"))
-                    except APINotFoundError as error:
-                        raise NotFoundError(str(error)) from error
+        params = {}
 
-                    data["account.id"] = id
-                    data["region"] = query["platform"].region.value
-                    yield MatchListDto(data)
+        if "beginIndex" in query:
+            params["beginIndex"] = query["beginIndex"]
+
+        if "endIndex" in query:
+            params["endIndex"] = query["endIndex"]
+
+        if "seasons" in query:
+            seasons = {Season(season) for season in query["seasons"]}
+            params["season"] = {SEASON_IDS[season] for season in seasons}
         else:
-            params = {}
+            seasons = set()
 
-            if "beginIndex" in query:
-                params["beginIndex"] = query["beginIndex"]
+        if "champion.ids" in query:
+            params["champion"] = {query["champion.ids"]}
 
-            if "endIndex" in query:
-                params["endIndex"] = query["endIndex"]
+        if "queues" in query:
+            queues = {Queue(queue) for queue in query["queues"]}
+            params["queue"] = {QUEUE_IDS[queue] for queue in queues}
+        else:
+            queues = set()
 
-            if "seasons" in query:
-                seasons = {Season(season) for season in query["seasons"]}
-                params["season"] = {SEASON_IDS[season] for season in seasons}
-            else:
-                seasons = set()
+        def generator():
+            for id in query["account.ids"]:
+                url = "https://{platform}.api.riotgames.com/lol/match/v3/matchlists/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=id)
+                try:
+                    app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "matchlists/by-account/accountId")
+                    data = self._get(url, params, app_limiter=app_limiter, method_limiter=method_limiter)
+                except APINotFoundError as error:
+                    raise NotFoundError(str(error)) from error
 
-            if "champion.ids" in query:
-                params["champion"] = {query["champion.ids"]}
-
-            if "queues" in query:
-                queues = {Queue(queue) for queue in query["queues"]}
-                params["queue"] = {QUEUE_IDS[queue] for queue in queues}
-            else:
-                queues = set()
-
-            def generator():
-                for id in query["account.ids"]:
-                    url = "https://{platform}.api.riotgames.com/lol/match/v3/matchlists/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=id)
-                    try:
-                        data = self._get(url, params, self._get_rate_limiter(query["platform"], "matchlists/by-account/accountId"))
-                    except APINotFoundError as error:
-                        raise NotFoundError(str(error)) from error
-
-                    data["account.id"] = id
-                    data["region"] = query["platform"].region.value
-                    if "beginIndex" in query:
-                        data["beginIndex"] = query["beginIndex"]
-                    if "endIndex" in query:
-                        data["endIndex"] = query["endIndex"]
-                    if "seasons" in query:
-                        data["seasons"] = seasons
-                    if "champion.ids" in query:
-                        data["champion"] = params["champion"]
-                    if "queues" in query:
-                        params["queue"] = queues
-                    yield MatchListDto(data)
+                data["account.id"] = id
+                data["region"] = query["platform"].region.value
+                if "beginIndex" in query:
+                    data["beginIndex"] = query["beginIndex"]
+                if "endIndex" in query:
+                    data["endIndex"] = query["endIndex"]
+                if "seasons" in query:
+                    data["seasons"] = seasons
+                if "champion.ids" in query:
+                    data["champion"] = params["champion"]
+                if "queues" in query:
+                    params["queue"] = queues
+                yield MatchListDto(data)
 
         return generator()
 
@@ -253,7 +243,8 @@ class MatchAPI(RiotAPIService):
     def get_match_timeline(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> TimelineDto:
         url = "https://{platform}.api.riotgames.com/lol/match/v3/timelines/by-match/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
         try:
-            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "timelines/by-match/id"))
+            app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "timelines/by-match/id")
+            data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -272,7 +263,8 @@ class MatchAPI(RiotAPIService):
             for id in query["ids"]:
                 url = "https://{platform}.api.riotgames.com/lol/match/v3/timelines/by-match/{id}".format(platform=query["platform"].value.lower(), id=id)
                 try:
-                    data = self._get(url, {}, self._get_rate_limiter(query["platform"], "timelines/by-match/id"))
+                    app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "timelines/by-match/id")
+                    data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 

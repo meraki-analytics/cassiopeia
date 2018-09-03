@@ -16,8 +16,9 @@ def _default_services(api_key: str, limiting_share: float = 1.0, request_by_id: 
     from .status import StatusAPI
     from .leagues import LeaguesAPI
     from .thirdpartycode import ThirdPartyCodeAPI
+    from ...data import Platform
 
-    app_rate_limiter = RiotAPIRateLimiter(limiting_share=limiting_share)
+    app_rate_limiter = {platform: RiotAPIRateLimiter(limiting_share=limiting_share) for platform in Platform}
 
     client = HTTPClient()
     services = {

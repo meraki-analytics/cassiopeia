@@ -45,7 +45,8 @@ class ChampionAPI(RiotAPIService):
         else:
             url = "https://{platform}.api.riotgames.com/lol/platform/v3/champions/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
             try:
-                data = self._get(url, {}, self._get_rate_limiter(query["platform"], "champions/id"))
+                app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "champions/id")
+                data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
             except APINotFoundError as error:
                 raise NotFoundError(str(error)) from error
 
@@ -65,7 +66,8 @@ class ChampionAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/platform/v3/champions".format(platform=query["platform"].value.lower())
         try:
-            data = self._get(url, params, self._get_rate_limiter(query["platform"], "champions"))
+            app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "champions")
+            data = self._get(url, params, app_limiter=app_limiter, method_limiter=method_limiter)
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -98,7 +100,8 @@ class ChampionAPI(RiotAPIService):
 
         url = "https://{platform}.api.riotgames.com/lol/platform/v3/champions".format(platform=query["platform"].value.lower())
         try:
-            data = self._get(url, params, self._get_rate_limiter(query["platform"], "champions"))
+            app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "champions")
+            data = self._get(url, params, app_limiter=app_limiter, method_limiter=method_limiter)
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -124,7 +127,8 @@ class ChampionAPI(RiotAPIService):
                 platform = Platform(platform.upper())
                 url = "https://{platform}.api.riotgames.com/lol/platform/v3/champions".format(platform=platform.value.lower())
                 try:
-                    data = self._get(url, params, self._get_rate_limiter(platform, "champions"))
+                    app_limiter, method_limiter = self._get_rate_limiter(platform, "champions")
+                    data = self._get(url, params, app_limiter=app_limiter, method_limiter=method_limiter)
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 

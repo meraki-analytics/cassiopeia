@@ -35,8 +35,9 @@ class ThirdPartyCodeAPI(RiotAPIService):
     def get_verification_string(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> VerificationStringDto:
         url = "https://{platform}.api.riotgames.com/lol/platform/v3/third-party-code/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
         try:
-            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "thirdpartycode"))
-        except APINotFoundError as error:
+            app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "thirdpartycode")
+            data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
+        except (ValueError, APINotFoundError) as error:
             raise NotFoundError(str(error)) from error
 
         data = {"string": data}
@@ -56,7 +57,8 @@ class ThirdPartyCodeAPI(RiotAPIService):
                 platform = Platform(platform.upper())
                 url = "https://{platform}.api.riotgames.com/lol/platform/v3/third-party-code/by-summoner/{summonerId}".format(platform=platform.value.lower(), summonerId=summoner_id)
                 try:
-                    data = self._get(url, {}, self._get_rate_limiter(platform, "thirdpartycode"))
+                    app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "thirdpartycode")
+                    data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 

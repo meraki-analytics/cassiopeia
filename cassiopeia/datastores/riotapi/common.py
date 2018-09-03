@@ -103,8 +103,8 @@ def _split_rate_limit_header(header):
 
 
 class RiotAPIService(DataSource):
-    def __init__(self, api_key: str, app_rate_limiter: RiotAPIRateLimiter, request_by_id: bool = True, request_error_handling: Dict = None, http_client: HTTPClient = None):
-        self._limiting_share = app_rate_limiter.limiting_share
+    def __init__(self, api_key: str, app_rate_limiter: Dict[Platform, RiotAPIRateLimiter], request_by_id: bool = True, request_error_handling: Dict = None, http_client: HTTPClient = None):
+        self._limiting_share = app_rate_limiter[Platform.north_america].limiting_share
         self._request_by_id = request_by_id
 
         if http_client is None:
@@ -200,27 +200,28 @@ class RiotAPIService(DataSource):
 
     def _get_rate_limiter(self, platform: Platform, endpoint: str):
         try:
-            limiter = self._rate_limiters[(platform, endpoint)]
+            method_limiter = self._rate_limiters[(platform, endpoint)]
         except KeyError:
-            limiter = RiotAPIRateLimiter(self._limiting_share)
-            self._rate_limiters[(platform, endpoint)] = limiter
-        return limiter
+            method_limiter = RiotAPIRateLimiter(self._limiting_share)
+            self._rate_limiters[(platform, endpoint)] = method_limiter
+        app_limiter = self._rate_limiters["application"][platform]
+        return app_limiter, method_limiter
 
-    def _adjust_rate_limiters_from_headers(self, rate_limiter, response_headers):
+    def _adjust_rate_limiters_from_headers(self, app_limiter, method_limiter, response_headers):
         # If Riot changes the # of permits allowed in their response headers, change our rate limiters.
         # We are currently ignoring the X-*-Rate-Limit-Count headers and assuming our rate limiter logic agrees.
         if "X-App-Rate-Limit" in response_headers:
             limits = _split_rate_limit_header(response_headers["X-App-Rate-Limit"])
-            self._rate_limiters["application"].adjust_rate_limits_if_necessary(limits)
+            app_limiter.adjust_rate_limits_if_necessary(limits)
         if "X-Method-Rate-Limit" in response_headers:
             limits = _split_rate_limit_header(response_headers["X-Method-Rate-Limit"])
-            rate_limiter.adjust_rate_limits_if_necessary(limits)
+            method_limiter.adjust_rate_limits_if_necessary(limits)
 
-    def _get(self, url: str, parameters: MutableMapping[str, Any] = None, rate_limiter: RiotAPIRateLimiter = None, connection: Curl = None) -> Union[dict, list, Any]:
+    def _get(self, url: str, parameters: MutableMapping[str, Any] = None, app_limiter: RiotAPIRateLimiter = None, method_limiter: RiotAPIRateLimiter = None, connection: Curl = None) -> Union[dict, list, Any]:
         # Make a new RiotAPIRequest and run it until it returns or fails.
         # If it returns, return the result.
         # If it fails, throw an appropriate error.
-        request = RiotAPIRequest(service=self, url=url, parameters=parameters, rate_limiter=rate_limiter, connection=connection)
+        request = RiotAPIRequest(service=self, url=url, parameters=parameters, app_limiter=app_limiter, method_limiter=method_limiter, connection=connection)
         try:
             return request()
         except HTTPError as error:
@@ -252,21 +253,25 @@ class RiotAPIService(DataSource):
 
 
 class RiotAPIRequest(object):
-    def __init__(self, service: RiotAPIService, url: str, parameters: MutableMapping[str, Any], rate_limiter: RiotAPIRateLimiter, connection: Curl):
+    def __init__(self, service: RiotAPIService, url: str, parameters: MutableMapping[str, Any], app_limiter: RiotAPIRateLimiter, method_limiter: RiotAPIRateLimiter, connection: Curl):
         self.service = service
         self.url = url
         self.parameters = parameters
-        self.rate_limiter = rate_limiter
+        self.app_limiter = app_limiter
+        self.method_limiter = method_limiter
         self.connection = connection
 
     def __call__(self):
         try:
             body, response_headers = self.service._client.get(url=self.url,
-                                                      parameters=self.parameters,
-                                                      headers=self.service._headers,
-                                                      rate_limiters=[self.service._rate_limiters["application"], self.rate_limiter],
-                                                      connection=self.connection)
-            self.service._adjust_rate_limiters_from_headers(self.rate_limiter, response_headers)
+                                                              parameters=self.parameters,
+                                                              headers=self.service._headers,
+                                                              rate_limiters=[self.app_limiter,
+                                                                             self.method_limiter],
+                                                              connection=self.connection)
+            self.service._adjust_rate_limiters_from_headers(app_limiter=self.app_limiter,
+                                                            method_limiter=self.method_limiter,
+                                                            response_headers=response_headers)
             return body
         except HTTPError as error:
             return self._retry_request_by_handling_error(error)
@@ -304,14 +309,15 @@ class RiotAPIRequest(object):
             else:
                 try:
                     body, response_headers = new_handler(error=error,
-                                                     requester=self.service._client.get,
-                                                     url=self.url,
-                                                     parameters=self.parameters,
-                                                     headers=self.service._headers,
-                                                     rate_limiters=[self.service._rate_limiters["application"], self.rate_limiter],
-                                                     connection=self.connection
-                                                     )
-                    self.service._adjust_rate_limiters_from_headers(self.rate_limiter, response_headers)
+                                                         requester=self.service._client.get,
+                                                         url=self.url,
+                                                         parameters=self.parameters,
+                                                         headers=self.service._headers,
+                                                         rate_limiters=[self.app_limiter, self.method_limiter],
+                                                         connection=self.connection)
+                    self.service._adjust_rate_limiters_from_headers(app_limiter=self.app_limiter,
+                                                                    method_limiter=self.method_limiter,
+                                                                    response_headers=response_headers)
                     return body
                 except HTTPError as error:
                     if new_handler not in handlers:

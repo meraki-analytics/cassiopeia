@@ -2,7 +2,7 @@ from collections import Counter
 import random
 
 import cassiopeia as cass
-from cassiopeia import Season, Queue, Summoner, Match, Champion, Champions, ChampionMastery, Item, Items, LanguageStrings, Map, Locales, Runes, Rune, RunePath, ShardStatus, FeaturedMatches, SummonerSpell, SummonerSpells, GameMode, VerificationString
+from cassiopeia import Season, Queue, Summoner, Match, Champion, Champions, ChampionMastery, Item, Items, LanguageStrings, Map, Locales, Runes, Rune, RunePath, ShardStatus, FeaturedMatches, SummonerSpell, SummonerSpells, GameMode, VerificationString, Role
 
 
 def test_versions():
@@ -282,24 +282,22 @@ def test_timeline():
 
 
 def test_championgg():
-    annie = Champion(name="Annie", id=1, region="NA")
-    annie.name
-    annie.championgg.win_rate
-    annie.championgg.play_rate
-    annie.championgg.play_rate_by_role
-    annie.championgg.ban_rate
-    annie.championgg.games_played
-    annie.championgg.damage_composition
-    annie.championgg.kills
-    annie.championgg.total_damage_taken
-    annie.championgg.wards_killed
-    annie.championgg.neutral_minions_killed_in_team_jungle
-    annie.championgg.assists
-    annie.championgg.performance_score
-    annie.championgg.neutral_minions_killed_in_enemy_jungle
-    annie.championgg.gold_earned
-    annie.championgg.deaths
-    annie.championgg.minions_killed
-    annie.championgg.total_healed
-    annie.championgg.championgg_metadata["elo"]
-    annie.championgg.championgg_metadata["patch"]
+    syndra = Champion(name="Syndra", region="NA")
+    syndra.name
+    syndra.championgg[Role.middle].win_rate
+    syndra.championgg[Role.middle].play_rate
+    syndra.championgg[Role.middle].play_rate_by_role
+    syndra.championgg[Role.middle].ban_rate
+    syndra.championgg[Role.middle].games_played
+    syndra.championgg[Role.middle].damage_composition
+    syndra.championgg[Role.middle].kills
+    syndra.championgg[Role.middle].total_damage_taken
+    syndra.championgg[Role.middle].neutral_minions_killed_in_team_jungle
+    syndra.championgg[Role.middle].assists
+    syndra.championgg[Role.middle].neutral_minions_killed_in_enemy_jungle
+    syndra.championgg[Role.middle].gold_earned
+    syndra.championgg[Role.middle].deaths
+    syndra.championgg[Role.middle].minions_killed
+    syndra.championgg[Role.middle].total_healed
+    syndra.championgg[Role.middle].championgg_metadata["elo"]
+    syndra.championgg[Role.middle].championgg_metadata["patch"]

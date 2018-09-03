@@ -41,7 +41,8 @@ class StatusAPI(RiotAPIService):
     def get_status(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ShardStatusDto:
         url = "https://{platform}.api.riotgames.com/lol/status/v3/shard-data".format(platform=query["platform"].value.lower())
         try:
-            data = self._get(url, {}, self._get_rate_limiter(query["platform"], "status"))
+            app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "status")
+            data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -59,7 +60,8 @@ class StatusAPI(RiotAPIService):
                 platform = Platform(platform.upper())
                 url = "https://{platform}.api.riotgames.com/lol/status/v3/shard-data".format(platform=platform.value.lower())
                 try:
-                    data = self._get(url, {}, self._get_rate_limiter(platform, "status"))
+                    app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "status")
+                    data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
