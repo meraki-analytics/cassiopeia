@@ -19,7 +19,7 @@ def collect_matches():
     region = "EUW"
 
     summoner = Summoner(name=initial_summoner_name, region=region)
-    patch_720 = Patch.from_str("7.20", region=region)
+    patch = Patch.from_str("8.9", region=region)
 
     unpulled_summoner_ids = SortedList([summoner.id])
     pulled_summoner_ids = SortedList()
@@ -31,7 +31,7 @@ def collect_matches():
         # Get a random summoner from our list of unpulled summoners and pull their match history
         new_summoner_id = random.choice(unpulled_summoner_ids)
         new_summoner = Summoner(id=new_summoner_id, region=region)
-        matches = filter_match_history(new_summoner, patch_720)
+        matches = filter_match_history(new_summoner, patch)
         unpulled_match_ids.update([match.id for match in matches])
         unpulled_summoner_ids.remove(new_summoner_id)
         pulled_summoner_ids.add(new_summoner_id)
