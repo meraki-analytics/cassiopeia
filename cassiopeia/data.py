@@ -422,6 +422,7 @@ class Queue(Enum):
     overcharge = "OVERCHARGE"  # 1000
     all_random_urf_snow = "SNOWURF"  # 1010
     one_for_all_rapid = "ONEFORALL_RAPID_5x5" # 1020
+    nexus_blitz = "NEXUS_BLITZ"  # 1200
 
     def from_id(id: int):
         return {i: season for season, i in QUEUE_IDS.items()}[id]
@@ -499,6 +500,7 @@ QUEUE_IDS = {
     Queue.overcharge: 1000,  # Overcharge, PROJECT: Hunters games
     Queue.all_random_urf_snow: 1010,  # Summoner's Rift, Snow ARURF games
     Queue.one_for_all_rapid: 1020, # Summoner's Rift  One for All games (increased gold and exp gain)
+    Queue.nexus_blitz: 1200,  # Nexus Blitz map    Nexus Blitz
 }
 
 RANKED_QUEUES = {
