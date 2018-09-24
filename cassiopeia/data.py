@@ -155,6 +155,7 @@ class GameMode(Enum):
     all_random_urf_snow = "SNOWURF"
     practice_tool = "PRACTICETOOL"
     nexus_blitz = "GAMEMODEX"
+    odyssey = "ODYSSEY"
 
 
 class MasteryTree(Enum):
@@ -422,6 +423,11 @@ class Queue(Enum):
     overcharge = "OVERCHARGE"  # 1000
     all_random_urf_snow = "SNOWURF"  # 1010
     one_for_all_rapid = "ONEFORALL_RAPID_5x5" # 1020
+    odyssey_intro = "ODYSSEY_INTRO"  # 1030
+    odyssey_cadet = "ODYSSEY_CADET"  # 1040
+    odyssey_crewmember = "ODYSSEY_CREWMEMBER"  # 1050
+    odyssey_captain = "ODYSSEY_CAPTAIN"  # 1060
+    odyssey_onslaught = "ODYSSEY_ONSLAUGHT"  # 1070
     nexus_blitz = "NEXUS_BLITZ"  # 1200
 
     def from_id(id: int):
@@ -500,6 +506,11 @@ QUEUE_IDS = {
     Queue.overcharge: 1000,  # Overcharge, PROJECT: Hunters games
     Queue.all_random_urf_snow: 1010,  # Summoner's Rift, Snow ARURF games
     Queue.one_for_all_rapid: 1020, # Summoner's Rift  One for All games (increased gold and exp gain)
+    Queue.odyssey_intro: 1030,  # Odyssey: Extraction
+    Queue.odyssey_cadet: 1040,  # Odyssey: Extraction
+    Queue.odyssey_crewmember: 1050,  # Odyssey: Extraction
+    Queue.odyssey_captain: 1060,  # Odyssey: Extraction
+    Queue.odyssey_onslaught: 1070,  # Odyssey: Extraction
     Queue.nexus_blitz: 1200,  # Nexus Blitz map    Nexus Blitz
 }
 
