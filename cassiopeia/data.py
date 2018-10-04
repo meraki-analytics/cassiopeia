@@ -1,6 +1,9 @@
 from enum import Enum
 import arrow
 
+import matplotlib.path as mplPath
+import numpy as np
+
 
 class Region(Enum):
     brazil = "BR"
@@ -322,6 +325,7 @@ class Lane(Enum):
     bot_lane = "BOT_LANE"
     jungle = "JUNGLE"
 
+
     def from_match_naming_scheme(string: str):
         return {
             "BOTTOM": Lane.bot_lane,
@@ -330,6 +334,30 @@ class Lane(Enum):
             "JUNGLE": Lane.jungle,
             "NONE": None
         }[string]
+    
+    def from_coordinate(x: int, y: int):
+        coordinate = [x,y]
+    
+        mid_lane_coordinate = mplPath.Path(np.array([[-120 ,-120],[1600 ,-120],[4200 ,3500],[11300 ,10500],[14870 ,13200],[14870 ,14980],[13270 ,14980],[10500 ,11300],[3300 ,4400],[-120, 1600]]))
+        top_lane_coordinate = mplPath.Path(np.array([[-120 ,-120],[-120 ,14980],[14870 ,14980],[14870 ,13200],[4000 ,13200],[1600,11000],[1600 ,-120]]))
+        bot_lane_coordinate = mplPath.Path(np.array([[-120 ,-120],[14870,-120],[14870,14980],[13270,14980],[13270,4000],[10500,1700],[-120,1700]]))
+        jungle1_coordinate = mplPath.Path(np.array([[1600,5000],[1600,11000],[4000 ,13200],[9800 ,13200],[10500 ,11300],[3300 ,4400]]))
+        jungle2_coordinate = mplPath.Path(np.array([[5000,1700],[4200 ,3500],[11300 ,10500],[13270,9900],[13270,4000],[10500,1700]]))
+        
+        if jungle1_coordinate.contains_point(coordinate) or jungle2_coordinate.contains_point(coordinate):
+            return Lane.jungle
+        
+        elif mid_lane_coordinate.contains_point(coordinate):
+            return Lane.mid_lane
+        
+        elif top_lane_coordinate.contains_point(coordinate):
+            return Lane.top_lane
+        
+        elif bot_lane_coordinate.contains_point(coordinate):
+            return Lane.bot_lane
+        
+        return None
+        
 
 
 class Role(Enum):

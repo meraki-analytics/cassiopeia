@@ -530,6 +530,10 @@ class ParticipantFrame(CassiopeiaObject):
     @property
     def neutral_minions_killed(self) -> int:
         return self._data[ParticipantFrameData].neutralMinionsKilled
+    
+    @property
+    def lane(self) -> Lane:
+        return Lane.from_coordinate(self.position.x,self.position.y)
 
 
 class Frame(CassiopeiaObject):
