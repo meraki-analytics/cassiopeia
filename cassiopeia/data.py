@@ -1,9 +1,6 @@
 from enum import Enum
 import arrow
 
-import matplotlib.path as mplPath
-import numpy as np
-
 
 class Region(Enum):
     brazil = "BR"
@@ -336,6 +333,10 @@ class Lane(Enum):
         }[string]
     
     def from_coordinate(x: int, y: int):
+
+        import matplotlib.path as mplPath
+        import numpy as np
+        
         coordinate = [x,y]
     
         mid_lane_coordinate = mplPath.Path(np.array([[-120 ,-120],[1600 ,-120],[4200 ,3500],[11300 ,10500],[14870 ,13200],[14870 ,14980],[13270 ,14980],[10500 ,11300],[3300 ,4400],[-120, 1600]]))
