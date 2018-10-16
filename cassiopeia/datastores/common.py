@@ -11,6 +11,7 @@ try:
 except ImportError:
     import requests
     USE_PYCURL = False
+    Curl = None  # This might break a few type hints but they are all internal and not user-facing.
 
 from merakicommons.ratelimits import RateLimiter
 

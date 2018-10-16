@@ -2,7 +2,7 @@ from collections import Counter
 import random
 
 import cassiopeia as cass
-from cassiopeia import Season, Queue, Summoner, Match, Champion, Champions, ChampionMastery, Item, Items, LanguageStrings, Map, Locales, Runes, Rune, RunePath, ShardStatus, FeaturedMatches, SummonerSpell, SummonerSpells, GameMode, VerificationString, Role, SummonersRiftMap
+from cassiopeia import Season, Queue, Summoner, Match, Champion, Champions, ChampionMastery, Item, Items, LanguageStrings, Map, Locales, Runes, Rune, RunePath, ShardStatus, FeaturedMatches, SummonerSpell, SummonerSpells, GameMode, VerificationString, Role
 
 
 def test_versions():
