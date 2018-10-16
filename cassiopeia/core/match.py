@@ -7,7 +7,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableLazyList, SearchableDictionary
 
 from .. import configuration
-from ..data import Region, Platform, Tier, GameType, GameMode, Queue, Side, Season, Lane, Role, Key
+from ..data import Region, Platform, Tier, GameType, GameMode, Queue, Side, Season, Lane, Role, Key, SummonersRiftArea
 from .common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, provide_default_region, ghost_load_on
 from ..dto import match as dto
 from .patch import Patch
@@ -393,6 +393,10 @@ class Position(CassiopeiaObject):
     def y(self) -> int:
         return self._data[PositionData].y
 
+    @property
+    def lane(self) -> SummonersRiftArea:
+        return SummonersRiftArea.from_position(self)
+
 
 @searchable({str: ["type", "tower_type", "ascended_type", "ward_type", "monster_type", "type", "monster_sub_type", "lane_type", "building_type"]})
 class Event(CassiopeiaObject):
@@ -530,10 +534,6 @@ class ParticipantFrame(CassiopeiaObject):
     @property
     def neutral_minions_killed(self) -> int:
         return self._data[ParticipantFrameData].neutralMinionsKilled
-    
-    @property
-    def lane(self) -> Lane:
-        return Lane.from_coordinate(self.position.x,self.position.y)
 
 
 class Frame(CassiopeiaObject):

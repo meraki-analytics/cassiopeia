@@ -1,6 +1,5 @@
 from enum import Enum
 import arrow
-from PIL import Image, PyAccess
 
 
 class Region(Enum):
@@ -323,7 +322,6 @@ class Lane(Enum):
     bot_lane = "BOT_LANE"
     jungle = "JUNGLE"
 
-
     def from_match_naming_scheme(string: str):
         return {
             "BOTTOM": Lane.bot_lane,
@@ -333,34 +331,6 @@ class Lane(Enum):
             "NONE": None
         }[string]
     
-    def from_coordinate(x: int, y: int):
-
-        import matplotlib.path as mplPath
-        import numpy as np
-        
-        coordinate = [x,y]
-    
-        mid_lane_coordinate = mplPath.Path(np.array([[-120 ,-120],[1600 ,-120],[4200 ,3500],[11300 ,10500],[14870 ,13200],[14870 ,14980],[13270 ,14980],[10500 ,11300],[3300 ,4400],[-120, 1600]]))
-        top_lane_coordinate = mplPath.Path(np.array([[-120 ,-120],[-120 ,14980],[14870 ,14980],[14870 ,13200],[4000 ,13200],[1600,11000],[1600 ,-120]]))
-        bot_lane_coordinate = mplPath.Path(np.array([[-120 ,-120],[14870,-120],[14870,14980],[13270,14980],[13270,4000],[10500,1700],[-120,1700]]))
-        jungle1_coordinate = mplPath.Path(np.array([[1600,5000],[1600,11000],[4000 ,13200],[9800 ,13200],[10500 ,11300],[3300 ,4400]]))
-        jungle2_coordinate = mplPath.Path(np.array([[5000,1700],[4200 ,3500],[11300 ,10500],[13270,9900],[13270,4000],[10500,1700]]))
-        
-        if jungle1_coordinate.contains_point(coordinate) or jungle2_coordinate.contains_point(coordinate):
-            return Lane.jungle
-        
-        elif mid_lane_coordinate.contains_point(coordinate):
-            return Lane.mid_lane
-        
-        elif top_lane_coordinate.contains_point(coordinate):
-            return Lane.top_lane
-        
-        elif bot_lane_coordinate.contains_point(coordinate):
-            return Lane.bot_lane
-        
-        return None
-        
-
 
 class SummonersRiftArea(Enum):
     none = "NONE"
@@ -382,33 +352,6 @@ class SummonersRiftArea(Enum):
     river_top = "RIVER_TOP"
     river_bot = "RIVER_BOT"
 
-    @staticmethod
-    def from_int(i: int):
-        color_map = {
-            0: SummonersRiftArea.none,
-            10: SummonersRiftArea.nexus_blue,
-            20: SummonersRiftArea.nexus_red,
-            30: SummonersRiftArea.top_lane_blue,
-            40: SummonersRiftArea.top_lane_purple,
-            50: SummonersRiftArea.top_lane_red,
-            60: SummonersRiftArea.mid_lane_blue,
-            70: SummonersRiftArea.mid_lane_purple,
-            80: SummonersRiftArea.mid_lane_red,
-            90: SummonersRiftArea.bot_lane_blue,
-            100: SummonersRiftArea.bot_lane_purple,
-            110: SummonersRiftArea.bot_lane_red,
-            120: SummonersRiftArea.jungle_top_blue,
-            130: SummonersRiftArea.jungle_top_red,
-            140: SummonersRiftArea.jungle_bot_blue,
-            150: SummonersRiftArea.jungle_bot_red,
-            160: SummonersRiftArea.river_top,
-            170: SummonersRiftArea.river_bot
-        }
-        if i in color_map:
-            return color_map[i]
-        else:
-            return SummonersRiftArea.none
-
     def get_side(self):
         if "BLUE" in self.value:
             return Side.blue
@@ -429,41 +372,56 @@ class SummonersRiftArea(Enum):
         else:
             return None
 
+    @staticmethod
+    def from_position(position: "Position") -> "SummonersRiftArea":
+        from .core.match import Position
+        x, y = position.x, position.y
 
-class SummonersRiftMap(object):
-    from PIL import PyAccess
-    # crashes at init on configuration lookup
-    # from .core.match import Position
-    pixels = None
-    min_x = -120
-    min_y = -120
-    max_x = 14870
-    max_y = 14980
-    width = max_x - min_x
-    height = max_y - min_y
-    img_width = -1
-    img_height = -1
-
-    @property
-    def color_map(self) -> PyAccess:
-        from PIL import Image
-        if self.pixels is None:
+        # Load the map if it isn't already loaded
+        try:
+            map = SummonersRiftArea.__map
+        except AttributeError:
             import os
+            from PIL import Image
             script_dir = os.path.dirname(__file__)
             rel_path = './resources/summonersRiftAreas.png'
-            img = Image.open(os.path.join(script_dir, rel_path))  # better way to import image with relative path?
-            self.img_width, self.img_height = img.size
-            self.pixels = img.load()
-        return self.pixels
+            map = Image.open(os.path.join(script_dir, rel_path))
+            SummonersRiftArea.__map_size = map.size
+            map = map.load()
+            SummonersRiftArea.__map = map
+        image_width, image_height = SummonersRiftArea.__map_size
 
-    # depends on import
-    # def get_area_from_coordinates(self, pos: Position) -> SummonersRiftArea:
-    def get_area_from_position(self, pos) -> SummonersRiftArea:
-        cmap = self.color_map
-        x = round((pos.x - self.min_x) / self.width * (self.img_width - 1))
-        y = round(abs(pos.y - self.min_y - self.height) / self.height * (self.img_height - 1))
-        rgb = cmap[x, y]
-        return SummonersRiftArea.from_int(rgb[0])
+        min_x = -120
+        min_y = -120
+        max_x = 14870
+        max_y = 14980
+        width = max_x - min_x
+        height = max_y - min_y
+        x = round((x - min_x) / width * (image_width - 1))
+        y = round(abs(y - min_y - height) / height * (image_height - 1))
+        rgb = map[x, y][0]
+
+        color_mapping = {
+            0: SummonersRiftArea.none,
+            10: SummonersRiftArea.nexus_blue,
+            20: SummonersRiftArea.nexus_red,
+            30: SummonersRiftArea.top_lane_blue,
+            40: SummonersRiftArea.top_lane_purple,
+            50: SummonersRiftArea.top_lane_red,
+            60: SummonersRiftArea.mid_lane_blue,
+            70: SummonersRiftArea.mid_lane_purple,
+            80: SummonersRiftArea.mid_lane_red,
+            90: SummonersRiftArea.bot_lane_blue,
+            100: SummonersRiftArea.bot_lane_purple,
+            110: SummonersRiftArea.bot_lane_red,
+            120: SummonersRiftArea.jungle_top_blue,
+            130: SummonersRiftArea.jungle_top_red,
+            140: SummonersRiftArea.jungle_bot_blue,
+            150: SummonersRiftArea.jungle_bot_red,
+            160: SummonersRiftArea.river_top,
+            170: SummonersRiftArea.river_bot
+        }
+        return color_mapping.get(rgb, SummonersRiftArea.none)
 
 
 class Role(Enum):

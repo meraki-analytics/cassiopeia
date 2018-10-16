@@ -301,13 +301,3 @@ def test_championgg():
     syndra.championgg[Role.middle].total_healed
     syndra.championgg[Role.middle].championgg_metadata["elo"]
     syndra.championgg[Role.middle].championgg_metadata["patch"]
-
-
-def test_summonersrift_map():
-    summoner = Summoner(name='Kalturi', region='NA')
-    srm = SummonersRiftMap()
-    match = summoner.match_history(queues=[Queue.ranked_solo_fives])[0]
-    for fr in match.timeline.frames:
-        for e in fr.events:
-            if e.type == 'CHAMPION_KILL':
-                srm.get_area_from_position(e.position)
