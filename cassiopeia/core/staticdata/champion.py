@@ -1,12 +1,11 @@
 from typing import Dict, List, Set, Union
-
 from PIL.Image import Image as PILImage
+
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
 
 from ... import configuration
 from ...data import Resource, Region, Platform, GameMode, Key
-from ..champion import ChampionStatusData
 from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, CoreDataList, get_latest_version, provide_default_region, ghost_load_on
 from .common import ImageData, Image, Sprite
 from .map import Map
@@ -566,7 +565,7 @@ class Info(CassiopeiaObject):
 
 @searchable({str: ["name", "key", "region", "platform", "locale", "tags"], int: ["id"], Region: ["region"], Platform: ["platform"], bool: ["free_to_play"]})
 class Champion(CassiopeiaGhost):
-    _data_types = (ChampionData, ChampionStatusData)
+    _data_types = (ChampionData,)
 
     @provide_default_region
     def __init__(self, *, id: int = None, name: str = None, key: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
@@ -662,36 +661,6 @@ class Champion(CassiopeiaGhost):
     def id(self) -> int:
         """The champion's ID."""
         return self._data[ChampionData].id
-
-    @CassiopeiaGhost.property(ChampionStatusData)
-    @ghost_load_on
-    def enabled(self) -> bool:
-        """Whether or not the champion is currently enabled."""
-        return self._data[ChampionStatusData].enabled
-
-    @CassiopeiaGhost.property(ChampionStatusData)
-    @ghost_load_on
-    def custom_enabled(self) -> bool:
-        """Whether or not the champion is currently enabled in custom games."""
-        return self._data[ChampionStatusData].customEnabled
-
-    @CassiopeiaGhost.property(ChampionStatusData)
-    @ghost_load_on
-    def coop_ai_enabled(self) -> bool:
-        """Whether or not the champion is currently enabled in coop and AI games."""
-        return self._data[ChampionStatusData].coopAiEnabled
-
-    @CassiopeiaGhost.property(ChampionStatusData)
-    @ghost_load_on
-    def ranked_enabled(self) -> bool:
-        """Whether or not the champion is currently enabled in ranked games."""
-        return self._data[ChampionStatusData].rankedEnabled
-
-    @CassiopeiaGhost.property(ChampionStatusData)
-    @ghost_load_on
-    def free_to_play(self) -> bool:
-        """Whether or not the champion is currently free to play."""
-        return self._data[ChampionStatusData].freeToPlay
 
     @CassiopeiaGhost.property(ChampionData)
     @ghost_load_on
@@ -810,3 +779,28 @@ class Champion(CassiopeiaGhost):
     @lazy_property
     def sprite(self) -> Sprite:
         return self.image.spriteInfo
+
+    @lazy_property
+    def free_to_play(self) -> bool:
+        """Whether or not the champion is currently free to play."""
+        from ..champion import ChampionRotation
+        rotation = ChampionRotation(region=self.region)
+        for champ in rotation.free_champions:
+            if self.id == champ.id:
+                return True
+        else:
+            return False
+
+    @lazy_property
+    def free_to_play_new_players(self) -> bool:
+        """Whether or not the champion is currently free to play for new players."""
+        from ..champion import ChampionRotation
+        rotation = ChampionRotation(region=self.region)
+        for champ in rotation.free_champions_for_new_players:
+            if self.id == champ.id:
+                return True
+        for champ in rotation.free_champions:
+            if self.id == champ.id:
+                return True
+        else:
+            return False

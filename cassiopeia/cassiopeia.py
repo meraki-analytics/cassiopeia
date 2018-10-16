@@ -3,7 +3,7 @@ import arrow
 import datetime
 
 from .data import Region, Queue, Season
-from .core import Champion, Summoner, Account, ChampionMastery, Rune, Item, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Locales, ProfileIcons, ChallengerLeague, MasterLeague, SummonerLeagues, LeagueEntries, Patch, VerificationString
+from .core import Champion, Summoner, Account, ChampionMastery, Rune, Item, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Locales, ProfileIcons, ChallengerLeague, MasterLeague, SummonerLeagues, LeagueEntries, Patch, VerificationString, ChampionRotation
 from .datastores import common as _common_datastore
 from ._configuration import Settings, load_config, get_default_config
 from . import configuration
@@ -150,3 +150,7 @@ def get_version(date: datetime.date = None, region: Union[Region, str] = None) -
 
 def get_verification_string(summoner: Summoner) -> VerificationString:
     return VerificationString(summoner=summoner)
+
+
+def get_champion_rotations(region: Union[Region, str] = None) -> ChampionRotation:
+    return ChampionRotation(region=region)

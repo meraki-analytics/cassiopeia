@@ -68,8 +68,7 @@ It takes one optional parameter (called ``expirations``), which is a mapping of 
 
 .. code-block:: python
 
-    ChampionStatusData: datetime.timedelta(hours=6),
-    ChampionStatusListData: datetime.timedelta(hours=6),
+    ChampionRotationData: datetime.timedelta(hours=6),
     Realms: datetime.timedelta(hours=6),
     Versions: datetime.timedelta(hours=6),
     Champion: datetime.timedelta(days=20),

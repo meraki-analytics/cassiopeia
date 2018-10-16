@@ -4,7 +4,7 @@ from datapipelines import Query, PipelineContext, QueryValidationError
 
 from ..data import Region, Platform, Queue, Tier, Season
 
-from ..dto.champion import ChampionListDto as ChampionStatusListDto, ChampionDto as ChampionStatusDto
+from ..dto.champion import ChampionRotationDto
 from ..dto.championmastery import ChampionMasteryDto, ChampionMasteryListDto, ChampionMasteryScoreDto
 from ..dto.league import LeagueListDto, LeaguePositionDto
 from ..dto.staticdata import ChampionDto, ChampionListDto, ItemDto, ItemListDto, LanguageStringsDto, LanguagesDto, ProfileIconDataDto, ProfileIconDetailsDto, RealmDto, RuneDto, RuneListDto, SummonerSpellDto, SummonerSpellListDto, MapDto, MapListDto, VersionListDto
@@ -13,7 +13,6 @@ from ..dto.match import MatchDto, MatchReferenceDto, TimelineDto
 from ..dto.spectator import CurrentGameInfoDto, FeaturedGamesDto
 from ..dto.summoner import SummonerDto
 
-from ..core.champion import ChampionStatusData, ChampionStatusListData
 from ..core.championmastery import ChampionMastery, ChampionMasteries
 from ..core.league import LeagueEntries, ChallengerLeague, MasterLeague, League
 from ..core.staticdata import Champion, Rune, Item, SummonerSpell, Map, Locales, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions, Items, Champions, Maps, SummonerSpells, Runes
@@ -21,6 +20,7 @@ from ..core.status import ShardStatus
 from ..core.match import Match, MatchHistory, Timeline
 from ..core.summoner import Summoner
 from ..core.spectator import CurrentMatch, FeaturedMatches, CurrentGameParticipantData
+from ..core.champion import ChampionRotation, ChampionRotationData
 
 from ..core.staticdata.champion import ChampionData
 from ..core.staticdata.item import ItemData
@@ -89,50 +89,23 @@ def convert_region_to_platform(query: MutableMapping[str, Any]) -> None:
 ################
 
 
-validate_champion_status_dto_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("id").as_(int)
-
-
-validate_many_champion_status_dto_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("ids").as_(Iterable)
-
-
-def for_champion_status_dto(champion_status: ChampionStatusDto) -> Tuple[str, int]:
-    return champion_status["platform"], champion_status["id"]
-
-
-def for_champion_status_dto_query(query: Query) -> Tuple[str, int]:
-    return query["platform"].value, query["id"]
-
-
-def for_many_champion_status_dto_query(query: Query) -> Generator[Tuple[str, int], None, None]:
-    for id in query["ids"]:
-        try:
-            id = int(id)
-            yield query["platform"].value, id
-        except ValueError as e:
-            raise QueryValidationError from e
-
-
-validate_champion_status_list_dto_query = Query. \
+validate_champion_rotation_dto_query = Query. \
     has("platform").as_(Platform)
 
 
-validate_many_champion_status_list_dto_query = Query. \
-    has("platforms").as_(Iterable)
+validate_many_champion_rotation_dto_query = Query. \
+    has("platform").as_(Platform)
 
 
-def for_champion_status_list_dto(champion_status_list: ChampionStatusListDto) -> str:
-    return champion_status_list["platform"]
+def for_champion_rotation_dto(champion_rotation: ChampionRotationDto) -> str:
+    return champion_rotation["platform"]
 
 
-def for_champion_status_list_dto_query(query: Query) -> str:
+def for_champion_rotation_dto_query(query: Query) -> str:
     return query["platform"].value
 
 
-def for_many_champion_status_list_dto_query(query: Query) -> Generator[str, None, None]:
+def for_many_champion_rotation_dto_query(query: Query) -> Generator[str, None, None]:
     for platform in query["platforms"]:
         try:
             platform = Platform(platform)
@@ -1042,42 +1015,22 @@ def for_many_summoner_dto_query(query: Query) -> Generator[Tuple[str, Union[int,
 ################
 
 
-validate_champion_status_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("id").as_(int)
+validate_champion_rotation_query = Query. \
+    has("platform").as_(Platform)
 
 
-validate_many_champion_status_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("ids").as_(Iterable)
+validate_many_champion_rotation_query = Query. \
+    has("platform").as_(Platform)
 
 
-validate_champion_status_list_query = Query. \
-    has("platform").as_(Platform).also. \
-    can_have("freeToPlay").with_default(False)
-
-
-validate_many_champion_status_list_query = Query. \
-    has("platforms").as_(Iterable).also. \
-    can_have("freeToPlay").with_default(False)
-
-
-def for_champion_status(champion_status: ChampionStatusData) -> List[Tuple]:
-    keys = [(Region(champion_status.region).platform.value, champion_status.id)]
+def for_champion_rotation(champion_rotation: ChampionRotationData) -> List[Region]:
+    keys = [champion_rotation.platform]
     return keys
 
 
-def for_champion_status_query(query: Query) -> List[Tuple]:
-    keys = [(query["platform"].value, query["id"])]
+def for_champion_rotation_query(query: Query) -> List[str]:
+    keys = [query["platform"].value]
     return keys
-
-
-def for_champion_status_list(champion_status_list: ChampionStatusListData) -> List[Tuple]:
-    return [(Region(champion_status_list.region).platform,)]
-
-
-def for_champion_status_list_query(query: Query) -> List[Tuple]:
-    return [(query["platform"],)]
 
 
 ########################

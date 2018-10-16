@@ -1,4 +1,5 @@
 from .staticdata import Champion, Champions, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, ProfileIcons, LanguageStrings, Locales, Versions, Runes, SummonerSpells, Maps, Items
+from .champion import ChampionRotation
 from .summoner import Summoner, Account
 from .championmastery import ChampionMastery, ChampionMasteries
 from .match import Match, MatchHistory

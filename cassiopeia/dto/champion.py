@@ -1,9 +1,5 @@
 from .common import DtoObject
 
 
-class ChampionListDto(DtoObject):
-    pass
-
-
-class ChampionDto(DtoObject):
+class ChampionRotationDto(DtoObject):
     pass
