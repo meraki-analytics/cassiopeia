@@ -18,4 +18,4 @@ def test_from_match():
     timeline = match.timeline
     for frame in timeline.frames[:-1]:
         for pf in frame.participant_frames.values():
-            print(pf.position.lane)
+            print(pf.position.location)

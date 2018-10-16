@@ -394,7 +394,7 @@ class Position(CassiopeiaObject):
         return self._data[PositionData].y
 
     @property
-    def lane(self) -> SummonersRiftArea:
+    def location(self) -> SummonersRiftArea:
         return SummonersRiftArea.from_position(self)
 
 
