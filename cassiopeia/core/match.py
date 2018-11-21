@@ -1223,7 +1223,8 @@ class Team(CassiopeiaObject):
 
     @property
     def bans(self) -> List["Champion"]:
-        return [Champion(id=champion_id, version=self.__match.version, region=self.__match.region) if champion_id != -1 else None for champion_id in self._data[TeamData].bans]
+        version = _choose_staticdata_version(self.__match)
+        return [Champion(id=champion_id, version=version, region=self.__match.region) if champion_id != -1 else None for champion_id in self._data[TeamData].bans]
 
     @property
     def baron_kills(self) -> int:
