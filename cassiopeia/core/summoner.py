@@ -86,7 +86,8 @@ class Summoner(CassiopeiaGhost):
             query["name"] = name
         if account and isinstance(account, Account):
             query["account.id"] = account.id
-            query["account.puuid"] = account.puui
+            if "puuid" in account:
+                query["account.puuid"] = account.puuid
         else:
             if account is not None:
                 query["account.id"] = account

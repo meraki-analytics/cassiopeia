@@ -162,7 +162,7 @@ class UnloadedGhostStore(DataSource):
         has("platform").as_(Platform)
 
     _validate_get_match_history_query = Query. \
-        has("account.id").as_(int).also. \
+        has("account.id").as_(str).also. \
         has("platform").as_(Platform).also. \
         can_have("beginTime").as_(int).also. \
         can_have("endTime").as_(int).also. \

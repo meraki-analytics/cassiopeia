@@ -34,7 +34,7 @@ class MatchAPI(RiotAPIService):
     @get.register(MatchDto)
     @validate_query(_validate_get_match_query, convert_region_to_platform)
     def get_match(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MatchDto:
-        url = "https://{platform}.api.riotgames.com/lol/match/v3/matches/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
+        url = "https://{platform}.api.riotgames.com/lol/match/v4/matches/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
         try:
             app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "matches/id")
             data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
@@ -58,7 +58,7 @@ class MatchAPI(RiotAPIService):
     def get_many_match(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[MatchDto, None, None]:
         def generator():
             for id in query["ids"]:
-                url = "https://{platform}.api.riotgames.com/lol/match/v3/matches/{id}".format(platform=query["platform"].value.lower(), id=id)
+                url = "https://{platform}.api.riotgames.com/lol/match/v4/matches/{id}".format(platform=query["platform"].value.lower(), id=id)
                 try:
                     app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "matches/id")
                     data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
@@ -79,7 +79,7 @@ class MatchAPI(RiotAPIService):
         return generator()
 
     _validate_get_match_list_query = Query. \
-        has("account.id").as_(int).also. \
+        has("account.id").as_(str).also. \
         has("platform").as_(Platform).also. \
         has("beginTime").as_(int).also. \
         can_have("endTime").as_(int).also. \
@@ -148,7 +148,7 @@ class MatchAPI(RiotAPIService):
         else:
             queues = set()
 
-        url = "https://{platform}.api.riotgames.com/lol/match/v3/matchlists/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=query["account.id"])
+        url = "https://{platform}.api.riotgames.com/lol/match/v4/matchlists/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=query["account.id"])
         try:
             app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "matchlists/by-account/accountId")
             data = self._get(url, params, app_limiter=app_limiter, method_limiter=method_limiter)
@@ -211,7 +211,7 @@ class MatchAPI(RiotAPIService):
 
         def generator():
             for id in query["account.ids"]:
-                url = "https://{platform}.api.riotgames.com/lol/match/v3/matchlists/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=id)
+                url = "https://{platform}.api.riotgames.com/lol/match/v4/matchlists/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=id)
                 try:
                     app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "matchlists/by-account/accountId")
                     data = self._get(url, params, app_limiter=app_limiter, method_limiter=method_limiter)
@@ -241,7 +241,7 @@ class MatchAPI(RiotAPIService):
     @get.register(TimelineDto)
     @validate_query(_validate_get_timeline_query, convert_region_to_platform)
     def get_match_timeline(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> TimelineDto:
-        url = "https://{platform}.api.riotgames.com/lol/match/v3/timelines/by-match/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
+        url = "https://{platform}.api.riotgames.com/lol/match/v4/timelines/by-match/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
         try:
             app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "timelines/by-match/id")
             data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
@@ -261,7 +261,7 @@ class MatchAPI(RiotAPIService):
     def get_many_match_timeline(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[TimelineDto, None, None]:
         def generator():
             for id in query["ids"]:
-                url = "https://{platform}.api.riotgames.com/lol/match/v3/timelines/by-match/{id}".format(platform=query["platform"].value.lower(), id=id)
+                url = "https://{platform}.api.riotgames.com/lol/match/v4/timelines/by-match/{id}".format(platform=query["platform"].value.lower(), id=id)
                 try:
                     app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "timelines/by-match/id")
                     data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
