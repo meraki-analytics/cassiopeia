@@ -127,12 +127,12 @@ class UnloadedGhostStore(DataSource):
 
     _validate_get_champion_mastery_query = Query. \
         has("platform").as_(Platform).also. \
-        has("summoner.id").also. \
+        has("summoner.id").as_(str).also. \
         has("champion.id").as_(int)
 
     _validate_get_champion_masteries_query = Query. \
         has("platform").as_(Platform).also. \
-        has("summoner.id").as_(int)
+        has("summoner.id").as_(str)
 
     _validate_get_league_entries_query = Query. \
         has("summoner.id").as_(int).also. \
