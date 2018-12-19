@@ -189,8 +189,9 @@ class Tier(Enum):
 
     @staticmethod
     def _order():
-        return {Tier.challenger: 7, Tier.master: 6, Tier.diamond: 5,
-                Tier.platinum: 4, Tier.gold: 3, Tier.silver: 2, Tier.bronze: 1}
+        return {Tier.challenger: 9, Tier.grandmaster: 8, Tier.master: 7,
+                Tier.diamond: 6, Tier.platinum: 5, Tier.gold: 4,
+                Tier.silver: 3, Tier.bronze: 2, Tier.iron: 1}
 
     def __lt__(self, other):
         return self._order()[self] < other._order()[other]
@@ -216,7 +217,7 @@ class Division(Enum):
 
     @staticmethod
     def _order():
-        return {Division.one: 5, Division.two: 4, Division.three: 3, Division.four: 2, Division.five: 1}
+        return {Division.one: 4, Division.two: 3, Division.three: 2, Division.four: 1}
 
     def __lt__(self, other):
         return self._order()[self] < other._order()[other]
