@@ -2045,12 +2045,12 @@ def for_many_featured_matches_query(query: Query) -> Generator[List[str], None, 
 
 validate_summoner_query = Query. \
     has("platform").as_(Platform).also. \
-    has("id").as_(int).or_("account.id").as_(int).or_("name").as_(str)
+    has("id").as_(str).or_("account.id").as_(str).or_("name").as_(str).or_("account.puuid").as_(str)
 
 
 validate_many_summoner_query = Query. \
     has("platform").as_(Platform).also. \
-    has("ids").as_(Iterable).or_("accounts.id").as_(Iterable).or_("names").as_(Iterable)
+    has("ids").as_(Iterable).or_("accounts.id").as_(Iterable).or_("names").as_(Iterable).or_("accounts.puuid").as_(Iterable)
 
 
 def for_summoner(summoner: Summoner) -> List[Tuple]:
@@ -2067,6 +2067,10 @@ def for_summoner(summoner: Summoner) -> List[Tuple]:
         keys.append((summoner.platform.value, "account", summoner._data[SummonerData].account.id))
     except AttributeError:
         pass
+    try:
+        keys.append((summoner.platform.value, "account", summoner._data[SummonerData].account.puuid))
+    except AttributeError:
+        pass
     return keys
 
 
@@ -2078,6 +2082,8 @@ def for_summoner_query(query: Query) -> List[Tuple]:
         keys.append((query["platform"].value, query["name"]))
     if "account.id" in query:
         keys.append((query["platform"].value, "account", query["account.id"]))
+    if "account.puuid" in query:
+        keys.append((query["platform"].value, "account", query["account.puuid"]))
     return keys
 
 
@@ -2086,10 +2092,13 @@ def for_many_summoner_query(query: Query) -> Generator[List[Tuple], None, None]:
     identifier_types = []
     if "ids" in query:
         grouped_identifiers.append(query["ids"])
-        identifier_types.append(int)
+        identifier_types.append(str)
     elif "accounts.id" in query:
         grouped_identifiers.append(query["accounts.id"])
-        identifier_types.append(int)
+        identifier_types.append(str)
+    elif "accounts.puuid" in query:
+        grouped_identifiers.append(query["accounts.puuid"])
+        identifier_types.append(str)
     elif "names" in query:
         grouped_identifiers.append(query["names"])
         identifier_types.append(str)

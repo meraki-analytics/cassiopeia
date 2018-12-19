@@ -180,8 +180,9 @@ class UnloadedGhostStore(DataSource):
         has("platform").as_(Platform)
 
     _validate_get_summoner_query = Query. \
-        has("id").as_(int). \
-        or_("account.id").as_(int). \
+        has("id").as_(str). \
+        or_("account.id").as_(str). \
+        or_("account.puuid").as_(str). \
         or_("name").as_(str).also. \
         has("platform").as_(Platform)
 
@@ -246,6 +247,8 @@ class UnloadedGhostStore(DataSource):
         query["region"] = query.pop("platform").region
         if "account.id" in query:
             query["account"] = query.pop("account.id")
+        if "account.puuid" in query:
+            query["puuid"] = query.pop("account.puuid")
         return Summoner._construct_normally(**query)
 
     @get.register(ChampionMastery)

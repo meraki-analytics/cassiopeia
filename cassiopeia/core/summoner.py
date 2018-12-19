@@ -26,8 +26,12 @@ class SummonerData(CoreData):
     _renamed = {"summonerLevel": "level"}
 
     def __call__(self, **kwargs):
-        if "accountId" in kwargs:
+        if "accountId" in kwargs and "puuid" in kwargs:
+            self.account = AccountData(id=kwargs.pop("accountId"), puuid=kwargs.pop("puuid"))
+        elif "accountId" in kwargs:
             self.account = AccountData(id=kwargs.pop("accountId"))
+        elif "puuid" in kwargs:
+            self.account = AccountData(puuid=kwargs.pop("puuid"))
         super().__call__(**kwargs)
         return self
 
@@ -37,21 +41,25 @@ class SummonerData(CoreData):
 ##############
 
 
-@searchable({int: ["id"]})
+@searchable({str: ["id"]})
 class Account(CassiopeiaObject):
     _data_types = {AccountData}
 
-    @property
-    def id(self) -> int:
+    @lazy_property
+    def id(self) -> str:
         return self._data[AccountData].id
 
+    @lazy_property
+    def puuid(self) -> str:
+        return self._data[AccountData].puuid
 
-@searchable({str: ["name", "region", "platform"], int: ["id", "account"], Region: ["region"], Platform: ["platform"]})
+
+@searchable({str: ["name", "region", "platform"], str: ["id", "account", "puuid"], Region: ["region"], Platform: ["platform"]})
 class Summoner(CassiopeiaGhost):
     _data_types = {SummonerData}
 
     @provide_default_region
-    def __init__(self, *, id: int = None, account: Union[Account, int] = None, name: str = None, region: Union[Region, str] = None):
+    def __init__(self, *, id: str = None, account: Union[Account, str] = None, name: str = None, region: Union[Region, str] = None, puuid: str = None):
         kwargs = {"region": region}
         if id is not None:
             kwargs["id"] = id
@@ -60,13 +68,17 @@ class Summoner(CassiopeiaGhost):
         if account and isinstance(account, Account):
             self.__class__.account.fget._lazy_set(self, account)
             kwargs["accountId"] = account.id
-        elif account is not None:
-            kwargs["accountId"] = account
+            kwargs["puuid"] = account.puuid
+        else:
+            if account is not None:
+                kwargs["accountId"] = account
+            if puuid is not None:
+                kwargs["puuid"] = puuid     
         super().__init__(**kwargs)
 
     @classmethod
     @provide_default_region
-    def __get_query_from_kwargs__(cls, *, id: int = None, account: Union[Account, int] = None, name: str = None, region: Union[Region, str]) -> dict:
+    def __get_query_from_kwargs__(cls, *, id: str = None, account: Union[Account, str] = None, name: str = None, region: Union[Region, str], puuid: str=None) -> dict:
         query = {"region": region}
         if id is not None:
             query["id"] = id
@@ -74,12 +86,20 @@ class Summoner(CassiopeiaGhost):
             query["name"] = name
         if account and isinstance(account, Account):
             query["account.id"] = account.id
-        elif account is not None:
-            query["account.id"] = account
+            query["account.puuid"] = account.puui
+        else:
+            if account is not None:
+                query["account.id"] = account
+            if puuid is not None:
+                query["account.puuid"] = puuid
         return query
 
     def __get_query__(self):
         query = {"region": self.region, "platform": self.platform}
+        try:
+            query["account.puuid"] = self._data[SummonerData].account.puuid
+        except AttributeError:
+            pass
         try:
             query["id"] = self._data[SummonerData].id
         except AttributeError:
@@ -92,7 +112,7 @@ class Summoner(CassiopeiaGhost):
             query["name"] = self._data[SummonerData].name
         except AttributeError:
             pass
-        assert "id" in query or "name" in query or "account.id" in query
+        assert "id" in query or "name" in query or "account.id" in query or "account.puuid" in query
         return query
 
     def __eq__(self, other: "Summoner"):
@@ -122,7 +142,11 @@ class Summoner(CassiopeiaGhost):
             account = self._data[SummonerData].account.id
         except AttributeError:
             account = "?"
-        return "Summoner(id={id_}, account={account}, name='{name}')".format(id_=id_, name=name, account=account)
+        try:
+            puuid = self._data[SummonerData].account.puuid
+        except AttributeError:
+            puuid = "?"
+        return "Summoner(id={id_}, account={account}, name='{name}', puuid='{puuid}')".format(id_=id_, name=name, account=account, puuid=puuid)
 
     @property
     def exists(self):
@@ -152,7 +176,7 @@ class Summoner(CassiopeiaGhost):
 
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on
-    def id(self) -> int:
+    def id(self) -> str:
         return self._data[SummonerData].id
 
     @CassiopeiaGhost.property(SummonerData)
