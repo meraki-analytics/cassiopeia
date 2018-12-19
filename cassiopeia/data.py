@@ -174,12 +174,14 @@ class RunePath(Enum):
 
 class Tier(Enum):
     challenger = "CHALLENGER"
+    grandmaster = "GRANDMASTER"
     master = "MASTER"
     diamond = "DIAMOND"
     platinum = "PLATINUM"
     gold = "GOLD"
     silver = "SILVER"
     bronze = "BRONZE"
+    iron = "IRON"
     unranked = "UNRANKED"
 
     def __str__(self):
@@ -208,7 +210,6 @@ class Division(Enum):
     two = "II"
     three = "III"
     four = "IV"
-    five = "V"
 
     def __str__(self):
         return self.value
