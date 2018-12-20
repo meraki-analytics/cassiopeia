@@ -24,6 +24,8 @@ class LeaguePositionsDto(DtoObject):
 class ChallengerLeagueListDto(DtoObject):
     pass
 
+class GrandmasterLeagueListDto(DtoObject):
+    pass
 
 class MasterLeagueListDto(DtoObject):
     pass

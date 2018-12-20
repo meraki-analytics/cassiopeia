@@ -14,7 +14,7 @@ from ..dto.spectator import CurrentGameInfoDto, FeaturedGamesDto
 from ..dto.summoner import SummonerDto
 
 from ..core.championmastery import ChampionMastery, ChampionMasteries
-from ..core.league import LeagueEntries, ChallengerLeague, MasterLeague, League
+from ..core.league import LeagueEntries, ChallengerLeague, GrandmasterLeague, MasterLeague, League
 from ..core.staticdata import Champion, Rune, Item, SummonerSpell, Map, Locales, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions, Items, Champions, Maps, SummonerSpells, Runes
 from ..core.status import ShardStatus
 from ..core.match import Match, MatchHistory, Timeline
@@ -1236,6 +1236,33 @@ def for_challenger_league_query(query: Query) -> List[Tuple[str, str]]:
 
 
 def for_many_challenger_league_query(query: Query) -> Generator[List[Tuple[str, str]], None, None]:
+    for queue in query["queues"]:
+        try:
+            yield [(query["platform"].value, queue.value)]
+        except ValueError as e:
+            raise QueryValidationError from e
+
+# Grandmaster
+
+validate_grandmaster_league_query = Query. \
+    has("platform").as_(Platform).also. \
+    has("queue").as_(Queue)
+
+
+validate_many_grandmaster_league_query = Query. \
+    has("platform").as_(Platform).also. \
+    has("queues").as_(Iterable)
+
+
+def for_grandmaster_league(league: GrandmasterLeague) -> List[Tuple[str, str]]:
+    return [(league.platform.value, league.queue.value)]
+
+
+def for_grandmaster_league_query(query: Query) -> List[Tuple[str, str]]:
+    return [(query["platform"].value, query["queue"].value)]
+
+
+def for_many_grandmaster_league_query(query: Query) -> Generator[List[Tuple[str, str]], None, None]:
     for queue in query["queues"]:
         try:
             yield [(query["platform"].value, queue.value)]

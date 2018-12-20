@@ -5,7 +5,7 @@ import copy
 from datapipelines import DataSource, PipelineContext, Query, validate_query
 
 from ..data import Platform, Queue
-from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions, ChampionMasteries, LeagueEntries, FeaturedMatches, VerificationString, Account
+from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, GrandmasterLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions, ChampionMasteries, LeagueEntries, FeaturedMatches, VerificationString, Account
 from ..core.match import Timeline, MatchListData
 from ..core.championmastery import ChampionMasteryListData
 from ..core.league import LeaguePositionsData, LeagueEntry
@@ -143,6 +143,10 @@ class UnloadedGhostStore(DataSource):
         has("platform").as_(Platform)
 
     _validate_get_challenger_league_query = Query. \
+        has("queue").as_(Queue).also. \
+        has("platform").as_(Platform)
+
+    _validate_get_grandmaster_league_query = Query. \
         has("queue").as_(Queue).also. \
         has("platform").as_(Platform)
 
@@ -298,6 +302,13 @@ class UnloadedGhostStore(DataSource):
         UnloadedGhostStore._validate_get_challenger_league_query(query)
         query["region"] = query.pop("platform").region
         return ChallengerLeague._construct_normally(**query)
+
+    @get.register(GrandmasterLeague)
+    @validate_query(_validate_get_grandmaster_league_query, convert_region_to_platform)
+    def get_grandmaster_league(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> GrandmasterLeague:
+        UnloadedGhostStore._validate_get_grandmaster_league_query(query)
+        query["region"] = query.pop("platform").region
+        return GrandmasterLeague._construct_normally(**query)
 
     @get.register(MasterLeague)
     @validate_query(_validate_get_master_league_query, convert_region_to_platform)
