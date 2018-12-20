@@ -188,7 +188,7 @@ class UnloadedGhostStore(DataSource):
 
     _validate_get_verification_string_query = Query. \
         has("platform").as_(Platform).also. \
-        has("summoner.id").as_(int)
+        has("summoner.id").as_(str)
 
     @get.register(Champion)
     @validate_query(_validate_get_champion_query, convert_region_to_platform)
