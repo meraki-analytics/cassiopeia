@@ -152,7 +152,7 @@ class UnloadedGhostStore(DataSource):
 
     _validate_get_current_match_query = Query. \
         has("platform").as_(Platform).also. \
-        has("summoner.id").as_(int)
+        has("summoner.id").as_(str)
 
     _validate_get_featured_matches_query = Query. \
         has("platform").as_(Platform)

@@ -1983,7 +1983,7 @@ def for_many_match_timeline_query(query: Query) -> Generator[List[Tuple[str, int
 
 validate_current_match_query = Query. \
     has("platform").as_(Platform).also. \
-    has("summoner.id").as_(int)
+    has("summoner.id").as_(str)
 
 
 validate_many_current_match_query = Query. \
@@ -1991,18 +1991,18 @@ validate_many_current_match_query = Query. \
     has("summoner.ids").as_(Iterable)
 
 
-def for_current_match(current_match_info: CurrentMatch) -> List[Tuple[str, int]]:
+def for_current_match(current_match_info: CurrentMatch) -> List[Tuple[str, str]]:
     # Reach into the data for the summoner ids so we don't create the Summoner objects
     # This stores the current match for every summoner in the match, so if a different summoner is
     #  requested, the match isn't pulled a second time.
     return [(current_match_info.platform.value, participant._data[CurrentGameParticipantData].summonerId) for participant in current_match_info.participants] + [(current_match_info.platform.value, current_match_info.id)]
 
 
-def for_current_match_query(query: Query) -> List[Tuple[str, int]]:
+def for_current_match_query(query: Query) -> List[Tuple[str, str]]:
     return [(query["platform"].value, query["summoner.id"])]
 
 
-def for_many_current_match_query(query: Query) -> Generator[List[Tuple[str, int]], None, None]:
+def for_many_current_match_query(query: Query) -> Generator[List[Tuple[str, str]], None, None]:
     for summoner_id in query["summoner.ids"]:
         try:
             summoner_id = int(summoner_id)
