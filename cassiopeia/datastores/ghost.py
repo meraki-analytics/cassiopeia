@@ -135,7 +135,7 @@ class UnloadedGhostStore(DataSource):
         has("summoner.id").as_(str)
 
     _validate_get_league_entries_query = Query. \
-        has("summoner.id").as_(int).also. \
+        has("summoner.id").as_(str).also. \
         has("platform").as_(Platform)
 
     _validate_get_league_query = Query. \

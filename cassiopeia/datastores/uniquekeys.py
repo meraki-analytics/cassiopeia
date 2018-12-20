@@ -1165,7 +1165,7 @@ def for_champion_masteries_query(query: Query) -> List[Tuple]:
 
 validate_league_entries_query = Query. \
     has("platform").as_(Platform).also. \
-    has("summoner.id").as_(int)
+    has("summoner.id").as_(str)
 
 
 validate_many_league_entries_query = Query. \
@@ -1173,15 +1173,15 @@ validate_many_league_entries_query = Query. \
     has("summoners.id").as_(Iterable)
 
 
-def for_league_entries(entries: LeagueEntries) -> List[Tuple[str, int]]:
+def for_league_entries(entries: LeagueEntries) -> List[Tuple[str, str]]:
     return [(entries.platform.value, entries._LeagueEntries__summoner.id)]
 
 
-def for_league_entries_query(query: Query) -> List[Tuple[str, int]]:
+def for_league_entries_query(query: Query) -> List[Tuple[str, str]]:
     return [(query["platform"].value, query["summoner.id"])]
 
 
-def for_many_league_entries_query(query: Query) -> Generator[List[Tuple[str, int]], None, None]:
+def for_many_league_entries_query(query: Query) -> Generator[List[Tuple[str, str]], None, None]:
     for id in query["summoners.id"]:
         try:
             yield [(query["platform"].value, id)]
@@ -1200,15 +1200,15 @@ validate_many_league_query = Query. \
     has("ids").as_(Iterable)
 
 
-def for_league(league: League) -> List[Tuple[str, int]]:
+def for_league(league: League) -> List[Tuple[str, str]]:
     return [(league.platform.value, league.id)]
 
 
-def for_league_query(query: Query) -> List[Tuple[str, int]]:
+def for_league_query(query: Query) -> List[Tuple[str, str]]:
     return [(query["platform"].value, query["id"])]
 
 
-def for_many_league_query(query: Query) -> Generator[List[Tuple[str, int]], None, None]:
+def for_many_league_query(query: Query) -> Generator[List[Tuple[str, str]], None, None]:
     for id in query["ids"]:
         try:
             yield [(query["platform"].value, id)]

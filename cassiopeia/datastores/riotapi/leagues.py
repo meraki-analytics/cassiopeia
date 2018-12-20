@@ -21,13 +21,13 @@ class LeaguesAPI(RiotAPIService):
     # League positions
 
     _validate_get_league_positions_query = Query. \
-        has("summoner.id").as_(int).also. \
+        has("summoner.id").as_(str).also. \
         has("platform").as_(Platform)
 
     @get.register(LeaguePositionsDto)
     @validate_query(_validate_get_league_positions_query, convert_region_to_platform)
     def get_league_position(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LeaguePositionsDto:
-        url = "https://{platform}.api.riotgames.com/lol/league/v3/positions/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
+        url = "https://{platform}.api.riotgames.com/lol/league/v4/positions/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
         try:
             endpoint = "positions/by-summoner/summonerId {}".format(query["platform"].value)
             app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
@@ -77,7 +77,7 @@ class LeaguesAPI(RiotAPIService):
     @get.register(LeagueListDto)
     @validate_query(_validate_get_leagues_query, convert_region_to_platform)
     def get_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LeagueListDto:
-        url = "https://{platform}.api.riotgames.com/lol/league/v3/leagues/{leagueId}".format(platform=query["platform"].value.lower(), leagueId=query["id"])
+        url = "https://{platform}.api.riotgames.com/lol/league/v4/leagues/{leagueId}".format(platform=query["platform"].value.lower(), leagueId=query["id"])
         try:
             endpoint = "leagues/leagueId {}".format(query["platform"].value)
             app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
@@ -100,7 +100,7 @@ class LeaguesAPI(RiotAPIService):
     def get_many_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[LeaguesListDto, None, None]:
         def generator():
             for id in query["summoner.ids"]:
-                url = "https://{platform}.api.riotgames.com/lol/league/v3/leagues/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=id)
+                url = "https://{platform}.api.riotgames.com/lol/league/v4/leagues/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=id)
                 try:
                     endpoint = "leagues/by-summoner/summonerId {}".format(query["platform"].value)
                     app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
@@ -125,7 +125,7 @@ class LeaguesAPI(RiotAPIService):
     def get_many_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[LeagueListDto, None, None]:
         def generator():
             for id in query["ids"]:
-                url = "https://{platform}.api.riotgames.com/lol/league/v3/leagues/{leagueId}".format(platform=query["platform"].value.lower(), leagueId=id)
+                url = "https://{platform}.api.riotgames.com/lol/league/v4/leagues/{leagueId}".format(platform=query["platform"].value.lower(), leagueId=id)
                 try:
                     endpoint = "leagues/leagueId {}".format(query["platform"].value)
                     app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
@@ -151,7 +151,7 @@ class LeaguesAPI(RiotAPIService):
     @get.register(ChallengerLeagueListDto)
     @validate_query(_validate_get_challenger_league_query, convert_region_to_platform)
     def get_challenger_league_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChallengerLeagueListDto:
-        url = "https://{platform}.api.riotgames.com/lol/league/v3/challengerleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=query["queue"].value)
+        url = "https://{platform}.api.riotgames.com/lol/league/v4/challengerleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=query["queue"].value)
         try:
             endpoint = "challengerleagues/by-queue {}".format(query["platform"].value)
             app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
@@ -174,7 +174,7 @@ class LeaguesAPI(RiotAPIService):
     def get_challenger_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChallengerLeagueListDto, None, None]:
         def generator():
             for queue in query["queues"]:
-                url = "https://{platform}.api.riotgames.com/lol/league/v3/challengerleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=queue.value)
+                url = "https://{platform}.api.riotgames.com/lol/league/v4/challengerleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=queue.value)
                 try:
                     endpoint = "challengerleagues/by-queue {}".format(query["platform"].value)
                     app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
@@ -199,7 +199,7 @@ class LeaguesAPI(RiotAPIService):
     @get.register(MasterLeagueListDto)
     @validate_query(_validate_get_master_league_query, convert_region_to_platform)
     def get_master_league_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasterLeagueListDto:
-        url = "https://{platform}.api.riotgames.com/lol/league/v3/masterleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=query["queue"].value)
+        url = "https://{platform}.api.riotgames.com/lol/league/v4/masterleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=query["queue"].value)
         try:
             endpoint = "masterleagues/by-queue {}".format(query["platform"].value)
             app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
@@ -222,7 +222,7 @@ class LeaguesAPI(RiotAPIService):
     def get_master_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[MasterLeagueListDto, None, None]:
         def generator():
             for queue in query["queues"]:
-                url = "https://{platform}.api.riotgames.com/lol/league/v3/masterleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=queue.value)
+                url = "https://{platform}.api.riotgames.com/lol/league/v4/masterleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=queue.value)
                 try:
                     endpoint = "masterleagues/by-queue {}".format(query["platform"].value)
                     app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)

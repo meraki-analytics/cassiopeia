@@ -28,7 +28,7 @@ class LeaguePositionData(CoreData):
         if "miniSeries" in kwargs:
             self.promos = MiniSeriesData(**kwargs.pop("miniSeries"))
         if "summonerId" in kwargs:
-            self.summonerId = int(kwargs.pop("summonerId"))
+            self.summonerId = kwargs.pop("summonerId")
         super().__call__(**kwargs)
         return self
 
@@ -187,7 +187,7 @@ class LeagueEntry(CassiopeiaGhost):
 
     @lazy_property
     def summoner(self) -> Summoner:
-        return Summoner(id=int(self._data[LeaguePositionData].summonerId), name=self._data[LeaguePositionData].summonerName, region=self.region)  # TODO I don't know why the summoner id isn't already an int; it's a string for some reason.
+        return Summoner(id=self._data[LeaguePositionData].summonerId, name=self._data[LeaguePositionData].summonerName, region=self.region)  # TODO I don't know why the summoner id isn't already an int; it's a string for some reason.
 
     @property
     def fresh_blood(self) -> bool:
@@ -196,6 +196,10 @@ class LeagueEntry(CassiopeiaGhost):
     @property
     def league_id(self) -> str:
         return self._data[LeaguePositionData].leagueId
+
+    @lazy_property
+    def league(self) -> "League":
+        return League(id=self.league_id, region=self.region)
 
     @property
     def league_points(self) -> int:
@@ -217,14 +221,15 @@ class LeagueEntries(CassiopeiaLazyList):
 
     @classmethod
     @provide_default_region
-    def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, int, str], region: Union[Region, str]) -> dict:
+    def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, str], region: Union[Region, str]) -> dict:
         query = {"region": region}
         if isinstance(summoner, Summoner):
             query["summoner.id"] = summoner.id
-        elif isinstance(summoner, int):  # int
-            query["summoner.id"] = summoner
         elif isinstance(summoner, str):
-            query["summoner.id"] = Summoner(name=summoner, region=region).id
+            if len(summoner) < 35:
+                query["summoner.id"] = Summoner(name=summoner, region=region).id
+            else:
+                query["summoner.id"] = summoner
         assert "summoner.id" in query
         return query
 
