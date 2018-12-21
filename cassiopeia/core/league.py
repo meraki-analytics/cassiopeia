@@ -196,7 +196,7 @@ class LeagueEntry(CassiopeiaGhost):
 
     @lazy_property
     def summoner(self) -> Summoner:
-        return Summoner(id=self._data[LeaguePositionData].summonerId, name=self._data[LeaguePositionData].summonerName, region=self.region)  # TODO I don't know why the summoner id isn't already an int; it's a string for some reason.
+        return Summoner(id=self._data[LeaguePositionData].summonerId, name=self._data[LeaguePositionData].summonerName, region=self.region)
 
     @property
     def fresh_blood(self) -> bool:
@@ -272,11 +272,6 @@ class SummonerLeagues(SearchableList):
     @property
     def threes(self):
         return self[Queue.ranked_flex_threes]
-
-    def set_queues(self, queues:{str:Queue}):
-        # Temporary hotfix method
-        for league in self:
-            league._data[LeagueListData].queue = queues[league.id]
 
 
 @searchable({str: ["tier", "queue", "name"], Queue: ["queue"], Tier: ["tier"]})

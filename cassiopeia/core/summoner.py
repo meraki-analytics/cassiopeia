@@ -59,7 +59,7 @@ class Summoner(CassiopeiaGhost):
     _data_types = {SummonerData}
 
     @provide_default_region
-    def __init__(self, *, id: str = None, account: Union[Account, str] = None, name: str = None, region: Union[Region, str] = None, puuid: str = None):
+    def __init__(self, *, id: str = None, account: Union[Account, str] = None, puuid: str = None, name: str = None, region: Union[Region, str] = None):
         kwargs = {"region": region}
         if id is not None:
             kwargs["id"] = id
@@ -78,7 +78,7 @@ class Summoner(CassiopeiaGhost):
 
     @classmethod
     @provide_default_region
-    def __get_query_from_kwargs__(cls, *, id: str = None, account: Union[Account, str] = None, name: str = None, region: Union[Region, str], puuid: str=None) -> dict:
+    def __get_query_from_kwargs__(cls, *, id: str = None, account: Union[Account, str] = None, puuid: str=None, name: str = None, region: Union[Region, str], ) -> dict:
         query = {"region": region}
         if id is not None:
             query["id"] = id
@@ -231,9 +231,11 @@ class Summoner(CassiopeiaGhost):
         positions = self.league_positions
         ids = {position.league_id for position in positions}
         # HOTFIX:
+        from .league import LeagueListData
         queues = {position.league_id: position.queue for position in positions}
         leagues = SummonerLeagues([League(id=id_, region=self.region) for id_ in ids])
-        leagues.set_queues(queues)
+        for league in leagues:
+            league._data[LeagueListData].queue = queues[league.id]
         return SummonerLeagues([League(id=id_, region=self.region) for id_ in ids])
 
     @property
