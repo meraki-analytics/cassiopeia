@@ -202,10 +202,6 @@ class LeagueEntry(CassiopeiaGhost):
     def fresh_blood(self) -> bool:
         return self._data[LeaguePositionData].freshBlood
 
-    @property
-    def league_id(self) -> str:
-        return self._data[LeaguePositionData].leagueId
-
     @lazy_property
     def league(self) -> "League":
         return League(id=self.league_id, region=self.region)
@@ -384,10 +380,11 @@ class ChallengerLeague(CassiopeiaGhost):
     @lazy_property
     def platform(self) -> Platform:
         return self.region.platform
-
-    @property
-    def id(self) -> Tier:
-        return self._data[LeagueListData].id
+    
+    @CassiopeiaGhost.property(ChallengerLeagueListData)
+    @ghost_load_on
+    def id(self) -> str:
+        return self._data[ChallengerLeagueListData].id
 
     @lazy_property
     def tier(self) -> Tier:
@@ -446,9 +443,10 @@ class GrandmasterLeague(CassiopeiaGhost):
     def platform(self) -> Platform:
         return self.region.platform
 
-    @property
-    def id(self) -> Tier:
-        return self._data[LeagueListData].id
+    @CassiopeiaGhost.property(GrandmasterLeagueListData)
+    @ghost_load_on
+    def id(self) -> str:
+        return self._data[GrandmasterLeagueListData].id
 
     @lazy_property
     def tier(self) -> Tier:
@@ -507,9 +505,10 @@ class MasterLeague(CassiopeiaGhost):
     def platform(self) -> Platform:
         return self.region.platform
 
-    @property
-    def id(self) -> Tier:
-        return self._data[LeagueListData].id
+    @CassiopeiaGhost.property(MasterLeagueListData)
+    @ghost_load_on
+    def id(self) -> str:
+        return self._data[MasterLeagueListData].id
 
     @lazy_property
     def tier(self) -> Tier:

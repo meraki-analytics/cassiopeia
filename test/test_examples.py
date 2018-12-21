@@ -4,6 +4,7 @@ import random
 import cassiopeia as cass
 from cassiopeia import Season, Queue, Summoner, Match, Champion, Champions, ChampionMastery, Item, Items, LanguageStrings, Map, Locales, Runes, Rune, RunePath, ShardStatus, FeaturedMatches, SummonerSpell, SummonerSpells, GameMode, VerificationString, Role
 
+import os, pytest
 
 def test_versions():
     versions = cass.get_versions(region="NA")
@@ -20,11 +21,9 @@ def test_realms():
 
 def test_match():
     name = "Kalturi"
-    account = 34718348
-    id = 21359666
     region = "NA"
 
-    summoner = Summoner(name=name, account=account, id=id, region=region)
+    summoner = Summoner(name=name, region=region)
 
     match_history = cass.get_match_history(summoner, queues={Queue.ranked_solo_fives})
     match_history = summoner.match_history
@@ -87,7 +86,7 @@ def test_champions():
 
 
 def test_championmastery():
-    me = Summoner(name="Kalturi", id=21359666, region="NA")
+    me = Summoner(name="Kalturi", region="NA")
     karma = Champion(name="Karma", id=43, region="NA")
     cm = ChampionMastery(champion=karma, summoner=me, region="NA")
     cm = cass.get_champion_mastery(champion=karma, summoner=me, region="NA")
@@ -125,7 +124,6 @@ def test_languagestrings():
     language_strings = cass.get_language_strings(region="NA")
     assert len(language_strings.strings) > 0
 
-
 def test_leagues():
     summoner_name = "Spartan324"
     region = "NA"
@@ -145,24 +143,36 @@ def test_leagues():
     else:
         "The summoner is not in their promos."
 
-    "Name of leagues this summoner is in:"
+    "Name and id of leagues this summoner is in:"
     for league in positions:
         league.name
+        league.league_id
 
-    # leagues = cass.get_leagues(summoner)
+    leagues = cass.get_leagues(summoner)
     leagues = summoner.leagues
     "Name of leagues this summoner is in (called from a different endpoint):"
     for league in leagues:
-        league.name
+        #league.name
+        league.id
 
-    f"Listing all summoners in {leagues.fives.name}"
-    for entry in leagues.fives:
-        entry.summoner.name, entry.league_points, leagues.fives.tier, entry.division
+    # f"Listing all summoners in {leagues.fives.name}"
+    # for entry in leagues.fives:
+    #     entry.summoner.name, entry.league_points, leagues.fives.tier, entry.division
 
-    "Challenger League name:"
+    "Challenger League name and id:"
     challenger = cass.get_challenger_league(queue=Queue.ranked_solo_fives, region=region)
-    challenger.name
+    # challenger.name
+    challenger.id
 
+    "Grandmaster League name and id:"
+    grandmaster = cass.get_grandmaster_league(queue=Queue.ranked_solo_fives, region=region)
+    # grandmaster.name
+    grandmaster.id
+
+    "Master League name and id:"
+    master = cass.get_master_league(queue=Queue.ranked_solo_fives, region=region)
+    # master.name
+    master.id
 
 def test_locales():
     locales = cass.get_locales(region="NA")
@@ -243,7 +253,7 @@ def test_summoner():
 
 
 def test_verification_string():
-    summoner = Summoner(id=21359666, region="NA")
+    summoner = Summoner(name="Kalturi", region="NA")
     vs1 = summoner.verification_string
     vs = VerificationString(summoner=summoner, region="NA")
     vs2 = vs.string
@@ -263,10 +273,8 @@ def test_summonerspells():
 
 def test_timeline():
     name = "Kalturi"
-    account = 34718348
-    id = 21359666
     region = "NA"
-    summoner = Summoner(name=name, account=account, id=id, region=region)
+    summoner = Summoner(name=name, region=region)
     match_history = summoner.match_history
     match = match_history[0]
     'Match ID:', match.id
@@ -282,6 +290,8 @@ def test_timeline():
 
 
 def test_championgg():
+    if not "CHAMPIONGG_KEY" in os.environ:
+        pytest.xfail("No championgg key provided")
     syndra = Champion(name="Syndra", region="NA")
     syndra.name
     syndra.championgg[Role.middle].win_rate

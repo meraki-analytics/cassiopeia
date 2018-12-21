@@ -86,7 +86,7 @@ def get_champion_mastery(summoner: Summoner, champion: Union[Champion, int, str]
     return ChampionMastery(champion=champion, summoner=summoner, region=region)
 
 
-def get_summoner(*, id: int = None, account: Union[Account, int] = None, name: str = None, region: Union[Region, str] = None) -> Summoner:
+def get_summoner(*, id: str = None, account: Union[Account, str] = None, name: str = None, region: Union[Region, str] = None) -> Summoner:
     return Summoner(id=id, account=account, name=name, region=region)
 
 
