@@ -230,6 +230,10 @@ class Summoner(CassiopeiaGhost):
         from .league import League, SummonerLeagues
         positions = self.league_positions
         ids = {position.league_id for position in positions}
+        # HOTFIX:
+        queues = {position.league_id: position.queue for position in positions}
+        leagues = SummonerLeagues([League(id=id_, region=self.region) for id_ in ids])
+        leagues.set_queues(queues)
         return SummonerLeagues([League(id=id_, region=self.region) for id_ in ids])
 
     @property

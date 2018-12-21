@@ -155,9 +155,9 @@ def test_leagues():
         #league.name
         league.id
 
-    # f"Listing all summoners in {leagues.fives.name}"
-    # for entry in leagues.fives:
-    #     entry.summoner.name, entry.league_points, leagues.fives.tier, entry.division
+    f"Listing all summoners in {leagues.fives.id}"
+    for entry in leagues.fives:
+        entry.summoner.name, entry.league_points, leagues.fives.tier, entry.division
 
     "Challenger League name and id:"
     challenger = cass.get_challenger_league(queue=Queue.ranked_solo_fives, region=region)

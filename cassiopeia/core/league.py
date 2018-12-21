@@ -273,6 +273,11 @@ class SummonerLeagues(SearchableList):
     def threes(self):
         return self[Queue.ranked_flex_threes]
 
+    def set_queues(self, queues:{str:Queue}):
+        # Temporary hotfix method
+        for league in self:
+            league._data[LeagueListData].queue = queues[league.id]
+
 
 @searchable({str: ["tier", "queue", "name"], Queue: ["queue"], Tier: ["tier"]})
 class League(CassiopeiaGhost):
