@@ -265,7 +265,7 @@ class MatchHistory(CassiopeiaLazyList):  # type: List[Match]
             end_time = end_time.timestamp * 1000
         kwargs["end_time"] = end_time
         assert isinstance(summoner, Summoner)
-        self.__account_id_callable = lambda: summoner.account.id
+        self.__account_id_callable = lambda: summoner.account_id
         self.__summoner = summoner
         CassiopeiaObject.__init__(self, **kwargs)
 
@@ -273,7 +273,7 @@ class MatchHistory(CassiopeiaLazyList):  # type: List[Match]
     def __get_query_from_kwargs__(cls, *, summoner: Summoner, begin_index: int = None, end_index: int = None, begin_time: arrow.Arrow = None, end_time: arrow.Arrow = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
         assert isinstance(summoner, Summoner)
         query = {"region": summoner.region}
-        query["account.id"] = summoner.account.id
+        query["accountId"] = summoner.account_id
 
         if begin_index is not None:
             query["beginIndex"] = begin_index

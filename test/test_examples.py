@@ -43,13 +43,13 @@ def test_match():
     match.id
 
     p = match.participants[summoner]
-    p.id, p.summoner.region, p.summoner.account.id, p.summoner.name, p.summoner.id, p.champion.id
+    p.id, p.summoner.region, p.summoner.account_id, p.summoner.name, p.summoner.id, p.champion.id
 
     for p in match.participants:
-        p.id, p.summoner.region, p.summoner.account.id, p.summoner.name, p.summoner.id, p.champion.id, p.team.first_dragon
+        p.id, p.summoner.region, p.summoner.account_id, p.summoner.name, p.summoner.id, p.champion.id, p.team.first_dragon
 
     for p in match.participants:
-        p.id, p.summoner.region, p.summoner.account.id, p.summoner.name, p.summoner.id, p.champion.id, p.team.first_dragon
+        p.id, p.summoner.region, p.summoner.account_id, p.summoner.name, p.summoner.id, p.champion.id, p.team.first_dragon
 
     match.blue_team.win
     match.red_team.win
@@ -243,7 +243,7 @@ def test_summoner():
     summoner = Summoner(name=name, region=region)
     "Name:", summoner.name
     "ID:", summoner.id
-    "Account ID:", summoner.account.id
+    "Account ID:", summoner.account_id
     "Level:", summoner.level
     "Revision date:", summoner.revision_date
     "Profile icon ID:", summoner.profile_icon.id

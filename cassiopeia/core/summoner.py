@@ -1,5 +1,6 @@
 import arrow
 import datetime
+import warnings
 from typing import Union
 
 from datapipelines import NotFoundError
@@ -25,16 +26,6 @@ class SummonerData(CoreData):
     _dto_type = SummonerDto
     _renamed = {"summonerLevel": "level"}
 
-    def __call__(self, **kwargs):
-        if "accountId" in kwargs and "puuid" in kwargs:
-            self.account = AccountData(id=kwargs.pop("accountId"), puuid=kwargs.pop("puuid"))
-        elif "accountId" in kwargs:
-            self.account = AccountData(id=kwargs.pop("accountId"))
-        elif "puuid" in kwargs:
-            self.account = AccountData(puuid=kwargs.pop("puuid"))
-        super().__call__(**kwargs)
-        return self
-
 
 ##############
 # Core Types #
@@ -44,61 +35,58 @@ class SummonerData(CoreData):
 @searchable({str: ["id"]})
 class Account(CassiopeiaObject):
     _data_types = {AccountData}
-
-    @lazy_property
+    warnings.warn("The data of the Account object have been moved to the Summoner object. The Account is therefor deprecated", DeprecationWarning, stacklevel=2)
+    @property
     def id(self) -> str:
         return self._data[AccountData].id
 
-    @lazy_property
-    def puuid(self) -> str:
-        return self._data[AccountData].puuid
 
-
-@searchable({str: ["name", "region", "platform"], str: ["id", "account", "puuid"], Region: ["region"], Platform: ["platform"]})
+@searchable({str: ["name", "region", "platform"], str: ["id", "accountId", "puuid"], Region: ["region"], Platform: ["platform"]})
 class Summoner(CassiopeiaGhost):
     _data_types = {SummonerData}
 
     @provide_default_region
-    def __init__(self, *, id: str = None, account: Union[Account, str] = None, puuid: str = None, name: str = None, region: Union[Region, str] = None):
+    def __init__(self, *, id: str = None, accountId: str = None, account: Union[Account, str] = None, puuid: str = None, name: str = None, region: Union[Region, str] = None):
         kwargs = {"region": region}
+        if account is not None:
+            warnings.warn("account has been deprecated use accountId instead", DeprecationWarning, stacklevel=2)
+        
         if id is not None:
             kwargs["id"] = id
+        if accountId is not None:
+            kwargs["accountId"] = accountId
+        if puuid is not None:
+            kwargs["puuid"] = puuid
         if name is not None:
             kwargs["name"] = name
         if account and isinstance(account, Account):
-            self.__class__.account.fget._lazy_set(self, account)
             kwargs["accountId"] = account.id
-            kwargs["puuid"] = account.puuid
-        else:
-            if account is not None:
-                kwargs["accountId"] = account
-            if puuid is not None:
-                kwargs["puuid"] = puuid     
+        elif account is not None:
+            kwargs["accountId"] = account
         super().__init__(**kwargs)
 
     @classmethod
     @provide_default_region
-    def __get_query_from_kwargs__(cls, *, id: str = None, account: Union[Account, str] = None, puuid: str=None, name: str = None, region: Union[Region, str], ) -> dict:
+    def __get_query_from_kwargs__(cls, *, id: str = None, accountId: str=None, account: Union[Account, str] = None, puuid: str=None, name: str = None, region: Union[Region, str], ) -> dict:
         query = {"region": region}
         if id is not None:
             query["id"] = id
+        if accountId is not None:
+            query["accountId"] = accountId
+        if puuid is not None:
+            query["puuid"] = puuid
         if name is not None:
             query["name"] = name
         if account and isinstance(account, Account):
-            query["account.id"] = account.id
-            if "puuid" in account:
-                query["account.puuid"] = account.puuid
-        else:
-            if account is not None:
-                query["account.id"] = account
-            if puuid is not None:
-                query["account.puuid"] = puuid
+            query["accountId"] = account.id
+        elif account is not None:
+            query["accountId"] = account
         return query
 
     def __get_query__(self):
         query = {"region": self.region, "platform": self.platform}
         try:
-            query["account.puuid"] = self._data[SummonerData].account.puuid
+            query["puuid"] = self._data[SummonerData].puuid
         except AttributeError:
             pass
         try:
@@ -106,14 +94,14 @@ class Summoner(CassiopeiaGhost):
         except AttributeError:
             pass
         try:
-            query["account.id"] = self._data[SummonerData].account.id
+            query["accountId"] = self._data[SummonerData].accountId
         except AttributeError:
             pass
         try:
             query["name"] = self._data[SummonerData].name
         except AttributeError:
             pass
-        assert "id" in query or "name" in query or "account.id" in query or "account.puuid" in query
+        assert "id" in query or "name" in query or "accountId" in query or "puuid" in query
         return query
 
     def __eq__(self, other: "Summoner"):
@@ -125,8 +113,8 @@ class Summoner(CassiopeiaGhost):
         if hasattr(other._data[SummonerData], "id"): o["id"] = other.id
         if hasattr(self._data[SummonerData], "name"): s["name"] = self.sanitized_name
         if hasattr(other._data[SummonerData], "name"): o["name"] = other.sanitized_name
-        if hasattr(self._data[SummonerData], "account"): s["account.id"] = self.account.id
-        if hasattr(other._data[SummonerData], "account"): o["account.id"] = other.account.id
+        if hasattr(self._data[SummonerData], "accountId"): s["accountId"] = self.account_id
+        if hasattr(other._data[SummonerData], "accountId"): o["accountId"] = other.account_id
         if any(s.get(key, "s") == o.get(key, "o") for key in s):
             return True
         else:
@@ -140,11 +128,11 @@ class Summoner(CassiopeiaGhost):
         if hasattr(self._data[SummonerData], "name"):
             name = self.name
         try:
-            account = self._data[SummonerData].account.id
+            account = self._data[SummonerData].account_id
         except AttributeError:
             account = "?"
         try:
-            puuid = self._data[SummonerData].account.puuid
+            puuid = self._data[SummonerData].puuid
         except AttributeError:
             puuid = "?"
         return "Summoner(id={id_}, account={account}, name='{name}', puuid='{puuid}')".format(id_=id_, name=name, account=account, puuid=puuid)
@@ -171,9 +159,19 @@ class Summoner(CassiopeiaGhost):
 
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on
-    @lazy
+    def account_id(self) -> str:
+        return self._data[SummonerData].accountId
+
+    @CassiopeiaGhost.property(SummonerData)
+    @ghost_load_on
+    def puuid(self) -> str:
+        return self._data[SummonerData].puuid
+
+    @CassiopeiaGhost.property(SummonerData)
+    @ghost_load_on
     def account(self) -> Account:
-        return Account.from_data(self._data[SummonerData].account)
+        warnings.warn("summoner.account has been deprecated. Use summoner.account_id instead", DeprecationWarning, stacklevel=2)
+        return Account(id=self.account_id)
 
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on
@@ -206,7 +204,7 @@ class Summoner(CassiopeiaGhost):
 
     @property
     def match_history_uri(self) -> str:
-        return "/v1/stats/player_history/{platform}/{id}".format(platform=self.platform.value, id=self.account.id)
+        return "/v1/stats/player_history/{platform}/{id}".format(platform=self.platform.value, id=self.account_id)
 
     # Special core methods
 

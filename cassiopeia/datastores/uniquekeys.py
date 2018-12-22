@@ -1038,13 +1038,13 @@ def for_champion_rotation_query(query: Query) -> List[str]:
 
 validate_champion_mastery_query = Query. \
     has("platform").as_(Platform).also. \
-    has("summoner.id").as_(str).or_("summoner.account.id").as_(str).or_("summoner.name").as_(str).also. \
+    has("summoner.id").as_(str).or_("summoner.accountId").as_(str).or_("summoner.name").as_(str).also. \
     has("champion.id").as_(int).or_("champion.name").as_(str)
 
 
 validate_many_champion_mastery_query = Query. \
     has("platform").as_(Platform).also. \
-    has("summoner.id").as_(str).or_("summoner.account.id").as_(str).or_("summoner.name").as_(str).also. \
+    has("summoner.id").as_(str).or_("summoner.accountId").as_(str).or_("summoner.name").as_(str).also. \
     has("champions.id").as_(Iterable).or_("champions.name").as_(Iterable)
 
 
@@ -1087,10 +1087,10 @@ def for_champion_mastery_query(query: Query) -> List[Tuple]:
         keys.append((query["platform"].value, query["summoner.name"], query["champion.id"]))
     if "summoner.name" in query and "champion.name" in query:
         keys.append((query["platform"].value, query["summoner.name"], query["champion.name"]))
-    if "summoner.account.id" in query and "champion.id" in query:
-        keys.append((query["platform"].value, query["summoner.account.id"], query["champion.id"]))
-    if "summoner.account.id" in query and "champion.name" in query:
-        keys.append((query["platform"].value, query["summoner.account.id"], query["champion.name"]))
+    if "summoner.accountId" in query and "champion.id" in query:
+        keys.append((query["platform"].value, query["summoner.accountId"], query["champion.id"]))
+    if "summoner.accountId" in query and "champion.name" in query:
+        keys.append((query["platform"].value, query["summoner.accountId"], query["champion.name"]))
     return keys
 
 
@@ -1111,8 +1111,8 @@ def for_many_champion_mastery_query(query: Query) -> Generator[Tuple[str, str, s
                 keys.append((query["platform"].value, query["summoner.id"], identifier))
             if "summoner.name" in query:
                 keys.append((query["platform"].value, query["summoner.name"], identifier))
-            if "summoner.account.id" in query:
-                keys.append((query["platform"].value, query["summoner.account.id"], identifier))
+            if "summoner.accountId" in query:
+                keys.append((query["platform"].value, query["summoner.accountId"], identifier))
         if len(keys) == 0:
             raise QueryValidationError
         yield keys
@@ -1120,12 +1120,12 @@ def for_many_champion_mastery_query(query: Query) -> Generator[Tuple[str, str, s
 
 validate_champion_masteries_query = Query. \
     has("platform").as_(Platform).also. \
-    has("summoner.id").as_(str).or_("summoner.account.id").as_(int).or_("summoner.name")
+    has("summoner.id").as_(str).or_("summoner.accountId").as_(int).or_("summoner.name")
 
 
 validate_many_champion_masteries_query = Query. \
     has("platform").as_(Platform).also. \
-    has("summoner.id").as_(str).or_("summoner.account.id").as_(int).or_("summoner.name")
+    has("summoner.id").as_(str).or_("summoner.accountId").as_(int).or_("summoner.name")
 
 
 def for_champion_masteries(champion_mastery: ChampionMasteries) -> List[Tuple]:
@@ -1151,8 +1151,8 @@ def for_champion_masteries_query(query: Query) -> List[Tuple]:
         keys.append((query["platform"].value, query["summoner.id"]))
     if "summoner.name" in query:
         keys.append((query["platform"].value, query["summoner.name"]))
-    if "summoner.account.id" in query:
-        keys.append((query["platform"].value, query["summoner.account.id"]))
+    if "summoner.accountId" in query:
+        keys.append((query["platform"].value, query["summoner.accountId"]))
     return keys
 
 
@@ -2070,12 +2070,12 @@ def for_many_featured_matches_query(query: Query) -> Generator[List[str], None, 
 
 validate_summoner_query = Query. \
     has("platform").as_(Platform).also. \
-    has("id").as_(str).or_("account.id").as_(str).or_("name").as_(str).or_("account.puuid").as_(str)
+    has("id").as_(str).or_("accountId").as_(str).or_("name").as_(str).or_("puuid").as_(str)
 
 
 validate_many_summoner_query = Query. \
     has("platform").as_(Platform).also. \
-    has("ids").as_(Iterable).or_("accounts.id").as_(Iterable).or_("names").as_(Iterable).or_("accounts.puuid").as_(Iterable)
+    has("ids").as_(Iterable).or_("accountIds").as_(Iterable).or_("names").as_(Iterable).or_("puuids").as_(Iterable)
 
 
 def for_summoner(summoner: Summoner) -> List[Tuple]:
@@ -2089,11 +2089,11 @@ def for_summoner(summoner: Summoner) -> List[Tuple]:
     except AttributeError:
         pass
     try:
-        keys.append((summoner.platform.value, "account", summoner._data[SummonerData].account.id))
+        keys.append((summoner.platform.value, "account", summoner._data[SummonerData].account_id))
     except AttributeError:
         pass
     try:
-        keys.append((summoner.platform.value, "account", summoner._data[SummonerData].account.puuid))
+        keys.append((summoner.platform.value, "account", summoner._data[SummonerData].puuid))
     except AttributeError:
         pass
     return keys
@@ -2105,10 +2105,10 @@ def for_summoner_query(query: Query) -> List[Tuple]:
         keys.append((query["platform"].value, query["id"]))
     if "name" in query:
         keys.append((query["platform"].value, query["name"]))
-    if "account.id" in query:
-        keys.append((query["platform"].value, "account", query["account.id"]))
-    if "account.puuid" in query:
-        keys.append((query["platform"].value, "account", query["account.puuid"]))
+    if "accountId" in query:
+        keys.append((query["platform"].value, "accountId", query["accountId"]))
+    if "puuid" in query:
+        keys.append((query["platform"].value, "puuid", query["puuid"]))
     return keys
 
 
@@ -2118,11 +2118,11 @@ def for_many_summoner_query(query: Query) -> Generator[List[Tuple], None, None]:
     if "ids" in query:
         grouped_identifiers.append(query["ids"])
         identifier_types.append(str)
-    elif "accounts.id" in query:
-        grouped_identifiers.append(query["accounts.id"])
+    elif "accountIds" in query:
+        grouped_identifiers.append(query["accountIds"])
         identifier_types.append(str)
-    elif "accounts.puuid" in query:
-        grouped_identifiers.append(query["accounts.puuid"])
+    elif "puuids" in query:
+        grouped_identifiers.append(query["puuids"])
         identifier_types.append(str)
     elif "names" in query:
         grouped_identifiers.append(query["names"])

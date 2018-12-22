@@ -79,7 +79,7 @@ class MatchAPI(RiotAPIService):
         return generator()
 
     _validate_get_match_list_query = Query. \
-        has("account.id").as_(str).also. \
+        has("accountId").as_(str).also. \
         has("platform").as_(Platform).also. \
         has("beginTime").as_(int).also. \
         can_have("endTime").as_(int).also. \
@@ -148,14 +148,14 @@ class MatchAPI(RiotAPIService):
         else:
             queues = set()
 
-        url = "https://{platform}.api.riotgames.com/lol/match/v4/matchlists/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=query["account.id"])
+        url = "https://{platform}.api.riotgames.com/lol/match/v4/matchlists/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=query["accountId"])
         try:
             app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "matchlists/by-account/accountId")
             data = self._get(url, params, app_limiter=app_limiter, method_limiter=method_limiter)
         except APINotFoundError:
             data = {"matches": []}
 
-        data["accountId"] = query["account.id"]
+        data["accountId"] = query["accountId"]
         data["region"] = query["platform"].region.value
         data["season"] = seasons
         data["champion"] = champions
@@ -168,12 +168,12 @@ class MatchAPI(RiotAPIService):
             data["beginTime"] = params["beginTime"]
             data["endTime"] = params["endTime"]
         for match in data["matches"]:
-            match["accountId"] = query["account.id"]
+            match["accountId"] = query["accountId"]
             match["region"] = Platform(match["platformId"]).region.value
         return MatchListDto(data)
 
     _validate_get_many_match_list_query = Query. \
-        has("account.ids").as_(Iterable).also. \
+        has("accountIds").as_(Iterable).also. \
         has("platform").as_(Platform).also. \
         can_have("beginTime").as_(int).also. \
         can_have("endTime").as_(int).also. \
@@ -210,7 +210,7 @@ class MatchAPI(RiotAPIService):
             queues = set()
 
         def generator():
-            for id in query["account.ids"]:
+            for id in query["accountIds"]:
                 url = "https://{platform}.api.riotgames.com/lol/match/v4/matchlists/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=id)
                 try:
                     app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "matchlists/by-account/accountId")
@@ -218,7 +218,7 @@ class MatchAPI(RiotAPIService):
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
-                data["account.id"] = id
+                data["accountId"] = id
                 data["region"] = query["platform"].region.value
                 if "beginIndex" in query:
                     data["beginIndex"] = query["beginIndex"]

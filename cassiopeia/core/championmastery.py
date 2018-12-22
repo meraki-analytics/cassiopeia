@@ -78,7 +78,7 @@ class ChampionMastery(CassiopeiaGhost):
         kwargs = {"region": region}
 
         if _account_id is not None:
-            summoner = Summoner(account=_account_id, region=region)
+            summoner = Summoner(accountId=_account_id, region=region)
 
         if summoner is not None:
             if isinstance(summoner, Summoner):

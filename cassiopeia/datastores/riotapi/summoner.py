@@ -20,8 +20,8 @@ class SummonerAPI(RiotAPIService):
 
     _validate_get_summoner_query = Query. \
         has("id").as_(str). \
-        or_("account.id").as_(str). \
-        or_("account.puuid").as_(str). \
+        or_("accountId").as_(str). \
+        or_("puuid").as_(str). \
         or_("name").as_(str).also. \
         has("platform").as_(Platform)
 
@@ -31,8 +31,8 @@ class SummonerAPI(RiotAPIService):
         if "id" in query:
             url = "https://{platform}.api.riotgames.com/lol/summoner/v4/summoners/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["id"])
             endpoint = "summoners/summonerId"
-        elif "account.id" in query:
-            url = "https://{platform}.api.riotgames.com/lol/summoner/v4/summoners/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=query["account.id"])
+        elif "accountId" in query:
+            url = "https://{platform}.api.riotgames.com/lol/summoner/v4/summoners/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=query["accountId"])
             endpoint = "summoners/by-account/accountId"
         elif "name" in query:
             url = "https://{platform}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{name}".format(platform=query["platform"].value.lower(), name=query["name"].replace(" ", "")).encode("utf-8")
