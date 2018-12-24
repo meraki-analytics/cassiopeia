@@ -28,12 +28,12 @@ class ThirdPartyCodeAPI(RiotAPIService):
 
     _validate_get_verification_string_query = Query. \
         has("platform").as_(Platform).also. \
-        has("summoner.id").as_(int)
+        has("summoner.id").as_(str)
 
     @get.register(VerificationStringDto)
     @validate_query(_validate_get_verification_string_query, convert_region_to_platform)
     def get_verification_string(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> VerificationStringDto:
-        url = "https://{platform}.api.riotgames.com/lol/platform/v3/third-party-code/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
+        url = "https://{platform}.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
         try:
             app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "thirdpartycode")
             data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
@@ -55,7 +55,7 @@ class ThirdPartyCodeAPI(RiotAPIService):
         def generator():
             for platform, summoner_id in zip(query["platforms"], query["summoner.ids"]):
                 platform = Platform(platform.upper())
-                url = "https://{platform}.api.riotgames.com/lol/platform/v3/third-party-code/by-summoner/{summonerId}".format(platform=platform.value.lower(), summonerId=summoner_id)
+                url = "https://{platform}.api.riotgames.com/lol/platform/v4/third-party-code/by-summoner/{summonerId}".format(platform=platform.value.lower(), summonerId=summoner_id)
                 try:
                     app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "thirdpartycode")
                     data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)

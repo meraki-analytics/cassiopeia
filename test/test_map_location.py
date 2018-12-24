@@ -11,7 +11,7 @@ def test_summonersrift_map():
 
 
 def test_from_match():
-    summoner = Summoner(name="Kalturi", id=21359666, account=Account(id=34718348), region="NA")
+    summoner = Summoner(name="Kalturi", region="NA")
     match_history = summoner.match_history
 
     match = match_history[0]

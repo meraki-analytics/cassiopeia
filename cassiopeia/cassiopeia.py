@@ -3,7 +3,7 @@ import arrow
 import datetime
 
 from .data import Region, Queue, Season
-from .core import Champion, Summoner, Account, ChampionMastery, Rune, Item, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Locales, ProfileIcons, ChallengerLeague, MasterLeague, SummonerLeagues, LeagueEntries, Patch, VerificationString, ChampionRotation
+from .core import Champion, Summoner, Account, ChampionMastery, Rune, Item, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Locales, ProfileIcons, ChallengerLeague, GrandmasterLeague, MasterLeague, SummonerLeagues, LeagueEntries, Patch, VerificationString, ChampionRotation
 from .datastores import common as _common_datastore
 from ._configuration import Settings, load_config, get_default_config
 from . import configuration
@@ -56,6 +56,8 @@ def get_leagues(summoner: Summoner, region: Union[Region, str] = None) -> Summon
 def get_master_league(queue: Union[Queue, int, str], region: Union[Region, str] = None) -> MasterLeague:
     return MasterLeague(queue=queue, region=region)
 
+def get_grandmaster_league(queue: Union[Queue, int, str], region: Union[Region, str] = None) -> GrandmasterLeague:
+    return GrandmasterLeague(queue=queue, region=region)
 
 def get_challenger_league(queue: Union[Queue, int, str], region: Union[Region, str] = None) -> ChallengerLeague:
     return ChallengerLeague(queue=queue, region=region)
@@ -84,7 +86,7 @@ def get_champion_mastery(summoner: Summoner, champion: Union[Champion, int, str]
     return ChampionMastery(champion=champion, summoner=summoner, region=region)
 
 
-def get_summoner(*, id: int = None, account: Union[Account, int] = None, name: str = None, region: Union[Region, str] = None) -> Summoner:
+def get_summoner(*, id: str = None, account: Union[Account, str] = None, name: str = None, region: Union[Region, str] = None) -> Summoner:
     return Summoner(id=id, account=account, name=name, region=region)
 
 

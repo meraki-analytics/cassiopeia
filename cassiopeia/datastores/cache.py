@@ -16,7 +16,7 @@ from ..core.staticdata.language import LanguagesData, Locales
 from ..core.staticdata.languagestrings import LanguageStringsData, LanguageStrings
 from ..core.staticdata.version import VersionListData, Versions
 from ..core.championmastery import ChampionMasteryData, ChampionMasteryListData, ChampionMastery, ChampionMasteries
-from ..core.league import LeaguePositionsData, LeagueListData, MasterLeagueListData, ChallengerLeagueListData, LeagueEntries, League, ChallengerLeague, MasterLeague
+from ..core.league import LeaguePositionsData, LeagueListData, MasterLeagueListData, GrandmasterLeagueListData, ChallengerLeagueListData, LeagueEntries, League, ChallengerLeague, GrandmasterLeague, MasterLeague
 from ..core.match import MatchData, TimelineData, Match, Timeline
 from ..core.summoner import SummonerData, Summoner
 from ..core.status import ShardStatusData, ShardStatus
@@ -49,6 +49,7 @@ default_expirations = {
     LeagueEntries: datetime.timedelta(hours=6),
     League: datetime.timedelta(hours=6),
     ChallengerLeague: datetime.timedelta(hours=6),
+    GrandmasterLeague: datetime.timedelta(hours=6),
     MasterLeague: datetime.timedelta(hours=6),
     Match: datetime.timedelta(days=3),
     Timeline: datetime.timedelta(days=1),
@@ -283,6 +284,27 @@ class Cache(DataSource, DataSink):
     @put_many.register(ChallengerLeague)
     def put_many_league_summoner(self, items: Iterable[ChallengerLeague], context: PipelineContext = None) -> None:
         self._put_many(ChallengerLeague, items, uniquekeys.for_challenger_league, context=context)
+
+    # Grandmaster
+
+    @get.register(GrandmasterLeague)
+    @validate_query(uniquekeys.validate_grandmaster_league_query, uniquekeys.convert_region_to_platform)
+    def get_league_summoner(self, query: Mapping[str, Any], context: PipelineContext = None) -> GrandmasterLeague:
+        return self._get(GrandmasterLeague, query, uniquekeys.for_grandmaster_league_query, context)
+
+    @get_many.register(GrandmasterLeague)
+    @validate_query(uniquekeys.validate_many_grandmaster_league_query, uniquekeys.convert_region_to_platform)
+    def get_many_league_summoner(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[GrandmasterLeague, None, None]:
+        return self._get_many(GrandmasterLeague, query, uniquekeys.for_many_grandmaster_league_query, context)
+
+    @put.register(GrandmasterLeague)
+    def put_league_summoner(self, item: GrandmasterLeague, context: PipelineContext = None) -> None:
+        self._put(GrandmasterLeague, item, uniquekeys.for_grandmaster_league, context=context)
+
+    @put_many.register(GrandmasterLeague)
+    def put_many_league_summoner(self, items: Iterable[GrandmasterLeague], context: PipelineContext = None) -> None:
+        self._put_many(GrandmasterLeague, items, uniquekeys.for_grandmaster_league, context=context)
+
 
     # Master
 

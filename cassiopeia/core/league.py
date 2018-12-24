@@ -6,7 +6,7 @@ from merakicommons.container import searchable, SearchableList
 from .. import configuration
 from ..data import Region, Platform, Tier, Division, Queue
 from .common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, provide_default_region, ghost_load_on
-from ..dto.league import LeaguePositionDto, LeaguePositionsDto,  LeaguesListDto, LeagueListDto, MiniSeriesDto, ChallengerLeagueListDto, MasterLeagueListDto
+from ..dto.league import LeaguePositionDto, LeaguePositionsDto,  LeaguesListDto, LeagueListDto, MiniSeriesDto, GrandmasterLeagueListDto, ChallengerLeagueListDto, MasterLeagueListDto
 from .summoner import Summoner
 
 
@@ -28,7 +28,7 @@ class LeaguePositionData(CoreData):
         if "miniSeries" in kwargs:
             self.promos = MiniSeriesData(**kwargs.pop("miniSeries"))
         if "summonerId" in kwargs:
-            self.summonerId = int(kwargs.pop("summonerId"))
+            self.summonerId = kwargs.pop("summonerId")
         super().__call__(**kwargs)
         return self
 
@@ -64,6 +64,15 @@ class ChallengerLeagueListData(CoreData):
         super().__call__(**kwargs)
         return self
 
+class GrandmasterLeagueListData(CoreData):
+    _dto_type = GrandmasterLeagueListDto
+    _renamed = {"leagueId": "id"}
+
+    def __call__(self, **kwargs):
+        if "entries" in kwargs:
+            self.entries = [LeaguePositionData(**entry) for entry in kwargs.pop("entries")]
+        super().__call__(**kwargs)
+        return self
 
 class MasterLeagueListData(CoreData):
     _dto_type = MasterLeagueListDto
@@ -187,15 +196,15 @@ class LeagueEntry(CassiopeiaGhost):
 
     @lazy_property
     def summoner(self) -> Summoner:
-        return Summoner(id=int(self._data[LeaguePositionData].summonerId), name=self._data[LeaguePositionData].summonerName, region=self.region)  # TODO I don't know why the summoner id isn't already an int; it's a string for some reason.
+        return Summoner(id=self._data[LeaguePositionData].summonerId, name=self._data[LeaguePositionData].summonerName, region=self.region)
 
     @property
     def fresh_blood(self) -> bool:
         return self._data[LeaguePositionData].freshBlood
 
-    @property
-    def league_id(self) -> str:
-        return self._data[LeaguePositionData].leagueId
+    @lazy_property
+    def league(self) -> "League":
+        return League(id=self.league_id, region=self.region)
 
     @property
     def league_points(self) -> int:
@@ -217,14 +226,15 @@ class LeagueEntries(CassiopeiaLazyList):
 
     @classmethod
     @provide_default_region
-    def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, int, str], region: Union[Region, str]) -> dict:
+    def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, str], region: Union[Region, str]) -> dict:
         query = {"region": region}
         if isinstance(summoner, Summoner):
             query["summoner.id"] = summoner.id
-        elif isinstance(summoner, int):  # int
-            query["summoner.id"] = summoner
         elif isinstance(summoner, str):
-            query["summoner.id"] = Summoner(name=summoner, region=region).id
+            if len(summoner) < 35:
+                query["summoner.id"] = Summoner(name=summoner, region=region).id
+            else:
+                query["summoner.id"] = summoner
         assert "summoner.id" in query
         return query
 
@@ -370,10 +380,11 @@ class ChallengerLeague(CassiopeiaGhost):
     @lazy_property
     def platform(self) -> Platform:
         return self.region.platform
-
-    @property
-    def id(self) -> Tier:
-        return self._data[LeagueListData].id
+    
+    @CassiopeiaGhost.property(ChallengerLeagueListData)
+    @ghost_load_on
+    def id(self) -> str:
+        return self._data[ChallengerLeagueListData].id
 
     @lazy_property
     def tier(self) -> Tier:
@@ -394,6 +405,67 @@ class ChallengerLeague(CassiopeiaGhost):
     def entries(self) -> List[LeagueEntry]:
         return SearchableList([LeagueEntry.from_data(entry) for entry in self._data[ChallengerLeagueListData].entries])
 
+class GrandmasterLeague(CassiopeiaGhost):
+    _data_types = {GrandmasterLeagueListData}
+
+    @provide_default_region
+    def __init__(self, *, queue: Union[Queue, str, int] = None, region: Union[Region, str] = None):
+        kwargs = {"region": region}
+        if isinstance(queue, int):
+            kwargs["queue"] = Queue.from_id(queue)
+        elif isinstance(queue, str):
+            kwargs["queue"] = Queue(queue)
+        elif isinstance(queue, Queue):
+            kwargs["queue"] = queue
+        super().__init__(**kwargs)
+
+    def __get_query__(self):
+        return {"region": self.region, "platform": self.platform, "queue": self.queue}
+
+    def __eq__(self, other: "GrandmasterLeague"):
+        if not isinstance(other, GrandmasterLeague) or self.region != other.region:
+            return False
+        return self.queue == other.queue
+
+    __hash__ = CassiopeiaGhost.__hash__
+
+    def __getitem__(self, item):
+        return self.entries[item]
+
+    def __len__(self):
+        return len(self.entries)
+
+    @lazy_property
+    def region(self) -> Region:
+        return Region(self._data[GrandmasterLeagueListData].region)
+
+    @lazy_property
+    def platform(self) -> Platform:
+        return self.region.platform
+
+    @CassiopeiaGhost.property(GrandmasterLeagueListData)
+    @ghost_load_on
+    def id(self) -> str:
+        return self._data[GrandmasterLeagueListData].id
+
+    @lazy_property
+    def tier(self) -> Tier:
+        return Tier.grandmaster
+
+    @lazy_property
+    def queue(self) -> Queue:
+        return Queue(self._data[GrandmasterLeagueListData].queue)
+
+    @CassiopeiaGhost.property(GrandmasterLeagueListData)
+    @ghost_load_on
+    def name(self) -> str:
+        return self._data[GrandmasterLeagueListData].name
+
+    @CassiopeiaGhost.property(GrandmasterLeagueListData)
+    @ghost_load_on
+    @lazy
+    def entries(self) -> List[LeagueEntry]:
+        return SearchableList([LeagueEntry.from_data(entry) for entry in self._data[GrandmasterLeagueListData].entries])
 
 class MasterLeague(CassiopeiaGhost):
     _data_types = {MasterLeagueListData}
@@ -433,9 +505,10 @@ class MasterLeague(CassiopeiaGhost):
     def platform(self) -> Platform:
         return self.region.platform
 
-    @property
-    def id(self) -> Tier:
-        return self._data[LeagueListData].id
+    @CassiopeiaGhost.property(MasterLeagueListData)
+    @ghost_load_on
+    def id(self) -> str:
+        return self._data[MasterLeagueListData].id
 
     @lazy_property
     def tier(self) -> Tier:

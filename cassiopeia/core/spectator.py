@@ -174,37 +174,40 @@ class CurrentMatch(CassiopeiaGhost):
     _data_types = {CurrentGameInfoData}
 
     @provide_default_region
-    def __init__(self, *, summoner: Union[Summoner, int, str] = None, region: Union[Region, str] = None):
+    def __init__(self, *, summoner: Union[Summoner, str] = None, region: Union[Region, str] = None):
         kwargs = {"region": region}
 
         if summoner is not None:
             if isinstance(summoner, str):
-                summoner = Summoner(name=summoner, region=region)
-            elif isinstance(summoner, int):
-                summoner = Summoner(id=summoner, region=region)
+                if len(summoner) < 35:
+                    summoner = Summoner(name=summoner, region=region)
+                else:
+                    summoner = Summoner(id=summoner, region=region)
             self.__summoner = summoner
         super().__init__(**kwargs)
 
     @classmethod
-    def from_data(cls, data: CurrentGameInfoData, summoner: Union[Summoner, int, str]):
+    def from_data(cls, data: CurrentGameInfoData, summoner: Union[Summoner, str]):
         self = super().from_data(data)
         if isinstance(summoner, str):
-            summoner = Summoner(name=summoner, region=data.region)
-        elif isinstance(summoner, int):
-            summoner = Summoner(id=summoner, region=data.region)
-        self.__summoner = summoner
+            if len(summoner) < 35:
+                summoner = Summoner(name=summoner, region=region)
+            else:
+                summoner = Summoner(id=summoner, region=region)
+                self.__summoner = summoner
         return self
 
     @classmethod
     @provide_default_region
-    def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, int, str], region: Union[Region, str]) -> dict:
+    def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, str], region: Union[Region, str]) -> dict:
         query = {"region": region}
         if isinstance(summoner, Summoner):
             query["summoner.id"] = summoner.id
-        elif isinstance(summoner, int):  # int
-            query["summoner.id"] = summoner
         elif isinstance(summoner, str):
-            query["summoner.id"] = Summoner(name=summoner, region=region).id
+            if len(summoner) < 35:
+                query["summoner.id"] = Summoner(name=summoner, region=region).id
+            else:
+                query["summoner.id"] = summoner
         assert "summoner.id" in query
         return query
 

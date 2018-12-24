@@ -20,13 +20,13 @@ class ChampionMasteryAPI(RiotAPIService):
 
     _validate_get_champion_mastery_query = Query. \
         has("platform").as_(Platform).also. \
-        has("summoner.id").also. \
+        has("summoner.id").as_(str).also. \
         has("champion.id").as_(int)
 
     @get.register(ChampionMasteryDto)
     @validate_query(_validate_get_champion_mastery_query, convert_region_to_platform)
     def get_champion_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionMasteryDto:
-        url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/champion-masteries/by-summoner/{summonerId}/by-champion/{championId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"], championId=query["champion.id"])
+        url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/{summonerId}/by-champion/{championId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"], championId=query["champion.id"])
         try:
             endpoint = "champion-masteries/by-summoner/summonerId/by-champion/championId"
             app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
@@ -40,13 +40,13 @@ class ChampionMasteryAPI(RiotAPIService):
 
     _validate_get_many_champion_mastery_query = Query. \
         has("platform").as_(Platform).also. \
-        has("summonerId").as_(int).also. \
+        has("summonerId").as_(str).also. \
         has("championIds").as_(Iterable)
 
     @get_many.register(ChampionMasteryDto)
     @validate_query(_validate_get_many_champion_mastery_query, convert_region_to_platform)
     def get_many_champion_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionMasteryDto, None, None]:
-        url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/champion-masteries/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summonerId"])
+        url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summonerId"])
         try:
             endpoint = "champion-masteries/by-summoner/summonerId"
             app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
@@ -73,12 +73,12 @@ class ChampionMasteryAPI(RiotAPIService):
 
     _validate_get_champion_mastery_list_query = Query. \
         has("platform").as_(Platform).also. \
-        has("summoner.id").as_(int)
+        has("summoner.id").as_(str)
 
     @get.register(ChampionMasteryListDto)
     @validate_query(_validate_get_champion_mastery_list_query, convert_region_to_platform)
     def get_champion_mastery_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionMasteryListDto:
-        url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/champion-masteries/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
+        url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
         try:
             endpoint = "champion-masteries/by-summoner/summonerId"
             app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
@@ -103,7 +103,7 @@ class ChampionMasteryAPI(RiotAPIService):
     def get_many_champion_mastery_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionMasteryListDto, None, None]:
         def generator():
             for summoner_id in query["summoner.ids"]:
-                url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/champion-masteries/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=summoner_id)
+                url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=summoner_id)
                 try:
                     endpoint = "champion-masteries/by-summoner/summonerId"
                     app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
@@ -121,12 +121,12 @@ class ChampionMasteryAPI(RiotAPIService):
 
     _validate_get_champion_mastery_score_query = Query. \
         has("platform").as_(Platform).also. \
-        has("summoner.id").as_(int)
+        has("summoner.id").as_(str)
 
     @get.register(ChampionMasteryScoreDto)
     @validate_query(_validate_get_champion_mastery_score_query, convert_region_to_platform)
     def get_champion_mastery_score(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionMasteryScoreDto:
-        url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/scores/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
+        url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v4/scores/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
         try:
             endpoint = "scores/by-summoner/summonerId"
             app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
@@ -149,7 +149,7 @@ class ChampionMasteryAPI(RiotAPIService):
     def get_many_champion_mastery_score(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionMasteryScoreDto, None, None]:
         def generator():
             for summoner_id in query["summoner.ids"]:
-                url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v3/scores/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=summoner_id)
+                url = "https://{platform}.api.riotgames.com/lol/champion-mastery/v4/scores/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=summoner_id)
                 try:
                     endpoint = "scores/by-summoner/summonerId"
                     app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)

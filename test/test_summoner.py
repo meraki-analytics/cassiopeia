@@ -8,7 +8,6 @@ from .constants import SUMMONER_NAME, UNKNOWN_SUMMONER_NAME
 
 def test_unknown_summoner():
     assert not cassiopeia.get_summoner(name=UNKNOWN_SUMMONER_NAME, region="NA").exists
-    assert not cassiopeia.get_summoner(id=9999999999999, region="NA").exists
 
 
 def test_equal_summoners():

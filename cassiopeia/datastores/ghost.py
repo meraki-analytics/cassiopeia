@@ -5,7 +5,7 @@ import copy
 from datapipelines import DataSource, PipelineContext, Query, validate_query
 
 from ..data import Platform, Queue
-from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions, ChampionMasteries, LeagueEntries, FeaturedMatches, VerificationString, Account
+from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, GrandmasterLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions, ChampionMasteries, LeagueEntries, FeaturedMatches, VerificationString, Account
 from ..core.match import Timeline, MatchListData
 from ..core.championmastery import ChampionMasteryListData
 from ..core.league import LeaguePositionsData, LeagueEntry
@@ -127,15 +127,15 @@ class UnloadedGhostStore(DataSource):
 
     _validate_get_champion_mastery_query = Query. \
         has("platform").as_(Platform).also. \
-        has("summoner.id").also. \
+        has("summoner.id").as_(str).also. \
         has("champion.id").as_(int)
 
     _validate_get_champion_masteries_query = Query. \
         has("platform").as_(Platform).also. \
-        has("summoner.id").as_(int)
+        has("summoner.id").as_(str)
 
     _validate_get_league_entries_query = Query. \
-        has("summoner.id").as_(int).also. \
+        has("summoner.id").as_(str).also. \
         has("platform").as_(Platform)
 
     _validate_get_league_query = Query. \
@@ -146,13 +146,17 @@ class UnloadedGhostStore(DataSource):
         has("queue").as_(Queue).also. \
         has("platform").as_(Platform)
 
+    _validate_get_grandmaster_league_query = Query. \
+        has("queue").as_(Queue).also. \
+        has("platform").as_(Platform)
+
     _validate_get_master_league_query = Query. \
         has("queue").as_(Queue).also. \
         has("platform").as_(Platform)
 
     _validate_get_current_match_query = Query. \
         has("platform").as_(Platform).also. \
-        has("summoner.id").as_(int)
+        has("summoner.id").as_(str)
 
     _validate_get_featured_matches_query = Query. \
         has("platform").as_(Platform)
@@ -162,7 +166,7 @@ class UnloadedGhostStore(DataSource):
         has("platform").as_(Platform)
 
     _validate_get_match_history_query = Query. \
-        has("account.id").as_(int).also. \
+        has("accountId").as_(str).also. \
         has("platform").as_(Platform).also. \
         can_have("beginTime").as_(int).also. \
         can_have("endTime").as_(int).also. \
@@ -180,14 +184,15 @@ class UnloadedGhostStore(DataSource):
         has("platform").as_(Platform)
 
     _validate_get_summoner_query = Query. \
-        has("id").as_(int). \
-        or_("account.id").as_(int). \
+        has("id").as_(str). \
+        or_("accountId").as_(str). \
+        or_("puuid").as_(str). \
         or_("name").as_(str).also. \
         has("platform").as_(Platform)
 
     _validate_get_verification_string_query = Query. \
         has("platform").as_(Platform).also. \
-        has("summoner.id").as_(int)
+        has("summoner.id").as_(str)
 
     @get.register(Champion)
     @validate_query(_validate_get_champion_query, convert_region_to_platform)
@@ -244,8 +249,10 @@ class UnloadedGhostStore(DataSource):
     @validate_query(_validate_get_summoner_query, convert_region_to_platform)
     def get_summoner(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Summoner:
         query["region"] = query.pop("platform").region
-        if "account.id" in query:
-            query["account"] = query.pop("account.id")
+        if "accountId" in query:
+            query["accountId"] = query.pop("accountId")
+        if "puuid" in query:
+            query["puuid"] = query.pop("puuid")
         return Summoner._construct_normally(**query)
 
     @get.register(ChampionMastery)
@@ -256,8 +263,8 @@ class UnloadedGhostStore(DataSource):
             query["summoner"] = query.pop("summoner.id")
         if "summoner.name" in query:
             query["summoner"] = query.pop("summoner.name")
-        if "summoner.account.id" in query:
-            query["_account_id"] = query.pop("summoner.account.id")
+        if "summoner.accountId" in query:
+            query["_account_id"] = query.pop("summoner.accountId")
         if "champion.id" in query:
             query["champion"] = query.pop("champion.id")
         if "champion.id" in query:
@@ -296,6 +303,13 @@ class UnloadedGhostStore(DataSource):
         query["region"] = query.pop("platform").region
         return ChallengerLeague._construct_normally(**query)
 
+    @get.register(GrandmasterLeague)
+    @validate_query(_validate_get_grandmaster_league_query, convert_region_to_platform)
+    def get_grandmaster_league(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> GrandmasterLeague:
+        UnloadedGhostStore._validate_get_grandmaster_league_query(query)
+        query["region"] = query.pop("platform").region
+        return GrandmasterLeague._construct_normally(**query)
+
     @get.register(MasterLeague)
     @validate_query(_validate_get_master_league_query, convert_region_to_platform)
     def get_master_league(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasterLeague:
@@ -321,7 +335,7 @@ class UnloadedGhostStore(DataSource):
     def get_match_history(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MatchHistory:
         original_query = copy.deepcopy(query)
         region = query["region"]
-        account_id = query["account.id"]
+        account_id = query["accountId"]
         begin_index = query.get("beginIndex", 0)
         end_index = query.get("endIndex", None)
         first_requested_dt = query.get("beginTime", 0)  # (begin_time) Defaults to start of summoner's match history
@@ -350,7 +364,7 @@ class UnloadedGhostStore(DataSource):
             while pulled_matches < max_number_of_requested_matches:
                 new_query = {
                     "region": region,
-                    "account.id": account_id,
+                    "accountId": account_id,
                     "queues": queues,
                     "seasons": seasons,
                     "champion.ids": champion_ids,
