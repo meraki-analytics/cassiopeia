@@ -6,7 +6,7 @@ def print_summoner(name: str, region: str):
     summoner = Summoner(name=name, region=region)
     print("Name:", summoner.name)
     print("ID:", summoner.id)
-    print("Account ID:", summoner.account.id)
+    print("Account ID:", summoner.account_id)
     print("Level:", summoner.level)
     print("Revision date:", summoner.revision_date)
     print("Profile icon ID:", summoner.profile_icon.id)

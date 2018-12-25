@@ -5,7 +5,7 @@ import copy
 from datapipelines import DataSource, PipelineContext, Query, validate_query
 
 from ..data import Platform, Queue
-from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, GrandmasterLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions, ChampionMasteries, LeagueEntries, FeaturedMatches, VerificationString, Account
+from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, GrandmasterLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions, ChampionMasteries, LeagueEntries, FeaturedMatches, VerificationString
 from ..core.match import Timeline, MatchListData
 from ..core.championmastery import ChampionMasteryListData
 from ..core.league import LeaguePositionsData, LeagueEntry
@@ -248,12 +248,11 @@ class UnloadedGhostStore(DataSource):
     @get.register(Summoner)
     @validate_query(_validate_get_summoner_query, convert_region_to_platform)
     def get_summoner(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Summoner:
-        query["region"] = query.pop("platform").region
-        if "accountId" in query:
-            query["accountId"] = query.pop("accountId")
-        if "puuid" in query:
-            query["puuid"] = query.pop("puuid")
-        return Summoner._construct_normally(**query)
+        kwargs = copy.deepcopy(query)
+        kwargs["region"] = kwargs.pop("platform").region
+        if "accountId" in kwargs:
+            kwargs["account_id"] = kwargs.pop("accountId")
+        return Summoner._construct_normally(**kwargs)
 
     @get.register(ChampionMastery)
     @validate_query(_validate_get_champion_mastery_query, convert_region_to_platform)
@@ -418,7 +417,7 @@ class UnloadedGhostStore(DataSource):
 
         generator = generate_matchlists(begin_index, max_number_of_requested_matches, first_requested_dt, most_recent_requested_dt)
 
-        summoner = Summoner(account=Account(id=account_id), region=region)
+        summoner = Summoner(account_id=account_id, region=region)
         generator = MatchHistory.from_generator(generator=generator, summoner=summoner,
                                                 begin_index=begin_index, end_index=end_index,
                                                 begin_time=first_requested_dt,

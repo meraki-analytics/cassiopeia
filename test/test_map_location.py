@@ -1,4 +1,4 @@
-from cassiopeia import Queue, Summoner, SummonersRiftArea, Account
+from cassiopeia import Queue, Summoner, SummonersRiftArea
 
 
 def test_summonersrift_map():

@@ -4,11 +4,11 @@ from cassiopeia.data import Season, Queue
 from collections import Counter
 
 
-def print_newest_match(name: str, account: int, id: int, region: str):
+def print_newest_match(name: str, region: str):
 
     # Notice how this function never makes a call to the summoner endpoint because we provide all the needed data!
 
-    summoner = Summoner(name=name, account=account, id=id, region=region)
+    summoner = Summoner(name=name, region=region)
 
     # A MatchHistory is a lazy list, meaning it's elements only get loaded as-needed.
 
@@ -41,17 +41,17 @@ def print_newest_match(name: str, account: int, id: int, region: str):
     p = match.participants[summoner]
     print("\nSince the match was created from a matchref, we only know one participant:")
     #print(p.summoner.name, 'playing', p.champion.name)
-    print(p.id, p.summoner.region, p.summoner.account.id, p.summoner.name, p.summoner.id, p.champion.id)
+    print(p.id, p.summoner.region, p.summoner.account_id, p.summoner.name, p.summoner.id, p.champion.id)
 
     print("\nNow pull the full match data by iterating over all the participants:")
     for p in match.participants:
         #print(p.summoner.name, 'playing', p.champion.name)
-        print(p.id, p.summoner.region, p.summoner.account.id, p.summoner.name, p.summoner.id, p.champion.id, p.team.first_dragon)
+        print(p.id, p.summoner.region, p.summoner.account_id, p.summoner.name, p.summoner.id, p.champion.id, p.team.first_dragon)
 
     print("\nIterate over all the participants again and note that the data is not repulled:")
     for p in match.participants:
         #print(p.summoner.name, 'playing', p.champion.name)
-        print(p.id, p.summoner.region, p.summoner.account.id, p.summoner.name, p.summoner.id, p.champion.id, p.team.first_dragon)
+        print(p.id, p.summoner.region, p.summoner.account_id, p.summoner.name, p.summoner.id, p.champion.id, p.team.first_dragon)
 
     print("\nBlue team won?", match.blue_team.win)
     print("Red team won?", match.red_team.win)
@@ -61,4 +61,4 @@ def print_newest_match(name: str, account: int, id: int, region: str):
 
 
 if __name__ == "__main__":
-    print_newest_match(name="Kalturi", account=34718348, id=21359666, region="NA")
+    print_newest_match(name="Kalturi", region="NA")

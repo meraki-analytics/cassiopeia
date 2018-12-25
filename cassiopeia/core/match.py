@@ -1163,7 +1163,7 @@ class Participant(CassiopeiaObject):
             kwargs["name"] = self._data[ParticipantData].summonerName
         except AttributeError:
             pass
-        kwargs["account"] = self._data[ParticipantData].currentAccountId
+        kwargs["account_id"] = self._data[ParticipantData].currentAccountId
         kwargs["region"] = Platform(self._data[ParticipantData].currentPlatformId).region
         summoner = Summoner(**kwargs)
         try:

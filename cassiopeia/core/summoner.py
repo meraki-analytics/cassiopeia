@@ -18,10 +18,6 @@ from ..dto.summoner import SummonerDto
 ##############
 
 
-class AccountData(CoreData):
-    _renamed = {"accountId": "id"}
-
-
 class SummonerData(CoreData):
     _dto_type = SummonerDto
     _renamed = {"summonerLevel": "level"}
@@ -32,55 +28,36 @@ class SummonerData(CoreData):
 ##############
 
 
-@searchable({str: ["id"]})
-class Account(CassiopeiaObject):
-    _data_types = {AccountData}
-    warnings.warn("The data of the Account object have been moved to the Summoner object. The Account is therefor deprecated", DeprecationWarning, stacklevel=2)
-    @property
-    def id(self) -> str:
-        return self._data[AccountData].id
-
-
-@searchable({str: ["name", "region", "platform"], str: ["id", "accountId", "puuid"], Region: ["region"], Platform: ["platform"]})
+@searchable({str: ["name", "region", "platform", "id", "account_id", "puuid"], Region: ["region"], Platform: ["platform"]})
 class Summoner(CassiopeiaGhost):
     _data_types = {SummonerData}
 
     @provide_default_region
-    def __init__(self, *, id: str = None, accountId: str = None, account: Union[Account, str] = None, puuid: str = None, name: str = None, region: Union[Region, str] = None):
+    def __init__(self, *, id: str = None, account_id: str = None, puuid: str = None, name: str = None, region: Union[Region, str] = None):
         kwargs = {"region": region}
-        if account is not None:
-            warnings.warn("account has been deprecated use accountId instead", DeprecationWarning, stacklevel=2)
-        
+
         if id is not None:
             kwargs["id"] = id
-        if accountId is not None:
-            kwargs["accountId"] = accountId
+        if account_id is not None:
+            kwargs["accountId"] = account_id
         if puuid is not None:
             kwargs["puuid"] = puuid
         if name is not None:
             kwargs["name"] = name
-        if account and isinstance(account, Account):
-            kwargs["accountId"] = account.id
-        elif account is not None:
-            kwargs["accountId"] = account
         super().__init__(**kwargs)
 
     @classmethod
     @provide_default_region
-    def __get_query_from_kwargs__(cls, *, id: str = None, accountId: str=None, account: Union[Account, str] = None, puuid: str=None, name: str = None, region: Union[Region, str], ) -> dict:
+    def __get_query_from_kwargs__(cls, *, id: str = None, account_id: str=None, puuid: str=None, name: str = None, region: Union[Region, str], ) -> dict:
         query = {"region": region}
         if id is not None:
             query["id"] = id
-        if accountId is not None:
-            query["accountId"] = accountId
+        if account_id is not None:
+            query["accountId"] = account_id
         if puuid is not None:
             query["puuid"] = puuid
         if name is not None:
             query["name"] = name
-        if account and isinstance(account, Account):
-            query["accountId"] = account.id
-        elif account is not None:
-            query["accountId"] = account
         return query
 
     def __get_query__(self):
@@ -128,14 +105,14 @@ class Summoner(CassiopeiaGhost):
         if hasattr(self._data[SummonerData], "name"):
             name = self.name
         try:
-            account = self._data[SummonerData].account_id
+            account_id = self._data[SummonerData].account_id
         except AttributeError:
-            account = "?"
+            account_id = "?"
         try:
             puuid = self._data[SummonerData].puuid
         except AttributeError:
             puuid = "?"
-        return "Summoner(id={id_}, account={account}, name='{name}', puuid='{puuid}')".format(id_=id_, name=name, account=account, puuid=puuid)
+        return "Summoner(id={id_}, account_id={account_id}, name='{name}', puuid='{puuid}')".format(id_=id_, name=name, account_id=account_id, puuid=puuid)
 
     @property
     def exists(self):
@@ -166,12 +143,6 @@ class Summoner(CassiopeiaGhost):
     @ghost_load_on
     def puuid(self) -> str:
         return self._data[SummonerData].puuid
-
-    @CassiopeiaGhost.property(SummonerData)
-    @ghost_load_on
-    def account(self) -> Account:
-        warnings.warn("summoner.account has been deprecated. Use summoner.account_id instead", DeprecationWarning, stacklevel=2)
-        return Account(id=self.account_id)
 
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on

@@ -74,11 +74,11 @@ class ChampionMastery(CassiopeiaGhost):
     _data_types = {ChampionMasteryData}
 
     @provide_default_region
-    def __init__(self, *, summoner: Union[Summoner, int, str] = None, champion: Union[Champion, int, str] = None, region: Union[Region, str] = None, _account_id: int = None):
+    def __init__(self, *, summoner: Union[Summoner, int, str] = None, champion: Union[Champion, int, str] = None, region: Union[Region, str] = None, _account_id: str = None):
         kwargs = {"region": region}
 
         if _account_id is not None:
-            summoner = Summoner(accountId=_account_id, region=region)
+            summoner = Summoner(account_id=_account_id, region=region)
 
         if summoner is not None:
             if isinstance(summoner, Summoner):

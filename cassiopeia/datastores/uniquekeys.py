@@ -27,7 +27,7 @@ from ..core.staticdata.item import ItemData
 from ..core.staticdata.summonerspell import SummonerSpellData
 from ..core.staticdata.rune import RuneData
 from ..core.staticdata.map import MapData
-from ..core.summoner import Account, SummonerData
+from ..core.summoner import SummonerData
 
 #############
 # Utilities #
@@ -2081,19 +2081,19 @@ validate_many_summoner_query = Query. \
 def for_summoner(summoner: Summoner) -> List[Tuple]:
     keys = []
     try:
-        keys.append((summoner.platform.value, summoner._data[SummonerData].id))
+        keys.append((summoner.platform.value, "id", summoner._data[SummonerData].id))
     except AttributeError:
         pass
     try:
-        keys.append((summoner.platform.value, summoner._data[SummonerData].name))
+        keys.append((summoner.platform.value, "name", summoner._data[SummonerData].name))
     except AttributeError:
         pass
     try:
-        keys.append((summoner.platform.value, "account", summoner._data[SummonerData].account_id))
+        keys.append((summoner.platform.value, "accountId", summoner._data[SummonerData].accountId))
     except AttributeError:
         pass
     try:
-        keys.append((summoner.platform.value, "account", summoner._data[SummonerData].puuid))
+        keys.append((summoner.platform.value, "puuid", summoner._data[SummonerData].puuid))
     except AttributeError:
         pass
     return keys
