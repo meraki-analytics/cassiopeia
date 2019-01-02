@@ -105,7 +105,7 @@ class Summoner(CassiopeiaGhost):
         if hasattr(self._data[SummonerData], "name"):
             name = self.name
         try:
-            account_id = self._data[SummonerData].account_id
+            account_id = self._data[SummonerData].accountId
         except AttributeError:
             account_id = "?"
         try:
