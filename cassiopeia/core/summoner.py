@@ -175,7 +175,7 @@ class Summoner(CassiopeiaGhost):
 
     @property
     def match_history_uri(self) -> str:
-        return "/v1/stats/player_history/{platform}/{id}".format(platform=self.platform.value, id=self.account_id)
+        return self.match_history[0].participants[self].match_history_uri
 
     # Special core methods
 

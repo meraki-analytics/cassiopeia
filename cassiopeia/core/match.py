@@ -1142,6 +1142,11 @@ class Participant(CassiopeiaObject):
     def rank_last_season(self) -> Tier:
         return Tier(self._data[ParticipantData].rankLastSeason)
 
+    @property
+    @load_match_on_attributeerror
+    def match_history_uri(self) -> str:
+        return self._data[ParticipantData].matchHistoryUri
+
     @lazy_property
     @load_match_on_attributeerror
     def champion(self) -> "Champion":
