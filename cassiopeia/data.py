@@ -171,6 +171,19 @@ class RunePath(Enum):
     inspiration = "Inspiration"
     resolve = "Resolve"
 
+    @property
+    def image_url(self):
+        urls = {
+            # See, e.g., https://ddragon.leagueoflegends.com/cdn/9.1.1/data/en_US/runesReforged.json
+            "precision": "perk-images/Styles/7201_Precision.png",
+            "domination": "perk-images/Styles/7200_Domination.png",
+            "sorcery": "perk-images/Styles/7202_Sorcery.png",
+            "inspiration": "perk-images/Styles/7203_Whimsy.png",
+            "resolve": "perk-images/Styles/7204_Resolve.png"
+        }
+        url = "https://ddragon.leagueoflegends.com/cdn/img/perk-images/" + urls[self.name]
+        return url
+
 
 class Tier(Enum):
     challenger = "CHALLENGER"
