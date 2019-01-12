@@ -650,20 +650,14 @@ class ParticipantTimeline(CassiopeiaObject):
         return self.events.filter(lambda event: event.type == "CHAMPION_KILL" and self.id in event.assisting_participants)
 
     @property
-    def lane(self) -> str:
+    def lane(self) -> Lane:
         return Lane.from_match_naming_scheme(self._data[ParticipantTimelineData].lane)
 
     @property
     def role(self) -> Union[str, Role]:
         role = self._data[ParticipantTimelineData].role
-        if role == "NONE":
-            role = None
-        elif role == "SOLO":
-            role = "SOLO"
-        elif role == "DUO":
-            role = "DUO"
-        else:
-            role = Role.from_match_naming_scheme(role)
+        lane = self._data[ParticipantTimelineData].lane
+        role = Role.from_match_naming_scheme(role, lane)
         return role
 
     @property

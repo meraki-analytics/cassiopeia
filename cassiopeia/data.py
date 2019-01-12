@@ -443,14 +443,17 @@ class Role(Enum):
     top = "TOP"
     jungle = "JUNGLE"
     middle = "MIDDLE"
-    adc = "DUO_CARRY"
-    support = "DUO_SUPPORT"
+    adc = "ADC"
+    support = "SUPPORT"
 
-    def from_match_naming_scheme(string: str):
+    def from_match_naming_scheme(role: str, lane: str):
         return {
-            "DUO_CARRY": Role.adc,
-            "DUO_SUPPORT": Role.support
-        }[string]
+            ("SOLO", "TOP"): Role.top,
+            ("NONE", "JUNGLE"): Role.jungle,
+            ("SOLO", "MIDDLE"): Role.middle,
+            ("DUO_CARRY", "BOTTOM"): Role.adc,
+            ("DUO_SUPPORT", "BOTTOM"): Role.support
+        }.get((role, lane), role)
 
 
 # References for Queues:
