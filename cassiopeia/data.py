@@ -447,13 +447,15 @@ class Role(Enum):
     support = "SUPPORT"
 
     def from_match_naming_scheme(role: str, lane: str):
-        return {
-            ("SOLO", "TOP"): Role.top,
-            ("NONE", "JUNGLE"): Role.jungle,
-            ("SOLO", "MIDDLE"): Role.middle,
-            ("DUO_CARRY", "BOTTOM"): Role.adc,
-            ("DUO_SUPPORT", "BOTTOM"): Role.support
-        }.get((role, lane), role)
+        if role == 'DUO_SUPPORT':
+            return Role.support
+        else:
+            return {
+                "TOP": Role.top,
+                "JUNGLE": Role.jungle,
+                "MIDDLE": Role.middle,
+                "BOTTOM": Role.adc,
+            }[lane]
 
 
 # References for Queues:
