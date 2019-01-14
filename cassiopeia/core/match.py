@@ -654,11 +654,8 @@ class ParticipantTimeline(CassiopeiaObject):
         return Lane.from_match_naming_scheme(self._data[ParticipantTimelineData].lane)
 
     @property
-    def role(self) -> Union[str, Role]:
-        role = self._data[ParticipantTimelineData].role
-        lane = self._data[ParticipantTimelineData].lane
-        role = Role.from_match_naming_scheme(role, lane)
-        return role
+    def role(self) -> Role:
+        return Role.from_match_naming_scheme(self._data[ParticipantTimelineData].role)
 
     @property
     def id(self) -> int:

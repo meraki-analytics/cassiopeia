@@ -175,14 +175,24 @@ class RunePath(Enum):
     def image_url(self):
         urls = {
             # See, e.g., https://ddragon.leagueoflegends.com/cdn/9.1.1/data/en_US/runesReforged.json
-            "precision": "perk-images/Styles/7201_Precision.png",
-            "domination": "perk-images/Styles/7200_Domination.png",
-            "sorcery": "perk-images/Styles/7202_Sorcery.png",
-            "inspiration": "perk-images/Styles/7203_Whimsy.png",
-            "resolve": "perk-images/Styles/7204_Resolve.png"
+            "precision": "Styles/7201_Precision.png",
+            "domination": "Styles/7200_Domination.png",
+            "sorcery": "Styles/7202_Sorcery.png",
+            "inspiration": "Styles/7203_Whimsy.png",
+            "resolve": "Styles/7204_Resolve.png"
         }
         url = "https://ddragon.leagueoflegends.com/cdn/img/perk-images/" + urls[self.name]
         return url
+
+    @property
+    def id(self):
+        return {
+            "precision": 8000,
+            "domination": 8100,
+            "sorcery": 8200,
+            "inspiration": 8300,
+            "resolve": 8400,
+        }[self.name]
 
 
 class Tier(Enum):
@@ -440,22 +450,20 @@ class SummonersRiftArea(Enum):
 
 
 class Role(Enum):
-    top = "TOP"
-    jungle = "JUNGLE"
-    middle = "MIDDLE"
-    adc = "ADC"
-    support = "SUPPORT"
+    duo = "DUO"
+    duo_carry = "DUO_CARRY"
+    duo_support = "DUO_SUPPORT"
+    none = "NONE"
+    solo = "SOLO"
 
-    def from_match_naming_scheme(role: str, lane: str):
-        if role == 'DUO_SUPPORT':
-            return Role.support
-        else:
-            return {
-                "TOP": Role.top,
-                "JUNGLE": Role.jungle,
-                "MIDDLE": Role.middle,
-                "BOTTOM": Role.adc,
-            }[lane]
+    def from_match_naming_scheme(string: str):
+        return {
+            "DUO": Role.duo,
+            "DUO_CARRY": Role.duo_carry,
+            "DUO_SUPPORT": Role.duo_support,
+            "NONE": Role.none,
+            "SOLO": Role.solo
+        }[string]
 
 
 # References for Queues:
