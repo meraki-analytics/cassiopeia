@@ -7,3 +7,11 @@ class ChampionDto(DtoObject):
 
 class ChampionListDto(DtoObject):
     pass
+
+
+class ChampionReleasesDto(DtoObject):
+    pass
+
+
+class ChampionReleaseDto(DtoObject):
+    pass

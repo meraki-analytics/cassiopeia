@@ -3,7 +3,7 @@ from copy import deepcopy
 
 from datapipelines import DataTransformer, PipelineContext
 
-from ..core.staticdata.champion import ChampionData, ChampionListData, Champion, Champions
+from ..core.staticdata.champion import ChampionData, ChampionListData, ChampionReleaseData, Champion, Champions
 from ..core.staticdata.rune import RuneData, RuneListData, Rune, Runes
 from ..core.staticdata.item import ItemData, ItemListData, Item, Items
 from ..core.staticdata.summonerspell import SummonerSpellData, SummonerSpellListData, SummonerSpell, SummonerSpells
@@ -14,7 +14,7 @@ from ..core.staticdata.language import LanguagesData, Locales
 from ..core.staticdata.languagestrings import LanguageStringsData, LanguageStrings
 from ..core.staticdata.profileicon import ProfileIconData, ProfileIconListData, ProfileIcon, ProfileIcons
 
-from ..dto.staticdata import ChampionDto, ChampionListDto
+from ..dto.staticdata import ChampionDto, ChampionListDto, ChampionReleaseDto
 from ..dto.staticdata import RuneDto, RuneListDto
 from ..dto.staticdata import ItemDto, ItemListDto
 from ..dto.staticdata import SummonerSpellDto, SummonerSpellListDto
@@ -53,6 +53,10 @@ class StaticDataTransformer(DataTransformer):
 
         data = data["data"]
         return ChampionListData(data, region=value["region"], version=value["version"], locale=value["locale"], includedData=value["includedData"])
+
+    @transform.register(ChampionReleaseDto, ChampionReleaseData)
+    def champion_releases_to_release(selfself, value: ChampionReleaseDto, context: PipelineContext = None) -> ChampionReleaseData:
+        return ChampionReleaseData(**value)
 
     # Rune
 

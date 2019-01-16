@@ -38,3 +38,9 @@ def test_searchable_champion_names():
         assert champion.name == name
         champion = champions[name]
         assert champion.name == name
+
+
+def test_release_dates():
+    champions = cassiopeia.get_champions(region="NA")
+    for champion in champions:
+        champion.release_date

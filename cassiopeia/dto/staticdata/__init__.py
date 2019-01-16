@@ -1,4 +1,4 @@
-from .champion import ChampionDto, ChampionListDto
+from .champion import ChampionDto, ChampionListDto, ChampionReleaseDto, ChampionReleasesDto
 from .item import ItemDto, ItemListDto
 from .language import LanguageStringsDto, LanguagesDto
 from .map import MapDto, MapListDto

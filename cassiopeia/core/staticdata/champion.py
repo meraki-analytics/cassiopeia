@@ -1,5 +1,6 @@
 from typing import Dict, List, Set, Union
 from PIL.Image import Image as PILImage
+import arrow
 
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableDictionary
@@ -16,6 +17,10 @@ from .item import Item
 ##############
 # Data Types #
 ##############
+
+
+class ChampionReleaseData(CoreData):
+    _renamed = {}
 
 
 class ChampionListData(CoreDataList):
@@ -565,7 +570,7 @@ class Info(CassiopeiaObject):
 
 @searchable({str: ["name", "key", "region", "platform", "locale", "tags"], int: ["id"], Region: ["region"], Platform: ["platform"], bool: ["free_to_play"]})
 class Champion(CassiopeiaGhost):
-    _data_types = (ChampionData,)
+    _data_types = (ChampionData, ChampionReleaseData)
 
     @provide_default_region
     def __init__(self, *, id: int = None, name: str = None, key: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
@@ -804,3 +809,9 @@ class Champion(CassiopeiaGhost):
                 return True
         else:
             return False
+
+    @CassiopeiaGhost.property(ChampionReleaseData)
+    @ghost_load_on
+    @lazy
+    def release_date(self) -> arrow.Arrow:
+        return arrow.get(self._data[ChampionReleaseData].releaseDate)
