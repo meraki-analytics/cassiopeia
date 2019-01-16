@@ -87,8 +87,8 @@ class Runes(CassiopeiaLazyList):
         return self.filter(lambda rune: rune.path == RunePath.precision)
 
     @property
-    def dominion(self) -> List["Rune"]:
-        return self.filter(lambda rune: rune.path == RunePath.dominion)
+    def domination(self) -> List["Rune"]:
+        return self.filter(lambda rune: rune.path == RunePath.domination)
 
     @property
     def sorcery(self) -> List["Rune"]:
