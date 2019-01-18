@@ -29,6 +29,9 @@ def apply_settings(config: Union[str, TextIO, Dict, Settings]):
     # Overwrite the old settings
     configuration._settings = settings
 
+    # Initialize the pipeline immediately
+    _ = configuration.settings.pipeline
+
 
 def set_riot_api_key(key: str):
     configuration.settings.set_riot_api_key(key)

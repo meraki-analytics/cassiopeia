@@ -20,7 +20,8 @@ where `"CHAMPIONGG_KEY"` should be replaced with your champion.gg api key or wit
 """
 
 import cassiopeia as cass
-from cassiopeia import Champion, Role
+from cassiopeia import Champion
+import cassiopeia_championgg
 
 config = cass.get_default_config()
 config["pipeline"]["ChampionGG"] =  {
@@ -29,8 +30,15 @@ config["pipeline"]["ChampionGG"] =  {
     }
 cass.apply_settings(config)
 
+from cassiopeia import RoleGG  # This gets monkey patched in by the champion.gg plugin, but we have to load it after putting ChampionGG in the pipeline
+
 
 def get_champions():
+    champions = cass.get_champions(region="NA")
+    for champion in champions:
+        print(f"{champion.name}: {[role for role in champion.championgg.roles.keys()]}")
+    print()
+
     lux = Champion(name="Lux", id=99, region="NA")
     print(lux.name)
 
@@ -38,28 +46,28 @@ def get_champions():
     print(lux.championgg.patch)
 
     # Lux mid vs. Lux support win rates
-    print(lux.championgg[Role.middle].win_rate)
-    print(lux.championgg[Role.support].win_rate)
+    print(lux.championgg[RoleGG.middle].win_rate)
+    print(lux.championgg[RoleGG.support].win_rate)
 
     # Print a bunch of data
-    print(lux.championgg[Role.support].play_rate)
-    print(lux.championgg[Role.support].play_rate_by_role)
-    print(lux.championgg[Role.support].ban_rate)
-    print(lux.championgg[Role.support].games_played)
-    print(lux.championgg[Role.support].damage_composition)
-    print(lux.championgg[Role.support].kills)
-    print(lux.championgg[Role.support].total_damage_taken)
-    print(lux.championgg[Role.support].neutral_minions_killed_in_team_jungle)
-    print(lux.championgg[Role.support].assists)
-    print(lux.championgg[Role.support].neutral_minions_killed_in_enemy_jungle)
-    print(lux.championgg[Role.support].gold_earned)
-    print(lux.championgg[Role.support].deaths)
-    print(lux.championgg[Role.support].minions_killed)
-    print(lux.championgg[Role.support].total_healed)
+    print(lux.championgg[RoleGG.support].play_rate)
+    print(lux.championgg[RoleGG.support].play_rate_by_role)
+    print(lux.championgg[RoleGG.support].ban_rate)
+    print(lux.championgg[RoleGG.support].games_played)
+    print(lux.championgg[RoleGG.support].damage_composition)
+    print(lux.championgg[RoleGG.support].kills)
+    print(lux.championgg[RoleGG.support].total_damage_taken)
+    print(lux.championgg[RoleGG.support].neutral_minions_killed_in_team_jungle)
+    print(lux.championgg[RoleGG.support].assists)
+    print(lux.championgg[RoleGG.support].neutral_minions_killed_in_enemy_jungle)
+    print(lux.championgg[RoleGG.support].gold_earned)
+    print(lux.championgg[RoleGG.support].deaths)
+    print(lux.championgg[RoleGG.support].minions_killed)
+    print(lux.championgg[RoleGG.support].total_healed)
 
     # Get matchup data for Lux mid
     # (This takes a minute to run the first time but is ~ instantaneous thereafter)
-    for matchup in lux.championgg[Role.middle].matchups:
+    for matchup in lux.championgg[RoleGG.middle].matchups:
         if matchup.nmatches > 100:
             print(f"{matchup.enemy.champion.name}: {round(matchup.winrate*100)}%   ({matchup.nmatches} matches analyzed)")
 
