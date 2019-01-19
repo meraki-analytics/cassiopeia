@@ -6,8 +6,8 @@ dependencies:
   - arrow
   - requests
   - pip:
-    - git+https://github.com/meraki-analytics/cassiopeia-datapipelines
-    - git+https://github.com/meraki-analytics/cassiopeia-merakicommons
+    - git+https://github.com/meraki-analytics/datapipelines
+    - git+https://github.com/meraki-analytics/merakicommons
     - git+https://github.com/meraki-analytics/cassiopeia-datastores#egg=cassiopeia-sqlstore&subdirectory=cassiopeia-sqlstore
     - git+https://github.com/meraki-analytics/cassiopeia-datastores#egg=cassiopeia-diskstore&subdirectory=cassiopeia-diskstore
     - git+https://github.com/meraki-analytics/cassiopeia-plugins#egg=cassiopeia-championgg&subdirectory=cassiopeia-championgg
