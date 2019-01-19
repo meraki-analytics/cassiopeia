@@ -11,9 +11,3 @@ Summoners
     :members:
     :undoc-members:
     :show-inheritance:
-
-
-.. autoclass:: cassiopeia.core.summoner.Account
-    :members:
-    :undoc-members:
-    :show-inheritance:

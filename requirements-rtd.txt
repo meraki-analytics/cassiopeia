@@ -5,3 +5,6 @@ datapipelines>=1.0.7
 Pillow
 arrow
 requests
+cassiopeia_championgg
+cassiopeia_diskstore
+cassiopeia_sqlstore
