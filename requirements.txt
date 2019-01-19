@@ -2,7 +2,6 @@ flake8
 pytest
 merakicommons>=1.0.6
 datapipelines>=1.0.7
-pycurl
 Pillow
 arrow
 requests

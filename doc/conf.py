@@ -16,8 +16,6 @@
 import sys
 import os
 from unittest.mock import MagicMock
-# import shlex
-from unittest.mock import MagicMock
 
 
 # Add all plugins to RTDs arguments so it reads them all.
@@ -31,17 +29,6 @@ class Mock(MagicMock):
             return MagicMock()
 
 MOCK_MODULES = ['pycurl']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
-
-
-
-# Mock pycurl
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-        return MagicMock()
-
-MOCK_MODULES = ["pycurl"]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
