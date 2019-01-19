@@ -48,7 +48,7 @@ class Summoner(CassiopeiaGhost):
 
     @classmethod
     @provide_default_region
-    def __get_query_from_kwargs__(cls, *, id: str = None, account_id: str=None, puuid: str=None, name: str = None, region: Union[Region, str], ) -> dict:
+    def __get_query_from_kwargs__(cls, *, id: str = None, account_id: str=None, puuid: str=None, name: str = None, region: Union[Region, str]) -> dict:
         query = {"region": region}
         if id is not None:
             query["id"] = id
