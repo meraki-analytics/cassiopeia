@@ -1,0 +1,13 @@
+name: cass_rtd
+dependencies:
+  - flake8
+  - pytest
+  - Pillow
+  - arrow
+  - requests
+  - pip:
+    - cassiopeia_championgg
+    - cassiopeia_diskstore
+    - cassiopeia_sqlstore
+    - merakicommons>=1.0.6
+    - datapipelines>=1.0.7
