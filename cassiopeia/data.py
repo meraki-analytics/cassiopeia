@@ -355,7 +355,24 @@ class Lane(Enum):
             "JUNGLE": Lane.jungle,
             "NONE": None
         }[string]
-    
+
+
+class Role(Enum):
+    duo = "DUO"
+    duo_carry = "DUO_CARRY"
+    duo_support = "DUO_SUPPORT"
+    none = "NONE"
+    solo = "SOLO"
+
+    def from_match_naming_scheme(string: str):
+        return {
+            "DUO": Role.duo,
+            "DUO_CARRY": Role.duo_carry,
+            "DUO_SUPPORT": Role.duo_support,
+            "NONE": Role.none,
+            "SOLO": Role.solo
+        }[string]
+
 
 class SummonersRiftArea(Enum):
     none = "NONE"
@@ -377,7 +394,7 @@ class SummonersRiftArea(Enum):
     river_top = "RIVER_TOP"
     river_bot = "RIVER_BOT"
 
-    def get_side(self):
+    def get_side(self) -> Side:
         if "BLUE" in self.value:
             return Side.blue
         elif "RED" in self.value:
@@ -385,7 +402,7 @@ class SummonersRiftArea(Enum):
         else:
             return None
 
-    def get_lane(self):
+    def get_lane(self) -> Lane:
         if "TOP" in self.value:
             return Lane.top_lane
         elif "MID" in self.value:
@@ -449,21 +466,11 @@ class SummonersRiftArea(Enum):
         return color_mapping.get(rgb, SummonersRiftArea.none)
 
 
-class Role(Enum):
-    duo = "DUO"
-    duo_carry = "DUO_CARRY"
-    duo_support = "DUO_SUPPORT"
-    none = "NONE"
-    solo = "SOLO"
-
-    def from_match_naming_scheme(string: str):
-        return {
-            "DUO": Role.duo,
-            "DUO_CARRY": Role.duo_carry,
-            "DUO_SUPPORT": Role.duo_support,
-            "NONE": Role.none,
-            "SOLO": Role.solo
-        }[string]
+class Tower(Enum):
+    OUTER = "OUTER_TURRET"
+    INNER = "INNER_TURRET"
+    BASE  = "BASE_TURRET"
+    NEXUS = "NEXUS_TURRET"
 
 
 # References for Queues:

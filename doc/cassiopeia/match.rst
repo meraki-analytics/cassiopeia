@@ -76,3 +76,15 @@ Matches
     :members:
     :undoc-members:
     :show-inheritance:
+
+
+.. autoclass:: cassiopeia.core.match.CumulativeTimeline
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+.. autoclass:: cassiopeia.core.match.ParticipantState
+    :members:
+    :undoc-members:
+    :show-inheritance:
