@@ -1,0 +1,11 @@
+conda:
+    file: environment.yml
+
+build:
+    image: latest
+
+python:
+    version: 3
+
+requirements_file:
+    requirements-rtd.txt
