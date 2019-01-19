@@ -1,9 +1,0 @@
-name: cass_rtd
-dependencies:
-  - python=3
-  - pycurl
-  - flake8
-  - pytest
-  - Pillow
-  - arrow
-  - requests
