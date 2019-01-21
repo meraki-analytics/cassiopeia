@@ -705,7 +705,10 @@ class CumulativeTimeline:
         self._id = id
         self._timeline = participant_timeline
 
-    def __getitem__(self, time: datetime.timedelta) -> "ParticipantState":
+    def __getitem__(self, time: Union[datetime.timedelta, str]) -> "ParticipantState":
+        if isinstance(time, str):
+            time = time.split(":")
+            time = datetime.timedelta(minutes=int(time[0]), seconds=int(time[1]))
         state = ParticipantState(id=self._id, time=time, participant_timeline=self._timeline)
         for event in self._timeline.events:
             if event.timestamp > time:

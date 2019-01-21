@@ -18,6 +18,8 @@ def print_newest_match(name: str,  region: str):
     #  Some data is only available every one minute.
     p = match.participants[summoner]
     p_state = p.cumulative_timeline[datetime.timedelta(minutes=15, seconds=30)]
+    # You can also use a string instead of datetime.timedelta
+    p_state = p.cumulative_timeline["15:30"]
     items = p_state.items
     items = [item.name for item in items]
     skills = p_state.skills
