@@ -1275,11 +1275,11 @@ class Participant(CassiopeiaObject):
 
     @property
     def lane(self) -> Lane:
-        return Lane.from_match_naming_scheme(self._data[ParticipantData].stats.lane)
+        return Lane.from_match_naming_scheme(self._data[ParticipantData].timeline.lane)
 
     @property
     def role(self) -> Role:
-        return Role.from_match_naming_scheme(self._data[ParticipantData].stats.role)
+        return Role.from_match_naming_scheme(self._data[ParticipantData].timeline.role)
 
     @property
     def skill_order(self) -> List[Key]:
