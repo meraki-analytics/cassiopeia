@@ -351,6 +351,7 @@ class Lane(Enum):
         return {
             "BOTTOM": Lane.bot_lane,
             "MIDDLE": Lane.mid_lane,
+            "MID": Lane.mid_lane,
             "TOP": Lane.top_lane,
             "JUNGLE": Lane.jungle,
             "NONE": None

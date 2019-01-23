@@ -197,7 +197,7 @@ class LeaguesAPI(RiotAPIService):
 
     @get.register(GrandmasterLeagueListDto)
     @validate_query(_validate_get_grandmaster_league_query, convert_region_to_platform)
-    def get_master_league_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> GrandmasterLeagueListDto:
+    def get_grandmaster_league_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> GrandmasterLeagueListDto:
         url = "https://{platform}.api.riotgames.com/lol/league/v4/grandmasterleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=query["queue"].value)
         try:
             endpoint = "grandmasterleagues/by-queue {}".format(query["platform"].value)

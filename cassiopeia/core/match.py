@@ -1275,11 +1275,11 @@ class Participant(CassiopeiaObject):
 
     @property
     def lane(self) -> Lane:
-        return Lane.from_match_naming_scheme(self._data[ParticipantData].stats.lane)
+        return Lane.from_match_naming_scheme(self._data[ParticipantData].timeline.lane)
 
     @property
     def role(self) -> Role:
-        return Role.from_match_naming_scheme(self._data[ParticipantData].stats.role)
+        return Role.from_match_naming_scheme(self._data[ParticipantData].timeline.role)
 
     @property
     def skill_order(self) -> List[Key]:
@@ -1496,7 +1496,7 @@ class Match(CassiopeiaGhost):
         # The below line is necessary because it's possible to pull this match from the cache (which has Match core objects in it).
         # In that case, the data will already be loaded and we don't want to overwrite anything.
         if not hasattr(instance._data[MatchData], "participants"):
-            participant = {"participantId": None, "championId": ref.championId, "stats": {"lane": ref.lane, "role": ref.role}}
+            participant = {"participantId": None, "championId": ref.championId, "timeline": {"lane": ref.lane, "role": ref.role}}
             player = {"participantId": None, "currentAccountId": ref.accountId, "currentPlatformId": ref.platform}
             instance(season=ref.season, queue=ref.queue, creation=ref.creation)
             instance._data[MatchData](participants=[participant],
