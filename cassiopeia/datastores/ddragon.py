@@ -423,7 +423,8 @@ class DDragon(DataSource):
         for path in body:
             for tier, subpath in enumerate(path["slots"]):
                 for i, rune in enumerate(subpath["runes"]):
-                    rune["path"] = path["name"]
+                    rune["path"] = path["key"]
+                    rune["path_name"] = path["name"]
                     rune["tier"] = tier
                     subpath[i] = RuneDto(rune)
 
