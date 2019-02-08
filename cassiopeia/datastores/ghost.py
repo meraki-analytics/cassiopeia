@@ -53,8 +53,7 @@ class UnloadedGhostStore(DataSource):
         has("platform").as_(Platform).also. \
         can_have("version").as_(str).also. \
         can_have("locale").with_default(_get_default_locale, supplies_type=str).also. \
-        can_have("includedData").with_default({"all"}).also. \
-        can_have("dataById").with_default(True)
+        can_have("includedData").with_default({"all"})
 
     _validate_get_rune_query = Query. \
         has("id").as_(int).or_("name").as_(str).also. \

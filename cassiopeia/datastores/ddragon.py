@@ -174,7 +174,6 @@ class DDragon(DataSource):
         body["region"] = query["platform"].region.value
         body["locale"] = locale
         body["includedData"] = {"all"}
-        body["dataById"] = True
         result = ChampionListDto(body)
         self._cache[ChampionListDto][ahash] = result
         return result
