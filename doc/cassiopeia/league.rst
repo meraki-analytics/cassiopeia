@@ -38,6 +38,13 @@ Leagues
     :show-inheritance:
 
 
+.. autoclass:: cassiopeia.core.league.PositionalLeagues
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :inherited-members:
+
+
 .. autoclass:: cassiopeia.core.league.MiniSeries
     :members:
     :undoc-members:
