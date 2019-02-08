@@ -8,6 +8,10 @@ Leagues
 
 .. automethod:: cassiopeia.get_leagues
 
+.. automethod:: cassiopeia.get_league_positions
+
+.. automethod:: cassiopeia.get_positional_leagues
+
 .. automethod:: cassiopeia.get_challenger_league
 
 .. automethod:: cassiopeia.get_master_league
