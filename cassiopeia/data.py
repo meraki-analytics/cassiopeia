@@ -350,6 +350,7 @@ class Position(Enum):
     jungle = "JUNGLE"
     bottom = "BOTTOM"
     support = "UTILITY"
+    apex = "APEX"
     none = "NONE"
 
     def from_league_naming_scheme(string: str):
