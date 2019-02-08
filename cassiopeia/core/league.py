@@ -275,7 +275,7 @@ class LeagueEntries(CassiopeiaLazyList):
         return self[Queue.ranked_flex_threes]
 
 
-class PositionalLeaguesList(CassiopeiaLazyList):  # type List[LeagueEntry]
+class PositionalLeagues(CassiopeiaLazyList):  # type List[LeagueEntry]
     _data_types = {PositionalLeaguesListData}
 
     @provide_default_region

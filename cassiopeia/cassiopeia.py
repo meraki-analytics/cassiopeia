@@ -3,7 +3,7 @@ import arrow
 import datetime
 
 from .data import Region, Queue, Season, Tier, Division, Position
-from .core import Champion, Summoner, ChampionMastery, Rune, Item, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Locales, ProfileIcons, ChallengerLeague, GrandmasterLeague, MasterLeague, SummonerLeagues, LeagueEntries, Patch, VerificationString, ChampionRotation, PositionalLeaguesList
+from .core import Champion, Summoner, ChampionMastery, Rune, Item, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Locales, ProfileIcons, ChallengerLeague, GrandmasterLeague, MasterLeague, SummonerLeagues, LeagueEntries, Patch, VerificationString, ChampionRotation, PositionalLeagues
 from .datastores import common as _common_datastore
 from ._configuration import Settings, load_config, get_default_config
 from . import configuration
@@ -56,8 +56,8 @@ def get_leagues(summoner: Summoner, region: Union[Region, str] = None) -> Summon
     return summoner.leagues
 
 
-def get_positional_leagues(queue: Queue = None, tier: Tier = None, division: Division = None, position: Position = None, region: Union[Region, str] = None) -> PositionalLeaguesList:
-    return PositionalLeaguesList(region=region, queue=queue, tier=tier, division=division, position=position)
+def get_positional_leagues(queue: Queue = None, tier: Tier = None, division: Division = None, position: Position = None, region: Union[Region, str] = None) -> PositionalLeagues:
+    return PositionalLeagues(region=region, queue=queue, tier=tier, division=division, position=position)
 
 
 def get_master_league(queue: Union[Queue, int, str], region: Union[Region, str] = None) -> MasterLeague:

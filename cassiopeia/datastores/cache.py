@@ -16,7 +16,7 @@ from ..core.staticdata.language import LanguagesData, Locales
 from ..core.staticdata.languagestrings import LanguageStringsData, LanguageStrings
 from ..core.staticdata.version import VersionListData, Versions
 from ..core.championmastery import ChampionMasteryData, ChampionMasteryListData, ChampionMastery, ChampionMasteries
-from ..core.league import LeaguePositionsData, LeagueListData, MasterLeagueListData, GrandmasterLeagueListData, ChallengerLeagueListData, LeagueEntries, League, ChallengerLeague, GrandmasterLeague, MasterLeague, PositionalLeaguesList
+from ..core.league import LeaguePositionsData, LeagueListData, MasterLeagueListData, GrandmasterLeagueListData, ChallengerLeagueListData, LeagueEntries, League, ChallengerLeague, GrandmasterLeague, MasterLeague, PositionalLeagues
 from ..core.match import MatchData, TimelineData, Match, Timeline
 from ..core.summoner import SummonerData, Summoner
 from ..core.status import ShardStatusData, ShardStatus
@@ -51,7 +51,7 @@ default_expirations = {
     ChallengerLeague: datetime.timedelta(hours=6),
     GrandmasterLeague: datetime.timedelta(hours=6),
     MasterLeague: datetime.timedelta(hours=6),
-    PositionalLeaguesList: datetime.timedelta(hours=6),
+    PositionalLeagues: datetime.timedelta(hours=6),
     Match: datetime.timedelta(days=3),
     Timeline: datetime.timedelta(days=1),
     Summoner: datetime.timedelta(days=1),
@@ -328,14 +328,14 @@ class Cache(DataSource, DataSink):
 
     # League Positions List Data
 
-    @get.register(PositionalLeaguesList)
+    @get.register(PositionalLeagues)
     @validate_query(uniquekeys.validate_league_entries_list_query, uniquekeys.convert_region_to_platform)
-    def get_league_entries_list(self, query: Mapping[str, Any], context: ProfileIcon = None) -> PositionalLeaguesList:
-        return self._get(PositionalLeaguesList, query, uniquekeys.for_league_entries_list_query, context)
+    def get_league_entries_list(self, query: Mapping[str, Any], context: ProfileIcon = None) -> PositionalLeagues:
+        return self._get(PositionalLeagues, query, uniquekeys.for_league_entries_list_query, context)
 
-    @put.register(PositionalLeaguesList)
-    def put_league_entries_list(self, item: PositionalLeaguesList, context: PipelineContext = None) -> None:
-        self._put(PositionalLeaguesList, item, uniquekeys.for_league_entries_list, context=context)
+    @put.register(PositionalLeagues)
+    def put_league_entries_list(self, item: PositionalLeagues, context: PipelineContext = None) -> None:
+        self._put(PositionalLeagues, item, uniquekeys.for_league_entries_list, context=context)
 
     ###################
     # Static Data API #
