@@ -21,7 +21,7 @@ class LeaguePositionsDto(DtoObject):
     pass
 
 
-class LeaguePositionsListDto(DtoObject):
+class PositionalLeaguesListDto(DtoObject):
     pass
 
 

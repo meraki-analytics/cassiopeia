@@ -14,7 +14,7 @@ from ..dto.spectator import CurrentGameInfoDto, FeaturedGamesDto
 from ..dto.summoner import SummonerDto
 
 from ..core.championmastery import ChampionMastery, ChampionMasteries
-from ..core.league import LeagueEntries, ChallengerLeague, GrandmasterLeague, MasterLeague, League, LeagueEntriesList
+from ..core.league import LeagueEntries, ChallengerLeague, GrandmasterLeague, MasterLeague, League, PositionalLeaguesList
 from ..core.staticdata import Champion, Rune, Item, SummonerSpell, Map, Locales, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions, Items, Champions, Maps, SummonerSpells, Runes
 from ..core.status import ShardStatus
 from ..core.match import Match, MatchHistory, Timeline
@@ -1305,7 +1305,7 @@ validate_league_entries_list_query = Query. \
     has("position").as_(Position).also. \
     has("platform").as_(Platform)
 
-def for_league_entries_list(lel: LeagueEntriesList) -> List[Tuple[str, str, str, str, str]]:
+def for_league_entries_list(lel: PositionalLeaguesList) -> List[Tuple[str, str, str, str, str]]:
     return [lel.platform.value, lel.queue.value, lel.tier.value, lel.division.value, lel.position.value]
 
 def for_league_entries_list_query(query: Query) -> List[Tuple[str, str, str, str, str]]:

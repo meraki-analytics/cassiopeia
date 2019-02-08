@@ -3,7 +3,7 @@ from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError, validate_query
 from .common import RiotAPIService, APINotFoundError
 from ...data import Platform, Queue, Tier, Division, Position
-from ...dto.league import LeaguesListDto, ChallengerLeagueListDto, MasterLeagueListDto,GrandmasterLeagueListDto, LeaguePositionsDto, LeagueListDto, PositionalQueuesDto, LeaguePositionsListDto
+from ...dto.league import LeaguesListDto, ChallengerLeagueListDto, MasterLeagueListDto,GrandmasterLeagueListDto, LeaguePositionsDto, LeagueListDto, PositionalQueuesDto, PositionalLeaguesListDto
 from ..uniquekeys import convert_region_to_platform
 
 T = TypeVar("T")
@@ -95,9 +95,9 @@ class LeaguesAPI(RiotAPIService):
         has("page").as_(int).also. \
         has("platform").as_(Platform)
 
-    @get.register(LeaguePositionsListDto)
+    @get.register(PositionalLeaguesListDto)
     @validate_query(_validate_get_league_positions_list_query, convert_region_to_platform)
-    def get_league_entries_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LeaguePositionsListDto:
+    def get_league_entries_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> PositionalLeaguesListDto:
         url = "https://{platform}.api.riotgames.com/lol/league/v4/positions/{queue}/{tier}/{division}/{position}/{page}".format(
             platform=query["platform"].value.lower(),
             queue=query["queue"].value,
@@ -111,7 +111,7 @@ class LeaguesAPI(RiotAPIService):
             data = self._get(url, app_limiter=app_limiter, method_limiter=method_limiter)
         except APINotFoundError:
             data = []
-        return LeaguePositionsListDto(entries=data, page=query["page"], region=query["region"].value, queue=query["queue"].value, tier=query["tier"].value, division=query["division"].value, position=query["position"].value)
+        return PositionalLeaguesListDto(entries=data, page=query["page"], region=query["region"].value, queue=query["queue"].value, tier=query["tier"].value, division=query["division"].value, position=query["position"].value)
 
     # Leagues
 

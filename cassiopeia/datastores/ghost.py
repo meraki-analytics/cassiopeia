@@ -8,7 +8,7 @@ from ..data import Platform, Queue, Tier, Division, Position
 from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, GrandmasterLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions, ChampionMasteries, LeagueEntries, FeaturedMatches, VerificationString
 from ..core.match import Timeline, MatchListData
 from ..core.championmastery import ChampionMasteryListData
-from ..core.league import LeaguePositionsData, LeagueEntry, LeagueEntriesList, LeaguePositionsListData, LeaguePositionData
+from ..core.league import LeaguePositionsData, LeagueEntry, PositionalLeaguesList, PositionalLeaguesListData, LeaguePositionData
 from ..core.spectator import FeaturedGamesData
 from ..core.staticdata.item import ItemListData
 from ..core.staticdata.champion import ChampionListData, ChampionData
@@ -329,15 +329,15 @@ class UnloadedGhostStore(DataSource):
         query["id"] = query.pop("id")
         return League._construct_normally(**query)
 
-    @get.register(LeagueEntriesList)
+    @get.register(PositionalLeaguesList)
     @validate_query(_validate_get_league_entries_list_query, convert_region_to_platform)
-    def get_league_entires_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LeagueEntriesList:
+    def get_league_entires_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> PositionalLeaguesList:
         def generate_entries(original_query):
             page = 0
             while True:
                 new_query = copy.deepcopy(original_query)
                 new_query["page"] = page
-                data = context[context.Keys.PIPELINE].get(LeaguePositionsListData, query=new_query)
+                data = context[context.Keys.PIPELINE].get(PositionalLeaguesListData, query=new_query)
                 n_new_results = len(data)
                 for entrydata in data:
                     entry = LeagueEntry.from_data(data=entrydata, loaded_groups={LeaguePositionData})
@@ -349,7 +349,7 @@ class UnloadedGhostStore(DataSource):
                 page += 1
 
         original_query = copy.deepcopy(query)
-        return LeagueEntriesList.from_generator(generator=generate_entries(original_query), region=query["region"], queue=query["queue"], tier=query["tier"], division=query["division"], position=query["position"])
+        return PositionalLeaguesList.from_generator(generator=generate_entries(original_query), region=query["region"], queue=query["queue"], tier=query["tier"], division=query["division"], position=query["position"])
 
     @get.register(VerificationString)
     @validate_query(_validate_get_verification_string_query, convert_region_to_platform)

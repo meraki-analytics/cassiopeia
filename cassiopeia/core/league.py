@@ -6,7 +6,7 @@ from merakicommons.container import searchable, SearchableList
 from .. import configuration
 from ..data import Region, Platform, Tier, Division, Queue, Role, Position
 from .common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, provide_default_region, ghost_load_on
-from ..dto.league import LeaguePositionDto, LeaguePositionsDto,  LeaguesListDto, LeagueListDto, MiniSeriesDto, GrandmasterLeagueListDto, ChallengerLeagueListDto, MasterLeagueListDto, LeaguePositionsListDto
+from ..dto.league import LeaguePositionDto, LeaguePositionsDto,  LeaguesListDto, LeagueListDto, MiniSeriesDto, GrandmasterLeagueListDto, ChallengerLeagueListDto, MasterLeagueListDto, PositionalLeaguesListDto
 from .summoner import Summoner
 
 
@@ -54,8 +54,8 @@ class LeaguesListData(CoreDataList):
     _renamed = {}
 
 
-class LeaguePositionsListData(CoreDataList):
-    _dto_type = LeaguePositionsListDto
+class PositionalLeaguesListData(CoreDataList):
+    _dto_type = PositionalLeaguesListDto
     _renamed = {}
 
 
@@ -275,8 +275,8 @@ class LeagueEntries(CassiopeiaLazyList):
         return self[Queue.ranked_flex_threes]
 
 
-class LeagueEntriesList(CassiopeiaLazyList):  # type List[LeagueEntry]
-    _data_types = {LeaguePositionsListData}
+class PositionalLeaguesList(CassiopeiaLazyList):  # type List[LeagueEntry]
+    _data_types = {PositionalLeaguesListData}
 
     @provide_default_region
     def __init__(self, *, region: Union[Region, str] = None, queue: Queue = None, tier: Tier = None, division: Division = None, position: Position = None):
@@ -302,7 +302,7 @@ class LeagueEntriesList(CassiopeiaLazyList):  # type List[LeagueEntry]
 
     @lazy_property
     def region(self) -> Region:
-        return Region(self._data[LeaguePositionsListData].region)
+        return Region(self._data[PositionalLeaguesListData].region)
 
     @lazy_property
     def platform(self) -> Platform:
@@ -310,19 +310,19 @@ class LeagueEntriesList(CassiopeiaLazyList):  # type List[LeagueEntry]
 
     @lazy_property
     def queue(self) -> Queue:
-        return Queue(self._data[LeaguePositionsListData].queue)
+        return Queue(self._data[PositionalLeaguesListData].queue)
 
     @lazy_property
     def tier(self) -> Tier:
-        return Tier(self._data[LeaguePositionsListData].tier)
+        return Tier(self._data[PositionalLeaguesListData].tier)
 
     @lazy_property
     def division(self) -> Division:
-        return Division(self._data[LeaguePositionsListData].division)
+        return Division(self._data[PositionalLeaguesListData].division)
 
     @lazy_property
     def position(self) -> Position:
-        return Position(self._data[LeaguePositionsListData].position)
+        return Position(self._data[PositionalLeaguesListData].position)
 
 
 
