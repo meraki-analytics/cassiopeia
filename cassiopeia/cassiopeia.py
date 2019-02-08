@@ -56,7 +56,7 @@ def get_leagues(summoner: Summoner, region: Union[Region, str] = None) -> Summon
     return summoner.leagues
 
 
-def get_positional_leagues(queue: Queue = None, tier: Tier = None, division: Division = None, position: Position = None, region: Union[Region, str] = None) -> PositionalLeagues:
+def get_positional_leagues(queue: Queue, tier: Tier, division: Division, position: Position, region: Union[Region, str] = None) -> PositionalLeagues:
     return PositionalLeagues(region=region, queue=queue, tier=tier, division=division, position=position)
 
 
