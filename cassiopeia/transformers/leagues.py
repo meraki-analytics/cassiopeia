@@ -3,9 +3,9 @@ from copy import deepcopy
 
 from datapipelines import DataTransformer, PipelineContext
 
-from ..core.league import LeaguePositionData, LeaguePositionsData, LeagueEntry, LeagueEntries, LeaguesListData, LeagueListData, SummonerLeagues, League, ChallengerLeagueListData, ChallengerLeague, GrandmasterLeagueListData, GrandmasterLeague, MasterLeagueListData, MasterLeague
+from ..core.league import LeaguePositionData, LeaguePositionsData, LeagueEntry, LeagueEntries, LeaguesListData, LeagueListData, SummonerLeagues, League, ChallengerLeagueListData, ChallengerLeague, GrandmasterLeagueListData, GrandmasterLeague, MasterLeagueListData, MasterLeague, LeaguePositionsListData
 
-from ..dto.league import LeaguesListDto, LeagueListDto, ChallengerLeagueListDto, GrandmasterLeagueListDto, MasterLeagueListDto, LeaguePositionDto, LeaguePositionsDto
+from ..dto.league import LeaguesListDto, LeagueListDto, ChallengerLeagueListDto, GrandmasterLeagueListDto, MasterLeagueListDto, LeaguePositionDto, LeaguePositionsDto, LeaguePositionsListDto
 
 T = TypeVar("T")
 F = TypeVar("F")
@@ -45,6 +45,18 @@ class LeagueTransformer(DataTransformer):
                 entry["region"] = league["region"]
         data = [LeagueTransformer.league_list_dto_to_data(self, league) for league in data["leagues"]]
         return LeaguesListData(data, summoner_id=value["summonerId"], region=value["region"])
+
+    @transform.register(LeaguePositionsListDto, LeaguePositionsListData)
+    def league_positions_list_dto_to_data(self, value: LeaguePositionsListDto, context: PipelineContext = None) -> LeaguePositionsListData:
+        kwargs = {
+            "region": value["region"],
+            "queue": value["queue"],
+            "tier": value["tier"],
+            "division": value["division"],
+            "position": value["position"],
+            "page": value["page"]
+        }
+        return LeaguePositionsListData([self.league_position_dto_to_data(entry) for entry in value["entries"]], **kwargs)
 
     @transform.register(ChallengerLeagueListDto, ChallengerLeagueListData)
     def challenger_league_list_dto_to_data(self, value: ChallengerLeagueListDto, context: PipelineContext = None) -> ChallengerLeagueListData:

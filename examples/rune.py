@@ -1,6 +1,5 @@
 import cassiopeia as cass
 from cassiopeia import Runes, Rune
-from cassiopeia import RunePath
 
 
 def print_keystone_runes():

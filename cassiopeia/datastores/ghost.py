@@ -4,11 +4,11 @@ import copy
 
 from datapipelines import DataSource, PipelineContext, Query, validate_query
 
-from ..data import Platform, Queue
+from ..data import Platform, Queue, Tier, Division, Position
 from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, GrandmasterLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions, ChampionMasteries, LeagueEntries, FeaturedMatches, VerificationString
 from ..core.match import Timeline, MatchListData
 from ..core.championmastery import ChampionMasteryListData
-from ..core.league import LeaguePositionsData, LeagueEntry
+from ..core.league import LeaguePositionsData, LeagueEntry, LeagueEntriesList, LeaguePositionsListData, LeaguePositionData
 from ..core.spectator import FeaturedGamesData
 from ..core.staticdata.item import ItemListData
 from ..core.staticdata.champion import ChampionListData, ChampionData
@@ -152,6 +152,13 @@ class UnloadedGhostStore(DataSource):
 
     _validate_get_master_league_query = Query. \
         has("queue").as_(Queue).also. \
+        has("platform").as_(Platform)
+
+    _validate_get_league_entries_list_query = Query. \
+        has("queue").as_(Queue).also. \
+        has("tier").as_(Tier).also. \
+        has("division").as_(Division).also. \
+        has("position").as_(Position).also. \
         has("platform").as_(Platform)
 
     _validate_get_current_match_query = Query. \
@@ -321,6 +328,28 @@ class UnloadedGhostStore(DataSource):
         query["region"] = query.pop("platform").region
         query["id"] = query.pop("id")
         return League._construct_normally(**query)
+
+    @get.register(LeagueEntriesList)
+    @validate_query(_validate_get_league_entries_list_query, convert_region_to_platform)
+    def get_league_entires_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LeagueEntriesList:
+        def generate_entries(original_query):
+            page = 0
+            while True:
+                new_query = copy.deepcopy(original_query)
+                new_query["page"] = page
+                data = context[context.Keys.PIPELINE].get(LeaguePositionsListData, query=new_query)
+                n_new_results = len(data)
+                for entrydata in data:
+                    entry = LeagueEntry.from_data(data=entrydata, loaded_groups={LeaguePositionData})
+                    yield entry
+                if page == 0:
+                    results_per_page = n_new_results
+                if n_new_results != results_per_page:
+                    break
+                page += 1
+
+        original_query = copy.deepcopy(query)
+        return LeagueEntriesList.from_generator(generator=generate_entries(original_query), region=query["region"], queue=query["queue"], tier=query["tier"], division=query["division"], position=query["position"])
 
     @get.register(VerificationString)
     @validate_query(_validate_get_verification_string_query, convert_region_to_platform)

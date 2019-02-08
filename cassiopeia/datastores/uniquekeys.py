@@ -2,7 +2,7 @@ from typing import Tuple, Set, Union, MutableMapping, Any, Mapping, Iterable, Ge
 
 from datapipelines import Query, PipelineContext, QueryValidationError
 
-from ..data import Region, Platform, Queue, Tier, Season
+from ..data import Region, Platform, Queue, Tier, Division, Position
 
 from ..dto.champion import ChampionRotationDto
 from ..dto.championmastery import ChampionMasteryDto, ChampionMasteryListDto, ChampionMasteryScoreDto
@@ -14,7 +14,7 @@ from ..dto.spectator import CurrentGameInfoDto, FeaturedGamesDto
 from ..dto.summoner import SummonerDto
 
 from ..core.championmastery import ChampionMastery, ChampionMasteries
-from ..core.league import LeagueEntries, ChallengerLeague, GrandmasterLeague, MasterLeague, League
+from ..core.league import LeagueEntries, ChallengerLeague, GrandmasterLeague, MasterLeague, League, LeagueEntriesList
 from ..core.staticdata import Champion, Rune, Item, SummonerSpell, Map, Locales, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions, Items, Champions, Maps, SummonerSpells, Runes
 from ..core.status import ShardStatus
 from ..core.match import Match, MatchHistory, Timeline
@@ -1295,6 +1295,21 @@ def for_many_master_league_query(query: Query) -> Generator[List[Tuple[str, str]
             yield [(query["platform"].value, queue.value)]
         except ValueError as e:
             raise QueryValidationError from e
+
+# League Entries List
+
+validate_league_entries_list_query = Query. \
+    has("queue").as_(Queue).also. \
+    has("tier").as_(Tier).also. \
+    has("division").as_(Division).also. \
+    has("position").as_(Position).also. \
+    has("platform").as_(Platform)
+
+def for_league_entries_list(lel: LeagueEntriesList) -> List[Tuple[str, str, str, str, str]]:
+    return [lel.platform.value, lel.queue.value, lel.tier.value, lel.division.value, lel.position.value]
+
+def for_league_entries_list_query(query: Query) -> List[Tuple[str, str, str, str, str]]:
+    return [query["platform"].value, query["queue"].value, query["tier"].value, query["division"].value, query["position"].value]
 
 
 ###################

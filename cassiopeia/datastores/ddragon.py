@@ -1,11 +1,12 @@
 import copy
 from typing import Type, TypeVar, MutableMapping, Any, Iterable
+from collections import defaultdict
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError, validate_query
 
 from ..data import Platform
 from ..dto.staticdata.champion import ChampionDto, ChampionListDto
-from ..dto.staticdata.rune import RuneDto, RuneListDto
+from ..dto.staticdata.rune import RuneDto, RuneListDto, RunePathDto, RunePathsDto
 from ..dto.staticdata.item import ItemDto, ItemListDto
 from ..dto.staticdata.summonerspell import SummonerSpellDto, SummonerSpellListDto
 from ..dto.staticdata.version import VersionListDto
@@ -423,8 +424,12 @@ class DDragon(DataSource):
         for path in body:
             for tier, subpath in enumerate(path["slots"]):
                 for i, rune in enumerate(subpath["runes"]):
-                    rune["path"] = path["key"]
-                    rune["path_name"] = path["name"]
+                    rune["path"] = {
+                        "key": path["key"],
+                        "name": path["name"],
+                        "id": path["id"],
+                        "icon": path["icon"]
+                    }
                     rune["tier"] = tier
                     subpath[i] = RuneDto(rune)
 
@@ -440,6 +445,26 @@ class DDragon(DataSource):
         result = RuneListDto(body)
         self._cache[RuneListDto][ahash] = result
         return result
+
+    _validate_get_rune_paths_query = Query. \
+        has("platform").as_(Platform).also. \
+        can_have("version").with_default(_get_latest_version, supplies_type=str).also. \
+        can_have("locale").as_(str).also. \
+        can_have("includedData")
+
+    @get.register(RunePathsDto)
+    @validate_query(_validate_get_rune_paths_query, convert_region_to_platform)
+    def get_rune_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> RunePathsDto:
+        pipeline = context[PipelineContext.Keys.PIPELINE]
+        runes = pipeline.get(RuneListDto, copy.deepcopy(query))["data"]
+        paths = defaultdict(dict)
+        for rune in runes:
+            if rune["path"]["id"] not in paths:
+                paths[rune["path"]["id"]] = rune["path"]
+        paths = [RunePathDto(path) for path in paths.values()]
+        paths = RunePathsDto(paths=paths, platform=query["platform"], locale=query.get("locale", None), version=query.get("version", None), includedData=query.get("includedData", None))
+        return paths
+
 
     #########
     # Items #

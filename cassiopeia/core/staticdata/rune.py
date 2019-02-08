@@ -5,7 +5,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
 from ... import configuration
-from ...data import Region, Platform, RunePath
+from ...data import Region, Platform
 from ..common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, get_latest_version, provide_default_region, ghost_load_on
 from .common import Image
 from ...dto.staticdata import rune as dto
@@ -14,6 +14,10 @@ from ...dto.staticdata import rune as dto
 ##############
 # Data Types #
 ##############
+
+
+class RunePathData(CoreData):
+    _renamed = {}
 
 
 class RuneListData(CoreDataList):
@@ -39,6 +43,37 @@ class RuneImageData(CoreData):
 ##############
 # Core Types #
 ##############
+
+
+class RunePath(CassiopeiaObject):
+    _data_types = {RunePathData}
+
+    def __init__(self, *, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+        if included_data is None:
+            included_data = {"all"}
+        if locale is None and region is not None:
+            locale = Region(region).default_locale
+        kwargs = {"region": region, "included_data": included_data, "locale": locale}
+        if version:
+            kwargs["version"] = version
+        CassiopeiaObject.__init__(self, **kwargs)
+
+    @property
+    def id(self):
+        return self._data[RunePathData].id
+
+    @property
+    def name(self):
+        return self._data[RunePathData].name
+
+    @property
+    def key(self):
+        return self._data[RunePathData].key
+
+    @property
+    def image_url(self):
+        url = "https://ddragon.leagueoflegends.com/cdn/img/perk-images/" + self._data[RunePathData].icon
+        return url
 
 
 class Runes(CassiopeiaLazyList):
@@ -84,23 +119,23 @@ class Runes(CassiopeiaLazyList):
 
     @property
     def precision(self) -> List["Rune"]:
-        return self.filter(lambda rune: rune.path == RunePath.precision)
+        return self.filter(lambda rune: rune.path.key == "Precision")
 
     @property
     def domination(self) -> List["Rune"]:
-        return self.filter(lambda rune: rune.path == RunePath.domination)
+        return self.filter(lambda rune: rune.path.key == "Domination")
 
     @property
     def sorcery(self) -> List["Rune"]:
-        return self.filter(lambda rune: rune.path == RunePath.sorcery)
+        return self.filter(lambda rune: rune.path.key == "Sorcery")
 
     @property
     def resolve(self) -> List["Rune"]:
-        return self.filter(lambda rune: rune.path == RunePath.resolve)
+        return self.filter(lambda rune: rune.path.key == "Resolve")
 
     @property
     def inspiration(self) -> List["Rune"]:
-        return self.filter(lambda rune: rune.path == RunePath.inspiration)
+        return self.filter(lambda rune: rune.path.key == "Inspiration")
 
     @property
     def keystones(self) -> List["Rune"]:
@@ -199,13 +234,14 @@ class Rune(CassiopeiaGhost):
 
     @property
     def included_data(self) -> Set[str]:
-        """A set of tags to return additonal information for this champion when it's loaded."""
+        """A set of tags to return additional information for this champion when it's loaded."""
         return self._data[RuneData].includedData
 
     @CassiopeiaGhost.property(RuneData)
     @ghost_load_on
     def path(self) -> RunePath:
-        return RunePath(self._data[RuneData].path)
+        data = RunePathData(**self._data[RuneData].path)  # This seems out of place but we never request a RunePath so it never geos through the pipeline
+        return RunePath.from_data(data=data)
 
     @CassiopeiaGhost.property(RuneData)
     @ghost_load_on

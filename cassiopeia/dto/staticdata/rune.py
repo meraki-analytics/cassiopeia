@@ -7,3 +7,12 @@ class RuneDto(DtoObject):
 
 class RuneListDto(DtoObject):
     pass
+
+
+
+class RunePathsDto(DtoObject):
+    pass
+
+
+class RunePathDto(DtoObject):
+    pass

@@ -164,37 +164,6 @@ class MasteryTree(Enum):
     resolve = "Resolve"
 
 
-class RunePath(Enum):
-    precision = "Precision"
-    domination = "Domination"
-    sorcery = "Sorcery"
-    inspiration = "Inspiration"
-    resolve = "Resolve"
-
-    @property
-    def image_url(self):
-        urls = {
-            # See, e.g., https://ddragon.leagueoflegends.com/cdn/9.1.1/data/en_US/runesReforged.json
-            "precision": "Styles/7201_Precision.png",
-            "domination": "Styles/7200_Domination.png",
-            "sorcery": "Styles/7202_Sorcery.png",
-            "inspiration": "Styles/7203_Whimsy.png",
-            "resolve": "Styles/7204_Resolve.png"
-        }
-        url = "https://ddragon.leagueoflegends.com/cdn/img/perk-images/" + urls[self.name]
-        return url
-
-    @property
-    def id(self):
-        return {
-            "precision": 8000,
-            "domination": 8100,
-            "sorcery": 8200,
-            "inspiration": 8300,
-            "resolve": 8400,
-        }[self.name]
-
-
 class Tier(Enum):
     challenger = "CHALLENGER"
     grandmaster = "GRANDMASTER"
@@ -373,6 +342,25 @@ class Role(Enum):
             "NONE": Role.none,
             "SOLO": Role.solo
         }[string]
+
+
+class Position(Enum):
+    top = "TOP"
+    middle = "MIDDLE"
+    jungle = "JUNGLE"
+    bottom = "BOTTOM"
+    support = "UTILITY"
+    none = "NONE"
+
+    def from_league_naming_scheme(string: str):
+        return {
+            "TOP": Position.top,
+            "MIDDLE": Position.middle,
+            "JUNGLE": Position.jungle,
+            "BOTTOM": Position.bottom,
+            "UTILITY": Position.support,
+            "NONE": Position.none
+        }
 
 
 class SummonersRiftArea(Enum):

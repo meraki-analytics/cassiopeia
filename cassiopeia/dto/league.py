@@ -21,11 +21,21 @@ class LeaguePositionsDto(DtoObject):
     pass
 
 
+class LeaguePositionsListDto(DtoObject):
+    pass
+
+
 class ChallengerLeagueListDto(DtoObject):
     pass
+
 
 class GrandmasterLeagueListDto(DtoObject):
     pass
 
+
 class MasterLeagueListDto(DtoObject):
+    pass
+
+
+class PositionalQueuesDto(DtoObject):
     pass

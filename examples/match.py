@@ -46,12 +46,12 @@ def print_newest_match(name: str, region: str):
     print("\nNow pull the full match data by iterating over all the participants:")
     for p in match.participants:
         #print(p.summoner.name, 'playing', p.champion.name)
-        print(p.id, p.summoner.region, p.summoner.account_id, p.summoner.name, p.summoner.id, p.champion.id, p.team.first_dragon)
+        print(p.id, p.summoner.region, p.summoner.account_id, p.summoner.name, p.summoner.id, p.champion.id, p.team.first_dragon, p.runes.keystone.name)
 
     print("\nIterate over all the participants again and note that the data is not repulled:")
     for p in match.participants:
         #print(p.summoner.name, 'playing', p.champion.name)
-        print(p.id, p.summoner.region, p.summoner.account_id, p.summoner.name, p.summoner.id, p.champion.id, p.team.first_dragon)
+        print(p.id, p.summoner.region, p.summoner.account_id, p.summoner.name, p.summoner.id, p.champion.id, p.team.first_dragon, p.runes.keystone.name)
 
     print("\nBlue team won?", match.blue_team.win)
     print("Red team won?", match.red_team.win)
