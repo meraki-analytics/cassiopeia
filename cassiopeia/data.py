@@ -349,7 +349,7 @@ class Position(Enum):
     middle = "MIDDLE"
     jungle = "JUNGLE"
     bottom = "BOTTOM"
-    support = "UTILITY"
+    utility = "UTILITY"
     apex = "APEX"
     none = "NONE"
 

@@ -1,5 +1,5 @@
 import cassiopeia as cass
-from cassiopeia.data import Queue
+from cassiopeia.data import Queue, Position
 from cassiopeia.core import Summoner
 
 
@@ -25,21 +25,15 @@ def print_leagues(summoner_name: str, region: str):
         print(league.name)
     print()
 
-    # leagues = cass.get_leagues(summoner)
     leagues = summoner.leagues
-    print("Name of leagues this summoner is in (called from a different endpoint):")
-    for league in leagues:
-        print(league.name)
-    print()
-
-    print(f"Listing all summoners in {leagues.fives.name}")
-    for entry in leagues.fives:
-        print(entry.summoner.name, entry.league_points, leagues.fives.tier, entry.division)
+    print(f"Listing all summoners in this league:")
+    for entry in leagues.fives[Position.utility]:
+        print(entry.summoner.name, entry.league_points, entry.tier, entry.division, entry.position)
 
     print()
-    print("Challenger League name:")
-    challenger = cass.get_challenger_league(queue=Queue.ranked_solo_fives, region=region)
-    print(challenger.name)
+    print("Master's League name:")
+    masters = cass.get_master_league(queue=Queue.ranked_solo_fives, region=region)
+    print(masters.name)
 
 if __name__ == "__main__":
     print_leagues("Kalturi", "NA")

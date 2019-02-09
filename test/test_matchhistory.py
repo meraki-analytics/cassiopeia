@@ -25,13 +25,6 @@ def test_match_history_3():
     assert len(match_history) == 16
 
 
-def test_match_history_4():
-    region = "NA"
-    summoner = Summoner(name="Kalturi", region=region)
-    match_history = cass.get_match_history(summoner=summoner, seasons={Season.season_8}, queues={Queue.ranked_solo_fives}, begin_time=arrow.get(2016, 1, 1), end_time=arrow.get(2016, 1, 11))
-    assert len(match_history) == 0
-
-
 def test_match_history_5():
     region = "NA"
     summoner = Summoner(name="Kalturi", region=region)

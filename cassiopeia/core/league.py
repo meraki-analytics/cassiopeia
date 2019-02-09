@@ -6,13 +6,18 @@ from merakicommons.container import searchable, SearchableList
 from .. import configuration
 from ..data import Region, Platform, Tier, Division, Queue, Role, Position
 from .common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, provide_default_region, ghost_load_on
-from ..dto.league import LeaguePositionDto, LeaguePositionsDto,  LeaguesListDto, LeagueListDto, MiniSeriesDto, GrandmasterLeagueListDto, ChallengerLeagueListDto, MasterLeagueListDto, PositionalLeaguesListDto
+from ..dto.league import LeaguePositionDto, LeaguePositionsDto,  LeaguesListDto, LeagueListDto, MiniSeriesDto, GrandmasterLeagueListDto, ChallengerLeagueListDto, MasterLeagueListDto, PositionalLeaguesListDto, PositionalQueuesDto
 from .summoner import Summoner
 
 
 ##############
 # Data Types #
 ##############
+
+
+class PositionalQueuesData(CoreDataList):
+    _dto_type = PositionalQueuesDto
+    _renamed = {}
 
 
 class MiniSeriesData(CoreData):
@@ -93,6 +98,15 @@ class MasterLeagueListData(CoreData):
 ##############
 # Core Types #
 ##############
+
+
+class PositionalQueues(CassiopeiaLazyList):
+    _data_types = {PositionalQueuesData}
+
+    @provide_default_region
+    def __init__(self, *, region: Union[Region, str] = None):
+        kwargs = {"region": region}
+        CassiopeiaObject.__init__(self, **kwargs)
 
 
 class MiniSeries(CassiopeiaObject):
@@ -326,7 +340,7 @@ class PositionalLeagues(CassiopeiaLazyList):  # type List[LeagueEntry]
 
 
 
-class SummonerLeagues(SearchableList):
+class SummonerLeagues(dict):
     """A helper class that is simply a searchable list but that also provides the below convenience methods."""
     @property
     def fives(self):

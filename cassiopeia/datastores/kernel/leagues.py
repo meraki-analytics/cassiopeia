@@ -1,7 +1,7 @@
 from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError, validate_query
-from .common import RiotAPIService, APINotFoundError
+from .common import KernelSource, APINotFoundError
 from ...data import Platform, Queue, Tier, Division, Position
 from ...dto.league import LeaguesListDto, ChallengerLeagueListDto, MasterLeagueListDto,GrandmasterLeagueListDto, LeaguePositionsDto, LeagueListDto, PositionalQueuesDto, PositionalLeaguesListDto
 from ..uniquekeys import convert_region_to_platform
@@ -9,7 +9,7 @@ from ..uniquekeys import convert_region_to_platform
 T = TypeVar("T")
 
 
-class LeaguesAPI(RiotAPIService):
+class LeaguesAPI(KernelSource):
     @DataSource.dispatch
     def get(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> T:
         pass
@@ -26,11 +26,10 @@ class LeaguesAPI(RiotAPIService):
     @get.register(PositionalQueuesDto)
     @validate_query(_validate_get_positional_queues_query, convert_region_to_platform)
     def get_positional_queues(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> PositionalQueuesDto:
-        url = "https://{platform}.api.riotgames.com/lol/league/v4/positional-rank-queues".format(platform=query["platform"].value.lower())
+        parameters = {"platform": query["platform"].value}
+        endpoint = "lol/league/v4/positional-rank-queues".format()
         try:
-            endpoint = "positional-rank-queues {}".format(query["platform"].value)
-            app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
-            data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
+            data = self._get(endpoint=endpoint, parameters=parameters)
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -45,11 +44,10 @@ class LeaguesAPI(RiotAPIService):
     @get.register(LeaguePositionsDto)
     @validate_query(_validate_get_league_positions_query, convert_region_to_platform)
     def get_league_position(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LeaguePositionsDto:
-        url = "https://{platform}.api.riotgames.com/lol/league/v4/positions/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=query["summoner.id"])
+        parameters = {"platform": query["platform"].value}
+        endpoint = "lol/league/v4/positions/by-summoner/{summonerId}".format(summonerId=query["summoner.id"])
         try:
-            endpoint = "positions/by-summoner/summonerId {}".format(query["platform"].value)
-            app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
-            data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
+            data = self._get(endpoint=endpoint, parameters=parameters)
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -68,12 +66,11 @@ class LeaguesAPI(RiotAPIService):
     @validate_query(_validate_get_many_league_positions_query, convert_region_to_platform)
     def get_leagues(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[LeaguePositionsDto, None, None]:
         def generator():
+            parameters = {"platform": query["platform"].value}
             for id in query["summoner.ids"]:
-                url = "https://{platform}.api.riotgames.com/lol/league/v3/positions/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=id)
+                endpoint = "lol/league/v3/positions/by-summoner/{summonerId}".format(summonerId=id)
                 try:
-                    endpoint = "positions/by-summoner/summonerId {}".format(query["platform"].value)
-                    app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
-                    data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
+                    data = self._get(endpoint=endpoint, parameters=parameters)
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
@@ -98,8 +95,8 @@ class LeaguesAPI(RiotAPIService):
     @get.register(PositionalLeaguesListDto)
     @validate_query(_validate_get_league_positions_list_query, convert_region_to_platform)
     def get_league_entries_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> PositionalLeaguesListDto:
-        url = "https://{platform}.api.riotgames.com/lol/league/v4/positions/{queue}/{tier}/{division}/{position}/{page}".format(
-            platform=query["platform"].value.lower(),
+        parameters = {"platform": query["platform"].value}
+        endpoint = "lol/league/v4/positions/{queue}/{tier}/{division}/{position}/{page}".format(
             queue=query["queue"].value,
             tier=query["tier"].value,
             division=query["division"].value,
@@ -107,8 +104,7 @@ class LeaguesAPI(RiotAPIService):
             page=query["page"]
         )
         try:
-            app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "leagues/paginated-positions")
-            data = self._get(url, app_limiter=app_limiter, method_limiter=method_limiter)
+            data = self._get(endpoint=endpoint, parameters=parameters)
         except APINotFoundError:
             data = []
         region = query["platform"].region.value
@@ -125,11 +121,10 @@ class LeaguesAPI(RiotAPIService):
     @get.register(LeagueListDto)
     @validate_query(_validate_get_leagues_query, convert_region_to_platform)
     def get_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LeagueListDto:
-        url = "https://{platform}.api.riotgames.com/lol/league/v4/leagues/{leagueId}".format(platform=query["platform"].value.lower(), leagueId=query["id"])
+        parameters = {"platform": query["platform"].value}
+        endpoint = "lol/league/v4/leagues/{leagueId}".format(leagueId=query["id"])
         try:
-            endpoint = "leagues/leagueId {}".format(query["platform"].value)
-            app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
-            data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
+            data = self._get(endpoint=endpoint, parameters=parameters)
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -147,12 +142,11 @@ class LeaguesAPI(RiotAPIService):
     @validate_query(_validate_get_many_leagues_by_summoner_query, convert_region_to_platform)
     def get_many_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[LeaguesListDto, None, None]:
         def generator():
+            parameters = {"platform": query["platform"].value}
             for id in query["summoner.ids"]:
-                url = "https://{platform}.api.riotgames.com/lol/league/v4/leagues/by-summoner/{summonerId}".format(platform=query["platform"].value.lower(), summonerId=id)
+                endpoint = "lol/league/v4/leagues/by-summoner/{summonerId}".format(summonerId=id)
                 try:
-                    endpoint = "leagues/by-summoner/summonerId {}".format(query["platform"].value)
-                    app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
-                    data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
+                    data = self._get(endpoint=endpoint, parameters=parameters)
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
@@ -172,12 +166,11 @@ class LeaguesAPI(RiotAPIService):
     @validate_query(_validate_get_many_leagues_query, convert_region_to_platform)
     def get_many_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[LeagueListDto, None, None]:
         def generator():
+            parameters = {"platform": query["platform"].value}
             for id in query["ids"]:
-                url = "https://{platform}.api.riotgames.com/lol/league/v4/leagues/{leagueId}".format(platform=query["platform"].value.lower(), leagueId=id)
+                endpoint = "lol/league/v4/leagues/{leagueId}".format(leagueId=id)
                 try:
-                    endpoint = "leagues/leagueId {}".format(query["platform"].value)
-                    app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
-                    data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
+                    data = self._get(endpoint=endpoint, parameters=parameters)
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
@@ -199,11 +192,10 @@ class LeaguesAPI(RiotAPIService):
     @get.register(ChallengerLeagueListDto)
     @validate_query(_validate_get_challenger_league_query, convert_region_to_platform)
     def get_challenger_league_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChallengerLeagueListDto:
-        url = "https://{platform}.api.riotgames.com/lol/league/v4/challengerleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=query["queue"].value)
+        parameters = {"platform": query["platform"].value}
+        endpoint = "lol/league/v4/challengerleagues/by-queue/{queueName}".format(queueName=query["queue"].value)
         try:
-            endpoint = "challengerleagues/by-queue {}".format(query["platform"].value)
-            app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
-            data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
+            data = self._get(endpoint=endpoint, parameters=parameters)
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -221,12 +213,11 @@ class LeaguesAPI(RiotAPIService):
     @validate_query(_validate_get_many_challenger_league_query, convert_region_to_platform)
     def get_challenger_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChallengerLeagueListDto, None, None]:
         def generator():
+            parameters = {"platform": query["platform"].value}
             for queue in query["queues"]:
-                url = "https://{platform}.api.riotgames.com/lol/league/v4/challengerleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=queue.value)
+                endpoint = "lol/league/v4/challengerleagues/by-queue/{queueName}".format(queueName=queue.value)
                 try:
-                    endpoint = "challengerleagues/by-queue {}".format(query["platform"].value)
-                    app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
-                    data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
+                    data = self._get(endpoint=endpoint, parameters=parameters)
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
@@ -246,11 +237,10 @@ class LeaguesAPI(RiotAPIService):
     @get.register(GrandmasterLeagueListDto)
     @validate_query(_validate_get_grandmaster_league_query, convert_region_to_platform)
     def get_grandmaster_league_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> GrandmasterLeagueListDto:
-        url = "https://{platform}.api.riotgames.com/lol/league/v4/grandmasterleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=query["queue"].value)
+        parameters = {"platform": query["platform"].value}
+        endpoint = "lol/league/v4/grandmasterleagues/by-queue/{queueName}".format(queueName=query["queue"].value)
         try:
-            endpoint = "grandmasterleagues/by-queue {}".format(query["platform"].value)
-            app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
-            data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
+            data = self._get(endpoint=endpoint, parameters=parameters)
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -268,12 +258,11 @@ class LeaguesAPI(RiotAPIService):
     @validate_query(_validate_get_many_grandmaster_league_query, convert_region_to_platform)
     def get_grandmaster_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[GrandmasterLeagueListDto, None, None]:
         def generator():
+            parameters = {"platform": query["platform"].value}
             for queue in query["queues"]:
-                url = "https://{platform}.api.riotgames.com/lol/league/v4/grandmasterleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=queue.value)
+                endpoint = "lol/league/v4/grandmasterleagues/by-queue/{queueName}".format(queueName=queue.value)
                 try:
-                    endpoint = "grandmasterleagues/by-queue {}".format(query["platform"].value)
-                    app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
-                    data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
+                    data = self._get(endpoint=endpoint, parameters=parameters)
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
@@ -294,11 +283,10 @@ class LeaguesAPI(RiotAPIService):
     @get.register(MasterLeagueListDto)
     @validate_query(_validate_get_master_league_query, convert_region_to_platform)
     def get_master_league_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MasterLeagueListDto:
-        url = "https://{platform}.api.riotgames.com/lol/league/v4/masterleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=query["queue"].value)
+        parameters = {"platform": query["platform"].value}
+        endpoint = "lol/league/v4/masterleagues/by-queue/{queueName}".format(queueName=query["queue"].value)
         try:
-            endpoint = "masterleagues/by-queue {}".format(query["platform"].value)
-            app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
-            data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
+            data = self._get(endpoint=endpoint, parameters=parameters)
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
@@ -316,12 +304,11 @@ class LeaguesAPI(RiotAPIService):
     @validate_query(_validate_get_many_master_league_query, convert_region_to_platform)
     def get_master_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[MasterLeagueListDto, None, None]:
         def generator():
+            parameters = {"platform": query["platform"].value}
             for queue in query["queues"]:
-                url = "https://{platform}.api.riotgames.com/lol/league/v4/masterleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=queue.value)
+                endpoint = "lol/league/v4/masterleagues/by-queue/{queueName}".format(queueName=queue.value)
                 try:
-                    endpoint = "masterleagues/by-queue {}".format(query["platform"].value)
-                    app_limiter, method_limiter = self._get_rate_limiter(query["platform"], endpoint)
-                    data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
+                    data = self._get(endpoint=endpoint, parameters=parameters)
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 

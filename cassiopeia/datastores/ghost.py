@@ -8,7 +8,7 @@ from ..data import Platform, Queue, Tier, Division, Position
 from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, GrandmasterLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions, ChampionMasteries, LeagueEntries, FeaturedMatches, VerificationString
 from ..core.match import Timeline, MatchListData
 from ..core.championmastery import ChampionMasteryListData
-from ..core.league import LeaguePositionsData, LeagueEntry, PositionalLeagues, PositionalLeaguesListData, LeaguePositionData
+from ..core.league import LeaguePositionsData, LeagueEntry, PositionalLeagues, PositionalLeaguesListData, LeaguePositionData, PositionalQueues, PositionalQueuesData
 from ..core.spectator import FeaturedGamesData
 from ..core.staticdata.item import ItemListData
 from ..core.staticdata.champion import ChampionListData, ChampionData
@@ -132,6 +132,9 @@ class UnloadedGhostStore(DataSource):
     _validate_get_champion_masteries_query = Query. \
         has("platform").as_(Platform).also. \
         has("summoner.id").as_(str)
+
+    _validate_get_positional_queues_query = Query. \
+        has("platform").as_(Platform)
 
     _validate_get_league_entries_query = Query. \
         has("summoner.id").as_(str).also. \
@@ -327,6 +330,16 @@ class UnloadedGhostStore(DataSource):
         query["region"] = query.pop("platform").region
         query["id"] = query.pop("id")
         return League._construct_normally(**query)
+
+    @get.register(PositionalQueues)
+    @validate_query(_validate_get_positional_queues_query, convert_region_to_platform)
+    def get_positional_queues(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> PositionalQueues:
+        query["region"] = query.pop("platform").region
+        def generate_queues(region):
+            data = context[context.Keys.PIPELINE].get(PositionalQueuesData, query={"region": region})
+            for queue in data:
+                yield Queue(queue)
+        return PositionalQueues.from_generator(generator=generate_queues(query["region"]), region=query["region"])
 
     @get.register(PositionalLeagues)
     @validate_query(_validate_get_league_entries_list_query, convert_region_to_platform)
