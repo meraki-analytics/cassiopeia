@@ -1306,10 +1306,10 @@ validate_league_entries_list_query = Query. \
     has("platform").as_(Platform)
 
 def for_league_entries_list(lel: PositionalLeagues) -> List[Tuple[str, str, str, str, str]]:
-    return [lel.platform.value, lel.queue.value, lel.tier.value, lel.division.value, lel.position.value]
+    return [(lel.platform.value, lel.queue.value, lel.tier.value, lel.division.value, lel.position.value,)]
 
 def for_league_entries_list_query(query: Query) -> List[Tuple[str, str, str, str, str]]:
-    return [query["platform"].value, query["queue"].value, query["tier"].value, query["division"].value, query["position"].value]
+    return [(query["platform"].value, query["queue"].value, query["tier"].value, query["division"].value, query["position"].value,)]
 
 
 ###################
