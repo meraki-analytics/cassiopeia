@@ -13,7 +13,7 @@ T = TypeVar("T")
 logging.basicConfig(format='%(asctime)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.WARNING)
 
 
-def create_pipeline(service_configs: Dict, enable_ghost_loading: bool, verbose: int = 0) -> DataPipeline:
+def create_pipeline(service_configs: Dict, verbose: int = 0) -> DataPipeline:
     transformers = []
 
     # Always use the Riot API transformers
@@ -35,27 +35,23 @@ def create_pipeline(service_configs: Dict, enable_ghost_loading: bool, verbose: 
 
     from ..datastores import Cache, MerakiAnalyticsCDN, LolWikia
 
-    # Automatically insert the ghost store if it isn't there (and if the setting for ghost loading is on)
-    if enable_ghost_loading:
-        from ..datastores import UnloadedGhostStore
-        found = False
-        for datastore in services:
-            if isinstance(datastore, UnloadedGhostStore):
-                found = True
-                break
-        if not found:
-            if any(isinstance(service, Cache) for service in services):
-                # Find the cache and insert the ghost store directly after it
-                for i, datastore in enumerate(services):
-                    if isinstance(datastore, Cache):
-                        services.insert(i+1, UnloadedGhostStore())
-                        break
-            else:
-                # Insert the ghost store at the beginning of the pipeline
-                services.insert(0, UnloadedGhostStore())
-    else:
-        # Enable the data -> core transformers for ghost objects
-        enable_ghost_transformers(riotapi_transformer)
+    # Automatically insert the ghost store if it isn't there
+    from ..datastores import UnloadedGhostStore
+    found = False
+    for datastore in services:
+        if isinstance(datastore, UnloadedGhostStore):
+            found = True
+            break
+    if not found:
+        if any(isinstance(service, Cache) for service in services):
+            # Find the cache and insert the ghost store directly after it
+            for i, datastore in enumerate(services):
+                if isinstance(datastore, Cache):
+                    services.insert(i+1, UnloadedGhostStore())
+                    break
+        else:
+            # Insert the ghost store at the beginning of the pipeline
+            services.insert(0, UnloadedGhostStore())
 
     services.append(MerakiAnalyticsCDN())
     services.append(LolWikia())
@@ -105,69 +101,11 @@ def register_transformer_conversion(transformer: DataTransformer, from_type, to_
         raise RuntimeError("Could not find method to register: {} to {} in {}.".format(from_type, to_type, transformer))
 
 
-def enable_ghost_transformers(riotapi_transformers: List[CompositeDataTransformer]):
-    # Enable the data -> core transformers for ghost objects
-
-    # First, find all the transformer objects in te composite data transformer(s)
-    from ..transformers import ChampionMasteryTransformer, LeagueTransformer, MatchTransformer, SpectatorTransformer, StaticDataTransformer, StatusTransformer, SummonerTransformer, ThirdPartyCodeTransformer
-    data_transformers = set([transformer
-                             for composite_transformer in riotapi_transformers
-                             for transformer in composite_transformer._transformers.values()
-                             ])
-
-    # Then, for each transformer we want to enable, register the function that's defined
-    for transformer in data_transformers:
-        if isinstance(transformer, ChampionMasteryTransformer):
-            from ..core.championmastery import ChampionMasteryData, ChampionMastery
-            register_transformer_conversion(transformer, ChampionMasteryData, ChampionMastery)
-        elif isinstance(transformer, LeagueTransformer):
-            from ..core.league import LeagueListData, League, ChallengerLeagueListData, ChallengerLeague, MasterLeagueListData, MasterLeague
-            register_transformer_conversion(transformer, LeagueListData, League)
-            register_transformer_conversion(transformer, ChallengerLeagueListData, ChallengerLeague)
-            register_transformer_conversion(transformer, MasterLeagueListData, MasterLeague)
-        elif isinstance(transformer, MatchTransformer):
-            from ..core.match import MatchData, Match, MatchReferenceData, TimelineData, Timeline
-            register_transformer_conversion(transformer, MatchData, Match)
-            register_transformer_conversion(transformer, MatchReferenceData, Match)
-            register_transformer_conversion(transformer, TimelineData, Timeline)
-        elif isinstance(transformer, SpectatorTransformer):
-            from ..core.spectator import CurrentGameInfoData, CurrentMatch
-            register_transformer_conversion(transformer, CurrentGameInfoData, CurrentMatch)
-        elif isinstance(transformer, StaticDataTransformer):
-            from ..core.staticdata.champion import ChampionData, Champion
-            from ..core.staticdata.rune import RuneData, Rune
-            from ..core.staticdata.item import ItemData, Item
-            from ..core.staticdata.summonerspell import SummonerSpellData, SummonerSpell
-            from ..core.staticdata.map import MapData, Map
-            from ..core.staticdata.profileicon import ProfileIconData, ProfileIcon
-            register_transformer_conversion(transformer, ChampionData, Champion)
-            register_transformer_conversion(transformer, RuneData, Rune)
-            register_transformer_conversion(transformer, ItemData, Item)
-            register_transformer_conversion(transformer, SummonerSpellData, SummonerSpell)
-            register_transformer_conversion(transformer, MapData, Map)
-            register_transformer_conversion(transformer, ProfileIconData, ProfileIcon)
-        elif isinstance(transformer, StatusTransformer):
-            from ..core.status import ShardStatusData, ShardStatus
-            register_transformer_conversion(transformer, ShardStatusData, ShardStatus)
-        elif isinstance(transformer, SummonerTransformer):
-            from ..core.summoner import SummonerData, Summoner
-            register_transformer_conversion(transformer, SummonerData, Summoner)
-        elif isinstance(transformer, ThirdPartyCodeTransformer):
-            from ..core.thirdpartycode import VerificationStringData, VerificationString
-            register_transformer_conversion(transformer, VerificationStringData, VerificationString)
-
-    # Re-init the composite transformers to redefine their transformers
-    for composite_transformer in riotapi_transformers:
-        data_transformers = [transformer for transformer in composite_transformer._transformers.values()]
-        composite_transformer.__init__(data_transformers)
-
-
 def get_default_config():
     return {
         "global": {
             "version_from_match": "patch",
-            "default_region": None,
-            "enable_ghost_loading": True
+            "default_region": None
         },
         "plugins": {},
         "pipeline": {
@@ -194,7 +132,6 @@ class Settings(object):
         self.__default_region = globals_.get("default_region", _defaults["global"]["default_region"])
         if self.__default_region is not None:
             self.__default_region = Region(self.__default_region.upper())
-        self.__enable_ghost_loading = globals_.get("enable_ghost_loading", _defaults["global"]["enable_ghost_loading"])
 
         self.__plugins = settings.get("plugins", _defaults["plugins"])
 
@@ -219,9 +156,7 @@ class Settings(object):
     @property
     def pipeline(self) -> DataPipeline:
         if self.__pipeline is None:
-            self.__pipeline = create_pipeline(service_configs=self.__pipeline_args,
-                                              enable_ghost_loading=self.__enable_ghost_loading,
-                                              verbose=0)
+            self.__pipeline = create_pipeline(service_configs=self.__pipeline_args, verbose=0)
         return self.__pipeline
 
     @property

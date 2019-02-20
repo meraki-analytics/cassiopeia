@@ -40,7 +40,7 @@ We will quickly and efficiently look up the champion masteries for the summoner 
 
 .. code-block:: python
 
-    kalturi = Summoner(name="Kalturi", id=21359666)
+    kalturi = Summoner(name="Kalturi")
     good_with = kalturi.champion_masteries.filter(lambda cm: cm.level >= 6)
     print([cm.champion.name for cm in good_with])
 
@@ -51,7 +51,7 @@ The above three lines are relatively concise code, and if you know what lambdas 
 
 .. code-block:: python
 
-    kalturi = Summoner(name="Kalturi", id=21359666)
+    kalturi = Summoner(name="Kalturi")
 
 First, we create a summoner with a ``name`` and ``id``. Note that creating ``kalturi`` doesn't trigger a call to the Riot API -- it merely instantiates a ``Summoner`` object with a name and id.
 

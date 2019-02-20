@@ -21,8 +21,6 @@ The ``"default_region"`` setting should be set to the string version of the regi
 
 The ``"version_from_match"`` variable determines which version of the static data for matches is loaded (this includes, for example, the items for each participant). Valid values are ``"version"``, ``"patch"``, and ``"latest"``. If set to ``"version"``, the static data for the match's version will be loaded correctly; however, this requires pulling the match data for all matches. If you only want to use match reference data (and will not pull the full data for every match), you should use either ``"patch"`` or ``"latest"``. ``"patch"`` will make a reasonable attempt to get the match's correct version based on its creation date (which is provided in the match reference data); however, if you pull a summoner's full match history, you will pull many versions of the static data, which may take a long time. In addition, the patch dates / times may be slightly off and may depend on the region. For small applications that barely uses the static data, pulling multiple versions of the static data is likely overkill. If that is the case, you should set this variable to ``"latest"``, in which case the static data for the most recent version will be used; this, however, could result in missing or incorrect data if parts of the static data are accessed that have changed from patch to patch. The default is to use the patch if the match hasn't yet been loaded, which is a nice compromise between ensuring you, the user, always have correct data while also preventing new users from pulling a massive amount of unnecessary match data. It's likely that the patch dates aren't perfect, so be aware of this and please report and inconsistencies.
 
-The ``"enable_ghost_loading"`` setting should be set to ``true`` if you want to enable ghost loading (highly recommended). The default is ``true``. See :ref:`ghost-loading` for information about ghost loading.
-
 Below is an example:
 
 .. code-block:: json
@@ -31,8 +29,7 @@ Below is an example:
         ...,
         "global": {
             "version_from_match": "patch",
-            "default_region": null,
-            "enable_ghost_loading": true
+            "default_region": null
         }
         ...
     }
@@ -51,8 +48,6 @@ The Riot API variable is an attribute of the ``pipeline`` variable, but it has a
 The ``"api_key"`` should be set to your Riot API key. You can instead supply an environment variable name that contains your API key (this is recommended so that you can push your settings file to version control without revealing your API key). This variable can be set programmatically via ``cass.set_riot_api_key``.
 
 The ``"limit_sharing"`` variable specifies what fraction of your API key should be used for your server. This is useful when you have multiple servers that you want to split your API key over. The default (if not set) is ``1.0``, and valid values are between ``0.0`` and ``1.0``.
-
-The ``request_by_id`` variable determines whether the Riot API will request static data and champion statuses by id when a single piece of data is accessed, or whether it will request all the champions/items/etc when one is asked for. The default is ``True``, meaning that individual elements will be requested one at a time. Be aware that you may quickly hit your rate limit if you aren't careful (luckily, by default, Cass also uses the `DDragon <http://cassiopeia.readthedocs.io/en/latest/datapipeline.html#data-dragon>`_ data source, which bypasses this rate limit issue for static data).
 
 Request Handling
 """"""""""""""""

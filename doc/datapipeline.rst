@@ -138,7 +138,7 @@ The ChampionGG plugin has its own data source if it is included. See :ref:`plugi
 Unloaded Ghost Store
 """"""""""""""""""""
 
-As a user, it's very likely that you don't need to worry about what this store does. Cass automatically puts this store in your datapipeline if your global variable ``enable_ghost_loading`` is set to ``true``.
+As a user, it's very likely that you don't need to worry about what this store does. Cass automatically puts this store in your datapipeline.
 
 The ``UnloadedGhostStore`` provides unloaded ghost objects to the rest of Cass when a new ghost object is created. This allows us to have a single location where all top-level objects are created, which alleviates some complicated issues that crop up when caching core objects and using ghost loading. In general, it should always be in your pipeline.
 
