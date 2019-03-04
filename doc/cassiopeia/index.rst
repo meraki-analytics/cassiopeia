@@ -50,3 +50,4 @@ See the links below for the method and class names for each type.
     summoner.rst
     summonerspell.rst
     versions.rst
+    patch.rst
