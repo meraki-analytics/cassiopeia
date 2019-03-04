@@ -361,7 +361,6 @@ class RetryFromHeaders(object):
             raise error
         backoff = int(error.response_headers["Retry-After"])
         print("INFO: Unexpected {} rate limit, backing off for {} seconds (from headers).".format(headers.get('X-Rate-Limit-Type', 'service'), backoff))
-        time.sleep(backoff)
         for rate_limiter in rate_limiters:
             rate_limiter.restrict_for(backoff)
         self.attempts += 1
