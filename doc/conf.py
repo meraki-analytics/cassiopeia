@@ -315,3 +315,58 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
+
+
+# JJM: Add custom documenter for properties so that the docs contain the return type annotation
+from sphinx.ext.autodoc import DocstringSignatureMixin, ClassLevelDocumenter, inspect, Signature, isbuiltin, isstaticmethod
+class PropertyDocumenter(DocstringSignatureMixin, ClassLevelDocumenter):  # type: ignore
+    """
+    Specialized Documenter subclass for python properties (with just an fget).
+    """
+    objtype = 'property'
+    member_order = 50
+    priority = 100  # must be more than AttributeDocumenter
+
+    @classmethod
+    def can_document_member(cls, member, membername, isattr, parent):
+        # type: (Any, unicode, bool, Any) -> bool
+        return isinstance(member, property)
+
+    def import_object(self):
+        # type: () -> Any
+        ret = ClassLevelDocumenter.import_object(self)
+        if not ret:
+            return ret
+
+        # Change the object to the fget method. Ignore everything else.
+        self.object = self.object.fget
+        # to distinguish classmethod/staticmethod
+        obj = self.parent.__dict__.get(self.object_name)
+        if obj is None:
+            obj = self.object
+
+        self.directivetype = 'attribute'  # Treat the property like an attribute in terms of formatting. The object is otherwise treated as a method.
+        return ret
+
+    def format_args(self):
+        # Copied from the MethodDocumenter because the .fget object we are documenting is a method.
+        # type: () -> unicode
+        if isbuiltin(self.object) or inspect.ismethoddescriptor(self.object):
+            # can never get arguments of a C function or method
+            return None
+        if isstaticmethod(self.object, cls=self.parent, name=self.object_name):
+            args = Signature(self.object, bound_method=False).format_args()
+        else:
+            args = Signature(self.object, bound_method=True).format_args()
+        # escape backslashes for reST
+        args = args.replace('\\', '\\\\')
+        return args
+
+    def document_members(self, all_members=False):
+        # Copied from the MethodDocumenter because the .fget object we are documenting is a method.
+        # type: (bool) -> None
+        pass
+
+# Define the setup to apply the PropertyDocumenter
+def setup(app):
+    app.add_autodocumenter(PropertyDocumenter)
