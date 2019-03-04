@@ -1,3 +1,6 @@
+.. _Champion_Masteries:
+
+
 Champion Masteries
 ==================
 

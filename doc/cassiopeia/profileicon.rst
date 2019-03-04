@@ -1,3 +1,6 @@
+.. _Profile_Icons:
+
+
 Profile Icons
 =============
 

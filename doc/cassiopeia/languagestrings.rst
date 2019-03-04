@@ -1,3 +1,6 @@
+.. _Language_Strings:
+
+
 Language Strings
 ================
 

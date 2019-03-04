@@ -103,14 +103,28 @@ Overview
 Top Level APIs
 ==============
 
-.. currentmodule:: cassiopeia
+* :ref:`Settings`
+* :ref:`Data_and_Enums`
+* :ref:`Champions`
+* :ref:`Champion_Masteries`
+* :ref:`Items`
+* :ref:`Language_Strings`
+* :ref:`Leagues`
+* :ref:`Locales`
+* :ref:`Maps`
+* :ref:`Matches`
+* :ref:`Patch`
+* :ref:`Profile_Icons`
+* :ref:`Realms`
+* :ref:`Runes`
+* :ref:`Status`
+* :ref:`Spectator`
+* :ref:`Summoners`
+* :ref:`Summoner_Spells`
+* :ref:`Versions`
 
-.. toctree::
-    :maxdepth: 1
 
 Index and Search
 ################
 
 * :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

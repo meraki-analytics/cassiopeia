@@ -1,3 +1,6 @@
+.. _Summoner_Spells:
+
+
 Summoner Spells
 ===============
 
