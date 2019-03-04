@@ -39,7 +39,7 @@ class Patch(object):
         self._start = start
         self._end = end
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self._name
 
     @classmethod
@@ -107,7 +107,7 @@ class Patch(object):
             cls.__patches[region].sort(key=lambda patch: patch.start)
 
     @property
-    def region(self):
+    def region(self) -> Region:
         return self._region
 
     @property
@@ -115,7 +115,7 @@ class Patch(object):
         return self._season
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name
 
     @property
@@ -127,25 +127,25 @@ class Patch(object):
         return self._end
 
     @property
-    def major(self):
+    def major(self) -> str:
         return self.name.split(".")[0]
 
     @property
-    def minor(self):
+    def minor(self) -> str:
         return self.name.split(".")[1]
 
     @property
-    def majorminor(self):
+    def majorminor(self) -> str:
         return ".".join(self.name.split(".")[:2])
 
     @property
-    def revision(self):
+    def revision(self) -> str:
         return ".".join(self.name.split(".")[2:])
 
-    def __eq__(self, other: "Patch"):
+    def __eq__(self, other: "Patch") -> bool:
         return self.name == other.name
 
-    def __lt__(self, other: "Patch"):
+    def __lt__(self, other: "Patch") -> bool:
         if self.major < other.major or (self.major == other.major and self.minor < other.minor):
             return True
         else:
