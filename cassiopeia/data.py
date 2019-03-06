@@ -265,6 +265,8 @@ class Season(Enum):
     season_7 = "SEASON2017"
     preseason_8 = "PRESEASON2018"
     season_8 = "SEASON2018"
+    preseason_9 = "PRESEASON2019"
+    season_9 = "SEASON2019"
 
     @property
     def id(self):
@@ -300,7 +302,9 @@ SEASON_IDS = {
     Season.preseason_7: 8,
     Season.season_7: 9,
     Season.preseason_8: 10,
-    Season.season_8: 11
+    Season.season_8: 11,
+    Season.preseason_9: 12,
+    Season.season_9: 13
 }
 
 

@@ -6,8 +6,8 @@ from setuptools import setup, find_packages
 
 
 install_requires = [
-    "datapipelines>=1.0.6",
-    "merakicommons>=1.0.6",
+    "datapipelines>=1.0.7",
+    "merakicommons>=1.0.7",
     "Pillow",
     "arrow"
 ]
@@ -18,7 +18,7 @@ if sys.version_info.major != 3 and sys.version_info.minor != 6:
 
 setup(
     name="cassiopeia",
-    version="4.0.2",  # Keep the Cass version at parity with the Riot API major version, use the minor version for breaking changes, and the patch version for everything else
+    version="4.0.3",  # Keep the Cass version at parity with the Riot API major version, use the minor version for breaking changes, and the patch version for everything else
     author="Jason Maldonis; Rob Rua",
     author_email="team@merakianalytics.com",
     url="https://github.com/meraki-analytics/cassiopeia",
