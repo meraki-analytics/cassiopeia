@@ -2117,9 +2117,9 @@ def for_summoner(summoner: Summoner) -> List[Tuple]:
 def for_summoner_query(query: Query) -> List[Tuple]:
     keys = []
     if "id" in query:
-        keys.append((query["platform"].value, query["id"]))
+        keys.append((query["platform"].value, "id", query["id"]))
     if "name" in query:
-        keys.append((query["platform"].value, query["name"]))
+        keys.append((query["platform"].value, "name", query["name"]))
     if "accountId" in query:
         keys.append((query["platform"].value, "accountId", query["accountId"]))
     if "puuid" in query:

@@ -107,6 +107,7 @@ class PositionalQueues(CassiopeiaLazyList):
     def __init__(self, *, region: Union[Region, str] = None):
         kwargs = {"region": region}
         CassiopeiaObject.__init__(self, **kwargs)
+        len(self)  # Force a load on init
 
 
 class MiniSeries(CassiopeiaObject):
@@ -337,7 +338,6 @@ class PositionalLeagues(CassiopeiaLazyList):  # type List[LeagueEntry]
     @lazy_property
     def position(self) -> Position:
         return Position(self._data[PositionalLeaguesListData].position)
-
 
 
 class SummonerLeagues(dict):
