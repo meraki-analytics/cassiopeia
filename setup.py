@@ -9,7 +9,8 @@ install_requires = [
     "datapipelines>=1.0.7",
     "merakicommons>=1.0.7",
     "Pillow",
-    "arrow"
+    "arrow",
+    "requests"
 ]
 
 # Require python 3.6
