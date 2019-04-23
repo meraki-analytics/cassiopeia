@@ -4,6 +4,7 @@ import datetime
 from collections import Counter
 from typing import List, Dict, Set, Union, Generator
 
+from datapipelines import NotFoundError
 from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableLazyList, SearchableDictionary
 
@@ -1670,6 +1671,16 @@ class Match(CassiopeiaGhost):
     @property
     def is_remake(self) -> bool:
         return self.duration < datetime.timedelta(minutes=5)
+
+    @property
+    def exists(self) -> bool:
+        try:
+            if not self._Ghost__all_loaded:
+                self.__load__()
+            self.type  # Make sure we can access this attribute
+            return True
+        except (AttributeError, NotFoundError):
+            return False
 
     def kills_heatmap(self):
         if self.map.name == "Summoner's Rift":
