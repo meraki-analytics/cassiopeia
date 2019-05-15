@@ -4,9 +4,9 @@ from merakicommons.cache import lazy_property, lazy
 from merakicommons.container import searchable, SearchableList
 
 from .. import configuration
-from ..data import Region, Platform, Tier, Division, Queue, Role, Position
+from ..data import Region, Platform, Tier, Division, Queue, Role
 from .common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, provide_default_region, ghost_load_on
-from ..dto.league import LeaguePositionDto, LeaguePositionsDto,  LeaguesListDto, LeagueListDto, MiniSeriesDto, GrandmasterLeagueListDto, ChallengerLeagueListDto, MasterLeagueListDto, PositionalLeaguesListDto, PositionalQueuesDto
+from ..dto.league import LeagueDto, LeagueEntryDto, LeagueEntriesDto, LeagueSummonerEntriesDto, MiniSeriesDto, GrandmasterLeagueListDto, ChallengerLeagueListDto, MasterLeagueListDto
 from .summoner import Summoner
 
 
@@ -15,18 +15,14 @@ from .summoner import Summoner
 ##############
 
 
-class PositionalQueuesData(CoreDataList):
-    _dto_type = PositionalQueuesDto
-    _renamed = {}
-
-
 class MiniSeriesData(CoreData):
     _dto_type = MiniSeriesDto
     _renamed = {}
 
 
-class LeaguePositionData(CoreData):
-    _dto_type = LeaguePositionDto
+class LeagueEntryData(CoreData):
+    """Contains the data for one entry (summoner) in a League."""
+    _dto_type = LeagueEntryDto
     _renamed = {"miniSeries": "promos", "playerOrTeamId": "summonerId", "playerOrTeamName": "summonerName", "leagueName": "name", "queueType": "queue", "rank": "division"}
 
     def __call__(self, **kwargs):
@@ -38,29 +34,27 @@ class LeaguePositionData(CoreData):
         return self
 
 
-class LeaguePositionsData(CoreDataList):
-    _dto_type = LeaguePositionsDto
-    _renamed = {}
-
-
-class LeagueListData(CoreData):
-    _dto_type = LeagueListDto
+class LeagueData(CoreData):
+    """Contains the data for one League which has many entries."""
+    _dto_type = LeagueDto
     _renamed = {"leagueId": "id"}
 
     def __call__(self, **kwargs):
         if "entries" in kwargs:
-            self.entries = [LeaguePositionData(**entry) for entry in kwargs.pop("entries")]
+            self.entries = [LeagueEntryData(**entry) for entry in kwargs.pop("entries")]
         super().__call__(**kwargs)
         return self
 
 
-class LeaguesListData(CoreDataList):
-    _dto_type = LeaguesListDto
+class LeagueSummonerEntriesData(CoreDataList):
+    """League entries for a single summoner."""
+    _dto_type = LeagueSummonerEntriesDto
     _renamed = {}
 
 
-class PositionalLeaguesListData(CoreDataList):
-    _dto_type = PositionalLeaguesListDto
+class LeagueEntriesData(CoreDataList):
+    """For paginated League entries."""
+    _dto_type = LeagueEntriesDto
     _renamed = {}
 
 
@@ -70,7 +64,7 @@ class ChallengerLeagueListData(CoreData):
 
     def __call__(self, **kwargs):
         if "entries" in kwargs:
-            self.entries = [LeaguePositionData(**entry) for entry in kwargs.pop("entries")]
+            self.entries = [LeagueEntryData(**entry) for entry in kwargs.pop("entries")]
         super().__call__(**kwargs)
         return self
 
@@ -80,7 +74,7 @@ class GrandmasterLeagueListData(CoreData):
 
     def __call__(self, **kwargs):
         if "entries" in kwargs:
-            self.entries = [LeaguePositionData(**entry) for entry in kwargs.pop("entries")]
+            self.entries = [LeagueEntryData(**entry) for entry in kwargs.pop("entries")]
         super().__call__(**kwargs)
         return self
 
@@ -90,7 +84,7 @@ class MasterLeagueListData(CoreData):
 
     def __call__(self, **kwargs):
         if "entries" in kwargs:
-            self.entries = [LeaguePositionData(**entry) for entry in kwargs.pop("entries")]
+            self.entries = [LeagueEntryData(**entry) for entry in kwargs.pop("entries")]
         super().__call__(**kwargs)
         return self
 
@@ -98,16 +92,6 @@ class MasterLeagueListData(CoreData):
 ##############
 # Core Types #
 ##############
-
-
-class PositionalQueues(CassiopeiaLazyList):
-    _data_types = {PositionalQueuesData}
-
-    @provide_default_region
-    def __init__(self, *, region: Union[Region, str] = None):
-        kwargs = {"region": region}
-        CassiopeiaObject.__init__(self, **kwargs)
-        len(self)  # Force a load on init
 
 
 class MiniSeries(CassiopeiaObject):
@@ -143,7 +127,7 @@ class MiniSeries(CassiopeiaObject):
 
 @searchable({str: ["division", "name", "summoner"], bool: ["hot_streak", "veteran", "fresh_blood"], Division: ["division"], Summoner: ["summoner"], Queue: ["queue"]})
 class LeagueEntry(CassiopeiaGhost):
-    _data_types = {LeaguePositionData}
+    _data_types = {LeagueEntryData}
 
     @provide_default_region
     def __init__(self, *, region: Union[Region, str] = None):
@@ -163,7 +147,7 @@ class LeagueEntry(CassiopeiaGhost):
     @lazy_property
     def region(self) -> Region:
         """The region for this champion."""
-        return Region(self._data[LeaguePositionData].region)
+        return Region(self._data[LeagueEntryData].region)
 
     @lazy_property
     def platform(self) -> Platform:
@@ -172,62 +156,58 @@ class LeagueEntry(CassiopeiaGhost):
 
     @property
     def league_id(self) -> str:
-        return self._data[LeaguePositionData].leagueId
+        return self._data[LeagueEntryData].leagueId
 
     @lazy_property
     def queue(self) -> Queue:
-        return Queue(self._data[LeaguePositionData].queue)
+        return Queue(self._data[LeagueEntryData].queue)
 
     @property
     def name(self) -> str:
-        return self._data[LeaguePositionData].name
+        return self._data[LeagueEntryData].name
 
     @lazy_property
     def tier(self) -> Tier:
-        return Tier(self._data[LeaguePositionData].tier)
-
-    @lazy_property
-    def position(self) -> Position:
-        return Position(self._data[LeaguePositionData].position)
+        return Tier(self._data[LeagueEntryData].tier)
 
     @lazy_property
     def division(self) -> Division:
-        return Division(self._data[LeaguePositionData].division)
+        return Division(self._data[LeagueEntryData].division)
 
     @property
     def hot_streak(self) -> bool:
-        return self._data[LeaguePositionData].hotStreak
+        return self._data[LeagueEntryData].hotStreak
 
     @lazy_property
     def promos(self) -> Optional[MiniSeries]:
-        if hasattr(self._data[LeaguePositionData], "promos"):
-            return MiniSeries.from_data(self._data[LeaguePositionData].promos)
+        if hasattr(self._data[LeagueEntryData], "promos"):
+            return MiniSeries.from_data(self._data[LeagueEntryData].promos)
         else:
             # Return None if the summoner isn't in their promos
-            if hasattr(self._data[LeaguePositionData], "leaguePoints"):
+            if hasattr(self._data[LeagueEntryData], "leaguePoints"):
                 return None
         # Reraise the original error
-        return MiniSeries.from_data(self._data[LeaguePositionData].promos)
+        return MiniSeries.from_data(self._data[LeagueEntryData].promos)
 
     @property
     def wins(self) -> int:
-        return self._data[LeaguePositionData].wins
+        return self._data[LeagueEntryData].wins
 
     @property
     def veteran(self) -> bool:
-        return self._data[LeaguePositionData].veteran
+        return self._data[LeagueEntryData].veteran
 
     @property
     def losses(self) -> int:
-        return self._data[LeaguePositionData].losses
+        return self._data[LeagueEntryData].losses
 
     @lazy_property
     def summoner(self) -> Summoner:
-        return Summoner(id=self._data[LeaguePositionData].summonerId, name=self._data[LeaguePositionData].summonerName, region=self.region)
+        return Summoner(id=self._data[LeagueEntryData].summonerId, name=self._data[LeagueEntryData].summonerName, region=self.region)
 
     @property
     def fresh_blood(self) -> bool:
-        return self._data[LeaguePositionData].freshBlood
+        return self._data[LeagueEntryData].freshBlood
 
     @lazy_property
     def league(self) -> "League":
@@ -235,89 +215,44 @@ class LeagueEntry(CassiopeiaGhost):
 
     @property
     def league_points(self) -> int:
-        return self._data[LeaguePositionData].leaguePoints
+        return self._data[LeagueEntryData].leaguePoints
 
     @property
     def inactive(self) -> bool:
-        return self._data[LeaguePositionData].inactive
+        return self._data[LeagueEntryData].inactive
 
     @property
     def role(self) -> Role:
-        return Role.from_league_naming_scheme(self._data[LeaguePositionData].role)
+        return Role.from_league_naming_scheme(self._data[LeagueEntryData].role)
 
 
-class LeagueEntries(CassiopeiaLazyList):
-    _data_types = {LeaguePositionsData}
+class LeagueEntries(CassiopeiaLazyList):  # type List[LeagueEntry]
+    _data_types = {LeagueEntriesData}
 
     @provide_default_region
-    def __init__(self, *, summoner: Summoner, region: Union[Region, str] = None):
-        self.__summoner = summoner
-        kwargs = {"region": region}
+    def __init__(self, *, region: Union[Region, str] = None, queue: Queue = None, tier: Tier = None, division: Division = None):
+        kwargs = {"region": region, "queue": queue, "tier": tier, "division": division}
         CassiopeiaObject.__init__(self, **kwargs)
 
     @classmethod
     @provide_default_region
-    def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, str], region: Union[Region, str]) -> dict:
-        query = {"region": region}
-        if isinstance(summoner, Summoner):
-            query["summoner.id"] = summoner.id
-        elif isinstance(summoner, str):
-            if len(summoner) < 35:
-                query["summoner.id"] = Summoner(name=summoner, region=region).id
-            else:
-                query["summoner.id"] = summoner
-        assert "summoner.id" in query
-        return query
-
-    @lazy_property
-    def region(self) -> Region:
-        return Region(self._data[LeaguePositionsData].region)
-
-    @lazy_property
-    def platform(self) -> Platform:
-        return self.region.platform
-
-    @property
-    def fives(self):
-        return self[Queue.ranked_solo_fives]
-
-    @property
-    def flex(self):
-        return self[Queue.ranked_flex_fives]
-
-    @property
-    def threes(self):
-        return self[Queue.ranked_flex_threes]
-
-
-class PositionalLeagues(CassiopeiaLazyList):  # type List[LeagueEntry]
-    _data_types = {PositionalLeaguesListData}
-
-    @provide_default_region
-    def __init__(self, *, region: Union[Region, str] = None, queue: Queue = None, tier: Tier = None, division: Division = None, position: Position = None):
-        kwargs = {"region": region, "queue": queue, "tier": tier, "division": division, "position": position}
-        CassiopeiaObject.__init__(self, **kwargs)
-
-    @classmethod
-    @provide_default_region
-    def __get_query_from_kwargs__(cls, *, region: Union[Region, str] = None, queue: Queue = None, tier: Tier = None, division: Division = None, position: Position = None):
-        query = {"region": region, "queue": queue, "tier": tier, "division": division, "position": position}
+    def __get_query_from_kwargs__(cls, *, region: Union[Region, str] = None, queue: Queue = None, tier: Tier = None, division: Division = None):
+        query = {"region": region, "queue": queue, "tier": tier, "division": division}
         return query
 
     @classmethod
-    def from_generator(cls, generator: Generator, region: Union[Region, str] = None, queue: Queue = None, tier: Tier = None, division: Division = None, position: Position = None, **kwargs):
+    def from_generator(cls, generator: Generator, region: Union[Region, str] = None, queue: Queue = None, tier: Tier = None, division: Division = None, **kwargs):
         self = cls.__new__(cls)
         kwargs["region"] = region
         kwargs["queue"] = queue
         kwargs["tier"] = tier
         kwargs["division"] = division
-        kwargs["position"] = position
         CassiopeiaLazyList.__init__(self, generator=generator, **kwargs)
         return self
 
     @lazy_property
     def region(self) -> Region:
-        return Region(self._data[PositionalLeaguesListData].region)
+        return Region(self._data[LeagueEntriesData].region)
 
     @lazy_property
     def platform(self) -> Platform:
@@ -325,39 +260,73 @@ class PositionalLeagues(CassiopeiaLazyList):  # type List[LeagueEntry]
 
     @lazy_property
     def queue(self) -> Queue:
-        return Queue(self._data[PositionalLeaguesListData].queue)
+        return Queue(self._data[LeagueEntriesData].queue)
 
     @lazy_property
     def tier(self) -> Tier:
-        return Tier(self._data[PositionalLeaguesListData].tier)
+        return Tier(self._data[LeagueEntriesData].tier)
 
     @lazy_property
     def division(self) -> Division:
-        return Division(self._data[PositionalLeaguesListData].division)
+        return Division(self._data[LeagueEntriesData].division)
+
+
+class LeagueSummonerEntries(CassiopeiaLazyList):
+    _data_types = {LeagueSummonerEntriesData}
+
+    @provide_default_region
+    def __init__(self, *, summoner: Summoner):
+        self.__summoner = summoner
+        kwargs = {"region": summoner.region}
+        CassiopeiaObject.__init__(self, **kwargs)
+
+    @classmethod
+    @provide_default_region
+    def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, str]) -> dict:
+        query = {"region": summoner.region}
+        if isinstance(summoner, Summoner):
+            query["summoner.id"] = summoner.id
+        elif isinstance(summoner, str):
+            if len(summoner) < 35:
+                query["summoner.id"] = Summoner(name=summoner, region=summoner.region).id
+            else:
+                query["summoner.id"] = summoner
+        assert "summoner.id" in query
+        return query
 
     @lazy_property
-    def position(self) -> Position:
-        return Position(self._data[PositionalLeaguesListData].position)
+    def region(self) -> Region:
+        return Region(self._data[LeagueEntriesData].region)
 
+    @lazy_property
+    def platform(self) -> Platform:
+        return self.region.platform
 
-class SummonerLeagues(dict):
-    """A helper class that is simply a searchable list but that also provides the below convenience methods."""
-    @property
+    @lazy_property
     def fives(self):
-        return self[Queue.ranked_solo_fives]
+        for entry in self:
+            if entry.queue is Queue.ranked_solo_fives:
+                return entry
+        raise ValueError("Queue does not exist for this summoner.")
 
-    @property
+    @lazy_property
     def flex(self):
-        return self[Queue.ranked_flex_fives]
+        for entry in self:
+            if entry.queue is Queue.ranked_flex_fives:
+                return entry
+        raise ValueError("Queue does not exist for this summoner.")
 
-    @property
+    @lazy_property
     def threes(self):
-        return self[Queue.ranked_flex_threes]
+        for entry in self:
+            if entry.queue is Queue.ranked_flex_threes:
+                return entry
+        raise ValueError("Queue does not exist for this summoner.")
 
 
 @searchable({str: ["tier", "queue", "name"], Queue: ["queue"], Tier: ["tier"]})
 class League(CassiopeiaGhost):
-    _data_types = {LeagueListData}
+    _data_types = {LeagueData}
 
     def __init__(self, id: str = None, region: Union[Region, str] = None):
         if region is None:
@@ -388,9 +357,12 @@ class League(CassiopeiaGhost):
     def __len__(self):
         return len(self.entries)
 
+    def __iter__(self):
+        return iter(self.entries)
+
     @lazy_property
     def region(self) -> Region:
-        return Region(self._data[LeagueListData].region)
+        return Region(self._data[LeagueData].region)
 
     @lazy_property
     def platform(self) -> Platform:
@@ -398,33 +370,33 @@ class League(CassiopeiaGhost):
 
     @property
     def id(self) -> str:
-        return self._data[LeagueListData].id
+        return self._data[LeagueData].id
 
-    @CassiopeiaGhost.property(LeagueListData)
+    @CassiopeiaGhost.property(LeagueData)
     @ghost_load_on
     @lazy
     def tier(self) -> Tier:
-        return Tier(self._data[LeagueListData].tier)
+        return Tier(self._data[LeagueData].tier)
 
-    @CassiopeiaGhost.property(LeagueListData)
+    @CassiopeiaGhost.property(LeagueData)
     @ghost_load_on
     @lazy
     def queue(self) -> Queue:
-        return Queue(self._data[LeagueListData].queue)
+        return Queue(self._data[LeagueData].queue)
 
-    @CassiopeiaGhost.property(LeagueListData)
+    @CassiopeiaGhost.property(LeagueData)
     @ghost_load_on
     def name(self) -> str:
-        return self._data[LeagueListData].name
+        return self._data[LeagueData].name
 
-    @CassiopeiaGhost.property(LeagueListData)
+    @CassiopeiaGhost.property(LeagueData)
     @ghost_load_on
     @lazy
     def entries(self) -> List[LeagueEntry]:
-        return SearchableList([LeagueEntry.from_data(entry) for entry in self._data[LeagueListData].entries])
+        return SearchableList([LeagueEntry.from_data(entry) for entry in self._data[LeagueData].entries])
 
 
-class ChallengerLeague(CassiopeiaGhost):
+class ChallengerLeague(League):
     _data_types = {ChallengerLeagueListData}
 
     @provide_default_region
@@ -440,12 +412,6 @@ class ChallengerLeague(CassiopeiaGhost):
 
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform, "queue": self.queue}
-
-    def __getitem__(self, item):
-        return self.entries[item]
-
-    def __len__(self):
-        return len(self.entries)
 
     def __eq__(self, other: "ChallengerLeague"):
         if not isinstance(other, ChallengerLeague) or self.region != other.region:

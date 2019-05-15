@@ -2,8 +2,8 @@ from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError, validate_query
 from .common import KernelSource, APINotFoundError
-from ...data import Platform, Queue, Tier, Division, Position
-from ...dto.league import LeaguesListDto, ChallengerLeagueListDto, MasterLeagueListDto,GrandmasterLeagueListDto, LeaguePositionsDto, LeagueListDto, PositionalQueuesDto, PositionalLeaguesListDto
+from ...data import Platform, Queue, Tier, Division
+from ...dto.league import LeaguesListDto, ChallengerLeagueListDto, MasterLeagueListDto,GrandmasterLeagueListDto, LeaguePositionsDto, LeagueListDto, PaginatedLeaguesListDto
 from ..uniquekeys import convert_region_to_platform
 
 T = TypeVar("T")
@@ -18,89 +18,21 @@ class LeaguesAPI(KernelSource):
     def get_many(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> Iterable[T]:
         pass
 
-    # Positional queues
-
-    _validate_get_positional_queues_query = Query. \
-        has("platform").as_(Platform)
-
-    @get.register(PositionalQueuesDto)
-    @validate_query(_validate_get_positional_queues_query, convert_region_to_platform)
-    def get_positional_queues(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> PositionalQueuesDto:
-        parameters = {"platform": query["platform"].value}
-        endpoint = "lol/league/v4/positional-rank-queues".format()
-        try:
-            data = self._get(endpoint=endpoint, parameters=parameters)
-        except APINotFoundError as error:
-            raise NotFoundError(str(error)) from error
-
-        return PositionalQueuesDto(region=query["platform"].region.value, queues=data)
-
-    # League positions
-
-    _validate_get_league_positions_query = Query. \
-        has("summoner.id").as_(str).also. \
-        has("platform").as_(Platform)
-
-    @get.register(LeaguePositionsDto)
-    @validate_query(_validate_get_league_positions_query, convert_region_to_platform)
-    def get_league_position(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> LeaguePositionsDto:
-        parameters = {"platform": query["platform"].value}
-        endpoint = "lol/league/v4/positions/by-summoner/{summonerId}".format(summonerId=query["summoner.id"])
-        try:
-            data = self._get(endpoint=endpoint, parameters=parameters)
-        except APINotFoundError as error:
-            raise NotFoundError(str(error)) from error
-
-        data = {"positions": data}
-        data["region"] = query["platform"].region.value
-        data["summonerId"] = query["summoner.id"]
-        for position in data["positions"]:
-            position["region"] = data["region"]
-        return LeaguePositionsDto(data)
-
-    _validate_get_many_league_positions_query = Query. \
-        has("summoner.ids").as_(Iterable).also. \
-        has("platform").as_(Platform)
-
-    @get_many.register(LeaguePositionsDto)
-    @validate_query(_validate_get_many_league_positions_query, convert_region_to_platform)
-    def get_leagues(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[LeaguePositionsDto, None, None]:
-        def generator():
-            parameters = {"platform": query["platform"].value}
-            for id in query["summoner.ids"]:
-                endpoint = "lol/league/v3/positions/by-summoner/{summonerId}".format(summonerId=id)
-                try:
-                    data = self._get(endpoint=endpoint, parameters=parameters)
-                except APINotFoundError as error:
-                    raise NotFoundError(str(error)) from error
-
-                data = {"positions": data}
-                data["region"] = query["platform"].region.value
-                data["summonerId"] = id
-                for position in data["positions"]:
-                    position["region"] = data["region"]
-                yield LeaguePositionsDto(data)
-
-        return generator()
-
-
-    _validate_get_league_positions_list_query = Query. \
+    _validate_get_paginated_leagues_list_query = Query. \
         has("queue").as_(Queue).also. \
         has("tier").as_(Tier).also. \
         has("division").as_(Division).also. \
-        has("position").as_(Position).also. \
         has("page").as_(int).also. \
         has("platform").as_(Platform)
 
-    @get.register(PositionalLeaguesListDto)
-    @validate_query(_validate_get_league_positions_list_query, convert_region_to_platform)
-    def get_league_entries_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> PositionalLeaguesListDto:
+    @get.register(PaginatedLeaguesListDto)
+    @validate_query(_validate_get_paginated_leagues_list_query, convert_region_to_platform)
+    def get_league_entries_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> PaginatedLeaguesListDto:
         parameters = {"platform": query["platform"].value}
-        endpoint = "lol/league/v4/positions/{queue}/{tier}/{division}/{position}/{page}".format(
+        endpoint = "lol/league/v4/entries/{queue}/{tier}/{division}/{page}".format(
             queue=query["queue"].value,
             tier=query["tier"].value,
             division=query["division"].value,
-            position=query["position"].value.upper(),
             page=query["page"]
         )
         try:
@@ -108,9 +40,9 @@ class LeaguesAPI(KernelSource):
         except APINotFoundError:
             data = []
         region = query["platform"].region.value
-        for position in data:
-            position["region"] = region
-        return PositionalLeaguesListDto(entries=data, page=query["page"], region=query["region"].value, queue=query["queue"].value, tier=query["tier"].value, division=query["division"].value, position=query["position"].value)
+        for entry in data:
+            entry["region"] = region
+        return PaginatedLeaguesListDto(entries=data, page=query["page"], region=query["region"].value, queue=query["queue"].value, tier=query["tier"].value, division=query["division"].value)
 
     # Leagues
 

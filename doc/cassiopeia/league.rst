@@ -13,7 +13,7 @@ Leagues
 
 .. automethod:: cassiopeia.get_league_positions
 
-.. automethod:: cassiopeia.get_positional_leagues
+.. automethod:: cassiopeia.get_paginated_leagues
 
 .. automethod:: cassiopeia.get_challenger_league
 
@@ -45,7 +45,7 @@ Leagues
     :show-inheritance:
 
 
-.. autoclass:: cassiopeia.core.league.PositionalLeagues
+.. autoclass:: cassiopeia.core.league.LeagueSummonerEntries
     :members:
     :undoc-members:
     :show-inheritance:

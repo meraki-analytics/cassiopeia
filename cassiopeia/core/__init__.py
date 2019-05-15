@@ -5,6 +5,6 @@ from .championmastery import ChampionMastery, ChampionMasteries
 from .match import Match, MatchHistory
 from .spectator import CurrentMatch, FeaturedMatches
 from .status import ShardStatus
-from .league import ChallengerLeague, GrandmasterLeague, MasterLeague, SummonerLeagues, LeagueEntries, League, PositionalLeagues, PositionalQueues
+from .league import League, ChallengerLeague, GrandmasterLeague, MasterLeague, LeagueSummonerEntries, LeagueEntries
 from .patch import Patch
 from .thirdpartycode import VerificationString

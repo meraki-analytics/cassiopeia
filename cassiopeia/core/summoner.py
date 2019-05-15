@@ -6,7 +6,7 @@ from datapipelines import NotFoundError
 from merakicommons.cache import lazy_property
 from merakicommons.container import searchable
 
-from ..data import Region, Platform, Rank, Position
+from ..data import Region, Platform, Rank
 from .common import CoreData, CassiopeiaObject, CassiopeiaGhost, provide_default_region, ghost_load_on
 from .staticdata import ProfileIcon
 from ..dto.summoner import SummonerDto
@@ -194,37 +194,10 @@ class Summoner(CassiopeiaGhost):
         return CurrentMatch(summoner=self, region=self.region)
 
     @property
-    def leagues(self) -> "SummonerLeagues":
-        from .league import League, SummonerLeagues, LeagueListData, PositionalQueues, PositionalLeagues, PositionalLeaguesListData
-        from collections import defaultdict
-        positions = self.league_positions
-        positional_queues = PositionalQueues(region=self.region)
-        non_positional_leagues = {}
-        positional_leagues = defaultdict(dict)
-        for p in positions:
-            q = p.queue
-            if q not in positional_queues:
-                id_ = p.league_id
-                league = League(id=id_, region=self.region)
-                league._data[LeagueListData].queue = q
-                league._data[LeagueListData].region = self.region
-                non_positional_leagues[q] = league
-            else:
-                positional_leagues[q][p.position] = PositionalLeagues(region=self.region, queue=q, tier=p.tier, division=p.division, position=p.position)
-                positional_leagues[q][p.position]._data[PositionalLeaguesListData].queue = q
-                positional_leagues[q][p.position]._data[PositionalLeaguesListData].region = self.region
-        leagues = {}
-        for q, league in non_positional_leagues.items():
-            leagues[q] = league
-        for q, many_leagues in positional_leagues.items():
-            leagues[q] = many_leagues
-        leagues = SummonerLeagues(leagues)
+    def league_entries(self) -> "SummonerLeagues":
+        from .league import LeagueSummonerEntries
+        leagues = LeagueSummonerEntries(summoner=self)
         return leagues
-
-    @property
-    def league_positions(self) -> "LeagueEntries":
-        from .league import LeagueEntries
-        return LeagueEntries(summoner=self, region=self.region)
 
     @lazy_property
     def rank_last_season(self):
