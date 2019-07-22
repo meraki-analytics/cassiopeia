@@ -549,6 +549,7 @@ class Queue(Enum):
     odyssey_crewmember = "ODYSSEY_CREWMEMBER"  # 1050
     odyssey_captain = "ODYSSEY_CAPTAIN"  # 1060
     odyssey_onslaught = "ODYSSEY_ONSLAUGHT"  # 1070
+    ranked_tft = "RANKED_TFT" # 1100
     nexus_blitz = "NEXUS_BLITZ"  # 1200
 
     def from_id(id: int):
@@ -632,6 +633,7 @@ QUEUE_IDS = {
     Queue.odyssey_crewmember: 1050,  # Odyssey: Extraction
     Queue.odyssey_captain: 1060,  # Odyssey: Extraction
     Queue.odyssey_onslaught: 1070,  # Odyssey: Extraction
+    Queue.ranked_tft: 1100, #  Convergence, Ranked Teamfight Tactics games
     Queue.nexus_blitz: 1200,  # Nexus Blitz map    Nexus Blitz
 }
 
@@ -645,4 +647,5 @@ RANKED_QUEUES = {
     Queue.ranked_solo_fives,  # Summoner's Rift    5v5 Ranked Solo games
     Queue.ranked_flex_fives,  # Summoner's Rift    5v5 Ranked Flex games
     Queue.ranked_flex_threes,  # Twisted Treeline    3v3 Ranked Flex games
+    Queue.ranked_tft, # Convergence  Ranked Teamfight Tactics games
 }
