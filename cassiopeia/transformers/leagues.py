@@ -72,13 +72,6 @@ class LeagueTransformer(DataTransformer):
     def league_entries_data_to_core(self, value: LeagueEntriesData, context: PipelineContext = None) -> LeagueEntries:
         return LeagueEntries(*[LeagueTransformer.league_entry_data_to_core(self, entry) for entry in value], tier=value.tier, division=value.division, queue=value.queue, region=value.region)
 
-    @transform.register(LeagueSummonerEntriesData, LeagueSummonerEntries)
-    def league_summoner_entries_data_to_core(self, value: LeagueSummonerEntriesData, context: PipelineContext = None) -> LeagueSummonerEntries:
-        print("HERE", value.to_dict(), value, type(value))
-        for entry in value:
-            print("HERE", entry.to_dict(), entry, type(entry))
-        return LeagueSummonerEntries.from_data(*[LeagueTransformer.league_entry_data_to_core(self, entry) for entry in value], summoner=value["summoner_id"])
-
     #@transform.register(ChallengerLeagueListData, ChallengerLeague)
     def challenger_league_list_data_to_core(self, value: ChallengerLeagueListData, context: PipelineContext = None) -> ChallengerLeague:
         data = deepcopy(value)

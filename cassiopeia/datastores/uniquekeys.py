@@ -14,7 +14,7 @@ from ..dto.spectator import CurrentGameInfoDto, FeaturedGamesDto
 from ..dto.summoner import SummonerDto
 
 from ..core.championmastery import ChampionMastery, ChampionMasteries
-from ..core.league import LeagueEntries, ChallengerLeague, GrandmasterLeague, MasterLeague, League, LeagueEntry
+from ..core.league import LeagueSummonerEntries, ChallengerLeague, GrandmasterLeague, MasterLeague, League, LeagueEntry
 from ..core.staticdata import Champion, Rune, Item, SummonerSpell, Map, Locales, LanguageStrings, ProfileIcon, ProfileIcons, Realms, Versions, Items, Champions, Maps, SummonerSpells, Runes
 from ..core.status import ShardStatus
 from ..core.match import Match, MatchHistory, Timeline
@@ -1142,15 +1142,15 @@ validate_many_league_entries_query = Query. \
     has("summoners.id").as_(Iterable)
 
 
-def for_league_entries(entries: LeagueEntries) -> List[Tuple[str, str]]:
-    return [(entries.platform.value, entries._LeagueEntries__summoner.id)]
+def for_league_summoner_entries(entries: LeagueSummonerEntries) -> List[Tuple[str, str]]:
+    return [(entries.platform.value, entries._LeagueSummonerEntries__summoner.id)]
 
 
-def for_league_entries_query(query: Query) -> List[Tuple[str, str]]:
+def for_league_summoner_entries_query(query: Query) -> List[Tuple[str, str]]:
     return [(query["platform"].value, query["summoner.id"])]
 
 
-def for_many_league_entries_query(query: Query) -> Generator[List[Tuple[str, str]], None, None]:
+def for_many_league_summoner_entries_query(query: Query) -> Generator[List[Tuple[str, str]], None, None]:
     for id in query["summoners.id"]:
         try:
             yield [(query["platform"].value, id)]
@@ -1273,7 +1273,7 @@ validate_league_entries_list_query = Query. \
     has("division").as_(Division).also. \
     has("platform").as_(Platform)
 
-def for_league_entries_list(lel: LeagueEntries) -> List[Tuple[str, str, str, str]]:
+def for_league_entries_list(lel: LeagueSummonerEntries) -> List[Tuple[str, str, str, str]]:
     return [(lel.platform.value, lel.queue.value, lel.tier.value, lel.division.value)]
 
 def for_league_entries_list_query(query: Query) -> List[Tuple[str, str, str, str]]:

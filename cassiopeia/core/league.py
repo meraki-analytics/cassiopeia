@@ -49,7 +49,7 @@ class LeagueData(CoreData):
 class LeagueSummonerEntriesData(CoreDataList):
     """League entries for a single summoner."""
     _dto_type = LeagueSummonerEntriesDto
-    _renamed = {}
+    _renamed = {"summonerId": "summoner_id"}
 
 
 class LeagueEntriesData(CoreDataList):
@@ -274,7 +274,6 @@ class LeagueEntries(CassiopeiaLazyList):  # type List[LeagueEntry]
 class LeagueSummonerEntries(CassiopeiaLazyList):
     _data_types = {LeagueSummonerEntriesData}
 
-    @provide_default_region
     def __init__(self, *, summoner: Summoner):
         self.__summoner = summoner
         kwargs = {"region": summoner.region}
@@ -296,7 +295,7 @@ class LeagueSummonerEntries(CassiopeiaLazyList):
 
     @lazy_property
     def region(self) -> Region:
-        return Region(self._data[LeagueEntriesData].region)
+        return Region(self._data[LeagueSummonerEntriesData].region)
 
     @lazy_property
     def platform(self) -> Platform:
@@ -328,12 +327,12 @@ class LeagueSummonerEntries(CassiopeiaLazyList):
 class League(CassiopeiaGhost):
     _data_types = {LeagueData}
 
-    def __init__(self, id: str = None, region: Union[Region, str] = None):
+    def __init__(self, id: str = None, queue: Queue = None, region: Union[Region, str] = None):
         if region is None:
             region = configuration.settings.default_region
         if region is not None and not isinstance(region, Region):
             region = Region(region)
-        kwargs = {"id": id, "region": region}
+        kwargs = {"id": id, "region": region, "queue": queue}
         super().__init__(**kwargs)
 
     def __get_query__(self):

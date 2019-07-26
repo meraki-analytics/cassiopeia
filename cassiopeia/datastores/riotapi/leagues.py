@@ -3,7 +3,7 @@ from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError, validate_query
 from .common import RiotAPIService, APINotFoundError
 from ...data import Platform, Queue, Tier, Division
-from ...dto.league import LeagueEntriesDto, LeagueEntryDto, LeagueDto, LeagueSummonerEntriesDto, ChallengerLeagueListDto, MasterLeagueListDto, GrandmasterLeagueListDto
+from ...dto.league import LeagueEntriesDto, LeagueDto, LeagueSummonerEntriesDto, ChallengerLeagueListDto, MasterLeagueListDto, GrandmasterLeagueListDto
 from ..uniquekeys import convert_region_to_platform
 
 T = TypeVar("T")
@@ -68,7 +68,6 @@ class LeaguesAPI(RiotAPIService):
             entry["region"] = region
         return LeagueSummonerEntriesDto(entries=data, region=region, summonerId=query["summoner.id"])
 
-
     # Leagues
 
     _validate_get_league_query = Query. \
@@ -119,7 +118,6 @@ class LeaguesAPI(RiotAPIService):
 
         return generator()
 
-
     _validate_get_challenger_league_query = Query. \
         has("queue").as_(Queue).also. \
         has("platform").as_(Platform)
@@ -147,7 +145,7 @@ class LeaguesAPI(RiotAPIService):
 
     @get_many.register(ChallengerLeagueListDto)
     @validate_query(_validate_get_many_challenger_league_query, convert_region_to_platform)
-    def get_challenger_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChallengerLeagueListDto, None, None]:
+    def get_many_challenger_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChallengerLeagueListDto, None, None]:
         def generator():
             for queue in query["queues"]:
                 url = "https://{platform}.api.riotgames.com/lol/league/v4/challengerleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=queue.value)
@@ -166,7 +164,6 @@ class LeaguesAPI(RiotAPIService):
                 yield ChallengerLeagueListDto(data)
 
         return generator()
-
 
     _validate_get_grandmaster_league_query = Query. \
         has("queue").as_(Queue).also. \
@@ -195,7 +192,7 @@ class LeaguesAPI(RiotAPIService):
 
     @get_many.register(GrandmasterLeagueListDto)
     @validate_query(_validate_get_many_grandmaster_league_query, convert_region_to_platform)
-    def get_grandmaster_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[GrandmasterLeagueListDto, None, None]:
+    def get_many_grandmaster_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[GrandmasterLeagueListDto, None, None]:
         def generator():
             for queue in query["queues"]:
                 url = "https://{platform}.api.riotgames.com/lol/league/v4/grandmasterleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=queue.value)
@@ -214,7 +211,6 @@ class LeaguesAPI(RiotAPIService):
                 yield GrandmasterLeagueListDto(data)
 
         return generator()
-
 
     _validate_get_master_league_query = Query. \
         has("queue").as_(Queue).also. \
@@ -243,7 +239,7 @@ class LeaguesAPI(RiotAPIService):
 
     @get_many.register(MasterLeagueListDto)
     @validate_query(_validate_get_many_master_league_query, convert_region_to_platform)
-    def get_master_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[MasterLeagueListDto, None, None]:
+    def get_many_master_leagues_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[MasterLeagueListDto, None, None]:
         def generator():
             for queue in query["queues"]:
                 url = "https://{platform}.api.riotgames.com/lol/league/v4/masterleagues/by-queue/{queueName}".format(platform=query["platform"].value.lower(), queueName=queue.value)

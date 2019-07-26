@@ -87,7 +87,7 @@ It takes one optional parameter (called ``expirations``), which is a mapping of 
     ProfileIcons: datetime.timedelta(days=20),
     ChampionMastery: datetime.timedelta(days=7),
     ChampionMasteries: datetime.timedelta(days=7),
-    LeagueEntries: datetime.timedelta(hours=6),
+    LeagueSummonerEntries: datetime.timedelta(hours=6),
     League: datetime.timedelta(hours=6),
     ChallengerLeague: datetime.timedelta(hours=6),
     MasterLeague: datetime.timedelta(hours=6),
