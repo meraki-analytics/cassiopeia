@@ -18,3 +18,12 @@ def test_equal_summoners():
     assert from_name.name == from_id.name
     assert from_name == from_id
     assert from_name.to_dict() == from_id.to_dict()
+
+
+def test_can_get_league_entries():
+    config_backup = cassiopeia.configuration.settings
+    cassiopeia.apply_settings({"global": {"default_region": "NA"}})
+    summoner = cassiopeia.Summoner(name=SUMMONER_NAME)
+    summoner.league_entries
+    # restore global settings to not affect other tests if they are run in one session
+    cassiopeia.apply_settings(config_backup)
