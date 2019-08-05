@@ -146,7 +146,7 @@ class Patch(object):
         return self.name == other.name
 
     def __lt__(self, other: "Patch") -> bool:
-        if self.major < other.major or (self.major == other.major and self.minor < other.minor):
+        if int(self.major) < int(other.major) or (self.major == other.major and int(self.minor) < int(other.minor)):
             return True
         else:
             return False
