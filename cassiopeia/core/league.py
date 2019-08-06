@@ -280,7 +280,6 @@ class LeagueSummonerEntries(CassiopeiaLazyList):
         CassiopeiaObject.__init__(self, **kwargs)
 
     @classmethod
-    @provide_default_region
     def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, str]) -> dict:
         query = {"region": summoner.region}
         if isinstance(summoner, Summoner):
