@@ -1,29 +1,48 @@
-import cassiopeia
-import pytest
+import os
+import unittest
 
-from datapipelines.common import NotFoundError
+import cassiopeia
 
 from .constants import SUMMONER_NAME, UNKNOWN_SUMMONER_NAME
 
 
-def test_unknown_summoner():
-    assert not cassiopeia.get_summoner(name=UNKNOWN_SUMMONER_NAME, region="NA").exists
+class TestSummoner(unittest.TestCase):
+    def setUp(self):
+        cassiopeia.apply_settings(cassiopeia.get_default_config())
+        cassiopeia.set_riot_api_key(os.environ.get('RIOT_API_KEY'))
+        cassiopeia.apply_settings({"global": {"default_region": "NA"}})
+
+    def test_unknown_summoner(self):
+        for e in cassiopeia.Summoner(name="Kalturi", region="NA").league_entries: print(e.name)
+        self.assertFalse(cassiopeia.get_summoner(name=UNKNOWN_SUMMONER_NAME, region="NA").exists)
+
+    def test_access_properties(self):
+        s = cassiopeia.Summoner(name=SUMMONER_NAME)
+        self.assertIsNotNone(s.region)
+        self.assertIsNotNone(s.platform)
+        self.assertIsNotNone(s.account_id)
+        self.assertIsNotNone(s.puuid)
+        self.assertIsNotNone(s.id)
+        self.assertIsNotNone(s.name)
+        self.assertIsNotNone(s.sanitized_name)
+        self.assertIsNotNone(s.level)
+        self.assertIsNotNone(s.profile_icon)
+        self.assertIsNotNone(s.revision_date)
+        self.assertIsNotNone(s.match_history_uri)
+        self.assertIsNotNone(s.champion_masteries)
+        self.assertIsNotNone(s.match_history)
+        self.assertIsNotNone(s.league_entries)
+        self.assertIsNotNone(s.rank_last_season)
+        self.assertIsNotNone(s.league_entries)
+
+    def test_equality(self):
+        from_name = cassiopeia.get_summoner(name=SUMMONER_NAME, region="NA")
+        from_id = cassiopeia.get_summoner(id=from_name.id, region="NA")
+        self.assertEqual(from_name.id, from_id.id)
+        self.assertEqual(from_name.name, from_id.name)
+        self.assertEqual(from_name, from_id)
+        self.assertEqual(from_name.to_dict(), from_id.to_dict())
 
 
-def test_equal_summoners():
-    from_name = cassiopeia.get_summoner(name=SUMMONER_NAME, region="NA")
-    from_id = cassiopeia.get_summoner(id=from_name.id, region="NA")
-
-    assert from_name.id == from_id.id
-    assert from_name.name == from_id.name
-    assert from_name == from_id
-    assert from_name.to_dict() == from_id.to_dict()
-
-
-def test_can_get_league_entries():
-    config_backup = cassiopeia.configuration.settings
-    cassiopeia.apply_settings({"global": {"default_region": "NA"}})
-    summoner = cassiopeia.Summoner(name=SUMMONER_NAME)
-    summoner.league_entries
-    # restore global settings to not affect other tests if they are run in one session
-    cassiopeia.apply_settings(config_backup)
+if __name__ == "__main__":
+    unittest.main()

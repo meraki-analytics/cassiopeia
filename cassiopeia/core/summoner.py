@@ -209,10 +209,3 @@ class Summoner(CassiopeiaGhost):
         from .thirdpartycode import VerificationString
         vs = VerificationString(summoner=self, region=self.region)
         return vs.string
-
-    @lazy_property
-    def ranks(self):
-        ranks = {}
-        for position in self.league_positions:
-            ranks[position.queue] = Rank(tier=position.tier, division=position.division)
-        return ranks
