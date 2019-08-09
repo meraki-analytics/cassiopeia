@@ -16,6 +16,13 @@ class TestSummoner(unittest.TestCase):
         for e in cassiopeia.Summoner(name="Kalturi", region="NA").league_entries: print(e.name)
         self.assertFalse(cassiopeia.get_summoner(name=UNKNOWN_SUMMONER_NAME, region="NA").exists)
 
+    def test_ranks(self):
+        s = cassiopeia.Summoner(name=SUMMONER_NAME)
+        ranks = s.ranks
+        for key in ranks:
+            self.assertIsInstance(key, cassiopeia.Queue)
+            self.assertIsInstance(ranks[key], cassiopeia.data.Rank)
+
     def test_access_properties(self):
         s = cassiopeia.Summoner(name=SUMMONER_NAME)
         self.assertIsNotNone(s.region)
