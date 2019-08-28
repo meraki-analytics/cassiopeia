@@ -160,26 +160,12 @@ class LeagueEntry(CassiopeiaGhost):
         """The platform for this champion."""
         return self.region.platform
 
-    @property
-    def league_id(self) -> str:
-        try:
-            return self._data[LeagueEntryData].leagueId
-        except AttributeError:
-            return self.league.id
-
     @lazy_property
     def queue(self) -> Queue:
         try:
             return Queue(self._data[LeagueEntryData].queue)
         except AttributeError:
             return self.league.queue
-
-    @property
-    def name(self) -> str:
-        try:
-            return self._data[LeagueEntryData].name
-        except AttributeError:
-            return self.league.name
 
     @lazy_property
     def tier(self) -> Tier:
@@ -226,7 +212,7 @@ class LeagueEntry(CassiopeiaGhost):
 
     @lazy_property
     def league(self) -> "League":
-        return self.__league or League(id=self.league_id, region=self.region)
+        return self.__league or League(id=self._data[LeagueEntryData].leagueId, region=self.region)
 
     @property
     def league_points(self) -> int:

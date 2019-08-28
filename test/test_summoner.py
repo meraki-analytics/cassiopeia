@@ -13,7 +13,7 @@ class TestSummoner(unittest.TestCase):
         cassiopeia.apply_settings({"global": {"default_region": "NA"}})
 
     def test_unknown_summoner(self):
-        for e in cassiopeia.Summoner(name="Kalturi", region="NA").league_entries: print(e.name)
+        for e in cassiopeia.Summoner(name="Kalturi", region="NA").league_entries: print(e.league.name)
         self.assertFalse(cassiopeia.get_summoner(name=UNKNOWN_SUMMONER_NAME, region="NA").exists)
 
     def test_ranks(self):
