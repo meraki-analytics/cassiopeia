@@ -144,6 +144,12 @@ class LeagueEntry(CassiopeiaGhost):
 
     __hash__ = CassiopeiaGhost.__hash__
 
+    @classmethod
+    def from_data(cls, data: LeagueEntryData, league: "League" = None):
+        self = super().from_data(data)
+        self.__league = league
+        return self
+
     @lazy_property
     def region(self) -> Region:
         """The region for this champion."""
@@ -154,17 +160,12 @@ class LeagueEntry(CassiopeiaGhost):
         """The platform for this champion."""
         return self.region.platform
 
-    @property
-    def league_id(self) -> str:
-        return self._data[LeagueEntryData].leagueId
-
     @lazy_property
     def queue(self) -> Queue:
-        return Queue(self._data[LeagueEntryData].queue)
-
-    @property
-    def name(self) -> str:
-        return self._data[LeagueEntryData].name
+        try:
+            return Queue(self._data[LeagueEntryData].queue)
+        except AttributeError:
+            return self.league.queue
 
     @lazy_property
     def tier(self) -> Tier:
@@ -211,7 +212,7 @@ class LeagueEntry(CassiopeiaGhost):
 
     @lazy_property
     def league(self) -> "League":
-        return League(id=self.league_id, region=self.region)
+        return self.__league or League(id=self._data[LeagueEntryData].leagueId, region=self.region)
 
     @property
     def league_points(self) -> int:
@@ -391,7 +392,7 @@ class League(CassiopeiaGhost):
     @ghost_load_on
     @lazy
     def entries(self) -> List[LeagueEntry]:
-        return SearchableList([LeagueEntry.from_data(entry) for entry in self._data[LeagueData].entries])
+        return SearchableList([LeagueEntry.from_data(entry, self) for entry in self._data[LeagueData].entries])
 
 
 class ChallengerLeague(League):

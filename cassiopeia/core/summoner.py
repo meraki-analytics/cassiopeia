@@ -213,6 +213,6 @@ class Summoner(CassiopeiaGhost):
     @lazy_property
     def ranks(self):
         ranks = {}
-        for position in self.league_positions:
+        for position in self.league_entries:
             ranks[position.queue] = Rank(tier=position.tier, division=position.division)
         return ranks
