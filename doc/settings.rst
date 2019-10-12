@@ -64,7 +64,7 @@ Below is an example, and these settings are the default if any value is not spec
 
 .. code-block:: json
 
-    "Riot API": {
+    "RiotAPI": {
         "api_key": "RIOT_API_KEY",
         "limiting_share": 1.0,
         "request_error_handling": {
