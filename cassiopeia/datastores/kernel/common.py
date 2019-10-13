@@ -38,7 +38,15 @@ class KernelSource(DataSource):
         url = f"{self._server_url}:{self._port}/{endpoint}"
         try:
             result, headers = self._client.get(url=url, parameters=parameters, connection=connection)
-            result = json.loads(result.decode())
+
+            # Ensure compatibility with both Curl and Requests based clients
+            if isinstance(result, bytes):
+                result = json.loads(result.decode())
+            elif isinstance(result, str):
+                result = json.loads(result)
+            
+            if not isinstance(result, dict):
+                raise ValueError("Unexpected type returned from HTTPClient: {}".format(type(result)))
         except HTTPError as error:
             # The error handlers didn't work, so raise an appropriate error.
             new_error_type = _ERROR_CODES[error.code]
