@@ -19,6 +19,21 @@ If you successfully installed Cass but it's throwing a certificate error, you pr
 
 If you are having more problems, let us know via the Riot API discord server or our Meraki discord server.
 
+Alternative library support
+===========================
+
+In case PyCurl is not installed, Cassiopeia falls back to `Requests <https://pypi.org/project/requests/>`_, this is a direct dependency and the user is not required to install the library manually.
+
+Furthermore, `ujson <https://github.com/esnme/ultrajson>`_ is used instead of Python's default `json <https://docs.python.org/3/library/json.html>`_ module when available. To use ujson in conjunction with Requests, the following patch needs to be applied before running any API requests.
+
+.. code-block:: python
+
+    # see https://github.com/psf/requests/issues/1595#issuecomment-504030697 for more details
+    import requests
+    import ujson
+
+    requests.models.complexjson = ujson
+
 
 Install from Source
 ===================
