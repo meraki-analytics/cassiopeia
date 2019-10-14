@@ -118,6 +118,27 @@ Hopefully you already know what this is. It's where you're planning on getting y
 
 This component can have complicated settings, so see :ref:`settings` for its parameters.
 
+Kernel
+""""""
+
+Cassiopeia can query a proxy server that mirrors Riot API endpoints. An example of such server is `Kernel <https://github.com/meraki-analytics/kernel>`_.
+
+To configure the address and ports of the proxy, use the following configuration within your pipeline:
+
+.. code-block:: json
+
+    {
+      "pipeline": {
+        ...,
+        "Kernel": {
+          "server_url": "http://localhost",
+          "port": 80
+        }
+        ...
+      }
+    }
+
+
 Simple Disk Database
 """"""""""""""""""""
 
