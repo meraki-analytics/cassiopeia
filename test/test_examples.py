@@ -125,28 +125,28 @@ def test_languagestrings():
     assert len(language_strings.strings) > 0
 
 def test_leagues():
-    summoner_name = "Spartan324"
+    summoner_name = "Kalturi"
     region = "NA"
     summoner = Summoner(name=summoner_name, region=region)
     "Name:", summoner.name
     "ID:", summoner.id
 
-    # positions = cass.get_league_positions(summoner, region=region)
-    positions = summoner.league_positions
-    if positions.fives.promos is not None:
+    # entries = cass.get_league_entries(summoner, region=region)
+    entries = summoner.league_entries
+    if entries.fives.promos is not None:
         # If the summoner is in their promos, print some info
-        "Promos progress:", positions.fives.promos.progress
-        "Promos wins", positions.fives.promos.wins
-        "Promos losses:", positions.fives.promos.losses
-        "Games not yet played in promos:", positions.fives.promos.not_played
-        "Number of wins required to win promos:", positions.fives.promos.wins_required
+        "Promos progress:", entries.fives.promos.progress
+        "Promos wins", entries.fives.promos.wins
+        "Promos losses:", entries.fives.promos.losses
+        "Games not yet played in promos:", entries.fives.promos.not_played
+        "Number of wins required to win promos:", entries.fives.promos.wins_required
     else:
         "The summoner is not in their promos."
 
     "Name and id of leagues this summoner is in:"
-    for league in positions:
-        league.name
-        league.league_id
+    for entry in entries:
+        entry.league.name
+        entry.league.id
 
     leagues = cass.get_leagues(summoner)
     leagues = summoner.leagues
