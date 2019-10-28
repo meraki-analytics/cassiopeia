@@ -148,6 +148,7 @@ def test_leagues():
         entry.league.name
         entry.league.id
 
+    leagues = cass.get_leagues(summoner)
     leagues = summoner.leagues
     "Name of leagues this summoner is in (called from a different endpoint):"
     for league in leagues:
