@@ -53,8 +53,7 @@ def get_league_entries(summoner: Summoner) -> LeagueEntries:
 
 
 def get_leagues(summoner: Summoner) -> LeagueSummonerEntries:
-    return summoner.leagues
-
+    return [entry.league for entry in summoner.league_entries]
 
 def get_paginated_league_entries(queue: Queue, tier: Tier, division: Division, region: Union[Region, str] = None) -> LeagueEntries:
     return LeagueEntries(region=region, queue=queue, tier=tier, division=division)

@@ -8,26 +8,27 @@ def print_leagues(summoner_name: str, region: str):
     print("Name:", summoner.name)
     print("ID:", summoner.id)
 
-    # entries = cass.get_league_entries(summoner, region=region)
-    entries = summoner.league_entries
-    if entries.fives.promos is not None:
+    # positions = cass.get_league_positions(summoner, region=region)
+    positions = summoner.league_positions
+    if positions.fives.promos is not None:
         # If the summoner is in their promos, print some info
-        print("Promos progress:", entries.fives.promos.progress)
-        print("Promos wins", entries.fives.promos.wins)
-        print("Promos losses:", entries.fives.promos.losses)
-        print("Games not yet played in promos:", entries.fives.promos.not_played)
-        print("Number of wins required to win promos:", entries.fives.promos.wins_required)
+        print("Promos progress:", positions.fives.promos.progress)
+        print("Promos wins", positions.fives.promos.wins)
+        print("Promos losses:", positions.fives.promos.losses)
+        print("Games not yet played in promos:", positions.fives.promos.not_played)
+        print("Number of wins required to win promos:", positions.fives.promos.wins_required)
     else:
         print("The summoner is not in their promos.")
 
     print("Name of leagues this summoner is in:")
-    for entry in entries:
-        print(entry.league.name)
+    for league in positions:
+        print(league.name)
     print()
 
+    leagues = summoner.leagues
     print(f"Listing all summoners in this league:")
-    for position, entry in enumerate(entries.fives.league.entries):
-        print(entry.summoner.name, entry.league_points, entry.tier, entry.division, position)
+    for entry in leagues.fives[Position.utility]:
+        print(entry.summoner.name, entry.league_points, entry.tier, entry.division, entry.position)
 
     print()
     print("Master's League name:")
