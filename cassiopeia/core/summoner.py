@@ -199,10 +199,6 @@ class Summoner(CassiopeiaGhost):
         leagues = LeagueSummonerEntries(summoner=self)
         return leagues
 
-    @property
-    def leagues(self) -> "LeagueSummonerEntries":
-        return [entry.league for entry in self.league_entries]
-
     @lazy_property
     def rank_last_season(self):
         most_recent_match = self.match_history[0]

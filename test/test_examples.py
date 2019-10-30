@@ -147,16 +147,9 @@ def test_leagues():
     for entry in entries:
         entry.league.name
         entry.league.id
-
-    leagues = cass.get_leagues(summoner)
-    leagues = summoner.leagues
-    "Name of leagues this summoner is in (called from a different endpoint):"
-    for league in leagues:
-        league.name
-        league.id
-        f"Listing all summoners in {league.id}"
-        for entry in league.entries:
-            entry.summoner.name, entry.league_points, league.tier, entry.division
+        f"Listing all summoners in {entry.league.id}"
+        for other_entry in entry.league.entries:
+            other_entry.summoner.name, other_entry.league_points, entry.league.tier, other_entry.division
 
     "Challenger League name and id:"
     challenger = cass.get_challenger_league(queue=Queue.ranked_solo_fives, region=region)
