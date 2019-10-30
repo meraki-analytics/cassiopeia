@@ -143,8 +143,8 @@ def test_leagues():
     else:
         "The summoner is not in their promos."
 
-    "Name and id of leagues this summoner is in:"
-    for entry in entries:
+    "Name and id of fives leagues this summoner is in:"
+    for entry in entries.fives:
         entry.league.name
         entry.league.id
         f"Listing all summoners in {entry.league.id}"
