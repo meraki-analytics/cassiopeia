@@ -318,7 +318,7 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 
 
 # JJM: Add custom documenter for properties so that the docs contain the return type annotation
-from sphinx.ext.autodoc import DocstringSignatureMixin, ClassLevelDocumenter, inspect, Signature, isstaticmethod
+from sphinx.ext.autodoc import DocstringSignatureMixin, ClassLevelDocumenter, inspect, Signature
 class PropertyDocumenter(DocstringSignatureMixin, ClassLevelDocumenter):  # type: ignore
     """
     Specialized Documenter subclass for python properties (with just an fget).
@@ -354,7 +354,7 @@ class PropertyDocumenter(DocstringSignatureMixin, ClassLevelDocumenter):  # type
         if inspect.isbuiltin(self.object) or inspect.ismethoddescriptor(self.object):
             # can never get arguments of a C function or method
             return None
-        if isstaticmethod(self.object, cls=self.parent, name=self.object_name):
+        if inspect.isstaticmethod(self.object, cls=self.parent, name=self.object_name):
             args = Signature(self.object, bound_method=False).format_args()
         else:
             args = Signature(self.object, bound_method=True).format_args()
