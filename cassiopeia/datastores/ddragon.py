@@ -26,6 +26,64 @@ except ImportError:
 T = TypeVar("T")
 
 
+# Manually add stat runes since Riot doesn't provide static data for them...
+statperk_health = {
+    "id": 5001,
+    "name": "HealthScaling",
+    "key": "HealthScaling",
+    "shortDesc": "+15-90 Health (based on level)",
+    "longDesc": "+15-90 Health (based on level)",
+    "icon": "/lol-game-data/assets/v1/perk-images/StatMods/StatModsHealthScalingIcon.png",
+}
+statperk_armor = {
+    "id": 5002,
+    "name": "Armor",
+    "key": "Armor",
+    "shortDesc": "+6 Armor",
+    "longDesc": "+6 Armor",
+    "icon": "/lol-game-data/assets/v1/perk-images/StatMods/StatModsArmorIcon.png",
+}
+statperk_magic_resist = {
+    "id": 5003,
+    "name": "MagicResist",
+    "key": "MagicRes",
+    "shortDesc": "+8 Magic Resist",
+    "longDesc": "+8 Magic Resist",
+    "icon": "/lol-game-data/assets/v1/perk-images/StatMods/StatModsMagicResIcon.png",
+}
+statperk_attack_speed = {
+    "id": 5005,
+    "name": "AttackSpeed",
+    "key": "AttackSpeed",
+    "shortDesc": "+10% Attack Speed",
+    "longDesc": "+10% Attack Speed",
+    "icon": "/lol-game-data/assets/v1/perk-images/StatMods/StatModsAttackSpeedIcon.png",
+}
+statperk_cdr = {
+    "id": 5007,
+    "name": "CDRScaling",
+    "key": "CDRScaling",
+    "shortDesc": "+1-10% <lol-uikit-tooltipped-keyword key='LinkTooltip_Description_CDR'>CDR</lol-uikit-tooltipped-keyword> (based on level)",
+    "longDesc": "+1-10% <lol-uikit-tooltipped-keyword key='LinkTooltip_Description_CDR'>CDR</lol-uikit-tooltipped-keyword> (based on level)",
+    "icon": "/lol-game-data/assets/v1/perk-images/StatMods/StatModsCDRScalingIcon.png",
+}
+statperk_adaptive = {
+    "id": 5008,
+    "name": "Adaptive",
+    "key": "Adaptive",
+    "shortDesc": "+9 <lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Adaptive'><font color='#48C4B7'>Adaptive Force</font></lol-uikit-tooltipped-keyword>",
+    "longDesc": "+9 <lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Adaptive'><font color='#48C4B7'>Adaptive Force</font></lol-uikit-tooltipped-keyword>",
+    "icon": "/lol-game-data/assets/v1/perk-images/StatMods/StatModsAdaptiveForceIcon.png",
+}
+statperks = {
+    "id": 5000,
+    "key": "stats",
+    "name": "stats",
+    "icon": "",
+    "slots": [{"runes": [statperk_health, statperk_armor, statperk_magic_resist, statperk_attack_speed, statperk_cdr, statperk_adaptive]}]
+}
+
+
 class DDragon(DataSource):
     def __init__(self, http_client: HTTPClient = None) -> None:
         if http_client is None:
@@ -348,6 +406,7 @@ class DDragon(DataSource):
     # Runes #
     #########
 
+
     _validate_get_rune_query = Query. \
         has("platform").as_(Platform).also. \
         has("id").as_(int).or_("name").as_(str).also. \
@@ -420,6 +479,7 @@ class DDragon(DataSource):
         except HTTPError as e:
             raise NotFoundError(str(e)) from e
 
+        body.append(statperks)
         for path in body:
             for tier, subpath in enumerate(path["slots"]):
                 for i, rune in enumerate(subpath["runes"]):

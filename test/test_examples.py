@@ -144,12 +144,11 @@ def test_leagues():
         "The summoner is not in their promos."
 
     "Name and id of fives leagues this summoner is in:"
-    for entry in entries.fives:
-        entry.league.name
-        entry.league.id
-        f"Listing all summoners in {entry.league.id}"
-        for other_entry in entry.league.entries:
-            other_entry.summoner.name, other_entry.league_points, entry.league.tier, other_entry.division
+    entries.fives.league.name
+    entries.fives.league.id
+    f"Listing all summoners in {entries.fives.league.id}"
+    for entry in entries.fives.league.entries:
+        entry.summoner.name, entry.league_points, entries.fives.league.tier, entry.division
 
     "Challenger League name and id:"
     challenger = cass.get_challenger_league(queue=Queue.ranked_solo_fives, region=region)
@@ -279,27 +278,3 @@ def test_timeline():
     for p in match.participants:
         for event in p.timeline.events:
             event.type
-
-
-def test_championgg():
-    if not "CHAMPIONGG_KEY" in os.environ:
-        pytest.xfail("No championgg key provided")
-    syndra = Champion(name="Syndra", region="NA")
-    syndra.name
-    syndra.championgg[Role.middle].win_rate
-    syndra.championgg[Role.middle].play_rate
-    syndra.championgg[Role.middle].play_rate_by_role
-    syndra.championgg[Role.middle].ban_rate
-    syndra.championgg[Role.middle].games_played
-    syndra.championgg[Role.middle].damage_composition
-    syndra.championgg[Role.middle].kills
-    syndra.championgg[Role.middle].total_damage_taken
-    syndra.championgg[Role.middle].neutral_minions_killed_in_team_jungle
-    syndra.championgg[Role.middle].assists
-    syndra.championgg[Role.middle].neutral_minions_killed_in_enemy_jungle
-    syndra.championgg[Role.middle].gold_earned
-    syndra.championgg[Role.middle].deaths
-    syndra.championgg[Role.middle].minions_killed
-    syndra.championgg[Role.middle].total_healed
-    syndra.championgg[Role.middle].championgg_metadata["elo"]
-    syndra.championgg[Role.middle].championgg_metadata["patch"]

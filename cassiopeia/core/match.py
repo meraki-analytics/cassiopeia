@@ -153,8 +153,13 @@ class ParticipantData(CoreData):
                     stats.pop("perk2"): [stats.pop("perk2Var1"), stats.pop("perk2Var2"), stats.pop("perk2Var3")],
                     stats.pop("perk3"): [stats.pop("perk3Var1"), stats.pop("perk3Var2"), stats.pop("perk3Var3")],
                     stats.pop("perk4"): [stats.pop("perk4Var1"), stats.pop("perk4Var2"), stats.pop("perk4Var3")],
-                    stats.pop("perk5"): [stats.pop("perk5Var1"), stats.pop("perk5Var2"), stats.pop("perk5Var3")]
+                    stats.pop("perk5"): [stats.pop("perk5Var1"), stats.pop("perk5Var2"), stats.pop("perk5Var3")],
                 }
+                self.stat_runes = [
+                    stats.pop("statPerk0"),
+                    stats.pop("statPerk1"),
+                    stats.pop("statPerk2"),
+                ]
                 stats.pop("runes", None)
             self.stats = ParticipantStatsData(**stats)
         if "timeline" in kwargs:
@@ -1313,7 +1318,7 @@ class Participant(CassiopeiaObject):
     def runes(self) -> Dict[Rune, int]:
         version = _choose_staticdata_version(self.__match)
         runes = SearchableDictionary({Rune(id=rune_id, version=version, region=self.__match.region): perk_vars
-            for rune_id, perk_vars in self._data[ParticipantData].runes.items()})
+                                      for rune_id, perk_vars in self._data[ParticipantData].runes.items()})
 
         def keystone(self):
             for rune in self:
@@ -1323,6 +1328,14 @@ class Participant(CassiopeiaObject):
         #  rune ids then there will be a needless call. That said, it's pretty nice functionality to have and without
         #  making a custom RunePage class, I believe this is the only option.
         runes.keystone = keystone(runes)
+        return runes
+
+    @lazy_property
+    @load_match_on_attributeerror
+    def stat_runes(self) -> List[Rune]:
+        version = _choose_staticdata_version(self.__match)
+        runes = SearchableList([Rune(id=rune_id, version=version, region=self.__match.region)
+                                for rune_id in self._data[ParticipantData].stat_runes])
         return runes
 
     @lazy_property

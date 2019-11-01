@@ -14,7 +14,7 @@ def print_newest_match(name: str, region: str):
 
     # match_history = cass.get_match_history(summoner=summoner, seasons={Season.season_8}, queues={Queue.ranked_solo_fives})
     match_history = summoner.match_history
-    match_history(seasons={Season.season_8}, queues={Queue.ranked_solo_fives})
+    match_history(seasons={Season.season_9}, queues={Queue.ranked_solo_fives})
 
     # Load the entire match history by iterating over all its elements so that we know how long it is.
     # Unfortunately since we are iterating over the match history and accessing the summoner's champion for each match,
@@ -57,7 +57,11 @@ def print_newest_match(name: str, region: str):
     print("Red team won?", match.red_team.win)
     print("Participants on blue team:")
     for p in match.blue_team.participants:
-        print(p.summoner.name)
+        print(p.summoner.name, p.champion.name)
+
+    # Print keystone and the stat runes for each player/champion
+    for p in match.participants:
+        print(p.champion.name, p.runes.keystone.name, *[r.name for r in p.stat_runes])
 
 
 if __name__ == "__main__":

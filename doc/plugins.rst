@@ -76,51 +76,6 @@ The ``"path"`` parameter specifies a directory path where the data will be store
     ChampionRotationDto: datetime.timedelta(days=1),
     ChampionMasteryDto: datetime.timedelta(days=7),
     ChampionMasteryListDto: datetime.timedelta(days=7),
-    LeaguePositionsDto: datetime.timedelta(hours=6),
-    LeagueListDto: datetime.timedelta(hours=6),
-    ChallengerLeagueListDto: datetime.timedelta(hours=6),
-    MasterLeagueListDto: datetime.timedelta(hours=6),
-    MatchDto: -1,
-    TimelineDto: -1,
-    SummonerDto: datetime.timedelta(days=1),
-    ShardStatusDto: datetime.timedelta(hours=1),
-    CurrentGameInfoDto: datetime.timedelta(hours=0.5),
-    FeaturedGamesDto: datetime.timedelta(hours=0.5),
-    PatchListDto: datetime.timedelta(days=1)
-
-TODO: The diskstore currently does not automatically expire its data, so it's possible to use more disk space than necessary. To prevent this, users can trigger an expiration of all data or all data of one type by using the method ``settings.pipeline.expire``. We will fix this so that the diskstore does automatically expire it's data, but we haven't gotten to it yet. Using the ``expire`` method is a temporary workaround.
-
-
-SQLAlchemy Database Support
----------------------------
-
-Install by running ``pip install cassiopeia-sqlstore``.
-
-To enable this plugin, add the following to your settings' data pipeline between the ``Cache`` and ``DDragon`` stores:
-
-.. code-block:: json
-
-  "pipeline": {
-    ...,
-    "SQLStore": {
-       "package":"cassiopeia_sqlstore",
-       "connection_string": "<your connection string>"
-    }
-    ...
-  }
-
-The ``"connection_string"`` should be your SQLAlchemy connection string (`see <http://docs.sqlalchemy.org/en/latest/core/engines.html>`_). There is also another optional ``"expirations"`` parameter that is left out of the above example for clarity. The ``"expirations"`` parameter is a mapping of type names to expiration periods analogous to those for the cache. The allowed type names and default values are below (a value of ``-1`` means "do not expire" and ``0`` means "do not store in the data sink):
-
-.. code-block:: python
-
-    ChampionDto: datetime.timedelta(days=1),
-    ChampionMasteryDto: datetime.timedelta(days=7),
-    MatchDto: -1,
-    TimelineDto: -1,
-    SummonerDto: datetime.timedelta(days=1),
-    CurrentGameInfoDto: datetime.timedelta(hours=0.5),
-    LeagueListDto:datetime.timedelta(hours=6),
-    LeaguePositionsDto: datetime.timedelta(hours=6),
     ShardStatusDto: datetime.timedelta(hours=1),
 
 Some objects share the same expiration time: ``FeaturedGamesDto`` shares expiration of ``CurrentGameInfoDto``, ``ChallengerLeagueListDto`` and ``MasterLeagueListDto`` share expiration of ``LeagueListDto``, ``ChampionMasteryListDto`` shares expiration of ``ChampionMasteryDto``, and ``ChampionListDto`` shares expiration of ``ChampionDto``. Only the latter in each category need to be set.

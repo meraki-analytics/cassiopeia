@@ -6,7 +6,7 @@ def print_champion_mastery():
     # ID: 21359666
     # Account ID: 34718348
 
-    me = Summoner(name="Kalturi", id=21359666, region="NA")
+    me = Summoner(name="Kalturi", region="NA")
     karma = Champion(name="Karma", id=43, region="NA")
     #cm = ChampionMastery(champion=karma, summoner=me, region="NA")
     cm = cass.get_champion_mastery(champion=karma, summoner=me, region="NA")

@@ -27,7 +27,7 @@ class RuneListData(CoreDataList):
 
 class RuneData(CoreData):
     _dto_type = dto.RuneDto
-    _renamed = {"longDesc": "longDescription", "shortDesc": "shortDescription", "endOfGameStatDescs": "endOfGameStatDescriptions", "included_data": "includedData"}
+    _renamed = {"longDesc": "longDescription", "shortDesc": "shortDescription", "included_data": "includedData"}
 
     def __call__(self, **kwargs):
         if "icon" in kwargs:
@@ -273,12 +273,6 @@ class Rune(CassiopeiaGhost):
     @ghost_load_on
     def long_description(self) -> str:
         return self._data[RuneData].longDescription
-
-    #@CassiopeiaGhost.property(RuneData)
-    #@ghost_load_on
-    #def end_of_game_stat_descriptions(self) -> List[str]:
-    #    print(self._data[RuneData].to_dict().keys())
-    #    return self._data[RuneData].endOfGameStatDescriptions
 
     @CassiopeiaGhost.property(RuneData)
     @ghost_load_on
