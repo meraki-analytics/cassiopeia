@@ -1,4 +1,4 @@
-from typing import List, Union, Optional, Generator
+from typing import List, Union, Optional, Generator, Set, Type
 
 from merakicommons.cache import lazy_property, lazy
 from merakicommons.container import searchable, SearchableList
@@ -145,8 +145,8 @@ class LeagueEntry(CassiopeiaGhost):
     __hash__ = CassiopeiaGhost.__hash__
 
     @classmethod
-    def from_data(cls, data: LeagueEntryData, league: "League" = None):
-        self = super().from_data(data)
+    def from_data(cls, data: LeagueEntryData, loaded_groups: Optional[Set[Type[CoreData]]] = None, league: "League" = None):
+        self = super().from_data(data=data, loaded_groups=loaded_groups)
         self.__league = league
         return self
 
