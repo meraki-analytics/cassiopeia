@@ -27,9 +27,9 @@ class TestLeague(unittest.TestCase):
         entry = cassiopeia.League(id=LEAGUE_UUID).entries[0]
         self.assertIsNotNone(entry.region)
         self.assertIsNotNone(entry.platform)
-        self.assertIsNotNone(entry.queue)
         self.assertIsNotNone(entry.tier)
         self.assertIsNotNone(entry.division)
+        # self.assertIsNotNone(entry.queue)
         self.assertIsNotNone(entry.hot_streak)
         self.assertIsNotNone(entry.wins)
         self.assertIsNotNone(entry.veteran)

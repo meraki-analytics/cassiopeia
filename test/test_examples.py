@@ -243,14 +243,6 @@ def test_summoner():
     "Profile icon image:", summoner.profile_icon.image
 
 
-def test_verification_string():
-    summoner = Summoner(name="Kalturi", region="NA")
-    vs1 = summoner.verification_string
-    vs = VerificationString(summoner=summoner, region="NA")
-    vs2 = vs.string
-    assert vs1 == vs2
-
-
 def test_summonerspells():
     sspells = cass.get_summoner_spells(region="NA")
     for sspell in sspells:

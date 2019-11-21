@@ -156,9 +156,9 @@ class ParticipantData(CoreData):
                     stats.pop("perk5"): [stats.pop("perk5Var1"), stats.pop("perk5Var2"), stats.pop("perk5Var3")],
                 }
                 self.stat_runes = [
-                    stats.pop("statPerk0"),
-                    stats.pop("statPerk1"),
-                    stats.pop("statPerk2"),
+                    stats.pop("statPerk0", None),
+                    stats.pop("statPerk1", None),
+                    stats.pop("statPerk2", None),
                 ]
                 stats.pop("runes", None)
             self.stats = ParticipantStatsData(**stats)
