@@ -392,7 +392,7 @@ class League(CassiopeiaGhost):
     @ghost_load_on
     @lazy
     def entries(self) -> List[LeagueEntry]:
-        return SearchableList([LeagueEntry.from_data(entry, self) for entry in self._data[LeagueData].entries])
+        return SearchableList([LeagueEntry.from_data(data=entry, loaded_groups={LeagueEntriesData}) for entry in self._data[LeagueData].entries])
 
 
 class ChallengerLeague(League):
