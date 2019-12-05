@@ -471,10 +471,6 @@ class ItemStats(CassiopeiaObject):
         return self._data[ItemStatsData].ability_power
 
     @property
-    def percent_mana_regen(self) -> float:
-        return self._data[ItemStatsData].percent_mana_regen
-
-    @property
     def percent_attack_damage(self) -> float:
         return self._data[ItemStatsData].percent_attack_damage
 
