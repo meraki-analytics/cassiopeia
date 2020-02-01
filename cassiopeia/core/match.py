@@ -222,10 +222,13 @@ class MatchData(CoreData):
                         good_participant_ids.append(participant["participantId"])
                         participant["player"] =  pid["player"]
                         break
+            self.privateGame = False
+            if len(good_participant_ids) == 0:
+                self.privateGame = True
             # For each participant id we found that has both a participant and an identity, add it to the match data's participants
             self.participants = []
             for participant in kwargs["participants"]:
-                if participant["participantId"] in good_participant_ids:
+                if self.privateGame or participant["participantId"] in good_participant_ids:
                     participant = ParticipantData(**participant)
                     self.participants.append(participant)
             assert len(self.participants) == len(kwargs["participants"])
@@ -1388,6 +1391,8 @@ class Participant(CassiopeiaObject):
     #   See: https://discussion.developer.riotgames.com/questions/1713/is-there-any-scenario-where-accountid-should-be-us.html
     @lazy_property
     def summoner(self) -> Summoner:
+        if self.__match._data[MatchData].privateGame:
+            return None
         kwargs = {}
         try:
             kwargs["id"] = self._data[ParticipantData].summonerId
