@@ -1515,6 +1515,7 @@ class Match(CassiopeiaGhost):
         kwargs = {"region": region, "id": id}
         super().__init__(**kwargs)
         self.__participants = []  # For lazy-loading the participants in a special way
+        self._timeline = None
 
     def __get_query__(self):
         return {"region": self.region, "platform": self.platform, "id": self.id}
@@ -1530,6 +1531,7 @@ class Match(CassiopeiaGhost):
             instance(season=ref.season, queue=ref.queue, creation=ref.creation)
             instance._data[MatchData](participants=[participant],
                                       participantIdentities=[{"participantId": None, "player": player, "bot": False}])
+        instance._timeline = None
         return instance
 
     def __eq__(self, other: "Match"):
@@ -1560,7 +1562,9 @@ class Match(CassiopeiaGhost):
 
     @lazy_property
     def timeline(self) -> Timeline:
-        return Timeline(id=self.id, region=self.region.value)
+        if self._timeline is None:
+            self._timeline = Timeline(id=self.id, region=self.region.value)
+        return self._timeline
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on
