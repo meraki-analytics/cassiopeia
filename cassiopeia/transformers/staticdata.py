@@ -3,7 +3,9 @@ from copy import deepcopy
 
 from datapipelines import DataTransformer, PipelineContext
 
-from ..core.staticdata.champion import ChampionData, ChampionListData, ChampionReleaseData, Champion, Champions
+from ..data import Position
+
+from ..core.staticdata.champion import ChampionData, ChampionListData, ChampionReleaseData, Champion, Champions, ChampionRatesData
 from ..core.staticdata.rune import RuneData, RuneListData, Rune, Runes
 from ..core.staticdata.item import ItemData, ItemListData, Item, Items
 from ..core.staticdata.summonerspell import SummonerSpellData, SummonerSpellListData, SummonerSpell, SummonerSpells
@@ -14,7 +16,7 @@ from ..core.staticdata.language import LanguagesData, Locales
 from ..core.staticdata.languagestrings import LanguageStringsData, LanguageStrings
 from ..core.staticdata.profileicon import ProfileIconData, ProfileIconListData, ProfileIcon, ProfileIcons
 
-from ..dto.staticdata import ChampionDto, ChampionListDto, ChampionReleaseDto
+from ..dto.staticdata import ChampionDto, ChampionListDto, ChampionReleaseDto, ChampionRatesDto
 from ..dto.staticdata import RuneDto, RuneListDto
 from ..dto.staticdata import ItemDto, ItemListDto
 from ..dto.staticdata import SummonerSpellDto, SummonerSpellListDto
@@ -57,6 +59,30 @@ class StaticDataTransformer(DataTransformer):
     @transform.register(ChampionReleaseDto, ChampionReleaseData)
     def champion_releases_to_release(selfself, value: ChampionReleaseDto, context: PipelineContext = None) -> ChampionReleaseData:
         return ChampionReleaseData(**value)
+
+    @transform.register(ChampionRatesDto, ChampionRatesData)
+    def champion_rates_dto_to_data(self, value: ChampionRatesDto, context: PipelineContext = None) -> ChampionRatesData:
+        # Transpose the nested dictionary
+        transformed = {"playRates": {}, "winRates": {}, "banRates": {}}
+        for role, rates in value.items():
+            if role == "Top":
+                role = Position.top
+            elif role == "Jungle":
+                role = Position.jungle
+            elif role == "Middle":
+                role = Position.middle
+            elif role == "ADC":
+                role = Position.bottom
+            elif role == "Support":
+                role = Position.utility
+            for rate, value in rates.items():
+                if rate == "playRate":
+                    transformed["playRates"][role] = value
+                if rate == "winRate":
+                    transformed["winRates"][role] = value
+                if rate == "banRate":
+                    transformed["banRates"][role] = value
+        return ChampionRatesData(**transformed)
 
     # Rune
 

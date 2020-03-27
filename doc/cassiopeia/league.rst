@@ -9,22 +9,9 @@ Leagues
 
 .. py:attribute:: cassiopeia.Summoner.leagues
 
-.. automethod:: cassiopeia.get_leagues
-
-.. automethod:: cassiopeia.get_league_positions
-
-.. automethod:: cassiopeia.get_paginated_leagues
-
 .. automethod:: cassiopeia.get_challenger_league
 
 .. automethod:: cassiopeia.get_master_league
-
-
-.. autoclass:: cassiopeia.core.league.SummonerLeagues
-    :members:
-    :undoc-members:
-    :show-inheritance:
-    :inherited-members:
 
 
 .. autoclass:: cassiopeia.core.league.League

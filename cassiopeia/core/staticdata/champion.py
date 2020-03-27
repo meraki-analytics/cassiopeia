@@ -23,6 +23,11 @@ class ChampionReleaseData(CoreData):
     _renamed = {}
 
 
+class ChampionRatesData(CoreData):
+    _dto_type = dto.ChampionRatesDto
+    _renamed = {}
+
+
 class ChampionListData(CoreDataList):
     _dto_type = dto.ChampionListDto
     _renamed = {"included_data": "includedData"}
@@ -570,7 +575,7 @@ class Info(CassiopeiaObject):
 
 @searchable({str: ["name", "key", "region", "platform", "locale", "tags"], int: ["id"], Region: ["region"], Platform: ["platform"], bool: ["free_to_play"]})
 class Champion(CassiopeiaGhost):
-    _data_types = (ChampionData, ChampionReleaseData)
+    _data_types = (ChampionData, ChampionReleaseData, ChampionRatesData)
 
     @provide_default_region
     def __init__(self, *, id: int = None, name: str = None, key: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
@@ -815,3 +820,21 @@ class Champion(CassiopeiaGhost):
     @lazy
     def release_date(self) -> arrow.Arrow:
         return arrow.get(self._data[ChampionReleaseData].releaseDate)
+
+    @CassiopeiaGhost.property(ChampionRatesData)
+    @ghost_load_on
+    @lazy
+    def play_rates(self) -> SearchableDictionary:
+       return self._data[ChampionRatesData].playRates
+
+    @CassiopeiaGhost.property(ChampionRatesData)
+    @ghost_load_on
+    @lazy
+    def win_rates(self) -> SearchableDictionary:
+        return self._data[ChampionRatesData].winRates
+
+    @CassiopeiaGhost.property(ChampionRatesData)
+    @ghost_load_on
+    @lazy
+    def ban_rates(self) -> SearchableDictionary:
+        return self._data[ChampionRatesData].banRates

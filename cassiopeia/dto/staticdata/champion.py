@@ -15,3 +15,11 @@ class ChampionReleasesDto(DtoObject):
 
 class ChampionReleaseDto(DtoObject):
     pass
+
+
+class ChampionAllRatesDto(DtoObject):
+    pass
+
+
+class ChampionRatesDto(DtoObject):
+    pass

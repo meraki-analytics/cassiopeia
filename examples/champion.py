@@ -18,18 +18,8 @@ def get_champions():
     print(annie.passive.name)
     print({item.name: count for item, count in annie.recommended_itemsets[0].item_sets[0].items.items()})
     print(annie.free_to_play)
-    print(annie._Ghost__all_loaded)
-
-    # ziggs = cass.get_champion(region="NA", "Ziggs")
-    ziggs = cass.get_champion("Ziggs", region="NA")
-    print(ziggs.name)
-    print(ziggs.region)
-    print({item.name: count for item, count in ziggs.recommended_itemsets[0].item_sets[0].items.items()})
-    print(ziggs.free_to_play)
-    for spell in ziggs.spells:
-        for var in spell.variables:
-            print(spell.name, var)
-    print(ziggs._Ghost__all_loaded)
+    
+    print(annie.win_rates)
 
 
 if __name__ == "__main__":
