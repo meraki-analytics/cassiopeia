@@ -65,15 +65,15 @@ class StaticDataTransformer(DataTransformer):
         # Transpose the nested dictionary
         transformed = {"playRates": {}, "winRates": {}, "banRates": {}}
         for role, rates in value.items():
-            if role == "Top":
+            if role == "TOP":
                 role = Position.top
-            elif role == "Jungle":
+            elif role == "JUNGLE":
                 role = Position.jungle
-            elif role == "Middle":
+            elif role == "MIDDLE":
                 role = Position.middle
-            elif role == "ADC":
+            elif role == "BOTTOM":
                 role = Position.bottom
-            elif role == "Support":
+            elif role == "UTILITY":
                 role = Position.utility
             for rate, value in rates.items():
                 if rate == "playRate":
