@@ -637,6 +637,9 @@ QUEUE_IDS = {
     Queue.ranked_tft: 1100, #  Convergence, Ranked Teamfight Tactics games
     Queue.normal_tft: 1090, #  Convergence, Normal Teamfight Tactics games
     Queue.nexus_blitz: 1200,  # Nexus Blitz map    Nexus Blitz
+    Queue.Tutorial1: 2000,  # Summoner's Rift  Tutorial 1
+    Queue.Tutorial1: 2010,  # Summoner's Rift  Tutorial 2
+    Queue.Tutorial1: 2020,  # Summoner's Rift  Tutorial 3
 }
 
 RANKED_QUEUES = {
