@@ -552,6 +552,9 @@ class Queue(Enum):
     ranked_tft = "RANKED_TFT" # 1100
     normal_tft = "NORMAL_TFT" # 1090
     nexus_blitz = "NEXUS_BLITZ"  # 1200
+    tutorial1 = "TUTORIAL_1"  # Summoner's Rift  Tutorial 1
+    tutorial2 = "TUTORIAL_2"  # Summoner's Rift  Tutorial 2
+    tutorial3 = "TUTORIAL_3"  # Summoner's Rift  Tutorial 3
 
     def from_id(id: int):
         return {i: season for season, i in QUEUE_IDS.items()}[id]
@@ -637,9 +640,9 @@ QUEUE_IDS = {
     Queue.ranked_tft: 1100, #  Convergence, Ranked Teamfight Tactics games
     Queue.normal_tft: 1090, #  Convergence, Normal Teamfight Tactics games
     Queue.nexus_blitz: 1200,  # Nexus Blitz map    Nexus Blitz
-    Queue.Tutorial1: 2000,  # Summoner's Rift  Tutorial 1
-    Queue.Tutorial1: 2010,  # Summoner's Rift  Tutorial 2
-    Queue.Tutorial1: 2020,  # Summoner's Rift  Tutorial 3
+    Queue.tutorial1: 2000,  # Summoner's Rift  Tutorial 1
+    Queue.tutorial2: 2010,  # Summoner's Rift  Tutorial 2
+    Queue.tutorial3: 2020,  # Summoner's Rift  Tutorial 3
 }
 
 RANKED_QUEUES = {
