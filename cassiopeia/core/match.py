@@ -55,11 +55,23 @@ def _choose_staticdata_version(match):
     if configuration.settings.version_from_match is None or configuration.settings.version_from_match == "latest":
         version = None  # Rather than pick the latest version here, let the obj handle it so it knows which endpoint within the realms data to use
     elif configuration.settings.version_from_match == "version" or hasattr(match._data[MatchData], "version"):
-        version = match.version
-        version = ".".join(version.split(".")[:2]) + ".1"
+        majorminor = match.patch.major + "." + match.patch.minor
+        if int(match.patch.major) >= 10:
+            from ..cassiopeia import get_versions
+            versions = get_versions(region=match.region)
+            # we use the first major.minor.x matching occurrence from the versions list
+            version = next(x for x in versions if ".".join(x.split(".")[:2]) == majorminor)
+        else:
+            version = majorminor + ".1"  # use major.minor.1
     elif configuration.settings.version_from_match == "patch":
         patch = Patch.from_date(match.creation, region=match.region)
-        version = patch.majorminor + ".1"  # Just always use x.x.1
+        if int(patch.major) >= 10:
+            from ..cassiopeia import get_versions
+            versions = get_versions(region=match.region)
+            # use the first major.minor.x matching occurrence from the versions list
+            version = next(x for x in versions if ".".join(x.split(".")[:2]) == patch.majorminor)
+        else:
+            version = patch.majorminor + ".1"  # use major.minor.1
     else:
         raise ValueError("Unknown value for setting `version_from_match`:", configuration.settings.version_from_match)
     return version
