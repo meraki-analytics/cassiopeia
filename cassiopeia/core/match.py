@@ -430,8 +430,8 @@ class Event(CassiopeiaObject):
         return Tower(self._data[EventData].towerType)
 
     @property
-    def team_id(self) -> int:
-        return self._data[EventData].teamId
+    def side(self) -> Side:
+        return Side(self._data[EventData].side)
 
     @property
     def ascended_type(self) -> str:
