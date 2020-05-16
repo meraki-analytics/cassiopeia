@@ -9,6 +9,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList, SearchableLazyList, SearchableDictionary
 
 from .. import configuration
+from .staticdata import Versions
 from ..data import Region, Platform, Tier, GameType, GameMode, Queue, Side, Season, Lane, Role, Key, SummonersRiftArea, Tower
 from .common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, provide_default_region, ghost_load_on
 from ..dto import match as dto
@@ -49,33 +50,32 @@ def load_match_on_attributeerror(method):
     return wrapper
 
 
+_staticdata_to_version_mapping = {}
 def _choose_staticdata_version(match):
     # If we want to pull the data for the correct version, we need to pull the entire match data.
     # However, we can use the creation date (which comes with a matchref) and get the ~ patch and therefore extract the version from the patch.
     if configuration.settings.version_from_match is None or configuration.settings.version_from_match == "latest":
-        version = None  # Rather than pick the latest version here, let the obj handle it so it knows which endpoint within the realms data to use
-    elif configuration.settings.version_from_match == "version" or hasattr(match._data[MatchData], "version"):
+        return None  # Rather than pick the latest version here, let the obj handle it so it knows which endpoint within the realms data to use
+
+    if configuration.settings.version_from_match == "version" or hasattr(match._data[MatchData], "version"):
         majorminor = match.patch.major + "." + match.patch.minor
+    elif configuration.settings.version_from_match == "patch":
+        patch = Patch.from_date(match.creation, region=match.region)
+        majorminor = patch.majorminor
+    else:
+        raise ValueError("Unknown value for setting `version_from_match`:", configuration.settings.version_from_match)
+
+    try:
+        version = _staticdata_to_version_mapping[majorminor]
+    except KeyError:
         if int(match.patch.major) >= 10:
-            from ..cassiopeia import get_versions
-            versions = get_versions(region=match.region)
-            # we use the first major.minor.x matching occurrence from the versions list
+            versions = Versions(region=match.region)
+            # use the first major.minor.x matching occurrence from the versions list
             version = next(x for x in versions if ".".join(x.split(".")[:2]) == majorminor)
         else:
             version = majorminor + ".1"  # use major.minor.1
-    elif configuration.settings.version_from_match == "patch":
-        patch = Patch.from_date(match.creation, region=match.region)
-        if int(patch.major) >= 10:
-            from ..cassiopeia import get_versions
-            versions = get_versions(region=match.region)
-            # use the first major.minor.x matching occurrence from the versions list
-            version = next(x for x in versions if ".".join(x.split(".")[:2]) == patch.majorminor)
-        else:
-            version = patch.majorminor + ".1"  # use major.minor.1
-    else:
-        raise ValueError("Unknown value for setting `version_from_match`:", configuration.settings.version_from_match)
+        _staticdata_to_version_mapping[majorminor] = version
     return version
-
 
 ##############
 # Data Types #
