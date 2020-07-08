@@ -23,6 +23,16 @@ Also note that many types can be pulled from ``Summoner`` objects. This is the p
     kalturi.match_history
     kalturi.current_match
     kalturi.leagues
+    
+Django web Framework
+--------------------
+There is an integration of cassiopeia to the popular python web framework Django made by Mori(Paaksing), this integration is aimed to fix most issues/conflicts that happens when Cassiopeia is paired with a Python web framework (e.g. Django, Flask). In this integration, you will have the ability to use any production tested cache backends that Django's cache framework supports (Memcached, Redis, Filebased, Locmem, Database/SQL, etc), plus others well adapted settings.
+
+* Link to `django-cassiopeia` [repository](https://github.com/paaksing/django-cassiopeia) (If you love using it, make sure to star!).
+* Link to `django-cassiopeia` [documentations](https://django-cassiopeia.readthedocs.io/en/latest/) (A dark theme is added to save you some eyeballs).
+* If you have any issues or feature requests with `django-cassiopeia`, tag Mori in our discord server, or fire an issue in the repository.
+
+Unfortunately, we currently don't have an integration to Flask and any contribution is welcome.
 
 
 Methods and Class Constructors
