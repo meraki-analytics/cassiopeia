@@ -154,7 +154,7 @@ class GameMode(Enum):
     overcharge = "OVERCHARGE"
     all_random_urf_snow = "SNOWURF"
     practice_tool = "PRACTICETOOL"
-    nexus_blitz = "GAMEMODEX"
+    nexus_blitz = "NEXUSBLITZ"
     odyssey = "ODYSSEY"
 
 
