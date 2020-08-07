@@ -3,7 +3,7 @@ import arrow
 import datetime
 
 from .data import Region, Queue, Season, Tier, Division, Position
-from .core import Champion, Summoner, ChampionMastery, Rune, Item, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Locales, ProfileIcons, ChallengerLeague, GrandmasterLeague, MasterLeague, League, LeagueSummonerEntries, LeagueEntries, Patch, VerificationString, ChampionRotation
+from .core import Champion, Summoner, ChampionMastery, Rune, Item, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Locales, ProfileIcons, ChallengerLeague, GrandmasterLeague, MasterLeague, League, LeagueSummonerEntries, LeagueEntries, Patch, VerificationString, ChampionRotation, TFTSummoner
 from .datastores import common as _common_datastore
 from ._configuration import Settings, load_config, get_default_config
 from . import configuration
@@ -92,6 +92,8 @@ def get_champion_mastery(summoner: Summoner, champion: Union[Champion, int, str]
 def get_summoner(*, id: str = None, account_id: str = None, name: str = None, region: Union[Region, str] = None) -> Summoner:
     return Summoner(id=id, account_id=account_id, name=name, region=region)
 
+def get_tft_summoner(*, id: str = None, account_id: str = None, name: str = None, region: Union[Region, str] = None) -> TFTSummoner:
+    return TFTSummoner(id=id, account_id=account_id, name=name, region=region)
 
 def get_champion(key: Union[str, int], region: Union[Region, str] = None) -> Champion:
     return get_champions(region=region)[key]

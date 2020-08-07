@@ -5,7 +5,7 @@ import copy
 from datapipelines import DataSource, PipelineContext, Query, validate_query
 
 from ..data import Platform, Queue, Tier, Division
-from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, GrandmasterLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions, ChampionMasteries, LeagueEntries, FeaturedMatches, VerificationString
+from ..core import Champion, Rune, Item, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, Summoner, ChampionMastery, Match, CurrentMatch, ShardStatus, ChallengerLeague, GrandmasterLeague, MasterLeague, League, MatchHistory, Items, Champions, Maps, ProfileIcons, Locales, Runes, SummonerSpells, Versions, ChampionMasteries, LeagueEntries, FeaturedMatches, VerificationString, TFTSummoner
 from ..core.match import Timeline, MatchListData
 from ..core.championmastery import ChampionMasteryListData
 from ..core.league import LeagueEntry, LeagueEntriesData, LeagueEntryData, LeagueSummonerEntries, LeagueSummonerEntriesData
@@ -204,6 +204,13 @@ class UnloadedGhostStore(DataSource):
         or_("name").as_(str).also. \
         has("platform").as_(Platform)
 
+    _validate_get_tft_summoner_query = Query. \
+        has("id").as_(str). \
+        or_("accountId").as_(str). \
+        or_("puuid").as_(str). \
+        or_("name").as_(str).also. \
+        has("platform").as_(Platform)
+
     _validate_get_verification_string_query = Query. \
         has("platform").as_(Platform).also. \
         has("summoner.id").as_(str)
@@ -267,6 +274,15 @@ class UnloadedGhostStore(DataSource):
         if "accountId" in kwargs:
             kwargs["account_id"] = kwargs.pop("accountId")
         return Summoner._construct_normally(**kwargs)
+
+    @get.register(TFTSummoner)
+    @validate_query(_validate_get_tft_summoner_query, convert_region_to_platform)
+    def get_tft_summoner(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> TFTSummoner:
+        kwargs = copy.deepcopy(query)
+        kwargs["region"] = kwargs.pop("platform").region
+        if "accountId" in kwargs:
+            kwargs["account_id"] = kwargs.pop("accountId")
+        return TFTSummoner._construct_normally(**kwargs)
 
     @get.register(ChampionMastery)
     @validate_query(_validate_get_champion_mastery_query, convert_region_to_platform)

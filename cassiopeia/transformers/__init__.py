@@ -9,6 +9,7 @@ from .spectator import SpectatorTransformer
 from .status import StatusTransformer
 from .leagues import LeagueTransformer
 from .thirdpartycode import ThirdPartyCodeTransformer
+from .tft_summoner import TFTSummonerTransformer
 
 
 riotapi_transformer = CompositeDataTransformer([
@@ -20,7 +21,8 @@ riotapi_transformer = CompositeDataTransformer([
     SpectatorTransformer(),
     StatusTransformer(),
     LeagueTransformer(),
-    ThirdPartyCodeTransformer()
+    ThirdPartyCodeTransformer(),
+    TFTSummonerTransformer(),
 ])
 
 __transformers__ = [riotapi_transformer]

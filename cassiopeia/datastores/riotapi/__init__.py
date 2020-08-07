@@ -16,6 +16,7 @@ def _default_services(api_key: str, limiting_share: float = 1.0, request_error_h
     from .status import StatusAPI
     from .leagues import LeaguesAPI
     from .thirdpartycode import ThirdPartyCodeAPI
+    from .tft_summoner import TFTSummonerAPI
     from ...data import Platform
 
     app_rate_limiter = {platform: RiotAPIRateLimiter(limiting_share=limiting_share) for platform in Platform}
@@ -30,7 +31,8 @@ def _default_services(api_key: str, limiting_share: float = 1.0, request_error_h
         SpectatorAPI(api_key, app_rate_limiter=app_rate_limiter, request_error_handling=request_error_handling, http_client=client),
         StatusAPI(api_key, app_rate_limiter=app_rate_limiter, request_error_handling=request_error_handling, http_client=client),
         LeaguesAPI(api_key, app_rate_limiter=app_rate_limiter, request_error_handling=request_error_handling, http_client=client),
-        ThirdPartyCodeAPI(api_key, app_rate_limiter=app_rate_limiter, request_error_handling=request_error_handling, http_client=client)
+        ThirdPartyCodeAPI(api_key, app_rate_limiter=app_rate_limiter, request_error_handling=request_error_handling, http_client=client),
+        TFTSummonerAPI(api_key, app_rate_limiter=app_rate_limiter, request_error_handling=request_error_handling, http_client=client),
     }
 
     return services
