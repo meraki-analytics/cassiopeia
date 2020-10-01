@@ -58,7 +58,7 @@ print("He's not as good as {name} at League, but probably a better python progra
 ```
 
 # Django web Framework
-There is an integration of cassiopeia to the popular python web framework Django made by Mori(Paaksing), this integration is aimed to fix most issues/conflicts related to co-ocurrence of cassiopeia and Django. In this integration will give you better tools for building your Django/DRF based app, you will have the ability to use any production tested cache backends that Django's cache framework supports.
+There is an integration of Cassiopeia to the popular python web framework Django made by Mori(Paaksing), this integration is aimed to fix most issues/conflicts related to co-ocurrence of Cassiopeia and Django. In this integration will give you better tools for building your Django/DRF based app, you will have the ability to use any production tested cache backends that Django's cache framework supports.
 
 **_New in v2.0:_** A new datastore called `Omnistone` is introduced in response to issue #1 of this repo, this is a refined version of `Cache` that automatically deletes expired objects when `MAX_ENTRIES` is hit, then culls the datastore according to the `CULL_FRECUENCY` given. The culling strategy used is the same as Django Cache Framework, which is LRU culling (Least Recently Used).
 
