@@ -2,7 +2,7 @@
 [![Documentation Status](https://readthedocs.org/projects/cassiopeia/badge/?version=latest)](http://cassiopeia.readthedocs.org/en/latest/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1170906.svg)](https://doi.org/10.5281/zenodo.1170906)
 
-# Cassiopeia
+# Meraki; An Amazing Project!
 
 A Python adaptation of the Riot Games League of Legends API (https://developer.riotgames.com/).
 
