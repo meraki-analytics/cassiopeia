@@ -16,7 +16,7 @@ Cassiopeia has detailed [documentation](http://cassiopeia.readthedocs.org/en/lat
 `pip install cassiopeia` or see [here](<http://cassiopeia.readthedocs.io/en/latest/setup.html>) for more information.
 
 
-## Why use Cass?
+## Why use Cassiopeia?
 
 * An excellent user interface that makes working with data from the Riot API easy and fun.
 
