@@ -1,6 +1,6 @@
 import cassiopeia as cass
 from cassiopeia import Summoner, Champion, ChampionMastery
-
+unknown type name 'import'. error
 def print_champion_mastery():
     # Name: Kalturi
     # ID: 21359666
