@@ -56,7 +56,7 @@ challenger_league = cass.get_challenger_league(queue=cass.Queue.ranked_solo_five
 best_na = challenger_league[0].summoner
 print("He's not as good as {name} at League, but probably a better python programmer!".format(name=best_na.name))
 ```
-
+#framework with django
 # Django web Framework
 There is an integration of cassiopeia to the popular python web framework Django made by Mori(Paaksing), this integration is aimed to fix most issues/conflicts related to co-ocurrence of cassiopeia and Django. In this integration will give you better tools for building your Django/DRF based app, you will have the ability to use any production tested cache backends that Django's cache framework supports.
 
