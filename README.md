@@ -4,7 +4,7 @@
 
 # Cassiopeia
 
-A Python adaptation of the Riot Games League of Legends API (https://developer.riotgames.com/).
+A Python adaptation of the Riot Games  League of Legends API (https://developer.riotgames.com/).
 
 Cassiopeia is the sister library to [Orianna](https://github.com/robrua/Orianna) (Java). It's been designed with usability in mind - making sure all the bookkeeping is done right so you can focus on getting the data you need and building your application.
 
