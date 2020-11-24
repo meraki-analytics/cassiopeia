@@ -27,7 +27,7 @@ class LeagueEntryData(CoreData):
 
     def __call__(self, **kwargs):
         if "miniSeries" in kwargs:
-            self.promos = MiniSeriesData(**kwargs.pop("miniSeries"))
+            self.promos = MiniSeriesData(**(kwargs.pop("miniSeries") or {}))
         if "summonerId" in kwargs:
             self.summonerId = kwargs.pop("summonerId")
         super().__call__(**kwargs)
@@ -41,7 +41,7 @@ class LeagueData(CoreData):
 
     def __call__(self, **kwargs):
         if "entries" in kwargs:
-            self.entries = [LeagueEntryData(**entry) for entry in kwargs.pop("entries")]
+            self.entries = [LeagueEntryData(**entry) for entry in (kwargs.pop("entries") or [])]
         super().__call__(**kwargs)
         return self
 
@@ -64,7 +64,7 @@ class ChallengerLeagueListData(CoreData):
 
     def __call__(self, **kwargs):
         if "entries" in kwargs:
-            self.entries = [LeagueEntryData(**entry) for entry in kwargs.pop("entries")]
+            self.entries = [LeagueEntryData(**entry) for entry in (kwargs.pop("entries") or [])]
         super().__call__(**kwargs)
         return self
 
@@ -74,7 +74,7 @@ class GrandmasterLeagueListData(CoreData):
 
     def __call__(self, **kwargs):
         if "entries" in kwargs:
-            self.entries = [LeagueEntryData(**entry) for entry in kwargs.pop("entries")]
+            self.entries = [LeagueEntryData(**entry) for entry in (kwargs.pop("entries") or [])]
         super().__call__(**kwargs)
         return self
 
@@ -84,7 +84,7 @@ class MasterLeagueListData(CoreData):
 
     def __call__(self, **kwargs):
         if "entries" in kwargs:
-            self.entries = [LeagueEntryData(**entry) for entry in kwargs.pop("entries")]
+            self.entries = [LeagueEntryData(**entry) for entry in (kwargs.pop("entries") or [])]
         super().__call__(**kwargs)
         return self
 
