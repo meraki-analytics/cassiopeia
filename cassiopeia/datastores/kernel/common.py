@@ -45,7 +45,7 @@ class KernelSource(DataSource):
             elif isinstance(result, str):
                 result = json.loads(result)
             
-            if not isinstance(result, dict):
+            if not isinstance(result, (dict, list)):
                 raise ValueError("Unexpected type returned from HTTPClient: {}".format(type(result)))
         except HTTPError as error:
             # The error handlers didn't work, so raise an appropriate error.
