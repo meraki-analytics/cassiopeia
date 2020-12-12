@@ -200,7 +200,7 @@ else:  # Use requests
 
             content_type = response_headers.get("Content-Type", "application/octet-stream").upper()
 
-            body = r.text
+            body = r.content.decode("utf-8")
             # Decode to text if a charset is included
             match = re.search("CHARSET=(\S+)", content_type)
             if match:

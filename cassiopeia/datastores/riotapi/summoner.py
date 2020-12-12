@@ -1,4 +1,5 @@
 from typing import Type, TypeVar, MutableMapping, Any, Iterable
+import urllib
 
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError, validate_query
 from .common import RiotAPIService, APINotFoundError
@@ -35,7 +36,9 @@ class SummonerAPI(RiotAPIService):
             url = "https://{platform}.api.riotgames.com/lol/summoner/v4/summoners/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=query["accountId"])
             endpoint = "summoners/by-account/accountId"
         elif "name" in query:
-            url = "https://{platform}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{name}".format(platform=query["platform"].value.lower(), name=query["name"].replace(" ", "")).encode("utf-8")
+            name = urllib.parse.quote_plus(query["name"].replace(" ", ""))
+            name = query["name"].replace(" ", "")
+            url = "https://{platform}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{name}".format(platform=query["platform"].value.lower(), name=name)
             endpoint = "summoners/by-name/name"
         elif "puuid" in query:
             url = url = "https://{platform}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{puuid}".format(platform=query["platform"].value.lower(), puuid=query["puuid"])
