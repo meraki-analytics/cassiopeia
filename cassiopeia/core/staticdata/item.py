@@ -53,7 +53,7 @@ class ItemData(CoreData):
             self.buildsFrom = [int(x) for x in kwargs.pop("from")]
         if "stats" in kwargs:
             self.stats = ItemStatsData(**kwargs.pop("stats"))
-        if "colloq" in kwargs:
+        if "colloq" in kwargs and kwargs["colloq"] is not None:
             self.keywords = set(kw for kw in kwargs.pop("colloq").split(";") if kw != "")
         if "maps" in kwargs:
             """List of maps where this item is available."""
