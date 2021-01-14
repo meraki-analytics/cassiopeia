@@ -551,7 +551,8 @@ class Queue(Enum):
     odyssey_onslaught = "ODYSSEY_ONSLAUGHT"  # 1070
     ranked_tft = "RANKED_TFT" # 1100
     normal_tft = "NORMAL_TFT" # 1090
-    nexus_blitz = "NEXUS_BLITZ"  # 1200
+    deprecated_nexus_blitz = "NEXUS_BLITZ"  # 1200
+    nexus_blitz = "NEXUS_BLITZ"  # 1300
     tutorial1 = "TUTORIAL_1"  # Summoner's Rift  Tutorial 1
     tutorial2 = "TUTORIAL_2"  # Summoner's Rift  Tutorial 2
     tutorial3 = "TUTORIAL_3"  # Summoner's Rift  Tutorial 3
@@ -639,7 +640,8 @@ QUEUE_IDS = {
     Queue.odyssey_onslaught: 1070,  # Odyssey: Extraction
     Queue.ranked_tft: 1100, #  Convergence, Ranked Teamfight Tactics games
     Queue.normal_tft: 1090, #  Convergence, Normal Teamfight Tactics games
-    Queue.nexus_blitz: 1200,  # Nexus Blitz map    Nexus Blitz
+    Queue.deprecated_nexus_blitz: 1200,  # Nexus Blitz map    Nexus Blitz Deprecated in patch 9.2 in favor of queueId 1300
+    Queue.nexus_blitz: 1300,  # Nexus Blitz map    Nexus Blitz
     Queue.tutorial1: 2000,  # Summoner's Rift  Tutorial 1
     Queue.tutorial2: 2010,  # Summoner's Rift  Tutorial 2
     Queue.tutorial3: 2020,  # Summoner's Rift  Tutorial 3
