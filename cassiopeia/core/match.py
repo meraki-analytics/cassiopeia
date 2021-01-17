@@ -874,6 +874,12 @@ class _ItemState:
         items_to_ignore = (2010, 3599, 3520, 3513, 2422, 2052)
         # 2422 is Slightly Magical Boots... I could figure out how to add those and Biscuits to the inventory based on runes but it would be manual...
         # 2052 is Poro-Snax, which gets added to inventory eventless
+        upgradable_items = {
+            3850: 3851, 3851: 3853, # Spellthief's Edge -> Frostfang -> Shard of True Ice
+            3854: 3855, 3855: 3857, # Steel Shoulderguards -> Runesteel Spaulders -> Pauldrons of Whiterock
+            3858: 3859, 3859: 3860, # Relic Shield -> Targon's Buckler -> Bulwark of the Mountain
+            3862: 3863, 3863: 3864, # Spectral Sickle -> Harrowing Crescent -> Black Mist Scythe
+        }
         item_id = getattr(event, 'item_id', getattr(event, 'before_id', None))
         assert item_id is not None
         if item_id in items_to_ignore:
@@ -883,6 +889,9 @@ class _ItemState:
             self._events.append(event)
         elif event.type == "ITEM_DESTROYED":
             self.destroy(event.item_id)
+            if event.item_id in upgradable_items:
+                # add the upgraded item
+                self.add(upgradable_items[event.item_id])
             self._events.append(event)
         elif event.type == "ITEM_SOLD":
             self.destroy(event.item_id)
