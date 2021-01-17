@@ -871,8 +871,9 @@ class _ItemState:
         return str(self._items)
 
     def process_event(self, event):
-        items_to_ignore = (2010, 3599, 3520, 3513, 2422)
+        items_to_ignore = (2010, 3599, 3520, 3513, 2422, 2052)
         # 2422 is Slightly Magical Boots... I could figure out how to add those and Biscuits to the inventory based on runes but it would be manual...
+        # 2052 is Poro-Snax, which gets added to inventory eventless
         item_id = getattr(event, 'item_id', getattr(event, 'before_id', None))
         assert item_id is not None
         if item_id in items_to_ignore:
