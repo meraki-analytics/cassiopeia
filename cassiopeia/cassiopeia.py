@@ -69,7 +69,7 @@ def get_challenger_league(queue: Union[Queue, int, str], region: Union[Region, s
 def get_match_history(summoner: Summoner, begin_index: int = None, end_index: int = None, begin_time: arrow.Arrow = None, end_time: arrow.Arrow = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
     return MatchHistory(summoner=summoner, begin_index=begin_index, end_index=end_index, begin_time=begin_time, end_time=end_time, queues=queues, seasons=seasons, champions=champions)
 
-def get_match(id, region: Union[Region, str] = None) -> Match:
+def get_match(id : int, region: Union[Region, str] = None) -> Match:
     return Match(id=id, region=region)
 
 
