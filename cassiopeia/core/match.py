@@ -282,10 +282,10 @@ class MatchHistory(CassiopeiaLazyList):  # type: List[Match]
         kwargs["begin_index"] = begin_index
         kwargs["end_index"] = end_index
         if begin_time is not None and not isinstance(begin_time, (int, float)):
-            begin_time = begin_time.timestamp * 1000
+            begin_time = begin_time.int_timestamp * 1000
         kwargs["begin_time"] = begin_time
         if end_time is not None and not isinstance(end_time, (int, float)):
-            end_time = end_time.timestamp * 1000
+            end_time = end_time.int_timestamp * 1000
         kwargs["end_time"] = end_time
         assert isinstance(summoner, Summoner)
         self.__account_id_callable = lambda: summoner.account_id
@@ -306,12 +306,12 @@ class MatchHistory(CassiopeiaLazyList):  # type: List[Match]
 
         if begin_time is not None:
             if isinstance(begin_time, arrow.Arrow):
-                begin_time = begin_time.timestamp * 1000
+                begin_time = begin_time.int_timestamp * 1000
             query["beginTime"] = begin_time
 
         if end_time is not None:
             if isinstance(end_time, arrow.Arrow):
-                end_time = end_time.timestamp * 1000
+                end_time = end_time.int_timestamp * 1000
             query["endTime"] = end_time
 
         if queues is not None:
