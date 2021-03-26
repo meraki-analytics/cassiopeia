@@ -200,15 +200,18 @@ else:  # Use requests
 
             content_type = response_headers.get("Content-Type", "application/octet-stream").upper()
 
-            body = r.content.decode("utf-8")
             # Decode to text if a charset is included
             match = re.search("CHARSET=(\S+)", content_type)
             if match:
                 # Load JSON if necessary
                 if "APPLICATION/JSON" in content_type:
                     body = r.json()
-            if "IMAGE/" in content_type:
+                else:
+                    body = r.content.decode("utf-8")
+            elif "IMAGE/" in content_type:
                 body = r.content
+            else:
+                body = r.content.decode("utf-8")
 
             return body, response_headers
 
