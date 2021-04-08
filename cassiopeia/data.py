@@ -465,6 +465,7 @@ class Tower(Enum):
     INNER = "INNER_TURRET"
     BASE  = "BASE_TURRET"
     NEXUS = "NEXUS_TURRET"
+    UNDEFINED = "UNDEFINED_TURRET"
 
 
 # References for Queues:
