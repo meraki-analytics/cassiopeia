@@ -3,7 +3,7 @@ pytest
 merakicommons>=1.0.7
 datapipelines>=1.0.7
 Pillow
-arrow<1.0.0
+arrow
 requests
 cassiopeia_championgg
 cassiopeia_diskstore

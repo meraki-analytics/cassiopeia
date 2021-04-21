@@ -417,7 +417,7 @@ class UnloadedGhostStore(DataSource):
                     "seasons": seasons,
                     "champion.ids": champion_ids,
                     "beginIndex": _begin_index,
-                    "beginTime": _current_first_requested_dt.timestamp * 1000,
+                    "beginTime": _current_first_requested_dt.int_timestamp * 1000,
                     "maxNumberOfMatches": max_number_of_requested_matches
                 }
                 if "endTime" in original_query:
