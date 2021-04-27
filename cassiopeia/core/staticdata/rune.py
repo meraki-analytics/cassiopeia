@@ -72,7 +72,7 @@ class RunePath(CassiopeiaObject):
 
     @property
     def image_url(self):
-        url = "https://ddragon.leagueoflegends.com/cdn/img/perk-images/" + self._data[RunePathData].icon
+        url = "https://ddragon.leagueoflegends.com/cdn/img/" + self._data[RunePathData].icon
         return url
 
 
