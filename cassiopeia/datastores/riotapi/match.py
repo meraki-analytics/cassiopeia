@@ -120,11 +120,11 @@ class MatchAPI(RiotAPIService):
         calling_method = determine_calling_method(begin_time, end_time)
 
         if calling_method == "by_date":
-            params["beginTime"] = begin_time.timestamp * 1000
+            params["beginTime"] = begin_time.int_timestamp * 1000
             if "endTime" in query:
-                params["endTime"] = min((begin_time + riot_date_interval).timestamp * 1000, query["endTime"])
+                params["endTime"] = min((begin_time + riot_date_interval).int_timestamp * 1000, query["endTime"])
             else:
-                params["endTime"] = (begin_time + riot_date_interval).timestamp * 1000
+                params["endTime"] = (begin_time + riot_date_interval).int_timestamp * 1000
         else:
             params["beginIndex"] = query["beginIndex"]
             params["endIndex"] = query["beginIndex"] + min(riot_index_interval, query["maxNumberOfMatches"])
