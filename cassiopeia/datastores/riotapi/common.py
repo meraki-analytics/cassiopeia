@@ -90,6 +90,10 @@ class RiotAPIRateLimiter(MultiRateLimiter):
         for limiter in self._limiters:
             if limiter._window_seconds == window:
                 return limiter
+            if for_window is None:  # Edge case where someone changes their API key...
+                self._limiters = []
+                self._construct_limiters(limits)
+                for_window = self._get_specific_limiter_for_window(window)
 
 
 def _split_rate_limit_header(header):

@@ -75,6 +75,10 @@ class RunePath(CassiopeiaObject):
         url = "https://ddragon.leagueoflegends.com/cdn/img/perk-images/" + self._data[RunePathData].icon
         return url
 
+    @lazy_property
+    def image(self) -> PILImage:
+        return configuration.settings.pipeline.get(PILImage, query={"url": self.image_url})
+
 
 class Runes(CassiopeiaLazyList):
     _data_types = {RuneListData}
