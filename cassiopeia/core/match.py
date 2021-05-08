@@ -631,7 +631,7 @@ class ParticipantTimeline(CassiopeiaObject):
         for frame in self.__match.timeline.frames:
             for pid, pframe in frame.participant_frames.items():
                 pframe.timestamp = frame.timestamp
-                if pid == self.id:
+                if pframe.participant_id == self.id:
                     these.append(pframe)
         return these
 

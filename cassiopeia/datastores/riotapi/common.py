@@ -1,7 +1,7 @@
 import time
 import copy
 import functools
-import collections
+import collections.abc
 from abc import abstractmethod, ABC
 from typing import MutableMapping, Any, Union, TypeVar, Iterable, Type, List, Tuple, Dict, Callable
 
@@ -174,7 +174,7 @@ class RiotAPIService(DataSource):
         else:
             def recursive_setdefault(d, u):
                 for k, v in u.items():
-                    if isinstance(v, collections.Mapping):
+                    if isinstance(v, collections.abc.Mapping):
                         r = recursive_setdefault(d.get(k, {}), v)
                         d.setdefault(k, r)
                     else:
