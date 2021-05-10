@@ -34,7 +34,7 @@ class SummonerAPI(KernelSource):
         elif "accountId" in query:
             endpoint = "lol/summoner/v4/summoners/by-account/{accountId}".format(accountId=query["accountId"])
         elif "name" in query:
-            endpoint = "lol/summoner/v4/summoners/by-name/{name}".format(name=query["name"].replace(" ", ""))
+            endpoint = "lol/summoner/v4/summoners/by-name/{name}".format(name=query["name"].replace(" ", "%20"))
         elif "puuid" in query:
             endpoint = "lol/summoner/v4/summoners/by-puuid/{puuid}".format(puuid=query["puuid"])
         else:

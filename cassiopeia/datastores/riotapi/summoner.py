@@ -36,8 +36,7 @@ class SummonerAPI(RiotAPIService):
             url = "https://{platform}.api.riotgames.com/lol/summoner/v4/summoners/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=query["accountId"])
             endpoint = "summoners/by-account/accountId"
         elif "name" in query:
-            name = urllib.parse.quote_plus(query["name"].replace(" ", ""))
-            name = query["name"].replace(" ", "")
+            name = query["name"].replace(" ", "%20")
             url = "https://{platform}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{name}".format(platform=query["platform"].value.lower(), name=name)
             endpoint = "summoners/by-name/name"
         elif "puuid" in query:
