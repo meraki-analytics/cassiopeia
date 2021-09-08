@@ -4,7 +4,7 @@ from merakicommons.cache import lazy_property
 from merakicommons.container import searchable
 
 from ...data import Region, Platform
-from ..common import CoreData, CassiopeiaGhost, get_latest_version, provide_default_region, ghost_load_on
+from ..common import CoreData, CassiopeiaGhost, get_latest_version, ghost_load_on
 from ...dto.staticdata import realm as dto
 
 
@@ -27,7 +27,6 @@ class LanguageStringsData(CoreData):
 class LanguageStrings(CassiopeiaGhost):
     _data_types = {LanguageStringsData}
 
-    @provide_default_region
     def __init__(self, *, strings: Dict[str, str] = None, region: Union[Region, str] = None, version: str = None, locale: str = None):
         if locale is None and region is not None:
             locale = Region(region).default_locale

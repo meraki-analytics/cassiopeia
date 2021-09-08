@@ -7,7 +7,7 @@ from merakicommons.cache import lazy_property
 from merakicommons.container import searchable
 
 from ..data import Region, Platform, Rank
-from .common import CoreData, CassiopeiaObject, CassiopeiaGhost, provide_default_region, ghost_load_on
+from .common import CoreData, CassiopeiaObject, CassiopeiaGhost, ghost_load_on
 from .staticdata import ProfileIcon
 from ..dto.summoner import SummonerDto
 
@@ -31,7 +31,6 @@ class SummonerData(CoreData):
 class Summoner(CassiopeiaGhost):
     _data_types = {SummonerData}
 
-    @provide_default_region
     def __init__(self, *, id: str = None, account_id: str = None, puuid: str = None, name: str = None, region: Union[Region, str] = None):
         kwargs = {"region": region}
 
@@ -46,7 +45,6 @@ class Summoner(CassiopeiaGhost):
         super().__init__(**kwargs)
 
     @classmethod
-    @provide_default_region
     def __get_query_from_kwargs__(cls, *, id: str = None, account_id: str=None, puuid: str=None, name: str = None, region: Union[Region, str]) -> dict:
         query = {"region": region}
         if id is not None:
@@ -186,7 +184,7 @@ class Summoner(CassiopeiaGhost):
     @property
     def match_history(self) -> "MatchHistory":
         from .match import MatchHistory
-        return MatchHistory(summoner=self)
+        return MatchHistory(continent=self.region.continent, puuid=self.puuid)
 
     @property
     def current_match(self) -> "CurrentMatch":

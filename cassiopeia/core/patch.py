@@ -43,11 +43,9 @@ class Patch(object):
         return self._name
 
     @classmethod
-    def from_str(cls, string: str, region: Union[Region, str] = None) -> "Patch":
+    def from_str(cls, string: str, region: Union[Region, str]) -> "Patch":
         if not cls.__patches:
             cls.__load__()
-        if region is None:
-            region = configuration.settings.default_region
         if not isinstance(region, Region):
             region = Region(region)
         for patch in cls.__patches[region]:
@@ -57,11 +55,9 @@ class Patch(object):
             raise ValueError("Unknown patch name {}".format(string))
 
     @classmethod
-    def from_date(cls, date: Union[arrow.Arrow], region: Union[Region, str] = None) -> "Patch":
+    def from_date(cls, date: Union[arrow.Arrow], region: Union[Region, str]) -> "Patch":
         if not cls.__patches:
             cls.__load__()
-        if region is None:
-            region = configuration.settings.default_region
         if not isinstance(region, Region):
             region = Region(region)
         for patch in cls.__patches[region]:

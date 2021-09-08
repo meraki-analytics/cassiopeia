@@ -3,7 +3,7 @@ from typing import Union
 from merakicommons.cache import lazy_property
 from merakicommons.container import SearchableLazyList
 
-from .common import CassiopeiaGhost, CoreData, provide_default_region, ghost_load_on
+from .common import CassiopeiaGhost, CoreData, ghost_load_on
 from .staticdata.champion import Champion
 from ..data import Region, Platform
 from ..dto import champion as dto
@@ -17,7 +17,6 @@ class ChampionRotationData(CoreData):
 class ChampionRotation(CassiopeiaGhost):
     _data_types = {ChampionRotationData}
 
-    @provide_default_region
     def __init__(self, *, region: Union[Region, str] = None):
         kwargs = {"region": region}
         super().__init__(**kwargs)

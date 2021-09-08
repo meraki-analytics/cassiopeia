@@ -3,7 +3,7 @@ from typing import Union
 from merakicommons.cache import lazy_property
 
 from ..data import Region, Platform
-from .common import CoreData, CassiopeiaGhost, provide_default_region, ghost_load_on
+from .common import CoreData, CassiopeiaGhost, ghost_load_on
 from .summoner import Summoner
 
 
@@ -24,7 +24,6 @@ class VerificationStringData(CoreData):
 class VerificationString(CassiopeiaGhost):
     _data_types = {VerificationStringData}
 
-    @provide_default_region
     def __init__(self, summoner: Summoner, region: Union[Region, str]):
         self.__summoner = summoner
         kwargs = {"region": region}
@@ -34,7 +33,6 @@ class VerificationString(CassiopeiaGhost):
         return {"region": self.region, "summoner.id": self.summoner.id}
 
     @classmethod
-    @provide_default_region
     def __get_query_from_kwargs__(cls, *, summoner: Summoner, region: Union[Region, str]) -> dict:
         return {"region": region, "summoner.id": summoner.id}
 

@@ -1,5 +1,4 @@
-from time import time
-from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator, Union
+from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
 import arrow
 import datetime
 import math
@@ -7,15 +6,11 @@ import math
 from datapipelines import DataSource, PipelineContext, Query, NotFoundError, validate_query
 
 from .common import RiotAPIService, APINotFoundError
-from ...data import Platform, Season, Queue, SEASON_IDS, QUEUE_IDS
+from ...data import Continent, Region, Platform, MatchType, Queue, QUEUE_IDS
 from ...dto.match import MatchDto, MatchListDto, TimelineDto
-from ..uniquekeys import convert_region_to_platform
+from ..uniquekeys import convert_to_continent
 
 T = TypeVar("T")
-
-
-def _get_current_time(query: MutableMapping[str, Any], context: PipelineContext = None) -> int:
-    return int(time()) * 1000
 
 
 class MatchAPI(RiotAPIService):
@@ -28,69 +23,76 @@ class MatchAPI(RiotAPIService):
         pass
 
     _validate_get_match_query = Query. \
-        has("id").as_(int).also. \
-        has("platform").as_(Platform)
+        has("continent").as_(Continent).or_("region").as_(Region).or_("platform").as_(Platform).also. \
+        has("id").as_(str)
 
     @get.register(MatchDto)
-    @validate_query(_validate_get_match_query, convert_region_to_platform)
+    @validate_query(_validate_get_match_query, convert_to_continent)
     def get_match(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MatchDto:
-        url = "https://{platform}.api.riotgames.com/lol/match/v4/matches/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
+        continent = query["continent"]
+        id = query["id"]
+        url = f"https://{continent.value.lower()}.api.riotgames.com/lol/match/v5/matches/{id}"
         try:
-            app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "matches/id")
+            app_limiter, method_limiter = self._get_rate_limiter(continent, "matches/id")
             data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
+            # metadata = data["metadata"]
+            data = data["info"]  # Drop the metadata
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
-        data["gameId"] = query["id"]
-        data["region"] = query["platform"].region.value
-        for p in data["participantIdentities"]:
-            aid = p.get("player", {}).get("currentAccountId", None)
-            if aid == 0:
-                p["player"]["bot"] = True
+        data["continent"] = continent.value
+        data["matchId"] = query["id"]
+        for p in data["participants"]:
+            puuid = p.get("puuid", None)
+            if puuid is None:  # TODO: Figure out what bots are marked as in match-v5
+                p["bot"] = True
+            else:
+                p["bot"] = False
         return MatchDto(data)
 
     _validate_get_many_match_query = Query. \
-        has("ids").as_(Iterable).also. \
-        has("platform").as_(Platform)
+        has("continent").as_(Continent).or_("region").as_(Region).or_("platform").as_(Platform).also. \
+        has("ids").as_(Iterable)
 
     @get_many.register(MatchDto)
-    @validate_query(_validate_get_many_match_query, convert_region_to_platform)
+    @validate_query(_validate_get_many_match_query, convert_to_continent)
     def get_many_match(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[MatchDto, None, None]:
+        continent = query["continent"]
+
         def generator():
             for id in query["ids"]:
-                url = "https://{platform}.api.riotgames.com/lol/match/v4/matches/{id}".format(platform=query["platform"].value.lower(), id=id)
+                url = f"https://{continent.value.lower()}.api.riotgames.com/lol/match/v5/matches/{id}"
                 try:
-                    app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "matches/id")
+                    app_limiter, method_limiter = self._get_rate_limiter(continent, "matches/id")
                     data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
-                
-                for participant in data["participants"]:
-                    participant.setdefault("runes", [])
-                for p in data["participantIdentities"]:
-                    aid = p.get("player", {}).get("currentAccountId", None)
-                    if aid == 0:
-                        p["player"]["bot"] = True
 
-                data["gameId"] = id
-                data["region"] = query["platform"].region.value
+                for p in data["participants"]:
+                    puuid = p.get("puuid", None)
+                    if puuid is None:  # TODO: Figure out what bots are marked as in match-v5
+                        p["bot"] = True
+                    else:
+                        p["bot"] = False
+
+                data["matchId"] = id
+                data["continent"] = continent.value
                 yield MatchDto(data)
 
         return generator()
 
     _validate_get_match_list_query = Query. \
-        has("accountId").as_(str).also. \
-        has("platform").as_(Platform).also. \
+        has("continent").as_(Continent).or_("region").as_(Region).or_("platform").as_(Platform).also. \
+        has("puuid").as_(str).also. \
         has("beginTime").as_(int).also. \
         can_have("endTime").as_(int).also. \
         has("beginIndex").as_(int).also. \
         has("maxNumberOfMatches").as_(float).also. \
-        can_have("seasons").as_(Iterable).also. \
-        can_have("champion.ids").as_(Iterable).also. \
-        can_have("queues").as_(Iterable)
+        can_have("queue").as_(Queue).also. \
+        can_have("type").as_(MatchType)
 
     @get.register(MatchListDto)
-    @validate_query(_validate_get_match_list_query, convert_region_to_platform)
+    @validate_query(_validate_get_match_list_query, convert_to_continent)
     def get_match_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> MatchListDto:
         params = {}
 
@@ -130,36 +132,33 @@ class MatchAPI(RiotAPIService):
             params["endIndex"] = query["beginIndex"] + min(riot_index_interval, query["maxNumberOfMatches"])
             params["endIndex"] = int(params["endIndex"])
 
-        if "seasons" in query:
-            seasons = {Season(season) for season in query["seasons"]}
-            params["season"] = {SEASON_IDS[season] for season in seasons}
-        else:
-            seasons = set()
+        queue = query.get("queue", None)
+        if queue is not None:
+            queue = QUEUE_IDS[queue]
+            params["queue"] = QUEUE_IDS[queue]
 
-        if "champion.ids" in query:
-            champions = query["champion.ids"]
-            params["champion"] = champions
-        else:
-            champions = set()
+        type = query.get("type", None)
+        if type is not None:
+            params["type"] = type
 
-        if "queues" in query:
-            queues = {Queue(queue) for queue in query["queues"]}
-            params["queue"] = {QUEUE_IDS[queue] for queue in queues}
-        else:
-            queues = set()
+        continent: Continent = query["continent"]
+        puuid: str = query["puuid"]
 
-        url = "https://{platform}.api.riotgames.com/lol/match/v4/matchlists/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=query["accountId"])
+        url = f"https://{continent.value.lower()}.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids"
         try:
-            app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "matchlists/by-account/accountId")
+            app_limiter, method_limiter = self._get_rate_limiter(continent, "matchlists/by-puuid/puuid")
             data = self._get(url, params, app_limiter=app_limiter, method_limiter=method_limiter)
         except APINotFoundError:
-            data = {"matches": []}
+            data = []
 
-        data["accountId"] = query["accountId"]
-        data["region"] = query["platform"].region.value
-        data["season"] = seasons
-        data["champion"] = champions
-        data["queue"] = queues
+        data = {
+            "match_ids": data,
+            "continent": continent.value,
+            "puuid": puuid,
+            "type": type,
+            "queue": queue,
+        }
+
         if calling_method == "by_index":
             data["beginIndex"] = params["beginIndex"]
             data["endIndex"] = params["endIndex"]
@@ -167,109 +166,24 @@ class MatchAPI(RiotAPIService):
         else:
             data["beginTime"] = params["beginTime"]
             data["endTime"] = params["endTime"]
-        for match in data["matches"]:
-            match["accountId"] = query["accountId"]
-            match["region"] = Platform(match["platformId"]).region.value
         return MatchListDto(data)
 
-    _validate_get_many_match_list_query = Query. \
-        has("accountIds").as_(Iterable).also. \
-        has("platform").as_(Platform).also. \
-        can_have("beginTime").as_(int).also. \
-        can_have("endTime").as_(int).also. \
-        can_have("beginIndex").as_(int).also. \
-        can_have("endIndex").as_(int).also. \
-        can_have("seasons").as_(Iterable).also. \
-        can_have("champion.ids").as_(Iterable).also. \
-        can_have("queues").as_(Iterable)
-
-    @get_many.register(MatchListDto)
-    @validate_query(_validate_get_many_match_list_query, convert_region_to_platform)
-    def get_many_match_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[MatchListDto, None, None]:
-        params = {}
-
-        if "beginIndex" in query:
-            params["beginIndex"] = query["beginIndex"]
-
-        if "endIndex" in query:
-            params["endIndex"] = query["endIndex"]
-
-        if "seasons" in query:
-            seasons = {Season(season) for season in query["seasons"]}
-            params["season"] = {SEASON_IDS[season] for season in seasons}
-        else:
-            seasons = set()
-
-        if "champion.ids" in query:
-            params["champion"] = {query["champion.ids"]}
-
-        if "queues" in query:
-            queues = {Queue(queue) for queue in query["queues"]}
-            params["queue"] = {QUEUE_IDS[queue] for queue in queues}
-        else:
-            queues = set()
-
-        def generator():
-            for id in query["accountIds"]:
-                url = "https://{platform}.api.riotgames.com/lol/match/v4/matchlists/by-account/{accountId}".format(platform=query["platform"].value.lower(), accountId=id)
-                try:
-                    app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "matchlists/by-account/accountId")
-                    data = self._get(url, params, app_limiter=app_limiter, method_limiter=method_limiter)
-                except APINotFoundError as error:
-                    raise NotFoundError(str(error)) from error
-
-                data["accountId"] = id
-                data["region"] = query["platform"].region.value
-                if "beginIndex" in query:
-                    data["beginIndex"] = query["beginIndex"]
-                if "endIndex" in query:
-                    data["endIndex"] = query["endIndex"]
-                if "seasons" in query:
-                    data["seasons"] = seasons
-                if "champion.ids" in query:
-                    data["champion"] = params["champion"]
-                if "queues" in query:
-                    params["queue"] = queues
-                yield MatchListDto(data)
-
-        return generator()
-
     _validate_get_timeline_query = Query. \
-        has("id").as_(int).also. \
-        has("platform").as_(Platform)
+        has("continent").as_(Continent).or_("region").as_(Region).or_("platform").as_(Platform).also. \
+        has("id").as_(int)
 
     @get.register(TimelineDto)
-    @validate_query(_validate_get_timeline_query, convert_region_to_platform)
+    @validate_query(_validate_get_timeline_query, convert_to_continent)
     def get_match_timeline(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> TimelineDto:
-        url = "https://{platform}.api.riotgames.com/lol/match/v4/timelines/by-match/{id}".format(platform=query["platform"].value.lower(), id=query["id"])
+        continent = query["continent"]
+        id = query["id"]
+        url = f"https://{continent.value.lower()}.api.riotgames.com/lol/match/v5/timelines/by-match/{id}"
         try:
-            app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "timelines/by-match/id")
+            app_limiter, method_limiter = self._get_rate_limiter(continent, "timelines/by-match/id")
             data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
         data["matchId"] = query["id"]
-        data["region"] = query["platform"].region.value
+        data["continent"] = continent.value
         return TimelineDto(data)
-
-    _validate_get_many_timeline_query = Query. \
-        has("ids").as_(Iterable).also. \
-        has("platform").as_(Platform)
-
-    @get_many.register(TimelineDto)
-    @validate_query(_validate_get_many_timeline_query, convert_region_to_platform)
-    def get_many_match_timeline(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[TimelineDto, None, None]:
-        def generator():
-            for id in query["ids"]:
-                url = "https://{platform}.api.riotgames.com/lol/match/v4/timelines/by-match/{id}".format(platform=query["platform"].value.lower(), id=id)
-                try:
-                    app_limiter, method_limiter = self._get_rate_limiter(query["platform"], "timelines/by-match/id")
-                    data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
-                except APINotFoundError as error:
-                    raise NotFoundError(str(error)) from error
-
-                data["matchId"] = id
-                data["region"] = query["platform"].region.value
-                yield TimelineDto(data)
-
-        return generator()

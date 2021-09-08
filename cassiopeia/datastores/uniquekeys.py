@@ -2,7 +2,7 @@ from typing import Tuple, Set, Union, MutableMapping, Any, Mapping, Iterable, Ge
 
 from datapipelines import Query, PipelineContext, QueryValidationError
 
-from ..data import Region, Platform, Queue, Tier, Division, Position
+from ..data import Region, Platform, Continent, Queue, Tier, Division
 
 from ..dto.champion import ChampionRotationDto
 from ..dto.championmastery import ChampionMasteryDto, ChampionMasteryListDto, ChampionMasteryScoreDto
@@ -77,6 +77,26 @@ def convert_region_to_platform(query: MutableMapping[str, Any]) -> None:
 
     if "region" in query and not isinstance(query["region"], Region):
         query["region"] = Region(query["region"])
+
+
+def convert_to_continent(query: MutableMapping[str, Any]) -> None:
+    if "continent" in query and not isinstance(query["continent"], Continent):
+        query["continent"] = Continent(query["continent"])
+
+    if "region" in query and not isinstance(query["region"], Region):
+        query["region"] = Region(query["region"])
+
+    if "platform" in query and not isinstance(query["platform"], Platform):
+        query["platform"] = Platform(query["platform"])
+
+    if "region" in query and "platform" not in query:
+        query["platform"] = query["region"].platform
+
+    if "platform" in query and "region" not in query:
+        query["region"] = query["platform"].region
+
+    if "continent" not in query:
+        query["continent"] = query["region"].continent
 
 
 #######
@@ -223,6 +243,7 @@ def for_league_entries_dto_query(query: Query) -> Tuple[str, str, str, int, int]
 validate_league_summoner_entries_dto_query = Query. \
     has("platform").as_(Platform).also. \
     has("id").as_(int)  # Summoner ID
+
 
 def for_league_summoner_entries_dto(league_entries: LeagueEntriesDto) -> Tuple[str, int]:
     return league_entries["platform"], league_entries["id"]
@@ -791,82 +812,85 @@ def for_many_shard_status_dto_query(query: Query) -> Generator[str, None, None]:
 
 
 validate_match_dto_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("gameId").as_(int)
+    has("continent").as_(Continent).or_("region").as_(Region).or_("platform").as_(Platform).also. \
+    has("id").as_(str)
 
 
 validate_many_match_dto_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("gameIds").as_(Iterable)
+    has("continent").as_(Continent).or_("region").as_(Region).or_("platform").as_(Platform).also. \
+    has("ids").as_(Iterable)
 
 
-def for_match_dto(match: MatchDto) -> Tuple[str, int]:
-    return match["platform"], match["gameId"]
+def for_match_dto(match: MatchDto) -> Tuple[str, str]:
+    return match["continent"], match["id"]
 
 
-def for_match_dto_query(query: Query) -> Tuple[str, int]:
-    return query["platform"].value, query["gameId"]
+def for_match_dto_query(query: Query) -> Tuple[str, str]:
+    convert_to_continent(query)
+    return query["continent"].value, query["id"]
 
 
-def for_many_match_dto_query(query: Query) -> Generator[Tuple[str, int], None, None]:
-    for game_id in query["gameIds"]:
+def for_many_match_dto_query(query: Query) -> Generator[Tuple[str, str], None, None]:
+    convert_to_continent(query)
+    for match_id in query["ids"]:
         try:
-            game_id = int(game_id)
-            yield query["platform"].value, game_id
+            yield query["continent"].value, match_id
         except ValueError as e:
             raise QueryValidationError from e
 
 
 validate_match_reference_dto_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("gameId").as_(int)
+    has("continent").as_(Continent).or_("region").as_(Region).or_("platform").as_(Platform).also. \
+    has("id").as_(str)
 
 
 validate_many_match_reference_dto_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("gameIds").as_(Iterable)
+    has("continent").as_(Continent).or_("region").as_(Region).or_("platform").as_(Platform).also. \
+    has("ids").as_(Iterable)
 
 
-def for_match_reference_dto(match_reference: MatchReferenceDto) -> Tuple[str, int]:
-    return match_reference["platform"], match_reference["gameId"]
+def for_match_reference_dto(match_reference: MatchReferenceDto) -> Tuple[str, str]:
+    return match_reference["continent"], match_reference["id"]
 
 
-def for_match_reference_dto_query(query: Query) -> Tuple[str, int]:
-    return query["platform"].value, query["gameId"]
+def for_match_reference_dto_query(query: Query) -> Tuple[str, str]:
+    convert_to_continent(query)
+    return query["continent"].value, query["id"]
 
 
-def for_many_match_reference_dto_query(query: Query) -> Generator[Tuple[str, int], None, None]:
-    for game_id in query["gameIds"]:
+def for_many_match_reference_dto_query(query: Query) -> Generator[Tuple[str, str], None, None]:
+    convert_to_continent(query)
+    for game_id in query["ids"]:
         try:
-            game_id = int(game_id)
-            yield query["platform"].value, game_id
+            yield query["continent"].value, game_id
         except ValueError as e:
             raise QueryValidationError from e
 
 
 validate_match_timeline_dto_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("matchId").as_(int)
+    has("continent").as_(Continent).or_("region").as_(Region).or_("platform").as_(Platform).also. \
+    has("id").as_(str)
 
 
 validate_many_match_timeline_dto_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("matchIds").as_(Iterable)
+    has("continent").as_(Continent).or_("region").as_(Region).or_("platform").as_(Platform).also. \
+    has("ids").as_(Iterable)
 
 
-def for_match_timeline_dto(match_timeline: TimelineDto) -> Tuple[str, int]:
-    return match_timeline["platform"], match_timeline["matchId"]
+def for_match_timeline_dto(match_timeline: TimelineDto) -> Tuple[str, str]:
+    return match_timeline["continent"], match_timeline["id"]
 
 
-def for_match_timeline_dto_query(query: Query) -> Tuple[str, int]:
-    return query["platform"].value, query["matchId"]
+def for_match_timeline_dto_query(query: Query) -> Tuple[str, str]:
+    convert_to_continent(query)
+    return query["continent"].value, query["id"]
 
 
-def for_many_match_timeline_dto_query(query: Query) -> Generator[Tuple[str, int], None, None]:
-    for match_id in query["matchIds"]:
+def for_many_match_timeline_dto_query(query: Query) -> Generator[Tuple[str, str], None, None]:
+    convert_to_continent(query)
+    for match_id in query["ids"]:
         try:
-            match_id = int(match_id)
-            yield query["platform"].value, match_id
+            yield query["continent"].value, match_id
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -1159,6 +1183,7 @@ def for_many_league_summoner_entries_query(query: Query) -> Generator[List[Tuple
 
 # Leagues
 
+
 validate_league_query = Query. \
     has("platform").as_(Platform).also. \
     has("id").as_(str)
@@ -1185,6 +1210,7 @@ def for_many_league_query(query: Query) -> Generator[List[Tuple[str, str]], None
             raise QueryValidationError from e
 
 # Challenger
+
 
 validate_challenger_league_query = Query. \
     has("platform").as_(Platform).also. \
@@ -1213,6 +1239,7 @@ def for_many_challenger_league_query(query: Query) -> Generator[List[Tuple[str, 
 
 # Grandmaster
 
+
 validate_grandmaster_league_query = Query. \
     has("platform").as_(Platform).also. \
     has("queue").as_(Queue)
@@ -1238,7 +1265,9 @@ def for_many_grandmaster_league_query(query: Query) -> Generator[List[Tuple[str,
         except ValueError as e:
             raise QueryValidationError from e
 
+
 # Master
+
 
 validate_master_league_query = Query. \
     has("platform").as_(Platform).also. \
@@ -1267,14 +1296,17 @@ def for_many_master_league_query(query: Query) -> Generator[List[Tuple[str, str]
 
 # League Entries List
 
+
 validate_league_entries_list_query = Query. \
     has("queue").as_(Queue).also. \
     has("tier").as_(Tier).also. \
     has("division").as_(Division).also. \
     has("platform").as_(Platform)
 
+
 def for_league_entries_list(lel: LeagueSummonerEntries) -> List[Tuple[str, str, str, str]]:
     return [(lel.platform.value, lel.queue.value, lel.tier.value, lel.division.value)]
+
 
 def for_league_entries_list_query(query: Query) -> List[Tuple[str, str, str, str]]:
     return [(query["platform"].value, query["queue"].value, query["tier"].value, query["division"].value)]
@@ -1935,54 +1967,65 @@ def for_many_shard_status_query(query: Query) -> Generator[List[str], None, None
 
 
 validate_match_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("id").as_(int)
+    has("continent").as_(Continent).or_("region").as_(Region).also. \
+    has("id").as_(str)
 
 
 validate_many_match_query = Query. \
-    has("platform").as_(Platform).also. \
+    has("continent").as_(Continent).or_("region").as_(Region).also. \
     has("ids").as_(Iterable)
 
 
-def for_match(match: Match) -> List[Tuple[str, int]]:
-    return [(match.platform.value, match.id)]
+def for_match(match: Match) -> List[Tuple[str, str]]:
+    return [(match.continent.value, match.id)]
 
 
-def for_match_query(query: Query) -> List[Tuple[str, int]]:
-    return [(query["platform"].value, query["id"])]
+def for_match_query(query: Query) -> List[Tuple[str, str]]:
+    convert_to_continent(query)
+    if "region" in query:
+        query["continent"] = query["region"].continent
+    if "platform" in query:
+        query["continent"] = query["platform"].continent
+    return [(query["continent"].value, query["id"])]
 
 
-def for_many_match_query(query: Query) -> Generator[List[Tuple[str, int]], None, None]:
+def for_many_match_query(query: Query) -> Generator[List[Tuple[str, str]], None, None]:
+    convert_to_continent(query)
+    if "region" in query:
+        query["continent"] = query["region"].continent
+    if "platform" in query:
+        query["continent"] = query["platform"].continent
     for id in query["ids"]:
         try:
-            id = int(id)
-            yield [(query["platform"].value, id)]
+            yield [(query["continent"].value, id)]
         except ValueError as e:
             raise QueryValidationError from e
 
+
 validate_match_timeline_query = Query. \
-    has("platform").as_(Platform).also. \
-    has("id").as_(int)
+    has("continent").as_(Continent).or_("region").as_(Region).also. \
+    has("id").as_(str)
 
 
 validate_many_match_timeline_query = Query. \
-    has("platform").as_(Platform).also. \
+    has("continent").as_(Continent).or_("region").as_(Region).also. \
     has("ids").as_(Iterable)
 
 
-def for_match_timeline(timeline: Timeline) -> List[Tuple[str, int]]:
-    return [(timeline.platform.value, timeline.id)]
+def for_match_timeline(timeline: Timeline) -> List[Tuple[str, str]]:
+    return [(timeline.continent.value, timeline.id)]
 
 
-def for_match_timeline_query(query: Query) -> List[Tuple[str, int]]:
-    return [(query["platform"].value, query["id"])]
+def for_match_timeline_query(query: Query) -> List[Tuple[str, str]]:
+    convert_to_continent(query)
+    return [(query["continent"].value, query["id"])]
 
 
-def for_many_match_timeline_query(query: Query) -> Generator[List[Tuple[str, int]], None, None]:
+def for_many_match_timeline_query(query: Query) -> Generator[List[Tuple[str, str]], None, None]:
+    convert_to_continent(query)
     for id in query["ids"]:
         try:
-            id = int(id)
-            yield [(query["platform"].value, id)]
+            yield [(query["continent"].value, id)]
         except ValueError as e:
             raise QueryValidationError from e
 

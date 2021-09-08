@@ -7,7 +7,7 @@ from merakicommons.container import searchable, SearchableList, SearchableDictio
 
 from ... import configuration
 from ...data import Resource, Region, Platform, GameMode, Key
-from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, CoreDataList, get_latest_version, provide_default_region, ghost_load_on
+from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, CoreDataList, get_latest_version, ghost_load_on
 from .common import ImageData, Image, Sprite
 from .map import Map
 from ...dto.staticdata import champion as dto
@@ -139,7 +139,6 @@ class ChampionData(CoreData):
 class Champions(CassiopeiaLazyList):
     _data_types = {ChampionListData}
 
-    @provide_default_region
     def __init__(self, *, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if included_data is None:
             included_data = {"all"}
@@ -577,7 +576,6 @@ class Info(CassiopeiaObject):
 class Champion(CassiopeiaGhost):
     _data_types = (ChampionData, ChampionReleaseData, ChampionRatesData)
 
-    @provide_default_region
     def __init__(self, *, id: int = None, name: str = None, key: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if included_data is None:
             included_data = {"all"}

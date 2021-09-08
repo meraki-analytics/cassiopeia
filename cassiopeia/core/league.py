@@ -5,7 +5,7 @@ from merakicommons.container import searchable, SearchableList
 
 from .. import configuration
 from ..data import Region, Platform, Tier, Division, Queue, Role
-from .common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, provide_default_region, ghost_load_on
+from .common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, ghost_load_on
 from ..dto.league import LeagueDto, LeagueEntryDto, LeagueEntriesDto, LeagueSummonerEntriesDto, MiniSeriesDto, GrandmasterLeagueListDto, ChallengerLeagueListDto, MasterLeagueListDto
 from .summoner import Summoner
 
@@ -129,7 +129,6 @@ class MiniSeries(CassiopeiaObject):
 class LeagueEntry(CassiopeiaGhost):
     _data_types = {LeagueEntryData}
 
-    @provide_default_region
     def __init__(self, *, region: Union[Region, str] = None):
         kwargs = {"region": region}
         super().__init__(**kwargs)
@@ -230,13 +229,11 @@ class LeagueEntry(CassiopeiaGhost):
 class LeagueEntries(CassiopeiaLazyList):  # type List[LeagueEntry]
     _data_types = {LeagueEntriesData}
 
-    @provide_default_region
     def __init__(self, *, region: Union[Region, str] = None, queue: Queue = None, tier: Tier = None, division: Division = None):
         kwargs = {"region": region, "queue": queue, "tier": tier, "division": division}
         CassiopeiaObject.__init__(self, **kwargs)
 
     @classmethod
-    @provide_default_region
     def __get_query_from_kwargs__(cls, *, region: Union[Region, str] = None, queue: Queue = None, tier: Tier = None, division: Division = None):
         query = {"region": region, "queue": queue, "tier": tier, "division": division}
         return query
@@ -328,8 +325,6 @@ class League(CassiopeiaGhost):
     _data_types = {LeagueData}
 
     def __init__(self, id: str = None, queue: Queue = None, region: Union[Region, str] = None):
-        if region is None:
-            region = configuration.settings.default_region
         if region is not None and not isinstance(region, Region):
             region = Region(region)
         kwargs = {"id": id, "region": region, "queue": queue}
@@ -403,7 +398,6 @@ class League(CassiopeiaGhost):
 class ChallengerLeague(League):
     _data_types = {ChallengerLeagueListData}
 
-    @provide_default_region
     def __init__(self, *, queue: Union[Queue, str, int] = None, region: Union[Region, str] = None):
         kwargs = {"region": region}
         if isinstance(queue, int):
@@ -459,7 +453,6 @@ class ChallengerLeague(League):
 class GrandmasterLeague(CassiopeiaGhost):
     _data_types = {GrandmasterLeagueListData}
 
-    @provide_default_region
     def __init__(self, *, queue: Union[Queue, str, int] = None, region: Union[Region, str] = None):
         kwargs = {"region": region}
         if isinstance(queue, int):
@@ -521,7 +514,6 @@ class GrandmasterLeague(CassiopeiaGhost):
 class MasterLeague(CassiopeiaGhost):
     _data_types = {MasterLeagueListData}
 
-    @provide_default_region
     def __init__(self, *, queue: Union[Queue, str, int] = None, region: Union[Region, str] = None):
         kwargs = {"region": region}
         if isinstance(queue, int):

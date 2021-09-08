@@ -55,7 +55,6 @@ _ERROR_CODES = {
 T = TypeVar("T")
 
 
-
 class RiotAPIRateLimiter(MultiRateLimiter):
     # The application limiter and method limiters will each be an instance of this.
 
@@ -254,7 +253,6 @@ class RiotAPIService(DataSource):
         pass
 
 
-
 class RiotAPIRequest(object):
     def __init__(self, service: RiotAPIService, url: str, parameters: MutableMapping[str, Any], app_limiter: RiotAPIRateLimiter, method_limiter: RiotAPIRateLimiter, connection: Curl):
         self.service = service
@@ -280,52 +278,52 @@ class RiotAPIRequest(object):
             return self._retry_request_by_handling_error(error)
 
     def _retry_request_by_handling_error(self, error: HTTPError, handlers=None):
-            if handlers is None:
-                handlers = []
-            # Try to properly handling the 429 and retry the call after the appropriate time limit.
-            if error.code == 429:
-                # Identify which rate limit was hit (application, method, or service)
-                if "X-Rate-Limit-Type" not in error.response_headers:
-                    rate_limiting_type = "service"
-                elif error.response_headers["X-Rate-Limit-Type"] == "application":
-                    rate_limiting_type = "application"
-                elif error.response_headers["X-Rate-Limit-Type"] == "method":
-                    rate_limiting_type = "method"
-                elif error.response_headers["X-Rate-Limit-Type"] == "service":
-                    rate_limiting_type = "service"
-                else:
-                    raise ValueError("Unknown cause of rate limit; aborting. Headers were: {}".format(error.response_headers))
-
-                # Create a new handler
-                new_handler = self.service._handlers[429][rate_limiting_type]()  # type: FailedRequestHandler
+        if handlers is None:
+            handlers = []
+        # Try to properly handling the 429 and retry the call after the appropriate time limit.
+        if error.code == 429:
+            # Identify which rate limit was hit (application, method, or service)
+            if "X-Rate-Limit-Type" not in error.response_headers:
+                rate_limiting_type = "service"
+            elif error.response_headers["X-Rate-Limit-Type"] == "application":
+                rate_limiting_type = "application"
+            elif error.response_headers["X-Rate-Limit-Type"] == "method":
+                rate_limiting_type = "method"
+            elif error.response_headers["X-Rate-Limit-Type"] == "service":
+                rate_limiting_type = "service"
             else:
-                new_handler = self.service._handlers[error.code]()
+                raise ValueError("Unknown cause of rate limit; aborting. Headers were: {}".format(error.response_headers))
 
-            # If we will handle the new error in the same way as we did previously, don't use a new instance
-            for handler in handlers:
-                if isinstance(new_handler, handler.__class__):
-                    new_handler = handler
-                    break
+            # Create a new handler
+            new_handler = self.service._handlers[429][rate_limiting_type]()  # type: FailedRequestHandler
+        else:
+            new_handler = self.service._handlers[error.code]()
 
-            if new_handler.stop:
-                raise error
-            else:
-                try:
-                    body, response_headers = new_handler(error=error,
-                                                         requester=self.service._client.get,
-                                                         url=self.url,
-                                                         parameters=self.parameters,
-                                                         headers=self.service._headers,
-                                                         rate_limiters=[self.app_limiter, self.method_limiter],
-                                                         connection=self.connection)
-                    self.service._adjust_rate_limiters_from_headers(app_limiter=self.app_limiter,
-                                                                    method_limiter=self.method_limiter,
-                                                                    response_headers=response_headers)
-                    return body
-                except HTTPError as error:
-                    if new_handler not in handlers:
-                        handlers.append(new_handler)
-                    return self._retry_request_by_handling_error(error, handlers=handlers)
+        # If we will handle the new error in the same way as we did previously, don't use a new instance
+        for handler in handlers:
+            if isinstance(new_handler, handler.__class__):
+                new_handler = handler
+                break
+
+        if new_handler.stop:
+            raise error
+        else:
+            try:
+                body, response_headers = new_handler(error=error,
+                                                     requester=self.service._client.get,
+                                                     url=self.url,
+                                                     parameters=self.parameters,
+                                                     headers=self.service._headers,
+                                                     rate_limiters=[self.app_limiter, self.method_limiter],
+                                                     connection=self.connection)
+                self.service._adjust_rate_limiters_from_headers(app_limiter=self.app_limiter,
+                                                                method_limiter=self.method_limiter,
+                                                                response_headers=response_headers)
+                return body
+            except HTTPError as error:
+                if new_handler not in handlers:
+                    handlers.append(new_handler)
+                return self._retry_request_by_handling_error(error, handlers=handlers)
 
 
 class FailedRequestHandler(ABC):
@@ -342,7 +340,7 @@ class ExponentialBackoff(FailedRequestHandler):
         self.attempts = 0
         self.stop = False
 
-    def __call__(self, error, requester, url, parameters, headers, rate_limiters, connection) ->  Tuple[Union[dict, list, str, bytes], dict]:
+    def __call__(self, error, requester, url, parameters, headers, rate_limiters, connection) -> Tuple[Union[dict, list, str, bytes], dict]:
         if self.attempts >= self.max_attempts:
             self.stop = True
             raise error
@@ -373,7 +371,7 @@ class RetryFromHeaders(object):
 
 class ThrowException(FailedRequestHandler):
     def __init__(self):
-        self.stop  = True
+        self.stop = True
 
     def __call__(self, error, requester, url, parameters, headers, rate_limiters, connection) -> Tuple[Union[dict, list, str, bytes], dict]:
         raise error

@@ -4,7 +4,7 @@ from merakicommons.cache import lazy_property
 from merakicommons.container import searchable
 
 from ...data import Region, Platform
-from ..common import CoreData, CassiopeiaGhost, provide_default_region, ghost_load_on
+from ..common import CoreData, CassiopeiaGhost, ghost_load_on
 from ...dto.staticdata import realm as dto
 
 
@@ -28,7 +28,6 @@ class RealmData(CoreData):
 class Realms(CassiopeiaGhost):
     _data_types = {RealmData}
 
-    @provide_default_region
     def __init__(self, region: Union[Region, str] = None):
         kwargs = {"region": region}
         super().__init__(**kwargs)

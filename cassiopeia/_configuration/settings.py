@@ -104,8 +104,7 @@ def register_transformer_conversion(transformer: DataTransformer, from_type, to_
 def get_default_config():
     return {
         "global": {
-            "version_from_match": "patch",
-            "default_region": None
+            "version_from_match": "patch"
         },
         "plugins": {},
         "pipeline": {
@@ -129,9 +128,6 @@ class Settings(object):
         _defaults = get_default_config()
         globals_ = settings.get("global", _defaults["global"])
         self.__version_from_match = globals_.get("version_from_match", _defaults["global"]["version_from_match"])  # Valid json values are: "version", "patch", and null
-        self.__default_region = globals_.get("default_region", _defaults["global"]["default_region"])
-        if self.__default_region is not None:
-            self.__default_region = Region(self.__default_region.upper())
 
         self.__plugins = settings.get("plugins", _defaults["plugins"])
 
@@ -148,24 +144,11 @@ class Settings(object):
             for handler in logger.handlers:
                 handler.setLevel(level)
 
-    def set_region(self, region: Union[Region, str]):
-        if isinstance(region, str):
-            region = Region(region.upper())
-        self.__default_region = region
-
     @property
     def pipeline(self) -> DataPipeline:
         if self.__pipeline is None:
             self.__pipeline = create_pipeline(service_configs=self.__pipeline_args, verbose=0)
         return self.__pipeline
-
-    @property
-    def default_region(self):
-        return self.__default_region
-
-    @property
-    def default_platform(self):
-        return Platform[self.__default_region.name]
 
     @property
     def version_from_match(self):

@@ -4,7 +4,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList
 
 from ...data import Region, Platform
-from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CoreDataList, get_latest_version, CassiopeiaLazyList, provide_default_region, ghost_load_on
+from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CoreDataList, get_latest_version, CassiopeiaLazyList, ghost_load_on
 from .common import ImageData, Sprite, Image
 from .map import Map
 from ...dto.staticdata import item as dto
@@ -70,7 +70,6 @@ class ItemData(CoreData):
 class Items(CassiopeiaLazyList):
     _data_types = {ItemListData}
 
-    @provide_default_region
     def __init__(self, *, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if included_data is None:
             included_data = {"all"}
@@ -265,7 +264,6 @@ class Gold(CassiopeiaObject):
 class Item(CassiopeiaGhost):
     _data_types = {ItemData}
 
-    @provide_default_region
     def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if included_data is None:
             included_data = {"all"}

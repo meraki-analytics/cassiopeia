@@ -37,10 +37,6 @@ def set_riot_api_key(key: str):
     configuration.settings.set_riot_api_key(key)
 
 
-def set_default_region(region: Union[Region, str]):
-    configuration.settings.set_region(region)
-
-
 def print_calls(calls: bool, api_key: bool = False):
     _common_datastore._print_calls = calls
     _common_datastore._print_api_key = api_key

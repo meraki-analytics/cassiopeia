@@ -7,7 +7,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList
 
 from ..data import Region, Platform, GameMode, GameType, Queue, Side
-from .common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, get_latest_version, provide_default_region, ghost_load_on
+from .common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, get_latest_version, ghost_load_on
 from ..dto import spectator as dto
 from .staticdata.profileicon import ProfileIcon
 from .staticdata.champion import Champion
@@ -78,8 +78,7 @@ class CurrentGameInfoData(CoreData):
 class FeaturedMatches(CassiopeiaLazyList):
     _data_types = {FeaturedGamesData}
 
-    @provide_default_region
-    def __init__(self, *, region: Union[Region, str] = None):
+    def __init__(self, *, region: Union[Region, str]):
         kwargs = {"region": region}
         CassiopeiaObject.__init__(self, **kwargs)
 
@@ -173,7 +172,6 @@ class Team(CassiopeiaObject):
 class CurrentMatch(CassiopeiaGhost):
     _data_types = {CurrentGameInfoData}
 
-    @provide_default_region
     def __init__(self, *, summoner: Union[Summoner, str] = None, region: Union[Region, str] = None):
         kwargs = {"region": region}
 
@@ -198,7 +196,6 @@ class CurrentMatch(CassiopeiaGhost):
         return self
 
     @classmethod
-    @provide_default_region
     def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, str], region: Union[Region, str]) -> dict:
         query = {"region": region}
         if isinstance(summoner, Summoner):
