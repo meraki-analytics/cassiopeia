@@ -198,6 +198,7 @@ class GameMode(Enum):
     practice_tool = "PRACTICETOOL"
     nexus_blitz = "NEXUSBLITZ"
     odyssey = "ODYSSEY"
+    utlbook = "ULTBOOK"
 
 
 class MasteryTree(Enum):
@@ -361,6 +362,7 @@ class Lane(Enum):
     mid_lane = "MID_LANE"
     bot_lane = "BOT_LANE"
     jungle = "JUNGLE"
+    utility = "UTILITY"
 
     def from_match_naming_scheme(string: str):
         return {
@@ -369,6 +371,7 @@ class Lane(Enum):
             "MID": Lane.mid_lane,
             "TOP": Lane.top_lane,
             "JUNGLE": Lane.jungle,
+            "UTILITY": Lane.utility,
             "NONE": None
         }[string]
 

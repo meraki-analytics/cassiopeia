@@ -191,7 +191,7 @@ class UnloadedGhostStore(DataSource):
 
     _validate_get_timeline_query = Query. \
         has("continent").as_(Continent).or_("region").as_(Region).or_("platform").as_(Platform).also. \
-        has("id").as_(int)
+        has("id").as_(str)
 
     _validate_get_shard_status_query = Query. \
         has("platform").as_(Platform)

@@ -134,7 +134,6 @@ class MatchAPI(RiotAPIService):
 
         queue = query.get("queue", None)
         if queue is not None:
-            queue = QUEUE_IDS[queue]
             params["queue"] = QUEUE_IDS[queue]
 
         type = query.get("type", None)
