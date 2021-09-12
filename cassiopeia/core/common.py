@@ -24,38 +24,6 @@ def ghost_load_on(method):
     return _ghost_load_on(AttributeError)(method)
 
 
-def add_region_to_kwargs(kwargs):
-    region = kwargs.pop("region", None)
-    platform = kwargs.pop("platform", None)
-    if region is None:
-        if platform is None:
-            region = configuration.settings.default_region
-        else:
-            if isinstance(platform, Platform):
-                region = platform.region
-            else:
-                region = Platform(platform).region
-    elif not isinstance(region, Region):
-        region = Region(region)
-    if region is not None:  # region can still be None if the configuration doesn't have a default
-        kwargs["region"] = region.value
-    return kwargs
-
-
-def provide_default_region(method):
-    @functools.wraps(method)
-    def default_region_wrapper(*args, **kwargs):
-        kwargs = add_region_to_kwargs(kwargs)
-        return method(*args, **kwargs)
-    #def default_region_wrapper(self=None, *args, **kwargs):
-    #    kwargs = add_region_to_kwargs(kwargs)
-    #    if self is not None:
-    #        return method(self, *args, **kwargs)
-    #    else:
-    #        return method(*args, **kwargs)
-    return default_region_wrapper
-
-
 def get_latest_version(region: Union[Region, str], endpoint: Optional[str]):
     from .staticdata.realm import Realms
     if endpoint is not None:
@@ -205,8 +173,6 @@ class CassiopeiaObject(object):
 
 class GetFromPipeline(type):
     def __call__(cls: "CassiopeiaPipelineObject", *args, **kwargs):
-        if 'region' in inspect.signature(cls.__get_query_from_kwargs__).parameters:
-            kwargs = add_region_to_kwargs(kwargs)
         pipeline = configuration.settings.pipeline
         query = cls.__get_query_from_kwargs__(**kwargs)
         if hasattr(cls, "version") and query.get("version", None) is None and cls.__name__ not in ["Realms", "Match"]:
@@ -231,7 +197,6 @@ class CassiopeiaPipelineObject(CassiopeiaObject, metaclass=GetFromPipeline):
         pass
 
     @classmethod
-    @provide_default_region
     def __get_query_from_kwargs__(cls, **kwargs):
         return kwargs
 
@@ -276,7 +241,7 @@ class CassiopeiaGhost(CassiopeiaPipelineObject, Ghost):
             if self._Ghost__is_loaded(load_group):
                 raise ValueError("object has already been loaded.")
             query = self.__get_query__()
-            if hasattr(self.__class__, "version") and "version" not in query and not self.__class__.__name__ == "Realms":
+            if hasattr(self.__class__, "version") and "version" not in query and self.__class__.__name__ not in ["Realms", "Match"]:
                 query["version"] = get_latest_version(region=query["region"], endpoint=None)
             data = configuration.settings.pipeline.get(type=self._load_types[load_group], query=query)
             self.__load_hook__(load_group, data)

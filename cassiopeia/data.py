@@ -47,6 +47,31 @@ class Region(Enum):
         }
         return tzs[self.value]
 
+    @property
+    def continent(self) -> "Continent":
+        if self is Region.brazil:
+            return Continent.americas
+        if self is Region.europe_north_east:
+            return Continent.europe
+        if self is Region.europe_west:
+            return Continent.europe
+        if self is Region.japan:
+            return Continent.asia
+        if self is Region.korea:
+            return Continent.asia
+        if self is Region.latin_america_north:
+            return Continent.americas
+        if self is Region.latin_america_south:
+            return Continent.americas
+        if self is Region.north_america:
+            return Continent.americas
+        if self is Region.oceania:
+            return Continent.asia  # TODO: Correct?
+        if self is Region.turkey:
+            return Continent.europe
+        if self is Region.russia:
+            return Continent.europe
+
 
 class Platform(Enum):
     brazil = "BR1"
@@ -76,6 +101,10 @@ class Platform(Enum):
         except AttributeError:
             return Region(region).platform
 
+    @property
+    def continent(self):
+        return self.region.continent
+
 
 DEFAULT_LOCALE = {
     Region.brazil: "pt_BR",
@@ -101,6 +130,12 @@ DEFAULT_LOCALE = {
     Region.russia: "ru_RU",
     Platform.russia: "ru_RU",
 }
+
+
+class Continent(Enum):
+    americas = "AMERICAS"
+    asia = "ASIA"
+    europe = "EUROPE"
 
 
 class Key(Enum):
@@ -131,6 +166,13 @@ class Side(Enum):
     red = 200
 
 
+class MatchType(Enum):  # TODO: Can we combine with GameType somehow?
+    ranked = "ranked"
+    normal = "normal"
+    tourney = "tourney"
+    tutorial = "tutorial"
+
+
 class GameMode(Enum):
     aram = "ARAM"
     ascension = "ASCENSION"
@@ -156,6 +198,7 @@ class GameMode(Enum):
     practice_tool = "PRACTICETOOL"
     nexus_blitz = "NEXUSBLITZ"
     odyssey = "ODYSSEY"
+    utlbook = "ULTBOOK"
 
 
 class MasteryTree(Enum):
@@ -319,6 +362,7 @@ class Lane(Enum):
     mid_lane = "MID_LANE"
     bot_lane = "BOT_LANE"
     jungle = "JUNGLE"
+    utility = "UTILITY"
 
     def from_match_naming_scheme(string: str):
         return {
@@ -327,6 +371,7 @@ class Lane(Enum):
             "MID": Lane.mid_lane,
             "TOP": Lane.top_lane,
             "JUNGLE": Lane.jungle,
+            "UTILITY": Lane.utility,
             "NONE": None
         }[string]
 

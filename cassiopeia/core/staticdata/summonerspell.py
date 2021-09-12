@@ -4,7 +4,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList
 
 from ...data import Resource, Region, Platform, GameMode
-from ..common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, get_latest_version, provide_default_region, ghost_load_on
+from ..common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, get_latest_version, ghost_load_on
 from .common import ImageData, Image, Sprite
 from ...dto.staticdata import summonerspell as dto
 
@@ -50,7 +50,6 @@ class SummonerSpellData(CoreData):
 class SummonerSpells(CassiopeiaLazyList):
     _data_types = {SummonerSpellListData}
 
-    @provide_default_region
     def __init__(self, *, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if included_data is None:
             included_data = {"all"}
@@ -123,7 +122,6 @@ class SpellVars(CassiopeiaObject):
 class SummonerSpell(CassiopeiaGhost):
     _data_types = {SummonerSpellData}
 
-    @provide_default_region
     def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if included_data is None:
             included_data = {"all"}

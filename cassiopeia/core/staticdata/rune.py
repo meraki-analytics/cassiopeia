@@ -6,7 +6,7 @@ from merakicommons.container import searchable
 
 from ... import configuration
 from ...data import Region, Platform
-from ..common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, get_latest_version, provide_default_region, ghost_load_on
+from ..common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, get_latest_version, ghost_load_on
 from .common import Image
 from ...dto.staticdata import rune as dto
 
@@ -83,7 +83,6 @@ class RunePath(CassiopeiaObject):
 class Runes(CassiopeiaLazyList):
     _data_types = {RuneListData}
 
-    @provide_default_region
     def __init__(self, *, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if included_data is None:
             included_data = {"all"}
@@ -162,7 +161,6 @@ class RuneImage(CassiopeiaObject):
 class Rune(CassiopeiaGhost):
     _data_types = {RuneData}
 
-    @provide_default_region
     def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
         if included_data is None:
             included_data = {"all"}

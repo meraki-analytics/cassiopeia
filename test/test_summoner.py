@@ -10,7 +10,6 @@ class TestSummoner(unittest.TestCase):
     def setUp(self):
         cassiopeia.apply_settings(cassiopeia.get_default_config())
         cassiopeia.set_riot_api_key(os.environ.get('RIOT_API_KEY'))
-        cassiopeia.apply_settings({"global": {"default_region": "NA"}})
 
     def test_unknown_summoner(self):
         for e in cassiopeia.Summoner(name="Kalturi", region="NA").league_entries: print(e.league.name)

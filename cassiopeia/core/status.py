@@ -4,7 +4,7 @@ from merakicommons.cache import lazy
 from merakicommons.container import searchable, SearchableList
 
 from ..data import Region, Platform
-from .common import CoreData, CassiopeiaObject, CassiopeiaGhost, provide_default_region, ghost_load_on
+from .common import CoreData, CassiopeiaObject, CassiopeiaGhost, ghost_load_on
 
 
 ##############
@@ -154,7 +154,6 @@ class Service(CassiopeiaObject):
 class ShardStatus(CassiopeiaGhost):
     _data_types = {ShardStatusData}
 
-    @provide_default_region
     def __init__(self, region: Union[Region, str] = None):
         kwargs = {"region": region}
         super().__init__(**kwargs)

@@ -750,12 +750,12 @@ class Cache(DataSource, DataSink):
     #############
 
     @get.register(Match)
-    @validate_query(uniquekeys.validate_match_query, uniquekeys.convert_region_to_platform)
+    @validate_query(uniquekeys.validate_match_query, uniquekeys.convert_to_continent)
     def get_match(self, query: Mapping[str, Any], context: PipelineContext = None) -> Match:
         return self._get(Match, query, uniquekeys.for_match_query, context)
 
     @get_many.register(Match)
-    @validate_query(uniquekeys.validate_many_match_query, uniquekeys.convert_region_to_platform)
+    @validate_query(uniquekeys.validate_many_match_query, uniquekeys.convert_to_continent)
     def get_many_match(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[Match, None, None]:
         return self._get_many(Match, query, uniquekeys.for_many_match_query, context)
 
@@ -768,7 +768,7 @@ class Cache(DataSource, DataSink):
         self._put_many(Match, items, uniquekeys.for_match, context=context)
 
     @get.register(MatchData)
-    @validate_query(uniquekeys.validate_match_query, uniquekeys.convert_region_to_platform)
+    @validate_query(uniquekeys.validate_match_query, uniquekeys.convert_to_continent)
     def get_match_data(self, query: Mapping[str, Any], context: PipelineContext = None) -> MatchData:
         result = self.get_match(query=query, context=context)
         if result._data[MatchData] is not None and result._Ghost__is_loaded(MatchData):
@@ -779,14 +779,14 @@ class Cache(DataSource, DataSink):
     # Timeline
 
     @get.register(Timeline)
-    @validate_query(uniquekeys.validate_match_timeline_query, uniquekeys.convert_region_to_platform)
+    @validate_query(uniquekeys.validate_match_timeline_query, uniquekeys.convert_to_continent)
     def get_match_timeline(self, query: Mapping[str, Any], context: PipelineContext = None) -> Timeline:
-        return self._get(Timeline, query, uniquekeys.for_match_query, context)
+        return self._get(Timeline, query, uniquekeys.for_match_timeline_query, context)
 
     @get_many.register(Timeline)
-    @validate_query(uniquekeys.validate_many_match_timeline_query, uniquekeys.convert_region_to_platform)
+    @validate_query(uniquekeys.validate_many_match_timeline_query, uniquekeys.convert_to_continent)
     def get_many_match_timeline(self, query: Mapping[str, Any], context: PipelineContext = None) -> Generator[Timeline, None, None]:
-        return self._get_many(Timeline, query, uniquekeys.for_many_match_query, context)
+        return self._get_many(Timeline, query, uniquekeys.for_many_match_timeline_query, context)
 
     @put.register(Timeline)
     def put_match_timeline(self, item: Timeline, context: PipelineContext = None) -> None:
@@ -797,7 +797,7 @@ class Cache(DataSource, DataSink):
         self._put_many(Timeline, items, uniquekeys.for_match_timeline, context=context)
 
     @get.register(TimelineData)
-    @validate_query(uniquekeys.validate_match_timeline_query, uniquekeys.convert_region_to_platform)
+    @validate_query(uniquekeys.validate_match_timeline_query, uniquekeys.convert_to_continent)
     def get_match_timeline_data(self, query: Mapping[str, Any], context: PipelineContext = None) -> TimelineData:
         result = self.get_match_timeline(query=query, context=context)
         if result._data[TimelineData] is not None and result._Ghost__is_loaded(TimelineData):

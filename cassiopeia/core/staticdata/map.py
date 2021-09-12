@@ -4,7 +4,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
 from ...data import Region, Platform
-from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CoreDataList, CassiopeiaLazyList, get_latest_version, provide_default_region, ghost_load_on
+from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CoreDataList, CassiopeiaLazyList, get_latest_version, ghost_load_on
 from .common import ImageData, Sprite, Image
 from ...dto.staticdata import map as dto
 
@@ -38,7 +38,6 @@ class MapData(CoreData):
 class Maps(CassiopeiaLazyList):
     _data_types = {MapListData}
 
-    @provide_default_region
     def __init__(self, *, region: Union[Region, str] = None, version: str = None, locale: str = None):
         if locale is None and region is not None:
             locale = Region(region).default_locale
@@ -73,7 +72,6 @@ class Maps(CassiopeiaLazyList):
 class Map(CassiopeiaGhost):
     _data_types = {MapData}
 
-    @provide_default_region
     def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None):
         if locale is None and region is not None:
             locale = Region(region).default_locale

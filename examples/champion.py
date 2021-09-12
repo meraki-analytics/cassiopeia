@@ -16,9 +16,8 @@ def get_champions():
 
     print(annie.info.difficulty)
     print(annie.passive.name)
-    print({item.name: count for item, count in annie.recommended_itemsets[0].item_sets[0].items.items()})
     print(annie.free_to_play)
-    
+
     print(annie.win_rates)
 
 

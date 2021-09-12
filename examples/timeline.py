@@ -3,10 +3,10 @@ import cassiopeia as cass
 from cassiopeia import Summoner
 
 
-def print_newest_match(name: str,  region: str):
+def print_newest_match(name: str, region: str):
     summoner = Summoner(name=name, region=region)
 
-    match_history = summoner.match_history(queues={cass.Queue.ranked_solo_fives})
+    match_history = summoner.match_history
     match = match_history[0]
     print("Match ID:", match.id)
 
@@ -41,4 +41,4 @@ def print_newest_match(name: str,  region: str):
 
 
 if __name__ == "__main__":
-    print_newest_match(name="Kalturi", region="NA")
+    print_newest_match(name="Perkz", region="NA")

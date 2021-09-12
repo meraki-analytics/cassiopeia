@@ -5,7 +5,7 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
 from ..data import Region, Platform
-from .common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, CoreDataList, get_latest_version, provide_default_region, ghost_load_on
+from .common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, CoreDataList, get_latest_version, ghost_load_on
 from ..dto.championmastery import ChampionMasteryDto
 from .staticdata.champion import Champion
 from .summoner import Summoner
@@ -35,14 +35,12 @@ class ChampionMasteryData(CoreData):
 class ChampionMasteries(CassiopeiaLazyList):
     _data_types = {ChampionMasteryListData}
 
-    @provide_default_region
     def __init__(self, *, summoner: Summoner, region: Union[Region, str] = None):
         self.__summoner = summoner
         kwargs = {"region": region}
         CassiopeiaObject.__init__(self, **kwargs)
 
     @classmethod
-    @provide_default_region
     def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, int, str], region: Union[Region, str]) -> dict:
         query = {"region": region}
         if isinstance(summoner, Summoner):
@@ -73,7 +71,6 @@ class ChampionMasteries(CassiopeiaLazyList):
 class ChampionMastery(CassiopeiaGhost):
     _data_types = {ChampionMasteryData}
 
-    @provide_default_region
     def __init__(self, *, summoner: Union[Summoner, int, str] = None, champion: Union[Champion, int, str] = None, region: Union[Region, str] = None, _account_id: str = None):
         kwargs = {"region": region}
 
@@ -104,7 +101,6 @@ class ChampionMastery(CassiopeiaGhost):
         super().__init__(**kwargs)
 
     @classmethod
-    @provide_default_region
     def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, int, str], champion: Union[Champion, int, str], region: Union[Region, str]) -> dict:
         query = {"region": region}
         if isinstance(summoner, Summoner):

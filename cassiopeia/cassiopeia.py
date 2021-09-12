@@ -2,7 +2,7 @@ from typing import List, Set, Dict, Union, TextIO
 import arrow
 import datetime
 
-from .data import Region, Queue, Season, Tier, Division, Position
+from .data import Region, Queue, Season, Tier, Division, Continent, Platform, MatchType
 from .core import Champion, Summoner, ChampionMastery, Rune, Item, Match, Map, SummonerSpell, Realms, ProfileIcon, LanguageStrings, CurrentMatch, ShardStatus, Versions, MatchHistory, Champions, ChampionMasteries, Runes, Items, SummonerSpells, Maps, FeaturedMatches, Locales, ProfileIcons, ChallengerLeague, GrandmasterLeague, MasterLeague, League, LeagueSummonerEntries, LeagueEntries, Patch, VerificationString, ChampionRotation
 from .datastores import common as _common_datastore
 from ._configuration import Settings, load_config, get_default_config
@@ -37,10 +37,6 @@ def set_riot_api_key(key: str):
     configuration.settings.set_riot_api_key(key)
 
 
-def set_default_region(region: Union[Region, str]):
-    configuration.settings.set_region(region)
-
-
 def print_calls(calls: bool, api_key: bool = False):
     _common_datastore._print_calls = calls
     _common_datastore._print_api_key = api_key
@@ -66,10 +62,10 @@ def get_challenger_league(queue: Union[Queue, int, str], region: Union[Region, s
     return ChallengerLeague(queue=queue, region=region)
 
 
-def get_match_history(summoner: Summoner, begin_index: int = None, end_index: int = None, begin_time: arrow.Arrow = None, end_time: arrow.Arrow = None, queues: Set[Queue] = None, seasons: Set[Season] = None, champions: Set[Champion] = None):
-    return MatchHistory(summoner=summoner, begin_index=begin_index, end_index=end_index, begin_time=begin_time, end_time=end_time, queues=queues, seasons=seasons, champions=champions)
+def get_match_history(continent: Continent = None, region: Region = None, platform: Platform = None, puuid: str = None, begin_index: int = None, end_index: int = None, begin_time: arrow.Arrow = None, end_time: arrow.Arrow = None, queue: Queue = None, type: MatchType = None):
+    return MatchHistory(continent=continent, region=region, platform=platform, puuid=puuid, begin_index=begin_index, end_index=end_index, begin_time=begin_time, end_time=end_time, queue=queue, type=type)
 
-def get_match(id : int, region: Union[Region, str] = None) -> Match:
+def get_match(id: int, region: Union[Region, str] = None) -> Match:
     return Match(id=id, region=region)
 
 

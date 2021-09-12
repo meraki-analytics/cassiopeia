@@ -1,4 +1,5 @@
 from typing import Iterable, Set, Dict
+import itertools
 import os
 
 from datapipelines import CompositeDataSource
@@ -16,9 +17,9 @@ def _default_services(api_key: str, limiting_share: float = 1.0, request_error_h
     from .status import StatusAPI
     from .leagues import LeaguesAPI
     from .thirdpartycode import ThirdPartyCodeAPI
-    from ...data import Platform
+    from ...data import Platform, Continent
 
-    app_rate_limiter = {platform: RiotAPIRateLimiter(limiting_share=limiting_share) for platform in Platform}
+    app_rate_limiter = {platform: RiotAPIRateLimiter(limiting_share=limiting_share) for platform in itertools.chain(Platform, Continent)}
 
     client = HTTPClient()
     services = {

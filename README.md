@@ -8,12 +8,13 @@ A Python adaptation of the Riot Games League of Legends API (https://developer.r
 
 Cassiopeia is the sister library to [Orianna](https://github.com/robrua/Orianna) (Java). It's been designed with usability in mind - making sure all the bookkeeping is done right so you can focus on getting the data you need and building your application.
 
-## Documentation and Examples
-Cassiopeia has detailed [documentation](http://cassiopeia.readthedocs.org/en/latest/) and [examples](https://github.com/meraki-analytics/cassiopeia/tree/master/examples).
-
 
 ## Installation
 `pip install cassiopeia` or see [here](<http://cassiopeia.readthedocs.io/en/latest/setup.html>) for more information.
+
+
+## Match-V5 Update
+On Monday, September 13th, 2021 Riot deprecated the match-v4 endpoints in favor of match-v5. The codebase was migrated to use the new endpoints, but it's likely that some bugs exist due to all the complex functionality between data types in Cass. Please submit PRs (preferably) or issues if you find bugs, and feel free to message the developers by creating an issue if you would like to contribute but don't know how to go about fixing a bug.
 
 
 ## Why use Cass?
@@ -31,6 +32,10 @@ Cassiopeia has detailed [documentation](http://cassiopeia.readthedocs.org/en/lat
 * Dynamic settings so you can configure Cass for your specific use case.
 
 
+## Documentation and Examples
+Cassiopeia's [documentation](http://cassiopeia.readthedocs.org/en/latest/) and [examples](https://github.com/meraki-analytics/cassiopeia/tree/master/examples) may be a little out of date, but should be quite helpful when getting started. Please submit a PR for any changes.
+
+
 ## Example
 
 Here's an example of a basic use of the API. The full documentation can be found at http://cassiopeia.readthedocs.org/en/latest/.
@@ -41,14 +46,13 @@ import random
 import cassiopeia as cass
 
 cass.set_riot_api_key("YOUR_KEY")  # This overrides the value set in your configuration/settings.
-cass.set_default_region("NA")
 
-summoner = cass.get_summoner(name="Kalturi")
+summoner = cass.get_summoner(name="Perkz", region="NA")
 print("{name} is a level {level} summoner on the {region} server.".format(name=summoner.name,
                                                                           level=summoner.level,
                                                                           region=summoner.region))
 
-champions = cass.get_champions()
+champions = cass.get_champions(region="NA")
 random_champion = random.choice(champions)
 print("He enjoys playing champions such as {name}.".format(name=random_champion.name))
 
@@ -60,7 +64,7 @@ print("He's not as good as {name} at League, but probably a better python progra
 # Django web Framework
 There is an integration of cassiopeia to the popular python web framework Django made by Mori(Paaksing), this integration is aimed to fix most issues/conflicts related to co-ocurrence of cassiopeia and Django. In this integration will give you better tools for building your Django/DRF based app, you will have the ability to use any production tested cache backends that Django's cache framework supports.
 
-**_New in v2.0:_** A new datastore called `Omnistone` is introduced in response to issue #1 of this repo, this is a refined version of `Cache` that automatically deletes expired objects when `MAX_ENTRIES` is hit, then culls the datastore according to the `CULL_FRECUENCY` given. The culling strategy used is the same as Django Cache Framework, which is LRU culling (Least Recently Used).
+A datastore called `Omnistone` is introduced in response to issue #1 of this repo, this is a refined version of `Cache` that automatically deletes expired objects when `MAX_ENTRIES` is hit, then culls the datastore according to the `CULL_FRECUENCY` given. The culling strategy used is the same as Django Cache Framework, which is LRU culling (Least Recently Used).
 
 * Link to `django-cassiopeia` [repository](https://github.com/paaksing/django-cassiopeia) (If you love using it, make sure to star!).
 * Link to `django-cassiopeia` [documentations](https://paaksing.github.io/django-cassiopeia/) (Production Release v2.0).
