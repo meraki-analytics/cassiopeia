@@ -170,6 +170,7 @@ class ParticipantData(CoreData):
             "gameEndedInEarlySurrender": kwargs.get("gameEndedInEarlySurrender", None),
             "gameEndedInSurrender": kwargs.get("gameEndedInSurrender", None),
             "individualPosition": kwargs.get("individualPosition", None),
+            "participantId": kwargs.get("participantId", None),
             "profileIcon": kwargs.get("profileIcon", None),
             "puuid": kwargs.get("puuid", None),
             "riotIdName": kwargs.get("riotIdName", None),
@@ -232,7 +233,6 @@ class ParticipantData(CoreData):
             "nexusTakedowns": kwargs.pop("nexusTakedowns", None),
             "objectivesStolen": kwargs.pop("objectivesStolen", None),
             "objectivesStolenAssists": kwargs.pop("objectivesStolenAssists", None),
-            "participantId": kwargs.pop("participantId", None),
             "pentaKills": kwargs.pop("pentaKills", None),
             "physicalDamageDealt": kwargs.pop("physicalDamageDealt", None),
             "physicalDamageDealtToChampions": kwargs.pop("physicalDamageDealtToChampions", None),
@@ -272,7 +272,8 @@ class ParticipantData(CoreData):
             "wardsPlaced": kwargs.pop("wardsPlaced", None),
             "win": kwargs.pop("win", None),
         }
-        self.stats = ParticipantStatsData(**stats)  # TODO: Figure out what we want to do with particpant stats now that they have moved onto the participant
+        self.stats = ParticipantStatsData(**stats)
+
         if "timeline" in kwargs:
             self.timeline = ParticipantTimelineData(**kwargs.pop("timeline"))
         if "teamId" in kwargs:
@@ -629,16 +630,26 @@ class Frame(CassiopeiaObject):
 class Timeline(CassiopeiaGhost):
     _data_types = {TimelineData}
 
-    def __init__(self, *, id: int = None, region: Union[Region, str] = None):
-        kwargs = {"region": region, "id": id}
+    def __init__(self, *, id: int = None, continent: Continent = None, region: Union[Region, str] = None, platform: Platform = None):
+        kwargs = {"id": id}
+        if continent is not None:
+            kwargs["continent"] = continent
+        elif region is not None:
+            kwargs["continent"] = region.continent
+        elif platform is not None:
+            kwargs["continent"] = platform.continent
         super().__init__(**kwargs)
 
     def __get_query__(self):
-        return {"region": self.region, "platform": self.platform, "id": self.id}
+        return {"continent": self.continent, "id": self.id}
 
     @property
     def id(self):
         return self._data[TimelineData].id
+
+    @property
+    def continent(self) -> Continent:
+        return Continent(self._data[TimelineData].continent)
 
     @property
     def region(self) -> Region:
@@ -666,12 +677,12 @@ class Timeline(CassiopeiaGhost):
                     return event
 
 
-class ParticipantTimeline(CassiopeiaObject):
+class ParticipantTimeline(object):
     _data_types = {ParticipantTimelineData}
 
     @classmethod
-    def from_data(cls, data: CoreData, match: "Match"):
-        self = super().from_data(data)
+    def from_data(cls, match: "Match"):
+        self = cls()
         self.__match = match
         return self
 
@@ -729,46 +740,6 @@ class ParticipantTimeline(CassiopeiaObject):
     @property
     def champion_assists(self):
         return self.events.filter(lambda event: event.type == "CHAMPION_KILL" and self.id in event.assisting_participants)
-
-    @property
-    def lane(self) -> Lane:
-        return Lane.from_match_naming_scheme(self._data[ParticipantTimelineData].lane)
-
-    @property
-    def role(self) -> Role:
-        return Role.from_match_naming_scheme(self._data[ParticipantTimelineData].role)
-
-    @property
-    def id(self) -> int:
-        return self._data[ParticipantTimelineData].id
-
-    @property
-    def cs_diff_per_min_deltas(self) -> Dict[str, float]:
-        return self._data[ParticipantTimelineData].csDiffPerMinDeltas
-
-    @property
-    def gold_per_min_deltas(self) -> Dict[str, float]:
-        return self._data[ParticipantTimelineData].goldPerMinDeltas
-
-    @property
-    def xp_diff_per_min_deltas(self) -> Dict[str, float]:
-        return self._data[ParticipantTimelineData].xpDiffPerMinDeltas
-
-    @property
-    def creeps_per_min_deltas(self) -> Dict[str, float]:
-        return self._data[ParticipantTimelineData].creepsPerMinDeltas
-
-    @property
-    def xp_per_min_deltas(self) -> Dict[str, float]:
-        return self._data[ParticipantTimelineData].xpPerMinDeltas
-
-    @property
-    def damage_taken_per_min_deltas(self) -> Dict[str, float]:
-        return self._data[ParticipantTimelineData].damageTakenPerMinDeltas
-
-    @property
-    def damage_taken_diff_per_min_deltas(self) -> Dict[str, float]:
-        return self._data[ParticipantTimelineData].damageTakenDiffPerMinDeltas
 
 
 class CumulativeTimeline:
@@ -1094,11 +1065,6 @@ class ParticipantStats(CassiopeiaObject):
 
     @property
     @load_match_on_attributeerror
-    def first_blood_kill(self) -> bool:
-        return self._data[ParticipantStatsData].firstBloodKill
-
-    @property
-    @load_match_on_attributeerror
     def first_tower_assist(self) -> bool:
         return self._data[ParticipantStatsData].firstTowerAssist
 
@@ -1220,11 +1186,6 @@ class ParticipantStats(CassiopeiaObject):
     @load_match_on_attributeerror
     def objectives_stolen_assists(self) -> int:
         return self._data[ParticipantStatsData].objectivesStolenAssists
-
-    @property
-    @load_match_on_attributeerror
-    def id(self) -> int:
-        return self._data[ParticipantStatsData].participantId
 
     @property
     @load_match_on_attributeerror
@@ -1457,9 +1418,9 @@ class Participant(CassiopeiaObject):
     @lazy_property
     @load_match_on_attributeerror
     def id(self) -> int:
-        if self._data[ParticipantData].id is None:
+        if self._data[ParticipantData].participantId is None:
             raise AttributeError
-        return self._data[ParticipantData].id
+        return self._data[ParticipantData].participantId
 
     @lazy_property
     @load_match_on_attributeerror
@@ -1494,8 +1455,8 @@ class Participant(CassiopeiaObject):
     @lazy_property
     @load_match_on_attributeerror
     def timeline(self) -> ParticipantTimeline:
-        timeline = ParticipantTimeline.from_data(self._data[ParticipantData].timeline, match=self.__match)
-        timeline(id=self.id)
+        timeline = ParticipantTimeline.from_data(match=self.__match)
+        timeline.id = self.id
         return timeline
 
     @property
@@ -1711,7 +1672,7 @@ class Match(CassiopeiaGhost):
     @lazy_property
     def timeline(self) -> Timeline:
         if self._timeline is None:
-            self._timeline = Timeline(id=self.id, region=self.region.value)
+            self._timeline = Timeline(id=self.id, continent=self.continent)
         return self._timeline
 
     @CassiopeiaGhost.property(MatchData)

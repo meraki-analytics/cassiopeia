@@ -289,9 +289,8 @@ class UnloadedGhostStore(DataSource):
         return Match._construct_normally(**query)
 
     @get.register(Timeline)
-    @validate_query(_validate_get_timeline_query, convert_region_to_platform)
+    @validate_query(_validate_get_timeline_query, convert_to_continent)
     def get_match_timeline(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Timeline:
-        query["region"] = query.pop("platform").region
         return Timeline._construct_normally(**query)
 
     @get.register(CurrentMatch)

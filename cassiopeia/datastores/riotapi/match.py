@@ -65,6 +65,8 @@ class MatchAPI(RiotAPIService):
                 try:
                     app_limiter, method_limiter = self._get_rate_limiter(continent, "matches/id")
                     data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
+                    # metadata = data["metadata"]
+                    data = data["info"]  # Drop the metadata
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
@@ -169,17 +171,19 @@ class MatchAPI(RiotAPIService):
 
     _validate_get_timeline_query = Query. \
         has("continent").as_(Continent).or_("region").as_(Region).or_("platform").as_(Platform).also. \
-        has("id").as_(int)
+        has("id").as_(str)
 
     @get.register(TimelineDto)
     @validate_query(_validate_get_timeline_query, convert_to_continent)
     def get_match_timeline(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> TimelineDto:
         continent = query["continent"]
         id = query["id"]
-        url = f"https://{continent.value.lower()}.api.riotgames.com/lol/match/v5/timelines/by-match/{id}"
+        url = f"https://{continent.value.lower()}.api.riotgames.com/lol/match/v5/matches/{id}/timeline"
         try:
-            app_limiter, method_limiter = self._get_rate_limiter(continent, "timelines/by-match/id")
+            app_limiter, method_limiter = self._get_rate_limiter(continent, "matches/id/timeline")
             data = self._get(url, {}, app_limiter=app_limiter, method_limiter=method_limiter)
+            # metadata = data["metadata"]
+            data = data["info"]  # Drop the metadata
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
