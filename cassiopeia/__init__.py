@@ -7,5 +7,4 @@ from .cassiopeia import apply_settings, set_riot_api_key, print_calls, _get_pipe
 from .core import Champion, Champions, Rune, Runes, Item, Items, SummonerSpell, SummonerSpells, ProfileIcon, ProfileIcons, Versions, Maps, Summoner, ChampionMastery, ChampionMasteries, Match, FeaturedMatches, ShardStatus, ChallengerLeague, GrandmasterLeague, MasterLeague, Map, Realms, LanguageStrings, Locales, LeagueEntries, League, Patch, VerificationString, MatchHistory, ChampionRotation, LeagueSummonerEntries, CurrentMatch
 from .data import Queue, Region, Platform, Resource, Side, GameMode, MasteryTree, Tier, Division, Season, GameType, Lane, Role, Rank, Key, SummonersRiftArea, Tower, Position
 
-#apply_settings(configuration.settings)
-from .modified_config import *
+apply_settings(configuration.settings)
