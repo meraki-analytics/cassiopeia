@@ -426,7 +426,6 @@ class MatchHistory(CassiopeiaLazyList):  # type: List[Match]
         return Queue(self._data[MatchListData].queue)
 
     def match_type(self) -> MatchType:
-        # TODO: this is wrong as type refers to GameType, we could use a mapping from Queue -> MatchType
         return MatchType(self._data[MatchData].type)
 
     @property
@@ -1687,6 +1686,7 @@ class Match(CassiopeiaGhost):
     @ghost_load_on
     @lazy
     def type(self) -> MatchType:
+        # TODO: this is wrong as type refers to the GameType, we could infer it from the queue
         return MatchType(self._data[MatchData].type)
 
     @CassiopeiaGhost.property(MatchData)
