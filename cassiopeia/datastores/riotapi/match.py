@@ -140,7 +140,7 @@ class MatchAPI(RiotAPIService):
 
         type = query.get("type", None)
         if type is not None:
-            params["type"] = type
+            params["type"] = MatchType(type).value
 
         continent: Continent = query["continent"]
         puuid: str = query["puuid"]
