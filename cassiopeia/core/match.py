@@ -274,6 +274,7 @@ class ParticipantData(CoreData):
         }
         self.stats = ParticipantStatsData(**stats)
 
+        # TODO: I don't think this is supported anymore, same for the attributes relying on this (role, lane, ...)
         if "timeline" in kwargs:
             self.timeline = ParticipantTimelineData(**kwargs.pop("timeline"))
         if "teamId" in kwargs:
@@ -317,7 +318,7 @@ class MatchData(CoreData):
         if "gameCreation" in kwargs:
             self.creation = arrow.get(kwargs["gameCreation"] / 1000)
         if "gameDuration" in kwargs:
-            self.duration = datetime.timedelta(seconds=kwargs["gameDuration"])
+            self.duration = datetime.timedelta(seconds=kwargs["gameDuration"] / 1000)
         if "gameStartTimestamp" in kwargs:
             self.start = arrow.get(kwargs["gameStartTimestamp"] / 1000)
 
@@ -425,7 +426,7 @@ class MatchHistory(CassiopeiaLazyList):  # type: List[Match]
         return Queue(self._data[MatchListData].queue)
 
     def match_type(self) -> MatchType:
-        return MatchType(self._data[MatchListData].type)
+        return MatchType(self._data[MatchData].type)
 
     @property
     def begin_index(self) -> Union[int, None]:
@@ -1410,6 +1411,10 @@ class Participant(CassiopeiaObject):
         skills = [spells[skill] for skill in skills]
         return skills
 
+    @property
+    def ended_in_early_surrender(self) -> bool:
+        return self._data[ParticipantData].endedInEarlySurrender
+
     @lazy_property
     @load_match_on_attributeerror
     def stats(self) -> ParticipantStats:
@@ -1547,56 +1552,52 @@ class Team(CassiopeiaObject):
 
     @property
     def first_dragon(self) -> bool:
-        return self._data[TeamData].firstDragonKiller
+        return self._data[TeamData].objectives['dragon'].first
 
     @property
     def first_inhibitor(self) -> bool:
-        return self._data[TeamData].firstInhibitorKiller
+        return self._data[TeamData].objectives['inhibitor'].first
 
     @property
     def first_rift_herald(self) -> bool:
-        return self._data[TeamData].firstRiftHeraldKiller
+        return self._data[TeamData].objectives['riftHerald'].first
 
     @property
     def first_baron(self) -> bool:
-        return self._data[TeamData].firstBaronKiller
+        return self._data[TeamData].objectives['baron'].first
 
     @property
     def first_tower(self) -> bool:
-        return self._data[TeamData].firstTowerKiller
+        return self._data[TeamData].objectives['tower'].first
 
     @property
     def first_blood(self) -> bool:
-        return self._data[TeamData].firstBloodKiller
+        return self._data[TeamData].objectives['champion'].first
 
     @property
     def bans(self) -> List["Champion"]:
         version = _choose_staticdata_version(self.__match)
-        return [Champion(id=champion_id, version=version, region=self.__match.region) if champion_id != -1 else None for champion_id in self._data[TeamData].bans]
-
-    @property
-    def baron_kills(self) -> int:
-        return self._data[TeamData].baronKills
+        return [Champion(id=ban.championId, version=version, region=self.__match.region) if ban.championId != -1 else None for ban in self._data[TeamData].bans]
 
     @property
     def rift_herald_kills(self) -> int:
-        return self._data[TeamData].riftHeraldKills
+        return self._data[TeamData].objectives['riftHerald'].kills
 
     @property
-    def vilemaw_kills(self) -> int:
-        return self._data[TeamData].vilemawKills
+    def baron_kills(self) -> int:
+        return self._data[TeamData].objectives['baron'].kills
 
     @property
     def inhibitor_kills(self) -> int:
-        return self._data[TeamData].inhibitorKills
+        return self._data[TeamData].objectives['inhibitor'].kills
 
     @property
     def tower_kills(self) -> int:
-        return self._data[TeamData].towerKills
+        return self._data[TeamData].objectives['tower'].kills
 
     @property
     def dragon_kills(self) -> int:
-        return self._data[TeamData].dragonKills
+        return self._data[TeamData].objectives['dragon'].kills
 
     @property
     def side(self) -> Side:
@@ -1685,6 +1686,7 @@ class Match(CassiopeiaGhost):
     @ghost_load_on
     @lazy
     def type(self) -> MatchType:
+        # TODO: this is wrong as type refers to the GameType, we could infer it from the queue
         return MatchType(self._data[MatchData].type)
 
     @CassiopeiaGhost.property(MatchData)
@@ -1694,9 +1696,12 @@ class Match(CassiopeiaGhost):
             if not self._Ghost__is_loaded(MatchData):
                 self.__load__(MatchData)
                 self._Ghost__set_loaded(MatchData)  # __load__ doesn't trigger __set_loaded.
-            for p in self._data[MatchData].participants:
-                participant = Participant.from_data(p, match=self)
-                self.__participants.append(participant)
+            # TODO: this is probably not the way to go, but that prevents participants being reappened every time match.participants is called
+            if len(self.__participants) == 0:
+                for p in self._data[MatchData].participants:
+                    participant = Participant.from_data(p, match=self)
+                    self.__participants.append(participant)
+
         else:
             self.__participants = []
 
@@ -1776,7 +1781,11 @@ class Match(CassiopeiaGhost):
 
     @property
     def is_remake(self) -> bool:
-        return self._data[MatchData].endedInEarlySurrender or self.duration < datetime.timedelta(minutes=5)
+        # TODO: not sure how this should be handled, it feels like the early surrender state should belong the the match itself, not the participants
+        if self.__participants[0] is not None:
+            return self.__participants[0].ended_in_early_surrender or self.duration < datetime.timedelta(minutes=5)
+        else:
+            self.duration < datetime.timedelta(minutes=5)
 
     @property
     def exists(self) -> bool:
