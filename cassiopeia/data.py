@@ -66,7 +66,7 @@ class Region(Enum):
         if self is Region.north_america:
             return Continent.americas
         if self is Region.oceania:
-            return Continent.asia  # TODO: Correct?
+            return Continent.americas # OCE content is managed by Americas server (as per https://i.imgur.com/FUyf5kv.png), this breaks OCE queries if set to Asia
         if self is Region.turkey:
             return Continent.europe
         if self is Region.russia:
