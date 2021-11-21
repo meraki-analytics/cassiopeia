@@ -130,9 +130,9 @@ class MatchAPI(RiotAPIService):
             else:
                 params["endTime"] = (begin_time + riot_date_interval).int_timestamp * 1000
         else:
-            params["beginIndex"] = query["beginIndex"]
-            params["endIndex"] = query["beginIndex"] + min(riot_index_interval, query["maxNumberOfMatches"])
-            params["endIndex"] = int(params["endIndex"])
+            params["start"] = query["beginIndex"]
+            params["count"] = min(riot_index_interval, query["maxNumberOfMatches"])
+            params["count"] = int(params["count"])
 
         queue = query.get("queue", None)
         if queue is not None:
@@ -144,7 +144,6 @@ class MatchAPI(RiotAPIService):
 
         continent: Continent = query["continent"]
         puuid: str = query["puuid"]
-
         url = f"https://{continent.value.lower()}.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids"
         try:
             app_limiter, method_limiter = self._get_rate_limiter(continent, "matchlists/by-puuid/puuid")
@@ -161,8 +160,8 @@ class MatchAPI(RiotAPIService):
         }
 
         if calling_method == "by_index":
-            data["beginIndex"] = params["beginIndex"]
-            data["endIndex"] = params["endIndex"]
+            data["beginIndex"] = params["start"]
+            data["endIndex"] = params["start"] + params["count"]
             data["maxNumberOfMatches"] = query["maxNumberOfMatches"]
         else:
             data["beginTime"] = params["beginTime"]
