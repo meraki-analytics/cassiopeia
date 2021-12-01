@@ -1052,7 +1052,7 @@ class ParticipantStats(CassiopeiaObject):
     @property
     @load_match_on_attributeerror
     def dragon_kills(self) -> int:
-        return self._data[TeamData].dragonKills
+        return self._data[ParticipantStatsData].dragonKills
 
     @property
     @load_match_on_attributeerror
