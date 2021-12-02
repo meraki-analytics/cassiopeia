@@ -983,19 +983,19 @@ class ParticipantStats(CassiopeiaObject):
     @load_match_on_attributeerror
     def kills(self) -> int:
         return self._data[ParticipantStatsData].kills
-
-    @load_match_on_attributeerror
+    
     @property
+    @load_match_on_attributeerror
     def baron_kills(self) -> int:
         return self._data[ParticipantStatsData].baronKills
-
-    @load_match_on_attributeerror
+    
     @property
+    @load_match_on_attributeerror
     def bounty_level(self) -> int:
         return self._data[TeamData].bountyLevel
 
-    @load_match_on_attributeerror
     @property
+    @load_match_on_attributeerror
     def champion_experience(self) -> int:
         return self._data[TeamData].championExperience
 
