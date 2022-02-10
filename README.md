@@ -27,7 +27,7 @@ On Monday, September 13th, 2021 Riot deprecated the match-v4 endpoints in favor 
 
 * Built in caching and (coming) the ability to easily hook into a database for offline storage of data.
 
-* Extendability to non-Riot data. Because Cass is a framework and not just an API wrapper, you can integrate your own data sources into your project. Cass already supports Data Dragon and the ``champion.gg`` API in addition to the Riot API.
+* Extendability to non-Riot data. Because Cass is a framework and not just an API wrapper, you can integrate your own data sources into your project. Cass already supports the community drive "Data Dragon."
 
 * Dynamic settings so you can configure Cass for your specific use case.
 

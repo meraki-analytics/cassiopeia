@@ -10,29 +10,6 @@ The plugins for Cass are stored in two different repositories: `cassiopeia-plugi
 Plugins can be added to Cass by downloading the appropriate plugin and putting it on your ``PYTHONPATH`` environment variable. Then, in your settings file, you specify the name of the module for that plugin (using the ``package`` keyword) as if you were directly importing it into your project. The name of the package specifies the data store that that will be loaded from that package and put on the pipeline.
 
 
-ChampionGG
-----------
-
-Install by running ``pip install cassiopeia-championgg``.
-
-The ChampionGG plugin pulls data from the `champion.gg api <http://api.champion.gg>`_ . This data is accessible via the ``Champion.championgg`` attribute.
-
-To enable this plugin, add the following to your settings' data pipeline:
-
-.. code-block:: json
-
-  "pipeline": {
-    ...,
-    "ChampionGG": {
-      "package": "cassiopeia_championgg",
-      "api_key": "CHAMPIONGG_KEY"
-    },
-    ...
-  }
-
-where ``"CHAMPIONGG_KEY"`` is your champion.gg API key or an environment variable that contains it.
-
-
 Simple KV Disk Store
 --------------------
 

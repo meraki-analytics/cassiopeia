@@ -34,11 +34,6 @@ Below is an example (which uses more datastores than Cass uses by default):
         "RiotAPI": {
           "api_key": "RIOT_API_KEY"
         },
-
-        "ChampionGG": {
-          "package": "cassiopeia_championgg",
-          "api_key": "CHAMPIONGG_KEY"  # See api.champion.gg
-        }
     }
 
 In brief, this means that the sequence for looking for data will be:  1) Look in the cache, 2) look in our disk-based database, 3) if it's static data, get it from data dragon, 4) pull the data from the Riot API, 5) pull the data from ChampionGG.

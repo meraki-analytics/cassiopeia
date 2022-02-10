@@ -24,6 +24,4 @@ Things we need help with!
 
 * We have some very basic tests in place, but a thorough testing of all attributes of all objects would be extremely helpful.
 
-* Some data from the `champion.gg api <http://api.champion.gg>`_ is available through Cass (via the ``Champion`` object). The remaining data should be added as well. You can find the relevant code in the ``plugins/championgg`` directory.
-
 * Implement better logging.
