@@ -5,11 +5,7 @@ import sys
 from setuptools import setup, find_packages
 
 
-install_requires = [
-    "datapipelines",
-    "merakicommons",
-    "Pillow"
-]
+install_requires = ["datapipelines", "merakicommons", "Pillow"]
 
 # Require python 3.6
 if sys.version_info.major != 3 and sys.version_info.minor != 6:
@@ -36,5 +32,5 @@ setup(
     packages=find_packages(),
     zip_safe=True,
     install_requires=install_requires,
-    include_package_data=True
+    include_package_data=True,
 )

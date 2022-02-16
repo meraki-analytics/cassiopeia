@@ -8,7 +8,15 @@ from merakicommons.container import searchable
 from ... import configuration
 from ...data import Region, Platform
 from ...dto.staticdata.profileicon import ProfileIconDetailsDto, ProfileIconDataDto
-from ..common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, get_latest_version, ghost_load_on
+from ..common import (
+    CoreData,
+    CoreDataList,
+    CassiopeiaObject,
+    CassiopeiaGhost,
+    CassiopeiaLazyList,
+    get_latest_version,
+    ghost_load_on,
+)
 
 
 try:
@@ -42,7 +50,13 @@ class ProfileIconData(CoreData):
 class ProfileIcons(CassiopeiaLazyList):
     _data_types = {ProfileIconListData}
 
-    def __init__(self, *, region: Union[Region, str] = None, version: str = None, locale: str = None):
+    def __init__(
+        self,
+        *,
+        region: Union[Region, str] = None,
+        version: str = None,
+        locale: str = None
+    ):
         kwargs = {"region": region}
         if version is not None:
             kwargs["version"] = version
@@ -78,7 +92,14 @@ class ProfileIcon(CassiopeiaGhost):
     _load_types = {ProfileIconData: ProfileIconListData}
     _load_type = ProfileIcons
 
-    def __init__(self, *, id: int = None, region: Union[Region, str] = None, version: str = None, locale: str = None):
+    def __init__(
+        self,
+        *,
+        id: int = None,
+        region: Union[Region, str] = None,
+        version: str = None,
+        locale: str = None
+    ):
         kwargs = {"region": region}
         if id is not None:
             kwargs["id"] = id
@@ -89,7 +110,11 @@ class ProfileIcon(CassiopeiaGhost):
         super().__init__(**kwargs)
 
     def __get_query__(self):
-        query = {"region": self.region, "platform": self.platform, "version": self.version}
+        query = {
+            "region": self.region,
+            "platform": self.platform,
+            "version": self.version,
+        }
         try:
             query["locale"] = self.locale
         except AttributeError:
@@ -106,7 +131,9 @@ class ProfileIcon(CassiopeiaGhost):
         id_ = "?"
         if hasattr(self._data[ProfileIconData], "id"):
             id_ = self.id
-        return "ProfileIcon(id={id_}, region='{region}')".format(id_=id_, region=region.value)
+        return "ProfileIcon(id={id_}, region='{region}')".format(
+            id_=id_, region=region.value
+        )
 
     __hash__ = CassiopeiaGhost.__hash__
 
@@ -115,6 +142,7 @@ class ProfileIcon(CassiopeiaGhost):
             for item in datalist:
                 if getattr(item, attrname, None) == attrvalue:
                     return item
+
         data = find_matching_attribute(data, "id", self.id)
         super().__load_hook__(load_group, data)
 
@@ -153,11 +181,15 @@ class ProfileIcon(CassiopeiaGhost):
         if _profile_icon_names is None:
             module_directory = os.path.dirname(os.path.realpath(__file__))
             module_directory, _ = os.path.split(module_directory)  # Go up one directory
-            module_directory, _ = os.path.split(module_directory)  # Go up another directory
+            module_directory, _ = os.path.split(
+                module_directory
+            )  # Go up another directory
             filename = os.path.join(module_directory, "profile_icon_names.json")
             with open(filename) as f:
                 _profile_icon_names = json.load(f)
-            _profile_icon_names = {int(key): value for key, value in _profile_icon_names.items()}
+            _profile_icon_names = {
+                int(key): value for key, value in _profile_icon_names.items()
+            }
         try:
             return _profile_icon_names[self._data[ProfileIconData].id] or None
         except KeyError:
@@ -167,7 +199,9 @@ class ProfileIcon(CassiopeiaGhost):
     @ghost_load_on
     def url(self) -> str:
         version = get_latest_version(region=self.region, endpoint="profileicon")
-        return "https://ddragon.leagueoflegends.com/cdn/{version}/img/profileicon/{id}.png".format(version=version, id=self.id)
+        return "https://ddragon.leagueoflegends.com/cdn/{version}/img/profileicon/{id}.png".format(
+            version=version, id=self.id
+        )
 
     @CassiopeiaGhost.property(ProfileIconData)
     @ghost_load_on

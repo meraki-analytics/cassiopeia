@@ -10,7 +10,7 @@ install_requires = [
     "merakicommons>=1.0.10",
     "Pillow",
     "arrow<1.0.0",
-    "requests"
+    "requests",
 ]
 
 # Require python 3.6
@@ -41,5 +41,5 @@ setup(
     packages=find_packages(),
     zip_safe=True,
     install_requires=install_requires,
-    include_package_data=True
+    include_package_data=True,
 )

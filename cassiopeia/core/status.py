@@ -21,7 +21,10 @@ class MessageData(CoreData):
 
     def __call__(self, **kwargs):
         if "translations" in kwargs:
-            self.translations = [TranslationData(**translation) for translation in kwargs.pop("translations")]
+            self.translations = [
+                TranslationData(**translation)
+                for translation in kwargs.pop("translations")
+            ]
         super().__call__(**kwargs)
         return self
 
@@ -41,7 +44,9 @@ class ServiceData(CoreData):
 
     def __call__(self, **kwargs):
         if "incidents" in kwargs:
-            self.incidents = [IncidentData(**incident) for incident in kwargs.pop("incidents")]
+            self.incidents = [
+                IncidentData(**incident) for incident in kwargs.pop("incidents")
+            ]
         super().__call__(**kwargs)
         return self
 
@@ -51,7 +56,9 @@ class ShardStatusData(CoreData):
 
     def __call__(self, **kwargs):
         if "services" in kwargs:
-            self.services = [ServiceData(**service) for service in kwargs.pop("services")]
+            self.services = [
+                ServiceData(**service) for service in kwargs.pop("services")
+            ]
         super().__call__(**kwargs)
         return self
 
@@ -95,7 +102,9 @@ class Message(CassiopeiaObject):
 
     @property
     def translations(self) -> List[Translation]:
-        return SearchableList([Translation(trans) for trans in self._data[MessageData].translations])
+        return SearchableList(
+            [Translation(trans) for trans in self._data[MessageData].translations]
+        )
 
     @property
     def updated(self) -> str:
@@ -127,7 +136,9 @@ class Incident(CassiopeiaObject):
 
     @property
     def updates(self) -> List[Message]:
-        return SearchableList([Message.from_data(message) for message in self._data[IncidentData].updates])
+        return SearchableList(
+            [Message.from_data(message) for message in self._data[IncidentData].updates]
+        )
 
 
 class Service(CassiopeiaObject):
@@ -139,7 +150,9 @@ class Service(CassiopeiaObject):
 
     @property
     def incidents(self) -> List[Incident]:
-        return SearchableList([Incident.from_data(inc) for inc in self._data[ServiceData].incidents])
+        return SearchableList(
+            [Incident.from_data(inc) for inc in self._data[ServiceData].incidents]
+        )
 
     @property
     def name(self) -> str:
@@ -186,7 +199,12 @@ class ShardStatus(CassiopeiaGhost):
     @CassiopeiaGhost.property(ShardStatusData)
     @ghost_load_on
     def services(self) -> List[Service]:
-        return SearchableList([Service.from_data(service) for service in self._data[ShardStatusData].services])
+        return SearchableList(
+            [
+                Service.from_data(service)
+                for service in self._data[ShardStatusData].services
+            ]
+        )
 
     @CassiopeiaGhost.property(ShardStatusData)
     @ghost_load_on

@@ -33,7 +33,9 @@ class VerificationString(CassiopeiaGhost):
         return {"region": self.region, "summoner.id": self.summoner.id}
 
     @classmethod
-    def __get_query_from_kwargs__(cls, *, summoner: Summoner, region: Union[Region, str]) -> dict:
+    def __get_query_from_kwargs__(
+        cls, *, summoner: Summoner, region: Union[Region, str]
+    ) -> dict:
         return {"region": region, "summoner.id": summoner.id}
 
     @lazy_property

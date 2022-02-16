@@ -33,17 +33,17 @@ class Region(Enum):
     @property
     def timezone(self) -> str:
         tzs = {
-            'NA': 'GMT-8',
-            'LAN': 'GMT-7',
-            'LAS': 'GMT-5',
-            'BR': 'GMT-4',
-            'EUW': 'GMT-2',
-            'TR': 'GMT-0',
-            'EUNE': 'GMT+1',
-            'RU': 'GMT+3',
-            'KR': 'GMT+6',
-            'JP': 'GMT+7',
-            'OCE': 'GMT+8',
+            "NA": "GMT-8",
+            "LAN": "GMT-7",
+            "LAS": "GMT-5",
+            "BR": "GMT-4",
+            "EUW": "GMT-2",
+            "TR": "GMT-0",
+            "EUNE": "GMT+1",
+            "RU": "GMT+3",
+            "KR": "GMT+6",
+            "JP": "GMT+7",
+            "OCE": "GMT+8",
         }
         return tzs[self.value]
 
@@ -66,7 +66,9 @@ class Region(Enum):
         if self is Region.north_america:
             return Continent.americas
         if self is Region.oceania:
-            return Continent.americas # OCE content is managed by Americas server (as per https://i.imgur.com/FUyf5kv.png), this breaks OCE queries if set to Asia
+            return (
+                Continent.americas
+            )  # OCE content is managed by Americas server (as per https://i.imgur.com/FUyf5kv.png), this breaks OCE queries if set to Asia
         if self is Region.turkey:
             return Continent.europe
         if self is Region.russia:
@@ -224,9 +226,17 @@ class Tier(Enum):
 
     @staticmethod
     def _order():
-        return {Tier.challenger: 9, Tier.grandmaster: 8, Tier.master: 7,
-                Tier.diamond: 6, Tier.platinum: 5, Tier.gold: 4,
-                Tier.silver: 3, Tier.bronze: 2, Tier.iron: 1}
+        return {
+            Tier.challenger: 9,
+            Tier.grandmaster: 8,
+            Tier.master: 7,
+            Tier.diamond: 6,
+            Tier.platinum: 5,
+            Tier.gold: 4,
+            Tier.silver: 3,
+            Tier.bronze: 2,
+            Tier.iron: 1,
+        }
 
     def __lt__(self, other):
         return self._order()[self] < other._order()[other]
@@ -320,6 +330,7 @@ class Season(Enum):
 
     def start(self, region: Region) -> arrow.Arrow:
         from .core import Patch
+
         if Patch._Patch__patches is None:
             Patch.__load__()
         for patch in Patch._Patch__patches[region]:
@@ -328,6 +339,7 @@ class Season(Enum):
 
     def end(self, region: Region) -> arrow.Arrow:
         from .core import Patch
+
         for patch in reversed(Patch._Patch__patches[region]):
             if patch.season == self:
                 return patch.end
@@ -347,7 +359,7 @@ SEASON_IDS = {
     Season.preseason_8: 10,
     Season.season_8: 11,
     Season.preseason_9: 12,
-    Season.season_9: 13
+    Season.season_9: 13,
 }
 
 
@@ -372,7 +384,7 @@ class Lane(Enum):
             "TOP": Lane.top_lane,
             "JUNGLE": Lane.jungle,
             "UTILITY": Lane.utility,
-            "NONE": None
+            "NONE": None,
         }[string]
 
 
@@ -389,7 +401,7 @@ class Role(Enum):
             "DUO_CARRY": Role.duo_carry,
             "DUO_SUPPORT": Role.duo_support,
             "NONE": Role.none,
-            "SOLO": Role.solo
+            "SOLO": Role.solo,
         }[string]
 
 
@@ -409,7 +421,7 @@ class Position(Enum):
             "JUNGLE": Position.jungle,
             "BOTTOM": Position.bottom,
             "UTILITY": Position.support,
-            "NONE": Position.none
+            "NONE": Position.none,
         }
 
 
@@ -456,6 +468,7 @@ class SummonersRiftArea(Enum):
     @staticmethod
     def from_position(position: "Position") -> "SummonersRiftArea":
         from .core.match import Position
+
         x, y = position.x, position.y
 
         # Load the map if it isn't already loaded
@@ -464,8 +477,9 @@ class SummonersRiftArea(Enum):
         except AttributeError:
             import os
             from PIL import Image
+
             script_dir = os.path.dirname(__file__)
-            rel_path = './resources/summonersRiftAreas.png'
+            rel_path = "./resources/summonersRiftAreas.png"
             map = Image.open(os.path.join(script_dir, rel_path))
             SummonersRiftArea.__map_size = map.size
             map = map.load()
@@ -500,7 +514,7 @@ class SummonersRiftArea(Enum):
             140: SummonersRiftArea.jungle_bot_blue,
             150: SummonersRiftArea.jungle_bot_red,
             160: SummonersRiftArea.river_top,
-            170: SummonersRiftArea.river_bot
+            170: SummonersRiftArea.river_bot,
         }
         return color_mapping.get(rgb, SummonersRiftArea.none)
 
@@ -508,7 +522,7 @@ class SummonersRiftArea(Enum):
 class Tower(Enum):
     OUTER = "OUTER_TURRET"
     INNER = "INNER_TURRET"
-    BASE  = "BASE_TURRET"
+    BASE = "BASE_TURRET"
     NEXUS = "NEXUS_TURRET"
     UNDEFINED = "UNDEFINED_TURRET"
 
@@ -589,14 +603,14 @@ class Queue(Enum):
     guardian_invasion_onslaught = "INVASION_ONSLAUGHT"  # 990
     overcharge = "OVERCHARGE"  # 1000
     all_random_urf_snow = "SNOWURF"  # 1010
-    one_for_all_rapid = "ONEFORALL_RAPID_5x5" # 1020
+    one_for_all_rapid = "ONEFORALL_RAPID_5x5"  # 1020
     odyssey_intro = "ODYSSEY_INTRO"  # 1030
     odyssey_cadet = "ODYSSEY_CADET"  # 1040
     odyssey_crewmember = "ODYSSEY_CREWMEMBER"  # 1050
     odyssey_captain = "ODYSSEY_CAPTAIN"  # 1060
     odyssey_onslaught = "ODYSSEY_ONSLAUGHT"  # 1070
-    ranked_tft = "RANKED_TFT" # 1100
-    normal_tft = "NORMAL_TFT" # 1090
+    ranked_tft = "RANKED_TFT"  # 1100
+    normal_tft = "NORMAL_TFT"  # 1090
     deprecated_nexus_blitz = "NEXUS_BLITZ"  # 1200
     nexus_blitz = "NEXUS_BLITZ"  # 1300
     ultimate_spellbook = "ULTIMATE_SPELLBOOK"  # 1400
@@ -679,14 +693,14 @@ QUEUE_IDS = {
     Queue.guardian_invasion_onslaught: 990,  # Valoran City Park    Star Guardian Invasion: Onslaught games
     Queue.overcharge: 1000,  # Overcharge, PROJECT: Hunters games
     Queue.all_random_urf_snow: 1010,  # Summoner's Rift, Snow ARURF games
-    Queue.one_for_all_rapid: 1020, # Summoner's Rift  One for All games (increased gold and exp gain)
+    Queue.one_for_all_rapid: 1020,  # Summoner's Rift  One for All games (increased gold and exp gain)
     Queue.odyssey_intro: 1030,  # Odyssey: Extraction
     Queue.odyssey_cadet: 1040,  # Odyssey: Extraction
     Queue.odyssey_crewmember: 1050,  # Odyssey: Extraction
     Queue.odyssey_captain: 1060,  # Odyssey: Extraction
     Queue.odyssey_onslaught: 1070,  # Odyssey: Extraction
-    Queue.ranked_tft: 1100, #  Convergence, Ranked Teamfight Tactics games
-    Queue.normal_tft: 1090, #  Convergence, Normal Teamfight Tactics games
+    Queue.ranked_tft: 1100,  #  Convergence, Ranked Teamfight Tactics games
+    Queue.normal_tft: 1090,  #  Convergence, Normal Teamfight Tactics games
     Queue.deprecated_nexus_blitz: 1200,  # Nexus Blitz map    Nexus Blitz Deprecated in patch 9.2 in favor of queueId 1300
     Queue.nexus_blitz: 1300,  # Nexus Blitz map    Nexus Blitz
     Queue.ultimate_spellbook: 1400,  # Summoner's Rift   Ultimate Spellbook
@@ -705,5 +719,5 @@ RANKED_QUEUES = {
     Queue.ranked_solo_fives,  # Summoner's Rift    5v5 Ranked Solo games
     Queue.ranked_flex_fives,  # Summoner's Rift    5v5 Ranked Flex games
     Queue.ranked_flex_threes,  # Twisted Treeline    3v3 Ranked Flex games
-    Queue.ranked_tft, # Convergence  Ranked Teamfight Tactics games
+    Queue.ranked_tft,  # Convergence  Ranked Teamfight Tactics games
 }

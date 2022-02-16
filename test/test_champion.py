@@ -17,7 +17,7 @@ def test_returns_correct_type():
 
 def test_raises_with_unknown_champion():
     with pytest.raises(SearchError):
-        cassiopeia.get_champion('nonexistant champ', region="NA")
+        cassiopeia.get_champion("nonexistant champ", region="NA")
 
 
 def test_champion_and_champions_return_same_data():

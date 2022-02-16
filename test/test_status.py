@@ -1,7 +1,8 @@
 import cassiopeia
 
+
 def test_all_fields_work():
-    status = cassiopeia.get_status('NA')
+    status = cassiopeia.get_status("NA")
     status.hostname
     status.name
     status.region

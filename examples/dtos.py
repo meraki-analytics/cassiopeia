@@ -26,17 +26,21 @@ from cassiopeia import Platform
 def use_pipeline():
     pipeline = cass._get_pipeline()
 
-    summoner_dto = pipeline.get(cass.dto.summoner.SummonerDto,
-                                query={"name": "Kalturi", "platform": Platform.north_america})
+    summoner_dto = pipeline.get(
+        cass.dto.summoner.SummonerDto,
+        query={"name": "Kalturi", "platform": Platform.north_america},
+    )
     print(summoner_dto)
     print(summoner_dto.to_json(indent=2))
     print(summoner_dto.to_bytes())  # Requires `pip install msgpack`
 
     print()
-    match_dto = pipeline.get(cass.dto.match.MatchDto,
-                             query={"id": 3000332065, "platform": Platform.north_america})
+    match_dto = pipeline.get(
+        cass.dto.match.MatchDto,
+        query={"id": 3000332065, "platform": Platform.north_america},
+    )
     print(match_dto.keys())
-    print(match_dto['gameCreation'])
+    print(match_dto["gameCreation"])
 
 
 if __name__ == "__main__":

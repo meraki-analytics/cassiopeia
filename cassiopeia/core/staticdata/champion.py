@@ -7,7 +7,15 @@ from merakicommons.container import searchable, SearchableList, SearchableDictio
 
 from ... import configuration
 from ...data import Resource, Region, Platform, GameMode, Key
-from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, CoreDataList, get_latest_version, ghost_load_on
+from ..common import (
+    CoreData,
+    CassiopeiaObject,
+    CassiopeiaGhost,
+    CassiopeiaLazyList,
+    CoreDataList,
+    get_latest_version,
+    ghost_load_on,
+)
 from .common import ImageData, Image, Sprite
 from .map import Map
 from ...dto.staticdata import champion as dto
@@ -42,17 +50,28 @@ class LevelTipData(CoreData):
 
 
 class ChampionSpellData(CoreData):
-    _renamed = {"vars": "variables", "maxrank": "maxRank", "cooldown": "cooldowns", "cost": "costs", "effect": "effects", "costType": "cost_type", "keyboardKey": "keyboard_key"}
+    _renamed = {
+        "vars": "variables",
+        "maxrank": "maxRank",
+        "cooldown": "cooldowns",
+        "cost": "costs",
+        "effect": "effects",
+        "costType": "cost_type",
+        "keyboardKey": "keyboard_key",
+    }
 
     def __call__(self, *args, **kwargs):
         if "leveltip" in kwargs:
             self.levelUpTips = LevelTipData(**kwargs.pop("leveltip"))
         if "vars" in kwargs:
-            self.variables =  [SpellVarsData(**v) for v in kwargs.pop("vars")]
+            self.variables = [SpellVarsData(**v) for v in kwargs.pop("vars")]
         if "image" in kwargs:
-            self.image =  ImageData(version=kwargs["version"], **kwargs.pop("image"))
+            self.image = ImageData(version=kwargs["version"], **kwargs.pop("image"))
         if "altimages" in kwargs:
-            self.alternative_images = [ImageData(version=kwargs["version"], **alt) for alt in kwargs.pop("altimages")]
+            self.alternative_images = [
+                ImageData(version=kwargs["version"], **alt)
+                for alt in kwargs.pop("altimages")
+            ]
         super().__call__(**kwargs)
         return self
 
@@ -96,7 +115,26 @@ class SkinData(CoreData):
 
 
 class StatsData(CoreData):
-    _renamed = {"armorperlevel": "armorPerLevel", "hpperlevel": "healthPerLevel", "attackdamage": "attackDamage", "mpperlevel": "manaPerLevel", "attackspeed": "attackSpeedOffset", "hp": "health", "hpregenperlevel": "healthRegenPerLevel", "attackspeedperlevel": "percentAttackSpeedPerLevel", "attackrange": "attackRange", "attackdamageperlevel": "attackDamagePerLevel", "mpregenperlevel": "manaRegenPerLevel", "mp": "mana", "spellblockperlevel": "magicResistPerLevel", "crit": "criticalStrikeChance", "mpregen": "manaRegen", "spellblock": "magicResist", "hpregen": "healthRegen", "critperlevel": "criticalStrikeChancePerLevel"}
+    _renamed = {
+        "armorperlevel": "armorPerLevel",
+        "hpperlevel": "healthPerLevel",
+        "attackdamage": "attackDamage",
+        "mpperlevel": "manaPerLevel",
+        "attackspeed": "attackSpeedOffset",
+        "hp": "health",
+        "hpregenperlevel": "healthRegenPerLevel",
+        "attackspeedperlevel": "percentAttackSpeedPerLevel",
+        "attackrange": "attackRange",
+        "attackdamageperlevel": "attackDamagePerLevel",
+        "mpregenperlevel": "manaRegenPerLevel",
+        "mp": "mana",
+        "spellblockperlevel": "magicResistPerLevel",
+        "crit": "criticalStrikeChance",
+        "mpregen": "manaRegen",
+        "spellblock": "magicResist",
+        "hpregen": "healthRegen",
+        "critperlevel": "criticalStrikeChancePerLevel",
+    }
 
 
 class InfoData(CoreData):
@@ -105,11 +143,19 @@ class InfoData(CoreData):
 
 class ChampionData(CoreData):
     _dto_type = dto.ChampionDto
-    _renamed = {"allytips": "allyTips", "enemytips": "enemyTips", "recommended": "recommendedItemsets", "partype": "resource", "included_data": "includedData"}
+    _renamed = {
+        "allytips": "allyTips",
+        "enemytips": "enemyTips",
+        "recommended": "recommendedItemsets",
+        "partype": "resource",
+        "included_data": "includedData",
+    }
 
     def __call__(self, **kwargs):
         if "recommended" in kwargs:
-            self.recommendedItemsets = [RecommendedData(**item) for item in kwargs.pop("recommended")]
+            self.recommendedItemsets = [
+                RecommendedData(**item) for item in kwargs.pop("recommended")
+            ]
         if "info" in kwargs:
             self.info = InfoData(**kwargs.pop("info"))
         if "stats" in kwargs:
@@ -119,14 +165,21 @@ class ChampionData(CoreData):
         if "skins" in kwargs:
             self.skins = [SkinData(**skin) for skin in kwargs.pop("skins")]
         if "passive" in kwargs:
-            version = kwargs.get("version", get_latest_version(kwargs["region"], endpoint="champion"))
+            version = kwargs.get(
+                "version", get_latest_version(kwargs["region"], endpoint="champion")
+            )
             self.passive = PassiveData(version=version, **kwargs.pop("passive"))
         if "spells" in kwargs:
             try:
                 version
             except NameError:
-                version = kwargs.get("version", get_latest_version(kwargs["region"], endpoint="champion"))
-            self.spells = [ChampionSpellData(version=version, **spell) for spell in kwargs.pop("spells")]
+                version = kwargs.get(
+                    "version", get_latest_version(kwargs["region"], endpoint="champion")
+                )
+            self.spells = [
+                ChampionSpellData(version=version, **spell)
+                for spell in kwargs.pop("spells")
+            ]
         super().__call__(**kwargs)
         return self
 
@@ -139,7 +192,14 @@ class ChampionData(CoreData):
 class Champions(CassiopeiaLazyList):
     _data_types = {ChampionListData}
 
-    def __init__(self, *, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+    def __init__(
+        self,
+        *,
+        region: Union[Region, str] = None,
+        version: str = None,
+        locale: str = None,
+        included_data: Set[str] = None
+    ):
         if included_data is None:
             included_data = {"all"}
         if locale is None and region is not None:
@@ -227,7 +287,9 @@ class ChampionSpell(CassiopeiaObject):
     @lazy_property
     def variables(self) -> List[SpellVars]:
         """Contains spell data."""
-        return SearchableList(SpellVars.from_data(v) for v in self._data[ChampionSpellData].variables)
+        return SearchableList(
+            SpellVars.from_data(v) for v in self._data[ChampionSpellData].variables
+        )
 
     @property
     def resource(self) -> Resource:
@@ -292,7 +354,10 @@ class ChampionSpell(CassiopeiaObject):
     @lazy_property
     def alternative_images(self) -> List[Image]:
         """The alternative images for this spell. These won't exist after patch NN, when Riot standardized all images."""
-        return SearchableList(Image.from_data(alt) for alt in self._data[ChampionSpellData].alternativeImages)
+        return SearchableList(
+            Image.from_data(alt)
+            for alt in self._data[ChampionSpellData].alternativeImages
+        )
 
     @property
     def name(self) -> str:
@@ -323,7 +388,12 @@ class ItemSet(CassiopeiaObject):
     @property
     def items(self) -> Dict[Item, int]:
         """A dictionary of items mapped to how many of them are recommended."""
-        return SearchableDictionary({Item(id=item.id, region=self.__region): item.count for item in self._data[BlockData].items})  # TODO Add version; low priority and hopefully it's just never an issue
+        return SearchableDictionary(
+            {
+                Item(id=item.id, region=self.__region): item.count
+                for item in self._data[BlockData].items
+            }
+        )  # TODO Add version; low priority and hopefully it's just never an issue
 
     @property
     def rec_math(self) -> bool:
@@ -336,7 +406,13 @@ class ItemSet(CassiopeiaObject):
         return self._data[BlockData].type
 
 
-@searchable({str: ["item_sets", "map", "title", "mode", "type"], Item: ["item_sets"], GameMode: ["mode"]})
+@searchable(
+    {
+        str: ["item_sets", "map", "title", "mode", "type"],
+        Item: ["item_sets"],
+        GameMode: ["mode"],
+    }
+)
 class RecommendedItems(CassiopeiaObject):
     _data_types = {RecommendedData}
 
@@ -354,19 +430,19 @@ class RecommendedItems(CassiopeiaObject):
     @lazy_property
     def map(self) -> Map:
         """The name of the map these recommendations are for."""
-        convert_shitty_map_name_to_id = {
-            "HA": 12,
-            "CS": 8,
-            "SR": 11,
-            "TT": 10
-        }
+        convert_shitty_map_name_to_id = {"HA": 12, "CS": 8, "SR": 11, "TT": 10}
         id_ = convert_shitty_map_name_to_id[self._data[RecommendedData].map]
-        return Map(id=id_, region=self.__region)  # TODO Add version; low priority and hopefully it's just never an issue
+        return Map(
+            id=id_, region=self.__region
+        )  # TODO Add version; low priority and hopefully it's just never an issue
 
     @lazy_property
     def item_sets(self) -> List[ItemSet]:
         """The recommended item sets."""
-        return SearchableList(ItemSet.from_data(itemset, region=self.__region) for itemset in self._data[RecommendedData].itemSets)
+        return SearchableList(
+            ItemSet.from_data(itemset, region=self.__region)
+            for itemset in self._data[RecommendedData].itemSets
+        )
 
     @property
     def title(self) -> str:
@@ -446,22 +522,30 @@ class Skin(CassiopeiaObject):
     @property
     def splash_url(self) -> str:
         """The skin's splash art url."""
-        return "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/{}_{}.jpg".format(self.champion_key, self.number)
+        return "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/{}_{}.jpg".format(
+            self.champion_key, self.number
+        )
 
     @property
     def loading_image_url(self) -> str:
         """The skin's loading screen image url."""
-        return "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/{}_{}.jpg".format(self.champion_key, self.number)
+        return "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/{}_{}.jpg".format(
+            self.champion_key, self.number
+        )
 
     @lazy_property
     def splash(self) -> PILImage:
         """The skin's splash art."""
-        return configuration.settings.pipeline.get(PILImage, query={"url": self.splash_url})
+        return configuration.settings.pipeline.get(
+            PILImage, query={"url": self.splash_url}
+        )
 
     @lazy_property
     def loading_image(self) -> PILImage:
         """The skin's loading screen image."""
-        return configuration.settings.pipeline.get(PILImage, query={"url": self.loading_image_url})
+        return configuration.settings.pipeline.get(
+            PILImage, query={"url": self.loading_image_url}
+        )
 
 
 class Stats(CassiopeiaObject):
@@ -572,11 +656,29 @@ class Info(CassiopeiaObject):
         return self._data[InfoData].magic
 
 
-@searchable({str: ["name", "key", "region", "platform", "locale", "tags"], int: ["id"], Region: ["region"], Platform: ["platform"], bool: ["free_to_play"]})
+@searchable(
+    {
+        str: ["name", "key", "region", "platform", "locale", "tags"],
+        int: ["id"],
+        Region: ["region"],
+        Platform: ["platform"],
+        bool: ["free_to_play"],
+    }
+)
 class Champion(CassiopeiaGhost):
     _data_types = (ChampionData, ChampionReleaseData, ChampionRatesData)
 
-    def __init__(self, *, id: int = None, name: str = None, key: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+    def __init__(
+        self,
+        *,
+        id: int = None,
+        name: str = None,
+        key: str = None,
+        region: Union[Region, str] = None,
+        version: str = None,
+        locale: str = None,
+        included_data: Set[str] = None
+    ):
         if included_data is None:
             included_data = {"all"}
         if locale is None and region is not None:
@@ -593,7 +695,13 @@ class Champion(CassiopeiaGhost):
         super().__init__(**kwargs)
 
     def __get_query__(self):
-        query = {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
+        query = {
+            "region": self.region,
+            "platform": self.platform,
+            "version": self.version,
+            "locale": self.locale,
+            "includedData": self.included_data,
+        }
         if hasattr(self._data[ChampionData], "id"):
             query["id"] = self._data[ChampionData].id
         if hasattr(self._data[ChampionData], "name"):
@@ -605,10 +713,14 @@ class Champion(CassiopeiaGhost):
             return False
         s = {}
         o = {}
-        if hasattr(self._data[ChampionData], "id"): s["id"] = self.id
-        if hasattr(other._data[ChampionData], "id"): o["id"] = other.id
-        if hasattr(self._data[ChampionData], "name"): s["name"] = self.name
-        if hasattr(other._data[ChampionData], "name"): o["name"] = other.name
+        if hasattr(self._data[ChampionData], "id"):
+            s["id"] = self.id
+        if hasattr(other._data[ChampionData], "id"):
+            o["id"] = other.id
+        if hasattr(self._data[ChampionData], "name"):
+            s["name"] = self.name
+        if hasattr(other._data[ChampionData], "name"):
+            o["name"] = other.name
         if any(s.get(key, "s") == o.get(key, "o") for key in s):
             return True
         else:
@@ -622,7 +734,9 @@ class Champion(CassiopeiaGhost):
             id_ = self.id
         if hasattr(self._data[ChampionData], "name"):
             name = self.name
-        return "Champion(name='{name}', id={id_}, region='{region}')".format(name=name, id_=id_, region=region.value)
+        return "Champion(name='{name}', id={id_}, region='{region}')".format(
+            name=name, id_=id_, region=region.value
+        )
 
     __hash__ = CassiopeiaGhost.__hash__
 
@@ -736,7 +850,10 @@ class Champion(CassiopeiaGhost):
     @lazy
     def recommended_itemsets(self) -> List[RecommendedItems]:
         """The champion's recommended itemsets."""
-        return SearchableList(RecommendedItems.from_data(item, region=self.region) for item in self._data[ChampionData].recommendedItemsets)
+        return SearchableList(
+            RecommendedItems.from_data(item, region=self.region)
+            for item in self._data[ChampionData].recommendedItemsets
+        )
 
     @CassiopeiaGhost.property(ChampionData)
     @ghost_load_on
@@ -792,6 +909,7 @@ class Champion(CassiopeiaGhost):
     def free_to_play(self) -> bool:
         """Whether or not the champion is currently free to play."""
         from ..champion import ChampionRotation
+
         rotation = ChampionRotation(region=self.region)
         for champ in rotation.free_champions:
             if self.id == champ.id:
@@ -803,6 +921,7 @@ class Champion(CassiopeiaGhost):
     def free_to_play_new_players(self) -> bool:
         """Whether or not the champion is currently free to play for new players."""
         from ..champion import ChampionRotation
+
         rotation = ChampionRotation(region=self.region)
         for champ in rotation.free_champions_for_new_players:
             if self.id == champ.id:
@@ -823,7 +942,7 @@ class Champion(CassiopeiaGhost):
     @ghost_load_on
     @lazy
     def play_rates(self) -> SearchableDictionary:
-       return self._data[ChampionRatesData].playRates
+        return self._data[ChampionRatesData].playRates
 
     @CassiopeiaGhost.property(ChampionRatesData)
     @ghost_load_on

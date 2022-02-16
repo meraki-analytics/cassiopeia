@@ -26,6 +26,7 @@ def ghost_load_on(method):
 
 def get_latest_version(region: Union[Region, str], endpoint: Optional[str]):
     from .staticdata.realm import Realms
+
     if endpoint is not None:
         return Realms(region=region).latest_versions[endpoint]
     else:
@@ -49,7 +50,9 @@ class CoreData(object):
 
     def to_dict(self):
         d = {}
-        attrs = {attrname for attrname in dir(self)} - {attrname for attrname in dir(self.__class__)}
+        attrs = {attrname for attrname in dir(self)} - {
+            attrname for attrname in dir(self.__class__)
+        }
         for attr in attrs:
             v = getattr(self, attr)
             if isinstance(v, CoreData):
@@ -85,7 +88,7 @@ class CassiopeiaObject(object):
         # Note: Dto names are not allowed to be passed in.
         self._data = {_type: None for _type in self._data_types}
         # Re-implement __call__ code here so that __call__ can be overridden in subclasses
-        results = {_type: {}  for _type in self._data_types}
+        results = {_type: {} for _type in self._data_types}
         found = False
         for key, value in kwargs.items():
             # We don't know which type to put the piece of data under, so put it in any type that supports this key
@@ -95,7 +98,11 @@ class CassiopeiaObject(object):
                     found = True
             if not found:
                 # The user passed in a value that we don't know anything about -- raise a warning.
-                LOGGER.warning("When initializing {}, key `{}` is not in type(s) {}. Not set.".format(self.__class__.__name__, key, self._data_types))
+                LOGGER.warning(
+                    "When initializing {}, key `{}` is not in type(s) {}. Not set.".format(
+                        self.__class__.__name__, key, self._data_types
+                    )
+                )
 
         # Now that we've parsed the data and know where to put it all, we can update our data.
         for _type, insert_this in results.items():
@@ -123,8 +130,11 @@ class CassiopeiaObject(object):
         self = cls()
 
         if data.__class__ not in self._data_types:
-            raise TypeError("Wrong data type '{}' passed to '{}.from_data'".format(
-                data.__class__.__name__, self.__class__.__name__))
+            raise TypeError(
+                "Wrong data type '{}' passed to '{}.from_data'".format(
+                    data.__class__.__name__, self.__class__.__name__
+                )
+            )
         self._data[data.__class__] = data
         return self
 
@@ -137,7 +147,7 @@ class CassiopeiaObject(object):
                 champion(champData={"tags"}).tags  # only pulls the tag data
         """
         # Update underlying data and deconstruct any Enums the user passed in.
-        results = {_type: {}  for _type in self._data_types}
+        results = {_type: {} for _type in self._data_types}
         found = False
         for key, value in kwargs.items():
             # We don't know which type to put the piece of data under, so put it in any type that supports this key
@@ -147,7 +157,11 @@ class CassiopeiaObject(object):
                     found = True
             if not found:
                 # The user passed in a value that we don't know anything about -- raise a warning.
-                LOGGER.warning("When initializing {}, key `{}` is not in type(s) {}. Not set.".format(self.__class__.__name__, key, self._data_types))
+                LOGGER.warning(
+                    "When initializing {}, key `{}` is not in type(s) {}. Not set.".format(
+                        self.__class__.__name__, key, self._data_types
+                    )
+                )
 
         # Now that we've parsed the data and know where to put it all, we can update our data.
         for _type, insert_this in results.items():
@@ -175,7 +189,11 @@ class GetFromPipeline(type):
     def __call__(cls: "CassiopeiaPipelineObject", *args, **kwargs):
         pipeline = configuration.settings.pipeline
         query = cls.__get_query_from_kwargs__(**kwargs)
-        if hasattr(cls, "version") and query.get("version", None) is None and cls.__name__ not in ["Realms", "Match"]:
+        if (
+            hasattr(cls, "version")
+            and query.get("version", None) is None
+            and cls.__name__ not in ["Realms", "Match"]
+        ):
             query["version"] = get_latest_version(region=query["region"], endpoint=None)
         return pipeline.get(cls, query=query)
 
@@ -225,7 +243,9 @@ class CassiopeiaGhost(CassiopeiaPipelineObject, Ghost):
             return self
         self.__load__()
         for load_group in load_groups:
-            self._Ghost__set_loaded(load_group)  # __load__ doesn't trigger __set_loaded.
+            self._Ghost__set_loaded(
+                load_group
+            )  # __load__ doesn't trigger __set_loaded.
         return self
 
     def __load__(self, load_group: CoreData = None, load_groups: Set = None) -> None:
@@ -241,9 +261,17 @@ class CassiopeiaGhost(CassiopeiaPipelineObject, Ghost):
             if self._Ghost__is_loaded(load_group):
                 raise ValueError("object has already been loaded.")
             query = self.__get_query__()
-            if hasattr(self.__class__, "version") and "version" not in query and self.__class__.__name__ not in ["Realms", "Match"]:
-                query["version"] = get_latest_version(region=query["region"], endpoint=None)
-            data = configuration.settings.pipeline.get(type=self._load_types[load_group], query=query)
+            if (
+                hasattr(self.__class__, "version")
+                and "version" not in query
+                and self.__class__.__name__ not in ["Realms", "Match"]
+            ):
+                query["version"] = get_latest_version(
+                    region=query["region"], endpoint=None
+                )
+            data = configuration.settings.pipeline.get(
+                type=self._load_types[load_group], query=query
+            )
             self.__load_hook__(load_group, data)
 
     @property
@@ -255,7 +283,9 @@ class CassiopeiaGhost(CassiopeiaPipelineObject, Ghost):
         return cls
 
     @classmethod
-    def from_data(cls, data: CoreData, loaded_groups: Optional[Set[Type[CoreData]]] = None):
+    def from_data(
+        cls, data: CoreData, loaded_groups: Optional[Set[Type[CoreData]]] = None
+    ):
         assert data is not None
         # Manually skip the CheckCache (well, all metaclass' __call__s) for ghost objects if they are
         # created via this constructor.
@@ -264,8 +294,11 @@ class CassiopeiaGhost(CassiopeiaPipelineObject, Ghost):
         # Make spots for the data and put it in
         self._data = {_type: None for _type in self._data_types}
         if data.__class__ not in self._data_types:
-            raise TypeError("Wrong data type '{}' passed to '{}.from_data'".format(
-                data.__class__.__name__, self.__class__.__name__))
+            raise TypeError(
+                "Wrong data type '{}' passed to '{}.from_data'".format(
+                    data.__class__.__name__, self.__class__.__name__
+                )
+            )
         self._data[data.__class__] = data
 
         # Set as loaded
@@ -279,7 +312,9 @@ class CassiopeiaGhost(CassiopeiaPipelineObject, Ghost):
 
     def __load_hook__(self, load_group: CoreData, data: CoreData) -> None:
         if not isinstance(data, CoreData):
-            raise TypeError("expected subclass of CoreData, got {cls}".format(cls=data.__class__))
+            raise TypeError(
+                "expected subclass of CoreData, got {cls}".format(cls=data.__class__)
+            )
         self._data[load_group] = data
 
 
@@ -291,9 +326,11 @@ class CassiopeiaLazyList(SearchableLazyList, CassiopeiaPipelineObject):
             if len(args) == 1 and isinstance(args[0], types.GeneratorType):
                 generator = args[0]
             else:
+
                 def generator(*args):
                     for arg in args:
                         yield arg
+
                 generator = generator(args)
         SearchableLazyList.__init__(self, generator)
         # Something feels very wrong; this is meant to work with MatchHistory.from_generator

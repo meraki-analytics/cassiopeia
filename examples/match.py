@@ -12,7 +12,11 @@ def print_newest_match(name: str, region: str):
 
     # A MatchHistory is a lazy list, meaning it's elements only get loaded as-needed.
 
-    match_history = cass.get_match_history(continent=summoner.region.continent, puuid=summoner.puuid, queue=Queue.ranked_solo_fives)
+    match_history = cass.get_match_history(
+        continent=summoner.region.continent,
+        puuid=summoner.puuid,
+        queue=Queue.ranked_solo_fives,
+    )
     # match_history = summoner.match_history
 
     # Load the entire match history by iterating over all its elements so that we know how long it is.
@@ -20,7 +24,9 @@ def print_newest_match(name: str, region: str):
     # we need to know what version of the static data the champion should have. To avoid pulling many different
     # static data versions, we will instead create a {champion_id -> champion_name} mapping and just access the champion's
     # ID from the match data (which it provides directly).
-    champion_id_to_name_mapping = {champion.id: champion.name for champion in cass.get_champions(region=region)}
+    champion_id_to_name_mapping = {
+        champion.id: champion.name for champion in cass.get_champions(region=region)
+    }
     played_champions = Counter()
     for match in match_history:
         champion_id = match.participants[summoner].champion.id
@@ -35,22 +41,48 @@ def print_newest_match(name: str, region: str):
     print()
 
     match = match_history[0]
-    print('Match ID:', match.id)
+    print("Match ID:", match.id)
 
     p = match.participants[summoner]
-    print("\nSince the match was created from a matchref, we only know one participant:")
-    #print(p.summoner.name, 'playing', p.champion.name)
-    print(p.summoner.region, p.summoner.account_id, p.summoner.name, p.summoner.id, p.champion.id)
+    print(
+        "\nSince the match was created from a matchref, we only know one participant:"
+    )
+    # print(p.summoner.name, 'playing', p.champion.name)
+    print(
+        p.summoner.region,
+        p.summoner.account_id,
+        p.summoner.name,
+        p.summoner.id,
+        p.champion.id,
+    )
 
     print("\nNow pull the full match data by iterating over all the participants:")
     for p in match.participants:
-        #print(p.summoner.name, 'playing', p.champion.name)
-        print(p.summoner.region, p.summoner.account_id, p.summoner.name, p.summoner.id, p.champion.id, p.stats.win, p.runes.keystone.name)
+        # print(p.summoner.name, 'playing', p.champion.name)
+        print(
+            p.summoner.region,
+            p.summoner.account_id,
+            p.summoner.name,
+            p.summoner.id,
+            p.champion.id,
+            p.stats.win,
+            p.runes.keystone.name,
+        )
 
-    print("\nIterate over all the participants again and note that the data is not repulled:")
+    print(
+        "\nIterate over all the participants again and note that the data is not repulled:"
+    )
     for p in match.participants:
-        #print(p.summoner.name, 'playing', p.champion.name)
-        print(p.summoner.region, p.summoner.account_id, p.summoner.name, p.summoner.id, p.champion.id, p.stats.win, p.runes.keystone.name)
+        # print(p.summoner.name, 'playing', p.champion.name)
+        print(
+            p.summoner.region,
+            p.summoner.account_id,
+            p.summoner.name,
+            p.summoner.id,
+            p.champion.id,
+            p.stats.win,
+            p.runes.keystone.name,
+        )
 
     print("\nBlue team won?", match.blue_team.win)
     print("Red team won?", match.red_team.win)

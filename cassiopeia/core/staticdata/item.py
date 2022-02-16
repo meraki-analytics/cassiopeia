@@ -4,7 +4,15 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList
 
 from ...data import Region, Platform
-from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CoreDataList, get_latest_version, CassiopeiaLazyList, ghost_load_on
+from ..common import (
+    CoreData,
+    CassiopeiaObject,
+    CassiopeiaGhost,
+    CoreDataList,
+    get_latest_version,
+    CassiopeiaLazyList,
+    ghost_load_on,
+)
 from .common import ImageData, Sprite, Image
 from .map import Map
 from ...dto.staticdata import item as dto
@@ -25,11 +33,46 @@ class ItemTreeData(CoreData):
 
 
 class ItemStatsData(CoreData):
-    _renamed = {"PercentCritDamageMod": "percentCriticalStrikeDamage", "PercentSpellBlockMod": "percentMagicResist", "PercentHPRegenMod": "percentHealthRegen", "PercentMovementSpeedMod": "percentMovespeed", "FlatSpellBlockMod": "magicResist", "FlatCritDamageMod": "criticalStrikeDamage", "FlatEnergyPoolMod": "energy", "PercentLifeStealMod": "lifeSteal", "FlatMPPoolMod": "mana", "FlatMovementSpeedMod": "movespeed", "PercentAttackSpeedMod": "percentAttackSpeed", "FlatBlockMod": "block", "PercentBlockMod": "percentBlock", "FlatEnergyRegenMod": "energyRegen", "PercentSpellVampMod": "spellVamp", "FlatMPRegenMod": "manaRegen", "PercentDodgeMod": "dodge", "FlatAttackSpeedMod": "attackSpeed", "FlatArmorMod": "armor", "FlatHPRegenMod": "healthRegen", "PercentMagicDamageMod": "percentAbilityPower", "PercentMPPoolMod": "percentMana", "FlatMagicDamageMod": "abilityPower", "PercentMPRegenMod": "percentManaRegen", "PercentPhysicalDamageMod": "percentAttackDamage", "FlatPhysicalDamageMod": "attackDamage", "PercentHPPoolMod": "percentHealth", "PercentArmorMod": "percentArmor", "PercentEXPBonus": "percentExpBonus", "FlatHPPoolMod": "health", "FlatCritChanceMod": "criticalStrikeChance", "FlatEXPBonus": "expBonus"}
+    _renamed = {
+        "PercentCritDamageMod": "percentCriticalStrikeDamage",
+        "PercentSpellBlockMod": "percentMagicResist",
+        "PercentHPRegenMod": "percentHealthRegen",
+        "PercentMovementSpeedMod": "percentMovespeed",
+        "FlatSpellBlockMod": "magicResist",
+        "FlatCritDamageMod": "criticalStrikeDamage",
+        "FlatEnergyPoolMod": "energy",
+        "PercentLifeStealMod": "lifeSteal",
+        "FlatMPPoolMod": "mana",
+        "FlatMovementSpeedMod": "movespeed",
+        "PercentAttackSpeedMod": "percentAttackSpeed",
+        "FlatBlockMod": "block",
+        "PercentBlockMod": "percentBlock",
+        "FlatEnergyRegenMod": "energyRegen",
+        "PercentSpellVampMod": "spellVamp",
+        "FlatMPRegenMod": "manaRegen",
+        "PercentDodgeMod": "dodge",
+        "FlatAttackSpeedMod": "attackSpeed",
+        "FlatArmorMod": "armor",
+        "FlatHPRegenMod": "healthRegen",
+        "PercentMagicDamageMod": "percentAbilityPower",
+        "PercentMPPoolMod": "percentMana",
+        "FlatMagicDamageMod": "abilityPower",
+        "PercentMPRegenMod": "percentManaRegen",
+        "PercentPhysicalDamageMod": "percentAttackDamage",
+        "FlatPhysicalDamageMod": "attackDamage",
+        "PercentHPPoolMod": "percentHealth",
+        "PercentArmorMod": "percentArmor",
+        "PercentEXPBonus": "percentExpBonus",
+        "FlatHPPoolMod": "health",
+        "FlatCritChanceMod": "criticalStrikeChance",
+        "FlatEXPBonus": "expBonus",
+    }
 
     def __call__(self, **kwargs):
         if "flatCritChanceMode" in kwargs and "percentCritChanceMod" in kwargs:
-            self.critical_strike_chance =  kwargs.pop("flatCritChanceMod") + kwargs.pop("percentCritChanceMod")
+            self.critical_strike_chance = kwargs.pop("flatCritChanceMod") + kwargs.pop(
+                "percentCritChanceMod"
+            )
         super().__call__(**kwargs)
         return self
 
@@ -40,7 +83,14 @@ class GoldData(CoreData):
 
 class ItemData(CoreData):
     _dto_type = dto.ItemDto
-    _renamed = {"hideFromAll": "hide", "colloq": "keywords", "requiredChampion": "champion", "depth": "tier", "stacks": "max_stacks", "included_data": "includedData"}
+    _renamed = {
+        "hideFromAll": "hide",
+        "colloq": "keywords",
+        "requiredChampion": "champion",
+        "depth": "tier",
+        "stacks": "max_stacks",
+        "included_data": "includedData",
+    }
 
     def __call__(self, **kwargs):
         if "image" in kwargs:
@@ -54,7 +104,9 @@ class ItemData(CoreData):
         if "stats" in kwargs:
             self.stats = ItemStatsData(**kwargs.pop("stats"))
         if "colloq" in kwargs and kwargs["colloq"] is not None:
-            self.keywords = set(kw for kw in kwargs.pop("colloq").split(";") if kw != "")
+            self.keywords = set(
+                kw for kw in kwargs.pop("colloq").split(";") if kw != ""
+            )
         if "maps" in kwargs:
             """List of maps where this item is available."""
             self.maps = [int(m) for m, tf in kwargs.pop("maps").items() if tf]
@@ -70,7 +122,14 @@ class ItemData(CoreData):
 class Items(CassiopeiaLazyList):
     _data_types = {ItemListData}
 
-    def __init__(self, *, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+    def __init__(
+        self,
+        *,
+        region: Union[Region, str] = None,
+        version: str = None,
+        locale: str = None,
+        included_data: Set[str] = None
+    ):
         if included_data is None:
             included_data = {"all"}
         if locale is None and region is not None:
@@ -260,11 +319,37 @@ class Gold(CassiopeiaObject):
         return self._data[GoldData].purchasable
 
 
-@searchable({str: ["name", "region", "platform", "locale", "keywords", "maps", "tags", "tier"], int: ["id"], Region: ["region"], Platform: ["platform"], Map: ["maps"]})
+@searchable(
+    {
+        str: [
+            "name",
+            "region",
+            "platform",
+            "locale",
+            "keywords",
+            "maps",
+            "tags",
+            "tier",
+        ],
+        int: ["id"],
+        Region: ["region"],
+        Platform: ["platform"],
+        Map: ["maps"],
+    }
+)
 class Item(CassiopeiaGhost):
     _data_types = {ItemData}
 
-    def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+    def __init__(
+        self,
+        *,
+        id: int = None,
+        name: str = None,
+        region: Union[Region, str] = None,
+        version: str = None,
+        locale: str = None,
+        included_data: Set[str] = None
+    ):
         if included_data is None:
             included_data = {"all"}
         if locale is None and region is not None:
@@ -279,7 +364,13 @@ class Item(CassiopeiaGhost):
         super().__init__(**kwargs)
 
     def __get_query__(self):
-        query = {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
+        query = {
+            "region": self.region,
+            "platform": self.platform,
+            "version": self.version,
+            "locale": self.locale,
+            "includedData": self.included_data,
+        }
         if hasattr(self._data[ItemData], "id"):
             query["id"] = self._data[ItemData].id
         if hasattr(self._data[ItemData], "name"):
@@ -291,10 +382,14 @@ class Item(CassiopeiaGhost):
             return False
         s = {}
         o = {}
-        if hasattr(self._data[ItemData], "id"): s["id"] = self.id
-        if hasattr(other._data[ItemData], "id"): o["id"] = other.id
-        if hasattr(self._data[ItemData], "name"): s["name"] = self.name
-        if hasattr(other._data[ItemData], "name"): o["name"] = other.name
+        if hasattr(self._data[ItemData], "id"):
+            s["id"] = self.id
+        if hasattr(other._data[ItemData], "id"):
+            o["id"] = other.id
+        if hasattr(self._data[ItemData], "name"):
+            s["name"] = self.name
+        if hasattr(other._data[ItemData], "name"):
+            o["name"] = other.name
         if any(s.get(key, "s") == o.get(key, "o") for key in s):
             return True
         else:
@@ -308,7 +403,9 @@ class Item(CassiopeiaGhost):
             id_ = self.id
         if hasattr(self._data[ItemData], "name"):
             name = self.name
-        return "Item(name='{name}', id={id_}, region='{region}')".format(name=name, id_=id_, region=region.value)
+        return "Item(name='{name}', id={id_}, region='{region}')".format(
+            name=name, id_=id_, region=region.value
+        )
 
     __hash__ = CassiopeiaGhost.__hash__
 
@@ -372,7 +469,12 @@ class Item(CassiopeiaGhost):
     @ghost_load_on
     def builds_into(self) -> List["Item"]:
         if hasattr(self._data[ItemData], "buildsInto"):
-            return SearchableList([Item(id=id_, region=self.region) for id_ in self._data[ItemData].buildsInto])
+            return SearchableList(
+                [
+                    Item(id=id_, region=self.region)
+                    for id_ in self._data[ItemData].buildsInto
+                ]
+            )
         else:
             return SearchableList([])
 
@@ -380,7 +482,12 @@ class Item(CassiopeiaGhost):
     @ghost_load_on
     def builds_from(self) -> List["Item"]:
         if hasattr(self._data[ItemData], "buildsFrom"):
-            return SearchableList([Item(id=id_, region=self.region) for id_ in self._data[ItemData].buildsFrom])
+            return SearchableList(
+                [
+                    Item(id=id_, region=self.region)
+                    for id_ in self._data[ItemData].buildsFrom
+                ]
+            )
         else:
             return SearchableList([])
 
@@ -398,7 +505,10 @@ class Item(CassiopeiaGhost):
     @ghost_load_on
     @lazy
     def maps(self) -> List[Map]:
-        return [Map(id=id_, region=self.region, version=self.version) for id_ in self._data[ItemData].maps]
+        return [
+            Map(id=id_, region=self.region, version=self.version)
+            for id_ in self._data[ItemData].maps
+        ]
 
     @CassiopeiaGhost.property(ItemData)
     @ghost_load_on
@@ -419,7 +529,10 @@ class Item(CassiopeiaGhost):
     @ghost_load_on
     def champion(self) -> "Champion":
         from .champion import Champion
-        return Champion(name=self._data[ItemData].champion, region=self.region, version=self.verion)
+
+        return Champion(
+            name=self._data[ItemData].champion, region=self.region, version=self.verion
+        )
 
     @CassiopeiaGhost.property(ItemData)
     @ghost_load_on

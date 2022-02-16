@@ -1,9 +1,19 @@
 from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
 
-from datapipelines import DataSource, PipelineContext, Query, NotFoundError, validate_query
+from datapipelines import (
+    DataSource,
+    PipelineContext,
+    Query,
+    NotFoundError,
+    validate_query,
+)
 from .common import KernelSource, APINotFoundError
 from ...data import Platform
-from ...dto.championmastery import ChampionMasteryDto, ChampionMasteryListDto, ChampionMasteryScoreDto
+from ...dto.championmastery import (
+    ChampionMasteryDto,
+    ChampionMasteryListDto,
+    ChampionMasteryScoreDto,
+)
 from ..uniquekeys import convert_region_to_platform
 
 T = TypeVar("T")
@@ -11,23 +21,41 @@ T = TypeVar("T")
 
 class ChampionMasteryAPI(KernelSource):
     @DataSource.dispatch
-    def get(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> T:
+    def get(
+        self,
+        type: Type[T],
+        query: MutableMapping[str, Any],
+        context: PipelineContext = None,
+    ) -> T:
         pass
 
     @DataSource.dispatch
-    def get_many(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> Iterable[T]:
+    def get_many(
+        self,
+        type: Type[T],
+        query: MutableMapping[str, Any],
+        context: PipelineContext = None,
+    ) -> Iterable[T]:
         pass
 
-    _validate_get_champion_mastery_query = Query. \
-        has("platform").as_(Platform).also. \
-        has("summoner.id").as_(str).also. \
-        has("champion.id").as_(int)
+    _validate_get_champion_mastery_query = (
+        Query.has("platform")
+        .as_(Platform)
+        .also.has("summoner.id")
+        .as_(str)
+        .also.has("champion.id")
+        .as_(int)
+    )
 
     @get.register(ChampionMasteryDto)
     @validate_query(_validate_get_champion_mastery_query, convert_region_to_platform)
-    def get_champion_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionMasteryDto:
+    def get_champion_mastery(
+        self, query: MutableMapping[str, Any], context: PipelineContext = None
+    ) -> ChampionMasteryDto:
         parameters = {"platform": query["platform"].value}
-        endpoint = "lol/champion-mastery/v4/champion-masteries/by-summoner/{summonerId}/by-champion/{championId}".format(summonerId=query["summoner.id"], championId=query["champion.id"])
+        endpoint = "lol/champion-mastery/v4/champion-masteries/by-summoner/{summonerId}/by-champion/{championId}".format(
+            summonerId=query["summoner.id"], championId=query["champion.id"]
+        )
         try:
             data = self._get(endpoint=endpoint, parameters=parameters)
         except APINotFoundError as error:
@@ -37,31 +65,43 @@ class ChampionMasteryAPI(KernelSource):
         data["summonerId"] = query["summoner.id"]
         return ChampionMasteryDto(data)
 
-    _validate_get_many_champion_mastery_query = Query. \
-        has("platform").as_(Platform).also. \
-        has("summonerId").as_(str).also. \
-        has("championIds").as_(Iterable)
+    _validate_get_many_champion_mastery_query = (
+        Query.has("platform")
+        .as_(Platform)
+        .also.has("summonerId")
+        .as_(str)
+        .also.has("championIds")
+        .as_(Iterable)
+    )
 
     @get_many.register(ChampionMasteryDto)
-    @validate_query(_validate_get_many_champion_mastery_query, convert_region_to_platform)
-    def get_many_champion_mastery(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionMasteryDto, None, None]:
+    @validate_query(
+        _validate_get_many_champion_mastery_query, convert_region_to_platform
+    )
+    def get_many_champion_mastery(
+        self, query: MutableMapping[str, Any], context: PipelineContext = None
+    ) -> Generator[ChampionMasteryDto, None, None]:
         parameters = {"platform": query["platform"].value}
-        endpoint = "lol/champion-mastery/v4/champion-masteries/by-summoner/{summonerId}".format(summonerId=query["summonerId"])
+        endpoint = "lol/champion-mastery/v4/champion-masteries/by-summoner/{summonerId}".format(
+            summonerId=query["summonerId"]
+        )
         try:
             data = self._get(endpoint=endpoint, parameters=parameters)
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
-        masteries = {
-            mastery["championId"]: mastery for mastery in data
-        }
+        masteries = {mastery["championId"]: mastery for mastery in data}
 
         def generator():
             for id in query["championIds"]:
                 try:
                     mastery = masteries[id]
                 except KeyError as error:
-                    raise NotFoundError("Summoner has no mastery on champion with id \"{id}\"".format(id=id)) from error
+                    raise NotFoundError(
+                        'Summoner has no mastery on champion with id "{id}"'.format(
+                            id=id
+                        )
+                    ) from error
 
                 mastery["summonerId"] = query["summonerId"]
                 mastery["region"] = query["platform"].region.value
@@ -69,15 +109,21 @@ class ChampionMasteryAPI(KernelSource):
 
         return generator()
 
-    _validate_get_champion_mastery_list_query = Query. \
-        has("platform").as_(Platform).also. \
-        has("summoner.id").as_(str)
+    _validate_get_champion_mastery_list_query = (
+        Query.has("platform").as_(Platform).also.has("summoner.id").as_(str)
+    )
 
     @get.register(ChampionMasteryListDto)
-    @validate_query(_validate_get_champion_mastery_list_query, convert_region_to_platform)
-    def get_champion_mastery_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionMasteryListDto:
+    @validate_query(
+        _validate_get_champion_mastery_list_query, convert_region_to_platform
+    )
+    def get_champion_mastery_list(
+        self, query: MutableMapping[str, Any], context: PipelineContext = None
+    ) -> ChampionMasteryListDto:
         parameters = {"platform": query["platform"].value}
-        endpoint = "lol/champion-mastery/v4/champion-masteries/by-summoner/{summonerId}".format(summonerId=query["summoner.id"])
+        endpoint = "lol/champion-mastery/v4/champion-masteries/by-summoner/{summonerId}".format(
+            summonerId=query["summoner.id"]
+        )
         try:
             data = self._get(endpoint=endpoint, parameters=parameters)
         except APINotFoundError as error:
@@ -85,76 +131,104 @@ class ChampionMasteryAPI(KernelSource):
 
         for cm in data:
             cm["region"] = query["region"]
-        return ChampionMasteryListDto({
-            "masteries": data,
-            "summonerId": query["summoner.id"],
-            "region": query["platform"].region.value
-        })
+        return ChampionMasteryListDto(
+            {
+                "masteries": data,
+                "summonerId": query["summoner.id"],
+                "region": query["platform"].region.value,
+            }
+        )
 
-    _validate_get_many_champion_mastery_list_query = Query. \
-        has("platform").as_(Platform).also. \
-        has("summoner.ids").as_(Iterable)
+    _validate_get_many_champion_mastery_list_query = (
+        Query.has("platform").as_(Platform).also.has("summoner.ids").as_(Iterable)
+    )
 
     @get_many.register(ChampionMasteryListDto)
-    @validate_query(_validate_get_many_champion_mastery_list_query, convert_region_to_platform)
-    def get_many_champion_mastery_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionMasteryListDto, None, None]:
+    @validate_query(
+        _validate_get_many_champion_mastery_list_query, convert_region_to_platform
+    )
+    def get_many_champion_mastery_list(
+        self, query: MutableMapping[str, Any], context: PipelineContext = None
+    ) -> Generator[ChampionMasteryListDto, None, None]:
         def generator():
             parameters = {"platform": query["platform"].value}
             for summoner_id in query["summoner.ids"]:
-                endpoint = "lol/champion-mastery/v4/champion-masteries/by-summoner/{summonerId}".format(summonerId=summoner_id)
+                endpoint = "lol/champion-mastery/v4/champion-masteries/by-summoner/{summonerId}".format(
+                    summonerId=summoner_id
+                )
                 try:
                     data = self._get(endpoint=endpoint, parameters=parameters)
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
-                yield ChampionMasteryListDto({
-                    "masteries": data,
-                    "summonerId": summoner_id,
-                    "region": query["platform"].region.value
-                })
+                yield ChampionMasteryListDto(
+                    {
+                        "masteries": data,
+                        "summonerId": summoner_id,
+                        "region": query["platform"].region.value,
+                    }
+                )
 
         return generator()
 
-    _validate_get_champion_mastery_score_query = Query. \
-        has("platform").as_(Platform).also. \
-        has("summoner.id").as_(str)
+    _validate_get_champion_mastery_score_query = (
+        Query.has("platform").as_(Platform).also.has("summoner.id").as_(str)
+    )
 
     @get.register(ChampionMasteryScoreDto)
-    @validate_query(_validate_get_champion_mastery_score_query, convert_region_to_platform)
-    def get_champion_mastery_score(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionMasteryScoreDto:
+    @validate_query(
+        _validate_get_champion_mastery_score_query, convert_region_to_platform
+    )
+    def get_champion_mastery_score(
+        self, query: MutableMapping[str, Any], context: PipelineContext = None
+    ) -> ChampionMasteryScoreDto:
         parameters = {"platform": query["platform"].value}
-        endpoint = "lol/champion-mastery/v4/scores/by-summoner/{summonerId}".format(summonerId=query["summoner.id"])
+        endpoint = "lol/champion-mastery/v4/scores/by-summoner/{summonerId}".format(
+            summonerId=query["summoner.id"]
+        )
         try:
             data = self._get(endpoint=endpoint, parameters=parameters)
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
 
-        return ChampionMasteryScoreDto({
-            "region": query["platform"].region.value,
-            "summonerId": query["summoner.id"],
-            "score": data
-        })
+        return ChampionMasteryScoreDto(
+            {
+                "region": query["platform"].region.value,
+                "summonerId": query["summoner.id"],
+                "score": data,
+            }
+        )
 
-    _validate_get_many_champion_mastery_score_query = Query. \
-        has("platform").as_(Platform).also. \
-        has("summoner.ids").as_(Iterable)
+    _validate_get_many_champion_mastery_score_query = (
+        Query.has("platform").as_(Platform).also.has("summoner.ids").as_(Iterable)
+    )
 
     @get_many.register(ChampionMasteryScoreDto)
-    @validate_query(_validate_get_many_champion_mastery_score_query, convert_region_to_platform)
-    def get_many_champion_mastery_score(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> Generator[ChampionMasteryScoreDto, None, None]:
+    @validate_query(
+        _validate_get_many_champion_mastery_score_query, convert_region_to_platform
+    )
+    def get_many_champion_mastery_score(
+        self, query: MutableMapping[str, Any], context: PipelineContext = None
+    ) -> Generator[ChampionMasteryScoreDto, None, None]:
         def generator():
             parameters = {"platform": query["platform"].value}
             for summoner_id in query["summoner.ids"]:
-                endpoint = "lol/champion-mastery/v4/scores/by-summoner/{summonerId}".format(summonerId=summoner_id)
+                endpoint = (
+                    "lol/champion-mastery/v4/scores/by-summoner/{summonerId}".format(
+                        summonerId=summoner_id
+                    )
+                )
                 try:
                     data = self._get(endpoint=endpoint, parameters=parameters)
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
 
-                yield ChampionMasteryScoreDto({
-                    "region": query["platform"].region.value,
-                    "summonerId": summoner_id,
-                    "score": data
-                })
+                yield ChampionMasteryScoreDto(
+                    {
+                        "region": query["platform"].region.value,
+                        "summonerId": summoner_id,
+                        "score": data,
+                    }
+                )
 
         return generator()

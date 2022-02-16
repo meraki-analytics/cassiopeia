@@ -15,8 +15,15 @@ from ...dto.staticdata import realm as dto
 
 class RealmData(CoreData):
     _dto_type = dto.RealmDto
-    _renamed = {"lg": "legacyMode", "dd": "latestDataDragon", "l": "language", "n": "latestVersions",
-                "profileiconmax": "maxProfileIconId", "v": "version", "css": "cssVersion"}
+    _renamed = {
+        "lg": "legacyMode",
+        "dd": "latestDataDragon",
+        "l": "language",
+        "n": "latestVersions",
+        "profileiconmax": "maxProfileIconId",
+        "v": "version",
+        "css": "cssVersion",
+    }
 
 
 ##############

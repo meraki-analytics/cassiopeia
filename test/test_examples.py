@@ -2,9 +2,32 @@ from collections import Counter
 import random
 
 import cassiopeia as cass
-from cassiopeia import Season, Queue, Summoner, Match, Champion, Champions, ChampionMastery, Item, Items, LanguageStrings, Map, Locales, Runes, Rune, ShardStatus, FeaturedMatches, SummonerSpell, SummonerSpells, GameMode, VerificationString, Role
+from cassiopeia import (
+    Season,
+    Queue,
+    Summoner,
+    Match,
+    Champion,
+    Champions,
+    ChampionMastery,
+    Item,
+    Items,
+    LanguageStrings,
+    Map,
+    Locales,
+    Runes,
+    Rune,
+    ShardStatus,
+    FeaturedMatches,
+    SummonerSpell,
+    SummonerSpells,
+    GameMode,
+    VerificationString,
+    Role,
+)
 
 import os, pytest
+
 
 def test_versions():
     versions = cass.get_versions(region="NA")
@@ -29,7 +52,9 @@ def test_match():
     match_history = summoner.match_history
     match_history(seasons={Season.season_7}, queues={Queue.ranked_solo_fives})
 
-    champion_id_to_name_mapping = {champion.id: champion.name for champion in cass.get_champions(region=region)}
+    champion_id_to_name_mapping = {
+        champion.id: champion.name for champion in cass.get_champions(region=region)
+    }
     played_champions = Counter()
     for match in match_history:
         champion_id = match.participants[summoner.name].champion.id
@@ -70,14 +95,20 @@ def test_champions():
 
     annie.info.difficulty
     annie.passive.name
-    {item.name: count for item, count in annie.recommended_itemsets[0].item_sets[0].items.items()}
+    {
+        item.name: count
+        for item, count in annie.recommended_itemsets[0].item_sets[0].items.items()
+    }
     annie.free_to_play
     annie._Ghost__all_loaded
 
     ziggs = cass.get_champion("Ziggs", region="NA")
     ziggs.name
     ziggs.region
-    {item.name: count for item, count in ziggs.recommended_itemsets[0].item_sets[0].items.items()}
+    {
+        item.name: count
+        for item, count in ziggs.recommended_itemsets[0].item_sets[0].items.items()
+    }
     ziggs.free_to_play
     for spell in ziggs.spells:
         for var in spell.variables:
@@ -90,10 +121,10 @@ def test_championmastery():
     karma = Champion(name="Karma", id=43, region="NA")
     cm = ChampionMastery(champion=karma, summoner=me, region="NA")
     cm = cass.get_champion_mastery(champion=karma, summoner=me, region="NA")
-    'Champion ID:', cm.champion.id
-    'Mastery points:', cm.points
-    'Mastery Level:', cm.level
-    'Points until next level:', cm.points_until_next_level
+    "Champion ID:", cm.champion.id
+    "Mastery points:", cm.points
+    "Mastery Level:", cm.level
+    "Points until next level:", cm.points_until_next_level
 
     cms = cass.get_champion_masteries(summoner=me, region="NA")
     cms = me.champion_masteries
@@ -124,6 +155,7 @@ def test_languagestrings():
     language_strings = cass.get_language_strings(region="NA")
     assert len(language_strings.strings) > 0
 
+
 def test_leagues():
     summoner_name = "Kalturi"
     region = "NA"
@@ -151,12 +183,16 @@ def test_leagues():
         entry.summoner.name, entry.league_points, entries.fives.league.tier, entry.division
 
     "Challenger League name and id:"
-    challenger = cass.get_challenger_league(queue=Queue.ranked_solo_fives, region=region)
+    challenger = cass.get_challenger_league(
+        queue=Queue.ranked_solo_fives, region=region
+    )
     # challenger.name
     challenger.id
 
     "Grandmaster League name and id:"
-    grandmaster = cass.get_grandmaster_league(queue=Queue.ranked_solo_fives, region=region)
+    grandmaster = cass.get_grandmaster_league(
+        queue=Queue.ranked_solo_fives, region=region
+    )
     # grandmaster.name
     grandmaster.id
 
@@ -164,6 +200,7 @@ def test_leagues():
     master = cass.get_master_league(queue=Queue.ranked_solo_fives, region=region)
     # master.name
     master.id
+
 
 def test_locales():
     locales = cass.get_locales(region="NA")
@@ -190,14 +227,20 @@ def test_profileicons():
 
 def test_readme():
     summoner = cass.get_summoner(name="Kalturi", region="NA")
-    "{name} is a level {level} summoner on the {region} server.".format(name=summoner.name, level=summoner.level, region=summoner.region)
+    "{name} is a level {level} summoner on the {region} server.".format(
+        name=summoner.name, level=summoner.level, region=summoner.region
+    )
     champions = cass.get_champions(region="NA")
     random_champion = random.choice(champions)
     "He enjoys playing champions such as {name}.".format(name=random_champion.name)
 
-    challenger_league = cass.get_challenger_league(queue=cass.Queue.ranked_solo_fives, region="NA")
+    challenger_league = cass.get_challenger_league(
+        queue=cass.Queue.ranked_solo_fives, region="NA"
+    )
     best_na = challenger_league[0].summoner
-    "He's not as good as {name} at League, but probably a better python programmer!".format(name=best_na.name)
+    "He's not as good as {name} at League, but probably a better python programmer!".format(
+        name=best_na.name
+    )
 
 
 def test_runes():
@@ -246,7 +289,12 @@ def test_summoner():
 def test_summonerspells():
     sspells = cass.get_summoner_spells(region="NA")
     for sspell in sspells:
-        if set(sspell.modes) & {GameMode.classic, GameMode.aram, GameMode.poro_king, GameMode.ascension}:
+        if set(sspell.modes) & {
+            GameMode.classic,
+            GameMode.aram,
+            GameMode.poro_king,
+            GameMode.ascension,
+        }:
             "Name:", sspell.name
             "Description:", sspell.description
 
@@ -260,7 +308,7 @@ def test_timeline():
     summoner = Summoner(name=name, region=region)
     match_history = summoner.match_history
     match = match_history[0]
-    'Match ID:', match.id
+    "Match ID:", match.id
 
     match.timeline.frame_interval
     for frame in match.timeline.frames:

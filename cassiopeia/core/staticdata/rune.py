@@ -6,7 +6,15 @@ from merakicommons.container import searchable
 
 from ... import configuration
 from ...data import Region, Platform
-from ..common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, get_latest_version, ghost_load_on
+from ..common import (
+    CoreData,
+    CoreDataList,
+    CassiopeiaObject,
+    CassiopeiaGhost,
+    CassiopeiaLazyList,
+    get_latest_version,
+    ghost_load_on,
+)
 from .common import Image
 from ...dto.staticdata import rune as dto
 
@@ -27,7 +35,11 @@ class RuneListData(CoreDataList):
 
 class RuneData(CoreData):
     _dto_type = dto.RuneDto
-    _renamed = {"longDesc": "longDescription", "shortDesc": "shortDescription", "included_data": "includedData"}
+    _renamed = {
+        "longDesc": "longDescription",
+        "shortDesc": "shortDescription",
+        "included_data": "includedData",
+    }
 
     def __call__(self, **kwargs):
         if "icon" in kwargs:
@@ -48,7 +60,14 @@ class RuneImageData(CoreData):
 class RunePath(CassiopeiaObject):
     _data_types = {RunePathData}
 
-    def __init__(self, *, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+    def __init__(
+        self,
+        *,
+        region: Union[Region, str] = None,
+        version: str = None,
+        locale: str = None,
+        included_data: Set[str] = None
+    ):
         if included_data is None:
             included_data = {"all"}
         if locale is None and region is not None:
@@ -72,18 +91,30 @@ class RunePath(CassiopeiaObject):
 
     @property
     def image_url(self):
-        url = "https://ddragon.leagueoflegends.com/cdn/img/" + self._data[RunePathData].icon
+        url = (
+            "https://ddragon.leagueoflegends.com/cdn/img/"
+            + self._data[RunePathData].icon
+        )
         return url
 
     @lazy_property
     def image(self) -> PILImage:
-        return configuration.settings.pipeline.get(PILImage, query={"url": self.image_url})
+        return configuration.settings.pipeline.get(
+            PILImage, query={"url": self.image_url}
+        )
 
 
 class Runes(CassiopeiaLazyList):
     _data_types = {RuneListData}
 
-    def __init__(self, *, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+    def __init__(
+        self,
+        *,
+        region: Union[Region, str] = None,
+        version: str = None,
+        locale: str = None,
+        included_data: Set[str] = None
+    ):
         if included_data is None:
             included_data = {"all"}
         if locale is None and region is not None:
@@ -150,18 +181,37 @@ class RuneImage(CassiopeiaObject):
 
     @property
     def url(self) -> str:
-        return "https://ddragon.leagueoflegends.com/cdn/img/{icon}".format(icon=self._data[RuneImageData].icon)
+        return "https://ddragon.leagueoflegends.com/cdn/img/{icon}".format(
+            icon=self._data[RuneImageData].icon
+        )
 
     @lazy_property
     def image(self) -> PILImage:
         return configuration.settings.pipeline.get(PILImage, query={"url": self.url})
 
 
-@searchable({str: ["name", "tags", "path", "region", "platform", "locale"], int: ["id"], RunePath: ["path"], Region: ["region"], Platform: ["platform"]})
+@searchable(
+    {
+        str: ["name", "tags", "path", "region", "platform", "locale"],
+        int: ["id"],
+        RunePath: ["path"],
+        Region: ["region"],
+        Platform: ["platform"],
+    }
+)
 class Rune(CassiopeiaGhost):
     _data_types = {RuneData}
 
-    def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+    def __init__(
+        self,
+        *,
+        id: int = None,
+        name: str = None,
+        region: Union[Region, str] = None,
+        version: str = None,
+        locale: str = None,
+        included_data: Set[str] = None
+    ):
         if included_data is None:
             included_data = {"all"}
         if locale is None and region is not None:
@@ -176,7 +226,13 @@ class Rune(CassiopeiaGhost):
         super().__init__(**kwargs)
 
     def __get_query__(self):
-        query = {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
+        query = {
+            "region": self.region,
+            "platform": self.platform,
+            "version": self.version,
+            "locale": self.locale,
+            "includedData": self.included_data,
+        }
         if hasattr(self._data[RuneData], "id"):
             query["id"] = self._data[RuneData].id
         if hasattr(self._data[RuneData], "name"):
@@ -188,10 +244,14 @@ class Rune(CassiopeiaGhost):
             return False
         s = {}
         o = {}
-        if hasattr(self._data[RuneData], "id"): s["id"] = self.id
-        if hasattr(other._data[RuneData], "id"): o["id"] = other.id
-        if hasattr(self._data[RuneData], "name"): s["name"] = self.name
-        if hasattr(other._data[RuneData], "name"): o["name"] = other.name
+        if hasattr(self._data[RuneData], "id"):
+            s["id"] = self.id
+        if hasattr(other._data[RuneData], "id"):
+            o["id"] = other.id
+        if hasattr(self._data[RuneData], "name"):
+            s["name"] = self.name
+        if hasattr(other._data[RuneData], "name"):
+            o["name"] = other.name
         if any(s.get(key, "s") == o.get(key, "o") for key in s):
             return True
         else:
@@ -205,7 +265,9 @@ class Rune(CassiopeiaGhost):
             id_ = self.id
         if hasattr(self._data[RuneData], "name"):
             name = self.name
-        return "Rune(name='{name}', id={id_}, region='{region}')".format(name=name, id_=id_, region=region.value)
+        return "Rune(name='{name}', id={id_}, region='{region}')".format(
+            name=name, id_=id_, region=region.value
+        )
 
     __hash__ = CassiopeiaGhost.__hash__
 
@@ -242,7 +304,9 @@ class Rune(CassiopeiaGhost):
     @CassiopeiaGhost.property(RuneData)
     @ghost_load_on
     def path(self) -> RunePath:
-        data = RunePathData(**self._data[RuneData].path)  # This seems out of place but we never request a RunePath so it never geos through the pipeline
+        data = RunePathData(
+            **self._data[RuneData].path
+        )  # This seems out of place but we never request a RunePath so it never geos through the pipeline
         return RunePath.from_data(data=data)
 
     @CassiopeiaGhost.property(RuneData)

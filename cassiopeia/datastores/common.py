@@ -7,9 +7,11 @@ from urllib.parse import urlencode
 
 try:
     from pycurl import Curl
+
     USE_PYCURL = True
 except ImportError:
     import requests
+
     USE_PYCURL = False
     Curl = None  # This might break a few type hints but they are all internal and not user-facing.
 
@@ -38,6 +40,7 @@ class HTTPError(RuntimeError):
 
 
 if USE_PYCURL:
+
     class HTTPClient(object):
         @staticmethod
         def _execute(curl: Curl, close_connection: bool) -> int:
@@ -48,11 +51,19 @@ if USE_PYCURL:
             return status_code
 
         @staticmethod
-        def _get(url: str, headers: Mapping[str, str] = None, rate_limiters: List[RateLimiter] = None, connection: Curl = None) -> (int, bytes, dict):
+        def _get(
+            url: str,
+            headers: Mapping[str, str] = None,
+            rate_limiters: List[RateLimiter] = None,
+            connection: Curl = None,
+        ) -> (int, bytes, dict):
             if not headers:
                 request_headers = ["Accept-Encoding: gzip"]
             else:
-                request_headers = ["{header}: {value}".format(header=key, value=value) for key, value in headers.items()]
+                request_headers = [
+                    "{header}: {value}".format(header=key, value=value)
+                    for key, value in headers.items()
+                ]
                 if "Accept-Encoding" not in headers:
                     request_headers.append("Accept-Encoding: gzip")
 
@@ -91,7 +102,10 @@ if USE_PYCURL:
             if rate_limiters:
                 with ExitStack() as stack:
                     # Enter each context manager / rate limiter
-                    limiters = [stack.enter_context(rate_limiter) for rate_limiter in rate_limiters]
+                    limiters = [
+                        stack.enter_context(rate_limiter)
+                        for rate_limiter in rate_limiters
+                    ]
                     exit_limiters = stack.pop_all().__exit__
                     status_code = HTTPClient._execute(curl, connection is None)
                 exit_limiters(None, None, None)
@@ -110,16 +124,31 @@ if USE_PYCURL:
 
             return status_code, body, response_headers
 
-        def get(self, url: str, parameters: MutableMapping[str, Any] = None, headers: Mapping[str, str] = None, rate_limiters: List[RateLimiter] = None, connection: Curl = None, encode_parameters: bool = True) -> (Union[dict, list, str, bytes], dict):
+        def get(
+            self,
+            url: str,
+            parameters: MutableMapping[str, Any] = None,
+            headers: Mapping[str, str] = None,
+            rate_limiters: List[RateLimiter] = None,
+            connection: Curl = None,
+            encode_parameters: bool = True,
+        ) -> (Union[dict, list, str, bytes], dict):
             if parameters:
                 if encode_parameters:
-                    parameters = {k: str(v).lower() if isinstance(v, bool) else v for k, v in parameters.items()}
+                    parameters = {
+                        k: str(v).lower() if isinstance(v, bool) else v
+                        for k, v in parameters.items()
+                    }
                     parameters = urlencode(parameters, doseq=True)
                 url = "{url}?{params}".format(url=url, params=parameters)
 
-            status_code, body, response_headers = HTTPClient._get(url, headers, rate_limiters, connection)
+            status_code, body, response_headers = HTTPClient._get(
+                url, headers, rate_limiters, connection
+            )
 
-            content_type = response_headers.get("Content-Type", "application/octet-stream").upper()
+            content_type = response_headers.get(
+                "Content-Type", "application/octet-stream"
+            ).upper()
 
             # Decode to text if a charset is included
             match = re.search("CHARSET=(\S+)", content_type)
@@ -150,10 +179,16 @@ if USE_PYCURL:
             yield session
             session.close()
 
+
 else:  # Use requests
+
     class HTTPClient(object):
         @staticmethod
-        def _get(url: str, headers: Mapping[str, str] = None, rate_limiters: List[RateLimiter] = None) -> (int, bytes, dict):
+        def _get(
+            url: str,
+            headers: Mapping[str, str] = None,
+            rate_limiters: List[RateLimiter] = None,
+        ) -> (int, bytes, dict):
             if not headers:
                 request_headers = {"Accept-Encoding": "gzip"}
             else:
@@ -174,7 +209,10 @@ else:  # Use requests
             if rate_limiters:
                 with ExitStack() as stack:
                     # Enter each context manager / rate limiter
-                    limiters = [stack.enter_context(rate_limiter) for rate_limiter in rate_limiters]
+                    limiters = [
+                        stack.enter_context(rate_limiter)
+                        for rate_limiter in rate_limiters
+                    ]
                     exit_limiters = stack.pop_all().__exit__
                     r = requests.get(url, headers=request_headers)
                 exit_limiters(None, None, None)
@@ -183,14 +221,25 @@ else:  # Use requests
 
             return r
 
-        def get(self, url: str, parameters: MutableMapping[str, Any] = None, headers: Mapping[str, str] = None, rate_limiters: List[RateLimiter] = None, connection: Curl = None, encode_parameters: bool = True) -> (Union[dict, list, str, bytes], dict):
+        def get(
+            self,
+            url: str,
+            parameters: MutableMapping[str, Any] = None,
+            headers: Mapping[str, str] = None,
+            rate_limiters: List[RateLimiter] = None,
+            connection: Curl = None,
+            encode_parameters: bool = True,
+        ) -> (Union[dict, list, str, bytes], dict):
             if parameters:
                 if encode_parameters:
-                    parameters = {k: str(v).lower() if isinstance(v, bool) else v for k, v in parameters.items()}
+                    parameters = {
+                        k: str(v).lower() if isinstance(v, bool) else v
+                        for k, v in parameters.items()
+                    }
                     parameters = urlencode(parameters, doseq=True)
                 url = "{url}?{params}".format(url=url, params=parameters)
 
-            #status_code, body, response_headers = HTTPClient._get(url, headers, rate_limiters)
+            # status_code, body, response_headers = HTTPClient._get(url, headers, rate_limiters)
             r = HTTPClient._get(url, headers, rate_limiters)
             response_headers = r.headers
 
@@ -198,7 +247,9 @@ else:  # Use requests
             if r.status_code >= 400:
                 raise HTTPError(r.reason, r.status_code, response_headers)
 
-            content_type = response_headers.get("Content-Type", "application/octet-stream").upper()
+            content_type = response_headers.get(
+                "Content-Type", "application/octet-stream"
+            ).upper()
 
             # Decode to text if a charset is included
             match = re.search("CHARSET=(\S+)", content_type)

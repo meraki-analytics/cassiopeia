@@ -35,6 +35,6 @@ def test_match_correct_return():
 
 
 def test_match_participant_search():
-    summoner = cassiopeia.Summoner(name='Kejorn', region='NA')
+    summoner = cassiopeia.Summoner(name="Kejorn", region="NA")
     match = summoner.match_history[0]
     p = match.participants[summoner]

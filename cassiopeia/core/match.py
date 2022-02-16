@@ -7,12 +7,40 @@ from typing import List, Dict, Union, Generator
 
 from datapipelines import NotFoundError
 from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import searchable, SearchableList, SearchableLazyList, SearchableDictionary
+from merakicommons.container import (
+    searchable,
+    SearchableList,
+    SearchableLazyList,
+    SearchableDictionary,
+)
 
 from .. import configuration
 from .staticdata import Versions
-from ..data import Region, Platform, Continent, Tier, GameType, GameMode, MatchType, Queue, Side, Season, Lane, Role, Key, SummonersRiftArea, Tower
-from .common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, ghost_load_on
+from ..data import (
+    Region,
+    Platform,
+    Continent,
+    Tier,
+    GameType,
+    GameMode,
+    MatchType,
+    Queue,
+    Side,
+    Season,
+    Lane,
+    Role,
+    Key,
+    SummonersRiftArea,
+    Tower,
+)
+from .common import (
+    CoreData,
+    CoreDataList,
+    CassiopeiaObject,
+    CassiopeiaGhost,
+    CassiopeiaLazyList,
+    ghost_load_on,
+)
 from ..dto import match as dto
 from .patch import Patch
 from .summoner import Summoner
@@ -37,7 +65,9 @@ def load_match_on_attributeerror(method):
             if isinstance(self, Participant):
                 old_participant = self
             elif isinstance(self, ParticipantStats):
-                old_participant = getattr(self, "_{}__participant".format(self.__class__.__name__))
+                old_participant = getattr(
+                    self, "_{}__participant".format(self.__class__.__name__)
+                )
             else:
                 raise RuntimeError("Impossible!")
             for participant in match.participants:
@@ -45,26 +75,39 @@ def load_match_on_attributeerror(method):
                     if isinstance(self, Participant):
                         self._data[ParticipantData] = participant._data[ParticipantData]
                     elif isinstance(self, ParticipantStats):
-                        self._data[ParticipantStatsData] = participant.stats._data[ParticipantStatsData]
+                        self._data[ParticipantStatsData] = participant.stats._data[
+                            ParticipantStatsData
+                        ]
                     return method(self, *args, **kwargs)
         return method(self, *args, **kwargs)
+
     return wrapper
 
 
 _staticdata_to_version_mapping = {}
+
+
 def _choose_staticdata_version(match):
     # If we want to pull the data for the correct version, we need to pull the entire match data.
     # However, we can use the creation date (which comes with a matchref) and get the ~ patch and therefore extract the version from the patch.
-    if configuration.settings.version_from_match is None or configuration.settings.version_from_match == "latest":
+    if (
+        configuration.settings.version_from_match is None
+        or configuration.settings.version_from_match == "latest"
+    ):
         return None  # Rather than pick the latest version here, let the obj handle it so it knows which endpoint within the realms data to use
 
-    if configuration.settings.version_from_match == "version" or hasattr(match._data[MatchData], "version"):
+    if configuration.settings.version_from_match == "version" or hasattr(
+        match._data[MatchData], "version"
+    ):
         majorminor = match.patch.major + "." + match.patch.minor
     elif configuration.settings.version_from_match == "patch":
         patch = Patch.from_date(match.creation, region=match.region)
         majorminor = patch.majorminor
     else:
-        raise ValueError("Unknown value for setting `version_from_match`:", configuration.settings.version_from_match)
+        raise ValueError(
+            "Unknown value for setting `version_from_match`:",
+            configuration.settings.version_from_match,
+        )
 
     try:
         version = _staticdata_to_version_mapping[majorminor]
@@ -72,11 +115,14 @@ def _choose_staticdata_version(match):
         if int(match.patch.major) >= 10:
             versions = Versions(region=match.region)
             # use the first major.minor.x matching occurrence from the versions list
-            version = next(x for x in versions if ".".join(x.split(".")[:2]) == majorminor)
+            version = next(
+                x for x in versions if ".".join(x.split(".")[:2]) == majorminor
+            )
         else:
             version = majorminor + ".1"  # use major.minor.1
         _staticdata_to_version_mapping[majorminor] = version
     return version
+
 
 ##############
 # Data Types #
@@ -93,7 +139,13 @@ class PositionData(CoreData):
 
 
 class EventData(CoreData):
-    _renamed = {"eventType": "type", "teamId": "side", "pointCaptured": "capturedPoint", "assistingParticipantIds": "assistingParticipants", "skillSlot": "skill"}
+    _renamed = {
+        "eventType": "type",
+        "teamId": "side",
+        "pointCaptured": "capturedPoint",
+        "assistingParticipantIds": "assistingParticipants",
+        "skillSlot": "skill",
+    }
 
     def __call__(self, **kwargs):
         if "position" in kwargs:
@@ -103,7 +155,12 @@ class EventData(CoreData):
 
 
 class ParticipantFrameData(CoreData):
-    _renamed = {"totalGold": "goldEarned", "minionsKilled": "creepScore", "xp": "experience", "jungleMinionsKilled": "neutralMinionsKilled"}
+    _renamed = {
+        "totalGold": "goldEarned",
+        "minionsKilled": "creepScore",
+        "xp": "experience",
+        "jungleMinionsKilled": "neutralMinionsKilled",
+    }
 
     def __call__(self, **kwargs):
         if "position" in kwargs:
@@ -119,7 +176,10 @@ class FrameData(CoreData):
         if "events" in kwargs:
             self.events = [EventData(**event) for event in kwargs.pop("events")]
         if "participantFrames" in kwargs:
-            self.participantFrames = {int(key): ParticipantFrameData(**pframe) for key, pframe in kwargs.pop("participantFrames").items()}
+            self.participantFrames = {
+                int(key): ParticipantFrameData(**pframe)
+                for key, pframe in kwargs.pop("participantFrames").items()
+            }
         super().__call__(**kwargs)
         return self
 
@@ -139,12 +199,12 @@ class ParticipantTimelineData(CoreData):
     _renamed = {"participantId": "id"}
 
     def __call__(self, **kwargs):
-        #timeline.setCreepScore(getStatTotals(item.getCreepsPerMinDeltas(), durationInSeconds));
-        #timeline.setCreepScoreDifference(getStatTotals(item.getCsDiffPerMinDeltas(), durationInSeconds));
-        #timeline.setDamageTaken(getStatTotals(item.getDamageTakenPerMinDeltas(), durationInSeconds));
-        #timeline.setDamageTakenDifference(getStatTotals(item.getDamageTakenDiffPerMinDeltas(), durationInSeconds));
-        #timeline.setExperience(getStatTotals(item.getXpPerMinDeltas(), durationInSeconds));
-        #timeline.setExperienceDifference(getStatTotals(item.getXpDiffPerMinDeltas(), durationInSeconds));
+        # timeline.setCreepScore(getStatTotals(item.getCreepsPerMinDeltas(), durationInSeconds));
+        # timeline.setCreepScoreDifference(getStatTotals(item.getCsDiffPerMinDeltas(), durationInSeconds));
+        # timeline.setDamageTaken(getStatTotals(item.getDamageTakenPerMinDeltas(), durationInSeconds));
+        # timeline.setDamageTakenDifference(getStatTotals(item.getDamageTakenDiffPerMinDeltas(), durationInSeconds));
+        # timeline.setExperience(getStatTotals(item.getXpPerMinDeltas(), durationInSeconds));
+        # timeline.setExperienceDifference(getStatTotals(item.getXpDiffPerMinDeltas(), durationInSeconds));
         super().__call__(**kwargs)
         return self
 
@@ -154,7 +214,14 @@ class ParticipantStatsData(CoreData):
 
 
 class ParticipantData(CoreData):
-    _renamed = {"summoner1Id": "summonerSpellDId", "summoner2Id": "summonerSpellFId", "bot": "isBot", "profileIcon": "profileIconId", "gameEndedInEarlySurrender": "endedInEarlySurrender", "gameEndedInSurrender": "endedInSurrender"}
+    _renamed = {
+        "summoner1Id": "summonerSpellDId",
+        "summoner2Id": "summonerSpellFId",
+        "bot": "isBot",
+        "profileIcon": "profileIconId",
+        "gameEndedInEarlySurrender": "endedInEarlySurrender",
+        "gameEndedInSurrender": "endedInSurrender",
+    }
 
     def __call__(self, **kwargs):
         perks = kwargs.pop("perks", {})
@@ -162,7 +229,9 @@ class ParticipantData(CoreData):
         # We're going to drop some info about the perks here because that info is already available from the static data
         styles = perks.pop("styles", [])
         selections = list(itertools.chain(*[s.get("selections", []) for s in styles]))
-        self.perks = {s["perk"]: [s.pop("var1"), s.pop("var2"), s.pop("var3")] for s in selections}
+        self.perks = {
+            s["perk"]: [s.pop("var1"), s.pop("var2"), s.pop("var3")] for s in selections
+        }
         self.stat_perks = stat_perks
         non_stats = {
             "championId": kwargs.get("championId", None),
@@ -225,7 +294,9 @@ class ParticipantData(CoreData):
             "largestMultiKill": kwargs.pop("largestMultiKill", None),
             "longestTimeSpentLiving": kwargs.pop("longestTimeSpentLiving", None),
             "magicDamageDealt": kwargs.pop("magicDamageDealt", None),
-            "magicDamageDealtToChampions": kwargs.pop("magicDamageDealtToChampions", None),
+            "magicDamageDealtToChampions": kwargs.pop(
+                "magicDamageDealtToChampions", None
+            ),
             "magicDamageTaken": kwargs.pop("magicDamageTaken", None),
             "neutralMinionsKilled": kwargs.pop("neutralMinionsKilled", None),
             "nexusKills": kwargs.pop("nexusKills", None),
@@ -235,7 +306,9 @@ class ParticipantData(CoreData):
             "objectivesStolenAssists": kwargs.pop("objectivesStolenAssists", None),
             "pentaKills": kwargs.pop("pentaKills", None),
             "physicalDamageDealt": kwargs.pop("physicalDamageDealt", None),
-            "physicalDamageDealtToChampions": kwargs.pop("physicalDamageDealtToChampions", None),
+            "physicalDamageDealtToChampions": kwargs.pop(
+                "physicalDamageDealtToChampions", None
+            ),
             "physicalDamageTaken": kwargs.pop("physicalDamageTaken", None),
             "quadraKills": kwargs.pop("quadraKills", None),
             "role": kwargs.pop("role", None),
@@ -249,8 +322,12 @@ class ParticipantData(CoreData):
             "timeCCingOthers": kwargs.pop("timeCCingOthers", None),
             "timePlayed": kwargs.pop("timePlayed", None),
             "totalDamageDealt": kwargs.pop("totalDamageDealt", None),
-            "totalDamageDealtToChampions": kwargs.pop("totalDamageDealtToChampions", None),
-            "totalDamageShieldedOnTeammates": kwargs.pop("totalDamageShieldedOnTeammates", None),
+            "totalDamageDealtToChampions": kwargs.pop(
+                "totalDamageDealtToChampions", None
+            ),
+            "totalDamageShieldedOnTeammates": kwargs.pop(
+                "totalDamageShieldedOnTeammates", None
+            ),
             "totalDamageTaken": kwargs.pop("totalDamageTaken", None),
             "totalHeal": kwargs.pop("totalHeal", None),
             "totalHealsOnTeammates": kwargs.pop("totalHealsOnTeammates", None),
@@ -260,7 +337,9 @@ class ParticipantData(CoreData):
             "totalUnitsHealed": kwargs.pop("totalUnitsHealed", None),
             "tripleKills": kwargs.pop("tripleKills", None),
             "trueDamageDealt": kwargs.pop("trueDamageDealt", None),
-            "trueDamageDealtToChampions": kwargs.pop("trueDamageDealtToChampions", None),
+            "trueDamageDealtToChampions": kwargs.pop(
+                "trueDamageDealtToChampions", None
+            ),
             "trueDamageTaken": kwargs.pop("trueDamageTaken", None),
             "turretKills": kwargs.pop("turretKills", None),
             "turretTakedowns": kwargs.pop("turretTakedowns", None),
@@ -293,11 +372,22 @@ class ObjectiveData(CoreData):
 
 
 class TeamData(CoreData):
-    _renamed = {"dominionVictoryScore": "dominionScore", "firstBaron": "firstBaronKiller", "firstBlood": "firstBloodKiller", "firstDragon": "firstDragonKiller", "firstInhibitor": "firstInhibitorKiller", "firstRiftHerald": "firstRiftHeraldKiller", "firstTower": "firstTowerKiller"}
+    _renamed = {
+        "dominionVictoryScore": "dominionScore",
+        "firstBaron": "firstBaronKiller",
+        "firstBlood": "firstBloodKiller",
+        "firstDragon": "firstDragonKiller",
+        "firstInhibitor": "firstInhibitorKiller",
+        "firstRiftHerald": "firstRiftHeraldKiller",
+        "firstTower": "firstTowerKiller",
+    }
 
     def __call__(self, **kwargs):
         self.bans = [BanData(**ban) for ban in kwargs.pop("bans", [])]
-        self.objectives = {key: ObjectiveData(**obj) for key, obj in kwargs.pop("objectives", {}).items()}
+        self.objectives = {
+            key: ObjectiveData(**obj)
+            for key, obj in kwargs.pop("objectives", {}).items()
+        }
         if "win" in kwargs:
             self.isWinner = kwargs.pop("win")
         if "teamId" in kwargs:
@@ -312,7 +402,14 @@ class MatchReferenceData(CoreData):
 
 class MatchData(CoreData):
     _dto_type = dto.MatchDto
-    _renamed = {"gameId": "id", "gameVersion": "version", "gameMode": "mode", "gameType": "type", "gameName": "name", "queueId": "queue"}
+    _renamed = {
+        "gameId": "id",
+        "gameVersion": "version",
+        "gameMode": "mode",
+        "gameType": "type",
+        "gameName": "name",
+        "queueId": "queue",
+    }
 
     def __call__(self, **kwargs):
         if "gameCreation" in kwargs:
@@ -329,7 +426,9 @@ class MatchData(CoreData):
             self.privateGame = True
         self.participants = []
         for participant in participants:
-            participant = ParticipantData(**participant, platformId=kwargs["platformId"])
+            participant = ParticipantData(
+                **participant, platformId=kwargs["platformId"]
+            )
             self.participants.append(participant)
 
         teams = kwargs.pop("teams", [])
@@ -353,13 +452,34 @@ class MatchData(CoreData):
 
 class MatchHistory(CassiopeiaLazyList):  # type: List[Match]
     """The match history for a summoner. By default, this will return the entire match history."""
+
     _data_types = {MatchListData}
 
-    def __init__(self, *, puuid: str, continent: Continent = None, region: Region = None, platform: Platform = None, begin_index: int = None, end_index: int = None, begin_time: arrow.Arrow = None, end_time: arrow.Arrow = None, queue: Queue = None, type: MatchType = None):
+    def __init__(
+        self,
+        *,
+        puuid: str,
+        continent: Continent = None,
+        region: Region = None,
+        platform: Platform = None,
+        begin_index: int = None,
+        end_index: int = None,
+        begin_time: arrow.Arrow = None,
+        end_time: arrow.Arrow = None,
+        queue: Queue = None,
+        type: MatchType = None,
+    ):
         assert end_index is None or end_index > begin_index
         if begin_time is not None and end_time is not None and begin_time > end_time:
             raise ValueError("`end_time` should be greater than `begin_time`")
-        kwargs = {"continent": continent, "puuid": puuid, "queue": queue, "type": type, "begin_index": begin_index, "end_index": end_index}
+        kwargs = {
+            "continent": continent,
+            "puuid": puuid,
+            "queue": queue,
+            "type": type,
+            "begin_index": begin_index,
+            "end_index": end_index,
+        }
         if begin_time is not None and not isinstance(begin_time, (int, float)):
             begin_time = begin_time.int_timestamp * 1000
         kwargs["begin_time"] = begin_time
@@ -369,7 +489,20 @@ class MatchHistory(CassiopeiaLazyList):  # type: List[Match]
         CassiopeiaObject.__init__(self, **kwargs)
 
     @classmethod
-    def __get_query_from_kwargs__(cls, *, continent: Continent, puuid: str, region: Region = None, platform: Platform = None, begin_index: int = None, end_index: int = None, begin_time: arrow.Arrow = None, end_time: arrow.Arrow = None, queue: Queue = None, type: MatchType = None):
+    def __get_query_from_kwargs__(
+        cls,
+        *,
+        continent: Continent,
+        puuid: str,
+        region: Region = None,
+        platform: Platform = None,
+        begin_index: int = None,
+        end_index: int = None,
+        begin_time: arrow.Arrow = None,
+        end_time: arrow.Arrow = None,
+        queue: Queue = None,
+        type: MatchType = None,
+    ):
         query = {"continent": continent, "puuid": puuid}
 
         if begin_index is not None:
@@ -474,7 +607,21 @@ class Position(CassiopeiaObject):
         return SummonersRiftArea.from_position(self)
 
 
-@searchable({str: ["type", "tower_type", "ascended_type", "ward_type", "monster_type", "type", "monster_sub_type", "lane_type", "building_type"]})
+@searchable(
+    {
+        str: [
+            "type",
+            "tower_type",
+            "ascended_type",
+            "ward_type",
+            "monster_type",
+            "type",
+            "monster_sub_type",
+            "lane_type",
+            "building_type",
+        ]
+    }
+)
 class Event(CassiopeiaObject):
     _data_types = {EventData}
 
@@ -529,7 +676,7 @@ class Event(CassiopeiaObject):
 
     @property
     def timestamp(self) -> datetime.timedelta:
-        return datetime.timedelta(seconds=self._data[EventData].timestamp/1000)
+        return datetime.timedelta(seconds=self._data[EventData].timestamp / 1000)
 
     @property
     def after_id(self) -> int:
@@ -617,21 +764,35 @@ class Frame(CassiopeiaObject):
 
     @property
     def timestamp(self) -> datetime.timedelta:
-        return datetime.timedelta(seconds=self._data[FrameData].timestamp/1000)
+        return datetime.timedelta(seconds=self._data[FrameData].timestamp / 1000)
 
     @property
     def participant_frames(self) -> Dict[int, ParticipantFrame]:
-        return SearchableDictionary({k: ParticipantFrame.from_data(frame) for k, frame in self._data[FrameData].participantFrames.items()})
+        return SearchableDictionary(
+            {
+                k: ParticipantFrame.from_data(frame)
+                for k, frame in self._data[FrameData].participantFrames.items()
+            }
+        )
 
     @property
     def events(self) -> List[Event]:
-        return SearchableList([Event.from_data(event) for event in self._data[FrameData].events])
+        return SearchableList(
+            [Event.from_data(event) for event in self._data[FrameData].events]
+        )
 
 
 class Timeline(CassiopeiaGhost):
     _data_types = {TimelineData}
 
-    def __init__(self, *, id: int = None, continent: Continent = None, region: Union[Region, str] = None, platform: Platform = None):
+    def __init__(
+        self,
+        *,
+        id: int = None,
+        continent: Continent = None,
+        region: Union[Region, str] = None,
+        platform: Platform = None,
+    ):
         kwargs = {"id": id}
         if continent is not None:
             kwargs["continent"] = continent
@@ -663,7 +824,9 @@ class Timeline(CassiopeiaGhost):
     @CassiopeiaGhost.property(TimelineData)
     @ghost_load_on
     def frames(self) -> List[Frame]:
-        return SearchableList([Frame.from_data(frame) for frame in self._data[TimelineData].frames])
+        return SearchableList(
+            [Frame.from_data(frame) for frame in self._data[TimelineData].frames]
+        )
 
     @CassiopeiaGhost.property(TimelineData)
     @ghost_load_on
@@ -674,7 +837,10 @@ class Timeline(CassiopeiaGhost):
     def first_tower_fallen(self) -> Event:
         for frame in self.frames:
             for event in frame.events:
-                if event.type == "BUILDING_KILL" and event.building_type == "TOWER_BUILDING":
+                if (
+                    event.type == "BUILDING_KILL"
+                    and event.building_type == "TOWER_BUILDING"
+                ):
                     return event
 
 
@@ -732,15 +898,22 @@ class ParticipantTimeline(object):
 
     @property
     def champion_kills(self):
-        return self.events.filter(lambda event: event.type == "CHAMPION_KILL" and event.killer_id == self.id)
+        return self.events.filter(
+            lambda event: event.type == "CHAMPION_KILL" and event.killer_id == self.id
+        )
 
     @property
     def champion_deaths(self):
-        return self.events.filter(lambda event: event.type == "CHAMPION_KILL" and event.victim_id == self.id)
+        return self.events.filter(
+            lambda event: event.type == "CHAMPION_KILL" and event.victim_id == self.id
+        )
 
     @property
     def champion_assists(self):
-        return self.events.filter(lambda event: event.type == "CHAMPION_KILL" and self.id in event.assisting_participants)
+        return self.events.filter(
+            lambda event: event.type == "CHAMPION_KILL"
+            and self.id in event.assisting_participants
+        )
 
 
 class CumulativeTimeline:
@@ -752,7 +925,9 @@ class CumulativeTimeline:
         if isinstance(time, str):
             time = time.split(":")
             time = datetime.timedelta(minutes=int(time[0]), seconds=int(time[1]))
-        state = ParticipantState(id=self._id, time=time, participant_timeline=self._timeline)
+        state = ParticipantState(
+            id=self._id, time=time, participant_timeline=self._timeline
+        )
         for event in self._timeline.events:
             if event.timestamp > time:
                 break
@@ -762,15 +937,23 @@ class CumulativeTimeline:
 
 class ParticipantState:
     """The state of a participant at a given point in the timeline."""
-    def __init__(self, id: int, time: datetime.timedelta, participant_timeline: ParticipantTimeline):
+
+    def __init__(
+        self,
+        id: int,
+        time: datetime.timedelta,
+        participant_timeline: ParticipantTimeline,
+    ):
         self._id = id
         self._time = time
-        #self._timeline = participant_timeline
+        # self._timeline = participant_timeline
         # Try to get info from the most recent participant timeline object
         latest_frame = None
         for frame in participant_timeline.frames:
             # Round to the nearest second for the frame timestamp because it's off by a few ms
-            rounded_frame_timestamp = datetime.timedelta(seconds=frame.timestamp.seconds)
+            rounded_frame_timestamp = datetime.timedelta(
+                seconds=frame.timestamp.seconds
+            )
             if rounded_frame_timestamp > self._time:
                 break
             latest_frame = frame
@@ -804,13 +987,15 @@ class ParticipantState:
         elif event.type in ("ELITE_MONSTER_KILL", "BUILDING_KILL"):
             self._objectives += 1
         else:
-            #print(f"Did not process event {event.to_dict()}")
+            # print(f"Did not process event {event.to_dict()}")
             pass
         self._processed_events.append(event)
 
     @property
     def items(self) -> SearchableList:
-        return SearchableList([Item(id=id_, region="NA") for id_ in self._item_state._items])
+        return SearchableList(
+            [Item(id=id_, region="NA") for id_ in self._item_state._items]
+        )
 
     @property
     def skills(self) -> Dict[Key, int]:
@@ -867,8 +1052,15 @@ class ParticipantState:
     def position(self) -> Position:
         # The latest position is either from the latest event or from the participant timeline frame
         latest_frame_ts = self._latest_frame.timestamp
-        latest_event_with_ts = [(getattr(event, 'timestamp', None), getattr(event, 'position', None)) for event in self._processed_events]
-        latest_event_with_ts = [(ts, p) for ts, p in latest_event_with_ts if ts is not None and p is not None]
+        latest_event_with_ts = [
+            (getattr(event, "timestamp", None), getattr(event, "position", None))
+            for event in self._processed_events
+        ]
+        latest_event_with_ts = [
+            (ts, p)
+            for ts, p in latest_event_with_ts
+            if ts is not None and p is not None
+        ]
         latest_event_ts = sorted(latest_event_with_ts)[-1]
         if latest_frame_ts > latest_event_ts[0]:
             return self._latest_frame.position
@@ -897,12 +1089,16 @@ class _ItemState:
         # 2422 is Slightly Magical Boots... I could figure out how to add those and Biscuits to the inventory based on runes but it would be manual...
         # 2052 is Poro-Snax, which gets added to inventory eventless
         upgradable_items = {
-            3850: 3851, 3851: 3853, # Spellthief's Edge -> Frostfang -> Shard of True Ice
-            3854: 3855, 3855: 3857, # Steel Shoulderguards -> Runesteel Spaulders -> Pauldrons of Whiterock
-            3858: 3859, 3859: 3860, # Relic Shield -> Targon's Buckler -> Bulwark of the Mountain
-            3862: 3863, 3863: 3864, # Spectral Sickle -> Harrowing Crescent -> Black Mist Scythe
+            3850: 3851,
+            3851: 3853,  # Spellthief's Edge -> Frostfang -> Shard of True Ice
+            3854: 3855,
+            3855: 3857,  # Steel Shoulderguards -> Runesteel Spaulders -> Pauldrons of Whiterock
+            3858: 3859,
+            3859: 3860,  # Relic Shield -> Targon's Buckler -> Bulwark of the Mountain
+            3862: 3863,
+            3863: 3864,  # Spectral Sickle -> Harrowing Crescent -> Black Mist Scythe
         }
-        item_id = getattr(event, 'item_id', getattr(event, 'before_id', None))
+        item_id = getattr(event, "item_id", getattr(event, "before_id", None))
         assert item_id is not None
         if item_id in items_to_ignore:
             return
@@ -931,7 +1127,30 @@ class _ItemState:
         try:
             self._items.remove(item)
         except ValueError as error:
-            if item in (3340, 3364, 2319, 2061, 2062, 2056, 2403, 2419, 3400, 2004, 2058, 3200, 2011, 2423, 2055, 2057, 2424, 2059, 2060, 2013, 2421, 3600):  # Something weird can happen with trinkets and klepto items
+            if item in (
+                3340,
+                3364,
+                2319,
+                2061,
+                2062,
+                2056,
+                2403,
+                2419,
+                3400,
+                2004,
+                2058,
+                3200,
+                2011,
+                2423,
+                2055,
+                2057,
+                2424,
+                2059,
+                2060,
+                2013,
+                2421,
+                3600,
+            ):  # Something weird can happen with trinkets and klepto items
                 pass
             else:
                 raise error
@@ -958,7 +1177,9 @@ class ParticipantStats(CassiopeiaObject):
     _data_types = {ParticipantStatsData}
 
     @classmethod
-    def from_data(cls, data: ParticipantStatsData, match: "Match", participant: "Participant"):
+    def from_data(
+        cls, data: ParticipantStatsData, match: "Match", participant: "Participant"
+    ):
         self = super().from_data(data)
         self.__match = match
         self.__participant = participant
@@ -983,12 +1204,12 @@ class ParticipantStats(CassiopeiaObject):
     @load_match_on_attributeerror
     def kills(self) -> int:
         return self._data[ParticipantStatsData].kills
-    
+
     @property
     @load_match_on_attributeerror
     def baron_kills(self) -> int:
         return self._data[ParticipantStatsData].baronKills
-    
+
     @property
     @load_match_on_attributeerror
     def bounty_level(self) -> int:
@@ -1102,16 +1323,22 @@ class ParticipantStats(CassiopeiaObject):
     @lazy_property
     @load_match_on_attributeerror
     def items(self) -> List[Item]:
-        ids = [self._data[ParticipantStatsData].item0,
-               self._data[ParticipantStatsData].item1,
-               self._data[ParticipantStatsData].item2,
-               self._data[ParticipantStatsData].item3,
-               self._data[ParticipantStatsData].item4,
-               self._data[ParticipantStatsData].item5,
-               self._data[ParticipantStatsData].item6
+        ids = [
+            self._data[ParticipantStatsData].item0,
+            self._data[ParticipantStatsData].item1,
+            self._data[ParticipantStatsData].item2,
+            self._data[ParticipantStatsData].item3,
+            self._data[ParticipantStatsData].item4,
+            self._data[ParticipantStatsData].item5,
+            self._data[ParticipantStatsData].item6,
         ]
         version = _choose_staticdata_version(self.__match)
-        return SearchableList([Item(id=id, version=version, region=self.__match.region) if id else None for id in ids])
+        return SearchableList(
+            [
+                Item(id=id, version=version, region=self.__match.region) if id else None
+                for id in ids
+            ]
+        )
 
     @property
     @load_match_on_attributeerror
@@ -1369,7 +1596,24 @@ class ParticipantStats(CassiopeiaObject):
         return self._data[ParticipantStatsData].win
 
 
-@searchable({str: ["summoner", "champion", "stats", "runes", "side", "summoner_spell_d", "summoner_spell_f"], Summoner: ["summoner"], Champion: ["champion"], Side: ["side"], Rune: ["runes"], SummonerSpell: ["summoner_spell_d", "summoner_spell_f"]})
+@searchable(
+    {
+        str: [
+            "summoner",
+            "champion",
+            "stats",
+            "runes",
+            "side",
+            "summoner_spell_d",
+            "summoner_spell_f",
+        ],
+        Summoner: ["summoner"],
+        Champion: ["champion"],
+        Side: ["side"],
+        Rune: ["runes"],
+        SummonerSpell: ["summoner_spell_d", "summoner_spell_f"],
+    }
+)
 class Participant(CassiopeiaObject):
     _data_types = {ParticipantData}
 
@@ -1383,12 +1627,16 @@ class Participant(CassiopeiaObject):
     def version(self) -> str:
         version = self.__match.version
         version = version.split(".")[0:2]
-        version = ".".join(version) + ".1"  # Always use x.x.1 because I don't know how to figure out what the last version number should be.
+        version = (
+            ".".join(version) + ".1"
+        )  # Always use x.x.1 because I don't know how to figure out what the last version number should be.
         return version
 
     @property
     def individual_position(self) -> Lane:
-        return Lane.from_match_naming_scheme(self._data[ParticipantData].individualPosition)
+        return Lane.from_match_naming_scheme(
+            self._data[ParticipantData].individualPosition
+        )
 
     @property
     def team_position(self) -> Lane:
@@ -1404,10 +1652,17 @@ class Participant(CassiopeiaObject):
 
     @property
     def skill_order(self) -> List[Key]:
-        skill_events = self.timeline.events.filter(lambda event: event.type == "SKILL_LEVEL_UP")
+        skill_events = self.timeline.events.filter(
+            lambda event: event.type == "SKILL_LEVEL_UP"
+        )
         skill_events.sort(key=lambda event: event.timestamp)
         skills = [event.skill - 1 for event in skill_events]
-        spells = [self.champion.spells[Key("Q")], self.champion.spells[Key("W")], self.champion.spells[Key("E")], self.champion.spells[Key("R")]]
+        spells = [
+            self.champion.spells[Key("Q")],
+            self.champion.spells[Key("W")],
+            self.champion.spells[Key("E")],
+            self.champion.spells[Key("R")],
+        ]
         skills = [spells[skill] for skill in skills]
         return skills
 
@@ -1418,7 +1673,9 @@ class Participant(CassiopeiaObject):
     @lazy_property
     @load_match_on_attributeerror
     def stats(self) -> ParticipantStats:
-        return ParticipantStats.from_data(self._data[ParticipantData].stats, match=self.__match, participant=self)
+        return ParticipantStats.from_data(
+            self._data[ParticipantData].stats, match=self.__match, participant=self
+        )
 
     @lazy_property
     @load_match_on_attributeerror
@@ -1436,13 +1693,18 @@ class Participant(CassiopeiaObject):
     @load_match_on_attributeerror
     def runes(self) -> Dict[Rune, int]:
         version = _choose_staticdata_version(self.__match)
-        runes = SearchableDictionary({Rune(id=rune_id, version=version, region=self.__match.region): perk_vars
-                                      for rune_id, perk_vars in self._data[ParticipantData].perks.items()})
+        runes = SearchableDictionary(
+            {
+                Rune(id=rune_id, version=version, region=self.__match.region): perk_vars
+                for rune_id, perk_vars in self._data[ParticipantData].perks.items()
+            }
+        )
 
         def keystone(self):
             for rune in self:
                 if rune.is_keystone:
                     return rune
+
         # The bad thing about calling this here is that the runes won't be lazy loaded, so if the user only want the
         #  rune ids then there will be a needless call. That said, it's pretty nice functionality to have and without
         #  making a custom RunePage class, I believe this is the only option.
@@ -1453,8 +1715,12 @@ class Participant(CassiopeiaObject):
     @load_match_on_attributeerror
     def stat_runes(self) -> List[Rune]:
         version = _choose_staticdata_version(self.__match)
-        runes = SearchableList([Rune(id=rune_id, version=version, region=self.__match.region)
-                                for rune_id in self._data[ParticipantData].stat_perks.values()])
+        runes = SearchableList(
+            [
+                Rune(id=rune_id, version=version, region=self.__match.region)
+                for rune_id in self._data[ParticipantData].stat_perks.values()
+            ]
+        )
         return runes
 
     @lazy_property
@@ -1477,13 +1743,21 @@ class Participant(CassiopeiaObject):
     @load_match_on_attributeerror
     def summoner_spell_d(self) -> SummonerSpell:
         version = _choose_staticdata_version(self.__match)
-        return SummonerSpell(id=self._data[ParticipantData].summonerSpellDId, version=version, region=self.__match.region)
+        return SummonerSpell(
+            id=self._data[ParticipantData].summonerSpellDId,
+            version=version,
+            region=self.__match.region,
+        )
 
     @lazy_property
     @load_match_on_attributeerror
     def summoner_spell_f(self) -> SummonerSpell:
         version = _choose_staticdata_version(self.__match)
-        return SummonerSpell(id=self._data[ParticipantData].summonerSpellFId, version=version, region=self.__match.region)
+        return SummonerSpell(
+            id=self._data[ParticipantData].summonerSpellFId,
+            version=version,
+            region=self.__match.region,
+        )
 
     @lazy_property
     @load_match_on_attributeerror
@@ -1500,7 +1774,11 @@ class Participant(CassiopeiaObject):
     def champion(self) -> "Champion":
         # See ParticipantStats for info
         version = _choose_staticdata_version(self.__match)
-        return Champion(id=self._data[ParticipantData].championId, version=version, region=self.__match.region)
+        return Champion(
+            id=self._data[ParticipantData].championId,
+            version=version,
+            region=self.__match.region,
+        )
 
     # All the summoner data from the match endpoint is passed through to the Summoner class.
     @lazy_property
@@ -1540,7 +1818,15 @@ class Participant(CassiopeiaObject):
             return self.__match.blue_team
 
 
-@searchable({str: ["participants"], bool: ["win"], Champion: ["participants"], Summoner: ["participants"], SummonerSpell: ["participants"]})
+@searchable(
+    {
+        str: ["participants"],
+        bool: ["win"],
+        Champion: ["participants"],
+        Summoner: ["participants"],
+        SummonerSpell: ["participants"],
+    }
+)
 class Team(CassiopeiaObject):
     _data_types = {TeamData}
 
@@ -1552,52 +1838,57 @@ class Team(CassiopeiaObject):
 
     @property
     def first_dragon(self) -> bool:
-        return self._data[TeamData].objectives['dragon'].first
+        return self._data[TeamData].objectives["dragon"].first
 
     @property
     def first_inhibitor(self) -> bool:
-        return self._data[TeamData].objectives['inhibitor'].first
+        return self._data[TeamData].objectives["inhibitor"].first
 
     @property
     def first_rift_herald(self) -> bool:
-        return self._data[TeamData].objectives['riftHerald'].first
+        return self._data[TeamData].objectives["riftHerald"].first
 
     @property
     def first_baron(self) -> bool:
-        return self._data[TeamData].objectives['baron'].first
+        return self._data[TeamData].objectives["baron"].first
 
     @property
     def first_tower(self) -> bool:
-        return self._data[TeamData].objectives['tower'].first
+        return self._data[TeamData].objectives["tower"].first
 
     @property
     def first_blood(self) -> bool:
-        return self._data[TeamData].objectives['champion'].first
+        return self._data[TeamData].objectives["champion"].first
 
     @property
     def bans(self) -> List["Champion"]:
         version = _choose_staticdata_version(self.__match)
-        return [Champion(id=ban.championId, version=version, region=self.__match.region) if ban.championId != -1 else None for ban in self._data[TeamData].bans]
+        return [
+            Champion(id=ban.championId, version=version, region=self.__match.region)
+            if ban.championId != -1
+            else None
+            for ban in self._data[TeamData].bans
+        ]
 
     @property
     def rift_herald_kills(self) -> int:
-        return self._data[TeamData].objectives['riftHerald'].kills
+        return self._data[TeamData].objectives["riftHerald"].kills
 
     @property
     def baron_kills(self) -> int:
-        return self._data[TeamData].objectives['baron'].kills
+        return self._data[TeamData].objectives["baron"].kills
 
     @property
     def inhibitor_kills(self) -> int:
-        return self._data[TeamData].objectives['inhibitor'].kills
+        return self._data[TeamData].objectives["inhibitor"].kills
 
     @property
     def tower_kills(self) -> int:
-        return self._data[TeamData].objectives['tower'].kills
+        return self._data[TeamData].objectives["tower"].kills
 
     @property
     def dragon_kills(self) -> int:
-        return self._data[TeamData].objectives['dragon'].kills
+        return self._data[TeamData].objectives["dragon"].kills
 
     @property
     def side(self) -> Side:
@@ -1613,14 +1904,40 @@ class Team(CassiopeiaObject):
 
     @lazy_property
     def participants(self) -> List[Participant]:
-        return SearchableList([Participant.from_data(p, match=self.__match) for p in self._data[TeamData].participants])
+        return SearchableList(
+            [
+                Participant.from_data(p, match=self.__match)
+                for p in self._data[TeamData].participants
+            ]
+        )
 
 
-@searchable({str: ["participants", "continent", "queue", "mode", "map", "type"], Continent: ["continent"], Queue: ["queue"], MatchType: ["type"], GameMode: ["mode"], Map: ["map"], GameType: ["type"], Item: ["participants"], Patch: ["patch"], Summoner: ["participants"], SummonerSpell: ["participants"]})
+@searchable(
+    {
+        str: ["participants", "continent", "queue", "mode", "map", "type"],
+        Continent: ["continent"],
+        Queue: ["queue"],
+        MatchType: ["type"],
+        GameMode: ["mode"],
+        Map: ["map"],
+        GameType: ["type"],
+        Item: ["participants"],
+        Patch: ["patch"],
+        Summoner: ["participants"],
+        SummonerSpell: ["participants"],
+    }
+)
 class Match(CassiopeiaGhost):
     _data_types = {MatchData}
 
-    def __init__(self, *, id: int = None, continent: Union[Continent, str] = None, region: Union[Region, str] = None, platform: Union[Platform, str] = None):
+    def __init__(
+        self,
+        *,
+        id: int = None,
+        continent: Union[Continent, str] = None,
+        region: Union[Region, str] = None,
+        platform: Union[Platform, str] = None,
+    ):
         if isinstance(region, str):
             region = Region(region)
         if region is not None:
@@ -1695,7 +2012,9 @@ class Match(CassiopeiaGhost):
         if hasattr(self._data[MatchData], "participants"):
             if not self._Ghost__is_loaded(MatchData):
                 self.__load__(MatchData)
-                self._Ghost__set_loaded(MatchData)  # __load__ doesn't trigger __set_loaded.
+                self._Ghost__set_loaded(
+                    MatchData
+                )  # __load__ doesn't trigger __set_loaded.
             # TODO: this is probably not the way to go, but that prevents participants being reappened every time match.participants is called
             if len(self.__participants) == 0:
                 for p in self._data[MatchData].participants:
@@ -1711,7 +2030,10 @@ class Match(CassiopeiaGhost):
     @ghost_load_on
     @lazy
     def teams(self) -> List[Team]:
-        return [Team.from_data(t, match=self) for i, t in enumerate(self._data[MatchData].teams)]
+        return [
+            Team.from_data(t, match=self)
+            for i, t in enumerate(self._data[MatchData].teams)
+        ]
 
     @property
     def red_team(self) -> Team:
@@ -1783,7 +2105,9 @@ class Match(CassiopeiaGhost):
     def is_remake(self) -> bool:
         # TODO: not sure how this should be handled, it feels like the early surrender state should belong the the match itself, not the participants
         if self.__participants[0] is not None:
-            return self.__participants[0].ended_in_early_surrender or self.duration < datetime.timedelta(minutes=5)
+            return self.__participants[
+                0
+            ].ended_in_early_surrender or self.duration < datetime.timedelta(minutes=5)
         else:
             self.duration < datetime.timedelta(minutes=5)
 
@@ -1810,14 +2134,15 @@ class Match(CassiopeiaGhost):
         def position_to_map_image_coords(position):
             x, y = position.x, position.y
             x -= rx0
-            x /= (rx1 - rx0)
-            x *= (imx1 - imx0)
+            x /= rx1 - rx0
+            x *= imx1 - imx0
             y -= ry0
-            y /= (ry1 - ry0)
-            y *= (imy1 - imy0)
+            y /= ry1 - ry0
+            y *= imy1 - imy0
             return x, y
 
         import matplotlib.pyplot as plt
+
         size = 8
         plt.figure(figsize=(size, size))
         plt.imshow(self.map.image.image.rotate(-90))
@@ -1828,5 +2153,5 @@ class Match(CassiopeiaGhost):
                     plt.scatter([x], [y], c="b", s=size * 10)
                 else:
                     plt.scatter([x], [y], c="r", s=size * 10)
-        plt.axis('off')
+        plt.axis("off")
         plt.show()

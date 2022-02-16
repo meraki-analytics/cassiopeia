@@ -1,6 +1,7 @@
 import cassiopeia as cass
 from cassiopeia import Summoner, Champion, ChampionMastery
 
+
 def print_champion_mastery():
     # Name: Kalturi
     # ID: 21359666
@@ -8,12 +9,12 @@ def print_champion_mastery():
 
     me = Summoner(name="Kalturi", region="NA")
     karma = Champion(name="Karma", id=43, region="NA")
-    #cm = ChampionMastery(champion=karma, summoner=me, region="NA")
+    # cm = ChampionMastery(champion=karma, summoner=me, region="NA")
     cm = cass.get_champion_mastery(champion=karma, summoner=me, region="NA")
-    print('Champion ID:', cm.champion.id)
-    print('Mastery points:', cm.points)
-    print('Mastery Level:', cm.level)
-    print('Points until next level:', cm.points_until_next_level)
+    print("Champion ID:", cm.champion.id)
+    print("Mastery points:", cm.points)
+    print("Mastery Level:", cm.level)
+    print("Points until next level:", cm.points_until_next_level)
 
     cms = cass.get_champion_masteries(summoner=me, region="NA")
     cms = me.champion_masteries

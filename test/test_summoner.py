@@ -9,11 +9,14 @@ from .constants import SUMMONER_NAME, UNKNOWN_SUMMONER_NAME
 class TestSummoner(unittest.TestCase):
     def setUp(self):
         cassiopeia.apply_settings(cassiopeia.get_default_config())
-        cassiopeia.set_riot_api_key(os.environ.get('RIOT_API_KEY'))
+        cassiopeia.set_riot_api_key(os.environ.get("RIOT_API_KEY"))
 
     def test_unknown_summoner(self):
-        for e in cassiopeia.Summoner(name="Kalturi", region="NA").league_entries: print(e.league.name)
-        self.assertFalse(cassiopeia.get_summoner(name=UNKNOWN_SUMMONER_NAME, region="NA").exists)
+        for e in cassiopeia.Summoner(name="Kalturi", region="NA").league_entries:
+            print(e.league.name)
+        self.assertFalse(
+            cassiopeia.get_summoner(name=UNKNOWN_SUMMONER_NAME, region="NA").exists
+        )
 
     def test_ranks(self):
         s = cassiopeia.Summoner(name=SUMMONER_NAME)
@@ -38,7 +41,7 @@ class TestSummoner(unittest.TestCase):
         self.assertIsNotNone(s.champion_masteries)
         self.assertIsNotNone(s.match_history)
         self.assertIsNotNone(s.league_entries)
-        #self.assertIsNotNone(s.rank_last_season)
+        # self.assertIsNotNone(s.rank_last_season)
 
     def test_equality(self):
         from_name = cassiopeia.get_summoner(name=SUMMONER_NAME, region="NA")

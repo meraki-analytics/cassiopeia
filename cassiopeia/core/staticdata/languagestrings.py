@@ -27,7 +27,14 @@ class LanguageStringsData(CoreData):
 class LanguageStrings(CassiopeiaGhost):
     _data_types = {LanguageStringsData}
 
-    def __init__(self, *, strings: Dict[str, str] = None, region: Union[Region, str] = None, version: str = None, locale: str = None):
+    def __init__(
+        self,
+        *,
+        strings: Dict[str, str] = None,
+        region: Union[Region, str] = None,
+        version: str = None,
+        locale: str = None
+    ):
         if locale is None and region is not None:
             locale = Region(region).default_locale
         kwargs = {"region": region, "locale": locale}
@@ -38,7 +45,12 @@ class LanguageStrings(CassiopeiaGhost):
         super().__init__(**kwargs)
 
     def __get_query__(self):
-        return {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale}
+        return {
+            "region": self.region,
+            "platform": self.platform,
+            "version": self.version,
+            "locale": self.locale,
+        }
 
     @lazy_property
     def region(self) -> Region:

@@ -39,11 +39,17 @@ class ChampionRotation(CassiopeiaGhost):
     @CassiopeiaGhost.property(ChampionRotationData)
     @ghost_load_on
     def free_champions(self) -> SearchableLazyList:
-        gen = (Champion(region=self.region, id=id_) for id_ in self._data[ChampionRotationData].freeChampionIds)
+        gen = (
+            Champion(region=self.region, id=id_)
+            for id_ in self._data[ChampionRotationData].freeChampionIds
+        )
         return SearchableLazyList(generator=gen)
 
     @CassiopeiaGhost.property(ChampionRotationData)
     @ghost_load_on
     def free_champions_for_new_players(self) -> SearchableLazyList:
-        gen = (Champion(region=self.region, id=id_) for id_ in self._data[ChampionRotationData].freeChampionIdsForNewPlayers)
+        gen = (
+            Champion(region=self.region, id=id_)
+            for id_ in self._data[ChampionRotationData].freeChampionIdsForNewPlayers
+        )
         return SearchableLazyList(generator=gen)

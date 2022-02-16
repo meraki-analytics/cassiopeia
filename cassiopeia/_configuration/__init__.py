@@ -33,4 +33,5 @@ class CassiopeiaConfiguration(object, metaclass=MetaConfiguration):
 
 
 import sys
+
 sys.modules["cassiopeia.configuration"] = CassiopeiaConfiguration()

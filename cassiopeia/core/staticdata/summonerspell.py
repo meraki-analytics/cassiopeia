@@ -4,7 +4,15 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable, SearchableList
 
 from ...data import Resource, Region, Platform, GameMode
-from ..common import CoreData, CoreDataList, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, get_latest_version, ghost_load_on
+from ..common import (
+    CoreData,
+    CoreDataList,
+    CassiopeiaObject,
+    CassiopeiaGhost,
+    CassiopeiaLazyList,
+    get_latest_version,
+    ghost_load_on,
+)
 from .common import ImageData, Image, Sprite
 from ...dto.staticdata import summonerspell as dto
 
@@ -29,13 +37,22 @@ class LevelTipData(CoreData):
 
 class SummonerSpellData(CoreData):
     _dto_type = dto.SummonerSpellDto
-    _renamed = {"maxrank": "maxRank", "cooldown": "cooldowns", "cost": "costs", "effect": "effects", "costType": "resource", "included_data": "includedData"}
+    _renamed = {
+        "maxrank": "maxRank",
+        "cooldown": "cooldowns",
+        "cost": "costs",
+        "effect": "effects",
+        "costType": "resource",
+        "included_data": "includedData",
+    }
 
     def __call__(self, **kwargs):
         if "vars" in kwargs:
             self.variables = [SpellVarsData(**v) for v in kwargs.pop("vars")]
         if "altimages" in kwargs:
-            self.alternativeImages = [ImageData(**alt) for alt in kwargs.pop("altimages")]
+            self.alternativeImages = [
+                ImageData(**alt) for alt in kwargs.pop("altimages")
+            ]
         if "image" in kwargs:
             self.image = ImageData(**kwargs.pop("image"))
         super().__call__(**kwargs)
@@ -50,7 +67,14 @@ class SummonerSpellData(CoreData):
 class SummonerSpells(CassiopeiaLazyList):
     _data_types = {SummonerSpellListData}
 
-    def __init__(self, *, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+    def __init__(
+        self,
+        *,
+        region: Union[Region, str] = None,
+        version: str = None,
+        locale: str = None,
+        included_data: Set[str] = None
+    ):
         if included_data is None:
             included_data = {"all"}
         if locale is None and region is not None:
@@ -122,7 +146,16 @@ class SpellVars(CassiopeiaObject):
 class SummonerSpell(CassiopeiaGhost):
     _data_types = {SummonerSpellData}
 
-    def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None, included_data: Set[str] = None):
+    def __init__(
+        self,
+        *,
+        id: int = None,
+        name: str = None,
+        region: Union[Region, str] = None,
+        version: str = None,
+        locale: str = None,
+        included_data: Set[str] = None
+    ):
         if included_data is None:
             included_data = {"all"}
         if locale is None and region is not None:
@@ -137,7 +170,13 @@ class SummonerSpell(CassiopeiaGhost):
         super().__init__(**kwargs)
 
     def __get_query__(self):
-        query = {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale, "includedData": self.included_data}
+        query = {
+            "region": self.region,
+            "platform": self.platform,
+            "version": self.version,
+            "locale": self.locale,
+            "includedData": self.included_data,
+        }
         if hasattr(self._data[SummonerSpellData], "id"):
             query["id"] = self._data[SummonerSpellData].id
         if hasattr(self._data[SummonerSpellData], "name"):
@@ -149,10 +188,14 @@ class SummonerSpell(CassiopeiaGhost):
             return False
         s = {}
         o = {}
-        if hasattr(self._data[SummonerSpellData], "id"): s["id"] = self.id
-        if hasattr(other._data[SummonerSpellData], "id"): o["id"] = other.id
-        if hasattr(self._data[SummonerSpellData], "name"): s["name"] = self.name
-        if hasattr(other._data[SummonerSpellData], "name"): o["name"] = other.name
+        if hasattr(self._data[SummonerSpellData], "id"):
+            s["id"] = self.id
+        if hasattr(other._data[SummonerSpellData], "id"):
+            o["id"] = other.id
+        if hasattr(self._data[SummonerSpellData], "name"):
+            s["name"] = self.name
+        if hasattr(other._data[SummonerSpellData], "name"):
+            o["name"] = other.name
         if any(s.get(key, "s") == o.get(key, "o") for key in s):
             return True
         else:
@@ -166,7 +209,9 @@ class SummonerSpell(CassiopeiaGhost):
             id_ = self.id
         if hasattr(self._data[SummonerSpellData], "name"):
             name = self.name
-        return "SummonerSpell(name='{name}', id={id_}, region='{region}')".format(name=name, id_=id_, region=region.value)
+        return "SummonerSpell(name='{name}', id={id_}, region='{region}')".format(
+            name=name, id_=id_, region=region.value
+        )
 
     __hash__ = CassiopeiaGhost.__hash__
 
@@ -204,14 +249,18 @@ class SummonerSpell(CassiopeiaGhost):
     @ghost_load_on
     @lazy
     def modes(self) -> List[GameMode]:
-        return SearchableList([GameMode(mode) for mode in self._data[SummonerSpellData].modes])
+        return SearchableList(
+            [GameMode(mode) for mode in self._data[SummonerSpellData].modes]
+        )
 
     @CassiopeiaGhost.property(SummonerSpellData)
     @ghost_load_on
     @lazy
     def variables(self) -> List[SpellVars]:
         """Contains spell data."""
-        return SearchableList(SpellVars(v) for v in self._data[SummonerSpellData].variables)
+        return SearchableList(
+            SpellVars(v) for v in self._data[SummonerSpellData].variables
+        )
 
     @CassiopeiaGhost.property(SummonerSpellData)
     @ghost_load_on
@@ -293,7 +342,10 @@ class SummonerSpell(CassiopeiaGhost):
     @lazy
     def alternative_images(self) -> List[Image]:
         """The alternative images for this spell. These won't exist after patch NN, when Riot standardized all images."""
-        return SearchableList(Image.from_data(alt) for alt in self._data[SummonerSpellData].alternativeImages)
+        return SearchableList(
+            Image.from_data(alt)
+            for alt in self._data[SummonerSpellData].alternativeImages
+        )
 
     @CassiopeiaGhost.property(SummonerSpellData)
     @ghost_load_on

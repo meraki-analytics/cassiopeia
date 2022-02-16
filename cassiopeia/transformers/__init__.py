@@ -11,16 +11,18 @@ from .leagues import LeagueTransformer
 from .thirdpartycode import ThirdPartyCodeTransformer
 
 
-riotapi_transformer = CompositeDataTransformer([
-    StaticDataTransformer(),
-    ChampionTransformer(),
-    ChampionMasteryTransformer(),
-    SummonerTransformer(),
-    MatchTransformer(),
-    SpectatorTransformer(),
-    StatusTransformer(),
-    LeagueTransformer(),
-    ThirdPartyCodeTransformer()
-])
+riotapi_transformer = CompositeDataTransformer(
+    [
+        StaticDataTransformer(),
+        ChampionTransformer(),
+        ChampionMasteryTransformer(),
+        SummonerTransformer(),
+        MatchTransformer(),
+        SpectatorTransformer(),
+        StatusTransformer(),
+        LeagueTransformer(),
+        ThirdPartyCodeTransformer(),
+    ]
+)
 
 __transformers__ = [riotapi_transformer]

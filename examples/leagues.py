@@ -16,7 +16,9 @@ def print_leagues(summoner_name: str, region: str):
         print("Promos wins", entries.fives.promos.wins)
         print("Promos losses:", entries.fives.promos.losses)
         print("Games not yet played in promos:", entries.fives.promos.not_played)
-        print("Number of wins required to win promos:", entries.fives.promos.wins_required)
+        print(
+            "Number of wins required to win promos:", entries.fives.promos.wins_required
+        )
     else:
         print("The summoner is not in their promos.")
 
@@ -27,12 +29,19 @@ def print_leagues(summoner_name: str, region: str):
 
     print(f"Listing all summoners in this league:")
     for position, entry in enumerate(entries.fives.league.entries):
-        print(entry.summoner.name, entry.league_points, entry.tier, entry.division, position)
+        print(
+            entry.summoner.name,
+            entry.league_points,
+            entry.tier,
+            entry.division,
+            position,
+        )
 
     print()
     print("Master's League name:")
     masters = cass.get_master_league(queue=Queue.ranked_solo_fives, region=region)
     print(masters.name)
+
 
 if __name__ == "__main__":
     print_leagues("Kalturi", "NA")

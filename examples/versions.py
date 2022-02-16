@@ -12,5 +12,6 @@ def get_versions():
     realms = cass.get_realms(region="NA")
     print(realms.latest_versions)
 
+
 if __name__ == "__main__":
     get_versions()

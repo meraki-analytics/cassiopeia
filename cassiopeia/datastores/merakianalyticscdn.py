@@ -10,6 +10,7 @@ try:
     import ujson as json
 except ImportError:
     import json
+
     json.decode = json.loads
 
 T = TypeVar("T")
@@ -24,11 +25,21 @@ class MerakiAnalyticsCDN(DataSource):
         self._cache = {}
 
     @DataSource.dispatch
-    def get(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> T:
+    def get(
+        self,
+        type: Type[T],
+        query: MutableMapping[str, Any],
+        context: PipelineContext = None,
+    ) -> T:
         pass
 
     @DataSource.dispatch
-    def get_many(self, type: Type[T], query: MutableMapping[str, Any], context: PipelineContext = None) -> Iterable[T]:
+    def get_many(
+        self,
+        type: Type[T],
+        query: MutableMapping[str, Any],
+        context: PipelineContext = None,
+    ) -> Iterable[T]:
         pass
 
     def calculate_hash(self, query):
@@ -40,7 +51,9 @@ class MerakiAnalyticsCDN(DataSource):
     ##############
 
     @get.register(PatchListDto)
-    def get_patch_list(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> PatchListDto:
+    def get_patch_list(
+        self, query: MutableMapping[str, Any], context: PipelineContext = None
+    ) -> PatchListDto:
         url = "https://cdn.merakianalytics.com/riot/lol/resources/patches.json"
         try:
             body = self._client.get(url)[0]
@@ -50,13 +63,14 @@ class MerakiAnalyticsCDN(DataSource):
 
         return PatchListDto(**body)
 
-
     ##################
     # Champion Rates #
     ##################
 
     @get.register(ChampionAllRatesDto)
-    def get_champion_all_rates(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionAllRatesDto:
+    def get_champion_all_rates(
+        self, query: MutableMapping[str, Any], context: PipelineContext = None
+    ) -> ChampionAllRatesDto:
         try:
             return self._cache[ChampionRatesDto]
         except KeyError:
@@ -74,7 +88,9 @@ class MerakiAnalyticsCDN(DataSource):
         return result
 
     @get.register(ChampionRatesDto)
-    def get_champion_rates(self, query: MutableMapping[str, Any], context: PipelineContext = None) -> ChampionRatesDto:
+    def get_champion_rates(
+        self, query: MutableMapping[str, Any], context: PipelineContext = None
+    ) -> ChampionRatesDto:
         data = self.get_champion_all_rates(query, context)
         rates = data["data"][query["id"]]
         return ChampionRatesDto(**rates)

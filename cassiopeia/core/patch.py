@@ -26,7 +26,14 @@ def pairwise(iterable):
 class Patch(object):
     __patches = None
 
-    def __init__(self, region: Union[str, Region], season: Season, name: str, start: Union[arrow.Arrow, float], end: Optional[Union[arrow.Arrow, float]]):
+    def __init__(
+        self,
+        region: Union[str, Region],
+        season: Season,
+        name: str,
+        start: Union[arrow.Arrow, float],
+        end: Optional[Union[arrow.Arrow, float]],
+    ):
         if not isinstance(start, arrow.Arrow):
             start = arrow.get(start)
         if end is not None and not isinstance(end, arrow.Arrow):
@@ -83,20 +90,30 @@ class Patch(object):
         cls.__patches = defaultdict(lambda: [None for _ in range(len(patches))])
         for i, (patch, next_patch) in enumerate(pairwise(patches)):
             for region in Region:
-                start = arrow.get(patch["start"] + shifts[region.platform.value]).to(region.timezone)
+                start = arrow.get(patch["start"] + shifts[region.platform.value]).to(
+                    region.timezone
+                )
                 season = Season.from_id(patch["season"])
                 name = patch["name"]
-                end = arrow.get(next_patch["start"] + shifts[region.platform.value]).to(region.timezone)
-                cls.__patches[region][i] = Patch(region=region, season=season, name=name, start=start, end=end)
+                end = arrow.get(next_patch["start"] + shifts[region.platform.value]).to(
+                    region.timezone
+                )
+                cls.__patches[region][i] = Patch(
+                    region=region, season=season, name=name, start=start, end=end
+                )
 
         # Since pairwise skips the last patch in the list, add it manually here
         patch = patches[-1]
         for region in Region:
-            start = arrow.get(patch["start"] + shifts[region.platform.value]).to(region.timezone)
+            start = arrow.get(patch["start"] + shifts[region.platform.value]).to(
+                region.timezone
+            )
             season = Season.from_id(patch["season"])
             name = patch["name"]
             end = None
-            cls.__patches[region][-1] = Patch(region=region, season=season, name=name, start=start, end=end)
+            cls.__patches[region][-1] = Patch(
+                region=region, season=season, name=name, start=start, end=end
+            )
 
         # Sort each region's patches by start date
         for region in Region:
@@ -142,7 +159,9 @@ class Patch(object):
         return self.name == other.name
 
     def __lt__(self, other: "Patch") -> bool:
-        if int(self.major) < int(other.major) or (self.major == other.major and int(self.minor) < int(other.minor)):
+        if int(self.major) < int(other.major) or (
+            self.major == other.major and int(self.minor) < int(other.minor)
+        ):
             return True
         else:
             return False

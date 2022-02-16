@@ -5,7 +5,15 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
 from ..data import Region, Platform
-from .common import CoreData, CassiopeiaObject, CassiopeiaGhost, CassiopeiaLazyList, CoreDataList, get_latest_version, ghost_load_on
+from .common import (
+    CoreData,
+    CassiopeiaObject,
+    CassiopeiaGhost,
+    CassiopeiaLazyList,
+    CoreDataList,
+    get_latest_version,
+    ghost_load_on,
+)
 from ..dto.championmastery import ChampionMasteryDto
 from .staticdata.champion import Champion
 from .summoner import Summoner
@@ -24,7 +32,15 @@ class ChampionMasteryListData(CoreDataList):
 
 class ChampionMasteryData(CoreData):
     _dto_type = ChampionMasteryDto
-    _renamed = {"championLevel": "level", "championPoints": "points", "playerId": "summonerId", "championPointsUntilNextLevel": "pointsUntilNextLevel", "championPointsSinceLastLevel": "pointsSinceLastLevel", "lastPlayTime": "lastPlayed", "tokensEarned": "tokens"}
+    _renamed = {
+        "championLevel": "level",
+        "championPoints": "points",
+        "playerId": "summonerId",
+        "championPointsUntilNextLevel": "pointsUntilNextLevel",
+        "championPointsSinceLastLevel": "pointsSinceLastLevel",
+        "lastPlayTime": "lastPlayed",
+        "tokensEarned": "tokens",
+    }
 
 
 ##############
@@ -41,7 +57,9 @@ class ChampionMasteries(CassiopeiaLazyList):
         CassiopeiaObject.__init__(self, **kwargs)
 
     @classmethod
-    def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, int, str], region: Union[Region, str]) -> dict:
+    def __get_query_from_kwargs__(
+        cls, *, summoner: Union[Summoner, int, str], region: Union[Region, str]
+    ) -> dict:
         query = {"region": region}
         if isinstance(summoner, Summoner):
             query["summoner.id"] = summoner.id
@@ -67,11 +85,27 @@ class ChampionMasteries(CassiopeiaLazyList):
         return self.__summoner
 
 
-@searchable({str: ["champion", "summoner"], int: ["points", "level"], bool: ["chest_granted"], arrow.Arrow: ["last_played"], Champion: ["champion"], Summoner: ["summoner"]})
+@searchable(
+    {
+        str: ["champion", "summoner"],
+        int: ["points", "level"],
+        bool: ["chest_granted"],
+        arrow.Arrow: ["last_played"],
+        Champion: ["champion"],
+        Summoner: ["summoner"],
+    }
+)
 class ChampionMastery(CassiopeiaGhost):
     _data_types = {ChampionMasteryData}
 
-    def __init__(self, *, summoner: Union[Summoner, int, str] = None, champion: Union[Champion, int, str] = None, region: Union[Region, str] = None, _account_id: str = None):
+    def __init__(
+        self,
+        *,
+        summoner: Union[Summoner, int, str] = None,
+        champion: Union[Champion, int, str] = None,
+        region: Union[Region, str] = None,
+        _account_id: str = None
+    ):
         kwargs = {"region": region}
 
         if _account_id is not None:
@@ -93,7 +127,11 @@ class ChampionMastery(CassiopeiaGhost):
             if isinstance(champion, Champion):
                 self.__class__.champion.fget._lazy_set(self, champion)
             elif isinstance(champion, str):
-                champion = Champion(name=champion, region=self.region, version=get_latest_version(self.region, endpoint="champion"))
+                champion = Champion(
+                    name=champion,
+                    region=self.region,
+                    version=get_latest_version(self.region, endpoint="champion"),
+                )
                 self.__class__.champion.fget._lazy_set(self, champion)
             else:  # int
                 kwargs["championId"] = champion
@@ -101,7 +139,13 @@ class ChampionMastery(CassiopeiaGhost):
         super().__init__(**kwargs)
 
     @classmethod
-    def __get_query_from_kwargs__(cls, *, summoner: Union[Summoner, int, str], champion: Union[Champion, int, str], region: Union[Region, str]) -> dict:
+    def __get_query_from_kwargs__(
+        cls,
+        *,
+        summoner: Union[Summoner, int, str],
+        champion: Union[Champion, int, str],
+        region: Union[Region, str]
+    ) -> dict:
         query = {"region": region}
         if isinstance(summoner, Summoner):
             query["summoner.id"] = summoner.id
@@ -112,7 +156,6 @@ class ChampionMastery(CassiopeiaGhost):
             else:
                 # It's probably a summoner id
                 query["summoner.id"] = summoner
-            
 
         if isinstance(champion, Champion):
             query["champion.id"] = champion.id
@@ -123,14 +166,21 @@ class ChampionMastery(CassiopeiaGhost):
         return query
 
     def __get_query__(self):
-        return {"region": self.region, "platform": self.platform.value, "summoner.id": self.summoner.id, "champion.id": self.champion.id}
+        return {
+            "region": self.region,
+            "platform": self.platform.value,
+            "summoner.id": self.summoner.id,
+            "champion.id": self.champion.id,
+        }
 
     def __load__(self, load_group: CoreData = None) -> None:
         from datapipelines import NotFoundError
+
         try:
             return super().__load__(load_group)
         except NotFoundError:
             from ..transformers.championmastery import ChampionMasteryTransformer
+
             dto = {
                 "championLevel": 0,
                 "chestGranted": False,
@@ -138,7 +188,7 @@ class ChampionMastery(CassiopeiaGhost):
                 "championPointsUntilNextLevel": 1800,
                 "tokensEarned": 0,
                 "championPointsSinceLastLevel": 0,
-                "lastPlayTime": None
+                "lastPlayTime": None,
             }
             data = ChampionMasteryTransformer.champion_mastery_dto_to_data(None, dto)
             self.__load_hook__(load_group, data)
@@ -149,7 +199,9 @@ class ChampionMastery(CassiopeiaGhost):
         return self.champion == other.champion and self.summoner == other.summoner
 
     def __str__(self):
-        return "ChampionMastery(summoner={summoner}, champion={champion})".format(summoner=str(self.summoner), champion=str(self.champion))
+        return "ChampionMastery(summoner={summoner}, champion={champion})".format(
+            summoner=str(self.summoner), champion=str(self.champion)
+        )
 
     __hash__ = CassiopeiaGhost.__hash__
 
@@ -165,13 +217,19 @@ class ChampionMastery(CassiopeiaGhost):
     @lazy
     def champion(self) -> Champion:
         """Champion for this entry."""
-        return Champion(id=self._data[ChampionMasteryData].championId, region=self.region, version=get_latest_version(self.region, endpoint="champion"))
+        return Champion(
+            id=self._data[ChampionMasteryData].championId,
+            region=self.region,
+            version=get_latest_version(self.region, endpoint="champion"),
+        )
 
     @CassiopeiaGhost.property(ChampionMasteryData)
     @lazy
     def summoner(self) -> Summoner:
         """Summoner for this entry."""
-        return Summoner(id=self._data[ChampionMasteryData].summonerId, region=self.region)
+        return Summoner(
+            id=self._data[ChampionMasteryData].summonerId, region=self.region
+        )
 
     @CassiopeiaGhost.property(ChampionMasteryData)
     @ghost_load_on

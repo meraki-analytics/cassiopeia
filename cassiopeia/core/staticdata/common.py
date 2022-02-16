@@ -44,7 +44,9 @@ class Sprite(CassiopeiaObject):
 
     @property
     def url(self) -> str:
-        return "https://ddragon.leagueoflegends.com/cdn/{version}/img/sprite/{sprite}".format(version=self.version, sprite=self.sprite)
+        return "https://ddragon.leagueoflegends.com/cdn/{version}/img/sprite/{sprite}".format(
+            version=self.version, sprite=self.sprite
+        )
 
     @lazy_property
     def image(self) -> PILImage:
@@ -69,7 +71,9 @@ class Image(CassiopeiaObject):
 
     @property
     def url(self) -> str:
-        return "https://ddragon.leagueoflegends.com/cdn/{version}/img/{group}/{full}".format(version=self.version, group=self.group, full=self.full)
+        return "https://ddragon.leagueoflegends.com/cdn/{version}/img/{group}/{full}".format(
+            version=self.version, group=self.group, full=self.full
+        )
 
     @lazy_property
     def image(self) -> PILImage:
@@ -77,10 +81,12 @@ class Image(CassiopeiaObject):
 
     @lazy_property
     def sprite_info(self) -> Sprite:
-        sprite = Sprite(w=self._data[ImageData].width,
-                        h=self._data[ImageData].height,
-                        x=self._data[ImageData].x,
-                        y=self._data[ImageData].y,
-                        sprite=self._data[ImageData].sprite,
-                        version=self._data[ImageData].version)
+        sprite = Sprite(
+            w=self._data[ImageData].width,
+            h=self._data[ImageData].height,
+            x=self._data[ImageData].x,
+            y=self._data[ImageData].y,
+            sprite=self._data[ImageData].sprite,
+            version=self._data[ImageData].version,
+        )
         return sprite

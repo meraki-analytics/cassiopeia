@@ -10,7 +10,12 @@ def filter_match_history(summoner, patch):
     end_time = patch.end
     if end_time is None:
         end_time = arrow.now()
-    match_history = MatchHistory(summoner=summoner, queues={Queue.aram}, begin_time=patch.start, end_time=end_time)
+    match_history = MatchHistory(
+        summoner=summoner,
+        queues={Queue.aram},
+        begin_time=patch.start,
+        end_time=end_time,
+    )
     return match_history
 
 
@@ -41,7 +46,10 @@ def collect_matches():
             new_match_id = random.choice(unpulled_match_ids)
             new_match = Match(id=new_match_id, region=region)
             for participant in new_match.participants:
-                if participant.summoner.id not in pulled_summoner_ids and participant.summoner.id not in unpulled_summoner_ids:
+                if (
+                    participant.summoner.id not in pulled_summoner_ids
+                    and participant.summoner.id not in unpulled_summoner_ids
+                ):
                     unpulled_summoner_ids.add(participant.summoner.id)
             # The above lines will trigger the match to load its data by iterating over all the participants.
             # If you have a database in your datapipeline, the match will automatically be stored in it.

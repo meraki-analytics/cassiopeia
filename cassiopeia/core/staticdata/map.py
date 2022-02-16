@@ -4,7 +4,15 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import searchable
 
 from ...data import Region, Platform
-from ..common import CoreData, CassiopeiaObject, CassiopeiaGhost, CoreDataList, CassiopeiaLazyList, get_latest_version, ghost_load_on
+from ..common import (
+    CoreData,
+    CassiopeiaObject,
+    CassiopeiaGhost,
+    CoreDataList,
+    CassiopeiaLazyList,
+    get_latest_version,
+    ghost_load_on,
+)
 from .common import ImageData, Sprite, Image
 from ...dto.staticdata import map as dto
 
@@ -21,7 +29,12 @@ class MapListData(CoreDataList):
 
 class MapData(CoreData):
     _dto_type = dto.MapDto
-    _renamed = {"mapId": "id", "mapName": "name", "unpurchasableItemList": "unpurchasableItems", "included_data": "includedData"}
+    _renamed = {
+        "mapId": "id",
+        "mapName": "name",
+        "unpurchasableItemList": "unpurchasableItems",
+        "included_data": "includedData",
+    }
 
     def __call__(self, **kwargs):
         if "image" in kwargs:
@@ -38,7 +51,13 @@ class MapData(CoreData):
 class Maps(CassiopeiaLazyList):
     _data_types = {MapListData}
 
-    def __init__(self, *, region: Union[Region, str] = None, version: str = None, locale: str = None):
+    def __init__(
+        self,
+        *,
+        region: Union[Region, str] = None,
+        version: str = None,
+        locale: str = None
+    ):
         if locale is None and region is not None:
             locale = Region(region).default_locale
         kwargs = {"region": region, "locale": locale}
@@ -72,7 +91,15 @@ class Maps(CassiopeiaLazyList):
 class Map(CassiopeiaGhost):
     _data_types = {MapData}
 
-    def __init__(self, *, id: int = None, name: str = None, region: Union[Region, str] = None, version: str = None, locale: str = None):
+    def __init__(
+        self,
+        *,
+        id: int = None,
+        name: str = None,
+        region: Union[Region, str] = None,
+        version: str = None,
+        locale: str = None
+    ):
         if locale is None and region is not None:
             locale = Region(region).default_locale
         kwargs = {"region": region, "locale": locale}
@@ -85,7 +112,12 @@ class Map(CassiopeiaGhost):
         super().__init__(**kwargs)
 
     def __get_query__(self):
-        query = {"region": self.region, "platform": self.platform, "version": self.version, "locale": self.locale}
+        query = {
+            "region": self.region,
+            "platform": self.platform,
+            "version": self.version,
+            "locale": self.locale,
+        }
         if hasattr(self._data[MapData], "id"):
             query["id"] = self.id
         if hasattr(self._data[MapData], "name"):
@@ -97,10 +129,14 @@ class Map(CassiopeiaGhost):
             return False
         s = {}
         o = {}
-        if hasattr(self._data[MapData], "id"): s["id"] = self.id
-        if hasattr(other._data[MapData], "id"): o["id"] = other.id
-        if hasattr(self._data[MapData], "name"): s["name"] = self.name
-        if hasattr(other._data[MapData], "name"): o["name"] = other.name
+        if hasattr(self._data[MapData], "id"):
+            s["id"] = self.id
+        if hasattr(other._data[MapData], "id"):
+            o["id"] = other.id
+        if hasattr(self._data[MapData], "name"):
+            s["name"] = self.name
+        if hasattr(other._data[MapData], "name"):
+            o["name"] = other.name
         if any(s.get(key, "s") == o.get(key, "o") for key in s):
             return True
         else:
@@ -114,7 +150,9 @@ class Map(CassiopeiaGhost):
             id_ = self.id
         if hasattr(self._data[MapData], "name"):
             name = self.name
-        return "Map(name='{name}', id={id_}, region='{region}')".format(name=name, id_=id_, region=region.value)
+        return "Map(name='{name}', id={id_}, region='{region}')".format(
+            name=name, id_=id_, region=region.value
+        )
 
     __hash__ = CassiopeiaGhost.__hash__
 

@@ -2,11 +2,11 @@ from cassiopeia import Queue, Summoner, SummonersRiftArea
 
 
 def test_summonersrift_map():
-    summoner = Summoner(name='Kalturi', region='NA')
+    summoner = Summoner(name="Kalturi", region="NA")
     match = summoner.match_history(queues=[Queue.ranked_solo_fives])[0]
     for frame in match.timeline.frames:
         for event in frame.events:
-            if event.type == 'CHAMPION_KILL':
+            if event.type == "CHAMPION_KILL":
                 SummonersRiftArea.from_position(event.position)
 
 
