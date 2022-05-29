@@ -468,7 +468,7 @@ class MatchHistory(CassiopeiaLazyList):  # type: List[Match]
         count: int = None,
     ):
         if start_time is not None and end_time is not None and start_time > end_time:
-            raise ValueError("`end_time` should be greater than `begin_time`")
+            raise ValueError("`end_time` should be greater than `start_time`")
         kwargs = {
             "continent": continent,
             "puuid": puuid,
