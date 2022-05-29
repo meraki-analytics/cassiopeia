@@ -599,7 +599,6 @@ class UnloadedGhostStore(DataSource):
     def get_match_history(
         self, query: MutableMapping[str, Any], context: PipelineContext = None
     ) -> MatchHistory:
-        print(query)
         continent = query["continent"]
         puuid = query["puuid"]
         start = query.get("start", 0)
