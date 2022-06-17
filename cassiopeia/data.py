@@ -612,7 +612,8 @@ class Queue(Enum):
     odyssey_onslaught = "ODYSSEY_ONSLAUGHT"  # 1070
     normal_tft = "NORMAL_TFT"  # 1090
     ranked_tft = "RANKED_TFT"  # 1100
-    ranked_tft_pairs = "RANKED_TFT_PAIRS" # 1150
+    ranked_tft_pairs = "RANKED_TFT_PAIRS"  # 1150
+    ranked_tft_double_up = "RANKED_TFT_DOUBLE_UP"  # 1160
     deprecated_nexus_blitz = "NEXUS_BLITZ"  # 1200
     nexus_blitz = "NEXUS_BLITZ"  # 1300
     ultimate_spellbook = "ULTIMATE_SPELLBOOK"  # 1400
@@ -703,7 +704,8 @@ QUEUE_IDS = {
     Queue.odyssey_onslaught: 1070,  # Odyssey: Extraction
     Queue.normal_tft: 1090,  #  Convergence, Normal Teamfight Tactics games
     Queue.ranked_tft: 1100,  #  Convergence, Ranked Teamfight Tactics games
-    Queue.ranked_tft_pairs: 1150, # Convergence, Teamfight Tactics (Double Up Beta) games
+    Queue.ranked_tft_pairs: 1150,  # Convergence, Teamfight Tactics (Double Up Beta) games
+    Queue.ranked_tft_double_up: 1160,  # Convergence, Teamfight Tactics Double Up
     Queue.deprecated_nexus_blitz: 1200,  # Nexus Blitz map    Nexus Blitz Deprecated in patch 9.2 in favor of queueId 1300
     Queue.nexus_blitz: 1300,  # Nexus Blitz map    Nexus Blitz
     Queue.ultimate_spellbook: 1400,  # Summoner's Rift   Ultimate Spellbook
@@ -723,5 +725,6 @@ RANKED_QUEUES = {
     Queue.ranked_flex_fives,  # Summoner's Rift    5v5 Ranked Flex games
     Queue.ranked_flex_threes,  # Twisted Treeline    3v3 Ranked Flex games
     Queue.ranked_tft,  # Convergence  Ranked Teamfight Tactics games
-    Queue.ranked_tft_pairs, # Convergence  Ranked Teamfight Tactics (Double Up Beta) games
+    Queue.ranked_tft_pairs,  # Convergence  Ranked Teamfight Tactics (Double Up Beta) games
+    Queue.ranked_tft_double_up,  # Convergence  Ranked Teamfight Tactics Double Up games
 }
