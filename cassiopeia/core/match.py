@@ -1920,7 +1920,7 @@ class Match(CassiopeiaGhost):
     def __init__(
         self,
         *,
-        id: int = None,
+        id: str = None,
         continent: Union[Continent, str] = None,
         region: Union[Region, str] = None,
         platform: Union[Platform, str] = None,
@@ -1971,7 +1971,7 @@ class Match(CassiopeiaGhost):
         return Platform(self._data[MatchData].platformId)
 
     @property
-    def id(self) -> int:
+    def id(self) -> str:
         return self._data[MatchData].id
 
     @lazy_property
