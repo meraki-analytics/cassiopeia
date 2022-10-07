@@ -1,6 +1,6 @@
 import cassiopeia as cass
 from cassiopeia import Summoner, Match
-from cassiopeia.data import Season, Queue
+from cassiopeia.data import Queue
 from collections import Counter
 
 

@@ -304,64 +304,6 @@ class Rank:
         return self.tuple >= other.tuple
 
 
-class Season(Enum):
-    preseason_3 = "PRESEASON3"
-    season_3 = "SEASON3"
-    preseason_4 = "PRESEASON2014"
-    season_4 = "SEASON2014"
-    preseason_5 = "PRESEASON2015"
-    season_5 = "SEASON2015"
-    preseason_6 = "PRESEASON2016"
-    season_6 = "SEASON2016"
-    preseason_7 = "PRESEASON2017"
-    season_7 = "SEASON2017"
-    preseason_8 = "PRESEASON2018"
-    season_8 = "SEASON2018"
-    preseason_9 = "PRESEASON2019"
-    season_9 = "SEASON2019"
-
-    @property
-    def id(self):
-        return SEASON_IDS[self]
-
-    def from_id(id: int):
-        return {i: season for season, i in SEASON_IDS.items()}[id]
-
-    def start(self, region: Region) -> arrow.Arrow:
-        from .core import Patch
-
-        if Patch._Patch__patches is None:
-            Patch.__load__()
-        for patch in Patch._Patch__patches[region]:
-            if patch.season == self:
-                return patch.start
-
-    def end(self, region: Region) -> arrow.Arrow:
-        from .core import Patch
-
-        for patch in reversed(Patch._Patch__patches[region]):
-            if patch.season == self:
-                return patch.end
-
-
-SEASON_IDS = {
-    Season.preseason_3: 0,
-    Season.season_3: 1,
-    Season.preseason_4: 2,
-    Season.season_4: 3,
-    Season.preseason_5: 4,
-    Season.season_5: 5,
-    Season.preseason_6: 6,
-    Season.season_6: 7,
-    Season.preseason_7: 8,
-    Season.season_7: 9,
-    Season.preseason_8: 10,
-    Season.season_8: 11,
-    Season.preseason_9: 12,
-    Season.season_9: 13,
-}
-
-
 class GameType(Enum):
     custom = "CUSTOM_GAME"
     tutorial = "TUTORIAL_GAME"
@@ -618,7 +560,7 @@ class Queue(Enum):
     tutorial3 = "TUTORIAL_3"  # Summoner's Rift  Tutorial 3
 
     def from_id(id: int):
-        return {i: season for season, i in QUEUE_IDS.items()}[id]
+        return {i: queue for queue, i in QUEUE_IDS.items()}[id]
 
     @property
     def id(self):

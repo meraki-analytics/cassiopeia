@@ -3,7 +3,6 @@ import random
 
 import cassiopeia as cass
 from cassiopeia import (
-    Season,
     Queue,
     Summoner,
     Match,
@@ -50,7 +49,7 @@ def test_match():
 
     match_history = cass.get_match_history(summoner, queues={Queue.ranked_solo_fives})
     match_history = summoner.match_history
-    match_history(seasons={Season.season_7}, queues={Queue.ranked_solo_fives})
+    match_history(queues={Queue.ranked_solo_fives})
 
     champion_id_to_name_mapping = {
         champion.id: champion.name for champion in cass.get_champions(region=region)

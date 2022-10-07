@@ -13,7 +13,7 @@ from datapipelines import (
 )
 
 from .common import KernelSource, APINotFoundError
-from ...data import Platform, Season, Queue, SEASON_IDS, QUEUE_IDS
+from ...data import Platform, Queue, QUEUE_IDS
 from ...dto.match import MatchDto, MatchListDto, TimelineDto
 from ..uniquekeys import convert_region_to_platform
 
@@ -113,8 +113,6 @@ class MatchAPI(KernelSource):
         .as_(int)
         .also.has("maxNumberOfMatches")
         .as_(float)
-        .also.can_have("seasons")
-        .as_(Iterable)
         .also.can_have("champion.ids")
         .as_(Iterable)
         .also.can_have("queues")
@@ -183,12 +181,6 @@ class MatchAPI(KernelSource):
             )
             parameters["endIndex"] = int(parameters["endIndex"])
 
-        if "seasons" in query:
-            seasons = {Season(season) for season in query["seasons"]}
-            parameters["season"] = {SEASON_IDS[season] for season in seasons}
-        else:
-            seasons = set()
-
         if "champion.ids" in query:
             champions = query["champion.ids"]
             parameters["champion"] = champions
@@ -211,7 +203,6 @@ class MatchAPI(KernelSource):
 
         data["accountId"] = query["accountId"]
         data["region"] = query["platform"].region.value
-        data["season"] = seasons
         data["champion"] = champions
         data["queue"] = queues
         if calling_method == "by_index":
@@ -239,8 +230,6 @@ class MatchAPI(KernelSource):
         .as_(int)
         .also.can_have("endIndex")
         .as_(int)
-        .also.can_have("seasons")
-        .as_(Iterable)
         .also.can_have("champion.ids")
         .as_(Iterable)
         .also.can_have("queues")
@@ -259,12 +248,6 @@ class MatchAPI(KernelSource):
 
         if "endIndex" in query:
             parameters["endIndex"] = query["endIndex"]
-
-        if "seasons" in query:
-            seasons = {Season(season) for season in query["seasons"]}
-            parameters["season"] = {SEASON_IDS[season] for season in seasons}
-        else:
-            seasons = set()
 
         if "champion.ids" in query:
             parameters["champion"] = {query["champion.ids"]}
@@ -291,8 +274,6 @@ class MatchAPI(KernelSource):
                     data["beginIndex"] = query["beginIndex"]
                 if "endIndex" in query:
                     data["endIndex"] = query["endIndex"]
-                if "seasons" in query:
-                    data["seasons"] = seasons
                 if "champion.ids" in query:
                     data["champion"] = parameters["champion"]
                 if "queues" in query:

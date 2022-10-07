@@ -1,7 +1,7 @@
 import arrow
 
 import cassiopeia as cass
-from cassiopeia import Season, Queue, Summoner
+from cassiopeia import Queue, Summoner
 
 
 def test_match_history_1():
@@ -18,7 +18,6 @@ def test_match_history_2():
     summoner = Summoner(name="Kalturi", region=region)
     match_history = cass.get_match_history(
         summoner=summoner,
-        seasons={Season.season_9},
         queues={Queue.ranked_solo_fives},
         begin_time=arrow.now().shift(days=-140),
         end_time=arrow.now(),
@@ -43,7 +42,6 @@ def test_match_history_5():
     summoner = Summoner(name="Kalturi", region=region)
     match_history = cass.get_match_history(
         summoner=summoner,
-        seasons={Season.season_9},
         queues={Queue.ranked_solo_fives},
         begin_time=arrow.get(2019, 1, 1),
         end_time=arrow.now(),
@@ -68,7 +66,6 @@ def test_match_history_7():
     summoner = Summoner(name="Kalturi", region=region)
     match_history = cass.get_match_history(
         summoner=summoner,
-        seasons={Season.season_9},
         queues={Queue.ranked_solo_fives},
         begin_time=arrow.get(2019, 10, 1),
     )

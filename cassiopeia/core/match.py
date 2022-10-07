@@ -26,7 +26,6 @@ from ..data import (
     MatchType,
     Queue,
     Side,
-    Season,
     Lane,
     Role,
     Key,
@@ -523,6 +522,10 @@ class MatchHistory(CassiopeiaLazyList):  # type: List[Match]
             query["type"] = type
 
         return query
+
+    # For type hints
+    def __getitem__(self, item: Union[str, int]) -> "Match":
+        return super().__getitem__(item)
 
     @classmethod
     def from_generator(cls, generator: Generator, **kwargs):
@@ -1742,16 +1745,6 @@ class Participant(CassiopeiaObject):
             version=version,
             region=self.__match.region,
         )
-
-    @lazy_property
-    @load_match_on_attributeerror
-    def rank_last_season(self) -> Tier:
-        return Tier(self._data[ParticipantData].rankLastSeason)
-
-    @property
-    @load_match_on_attributeerror
-    def match_history_uri(self) -> str:
-        return self._data[ParticipantData].matchHistoryUri
 
     @lazy_property
     @load_match_on_attributeerror

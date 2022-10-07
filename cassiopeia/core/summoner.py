@@ -229,16 +229,11 @@ class Summoner(CassiopeiaGhost):
         return CurrentMatch(summoner=self, region=self.region)
 
     @property
-    def league_entries(self) -> "SummonerLeagues":
+    def league_entries(self) -> "LeagueSummonerEntries":
         from .league import LeagueSummonerEntries
 
         leagues = LeagueSummonerEntries(summoner=self)
         return leagues
-
-    @lazy_property
-    def rank_last_season(self):
-        most_recent_match = self.match_history[0]
-        return most_recent_match.participants[self.name].rank_last_season
 
     @property
     def verification_string(self) -> str:
@@ -253,3 +248,11 @@ class Summoner(CassiopeiaGhost):
         for position in self.league_entries:
             ranks[position.queue] = Rank(tier=position.tier, division=position.division)
         return ranks
+
+
+# Add circular references at the bottom
+from .championmastery import ChampionMasteries
+from .match import MatchHistory
+from .spectator import CurrentMatch
+from .league import LeagueSummonerEntries
+from .thirdpartycode import VerificationString
