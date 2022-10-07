@@ -1850,7 +1850,7 @@ class Team(CassiopeiaObject):
 
     @property
     def baron_kills(self) -> int:
-        return self._data[TeamData].objectives["baron"].kills
+        return self._data[TeamData].objectives["baronKills"].kills
 
     @property
     def inhibitor_kills(self) -> int:
@@ -1862,7 +1862,7 @@ class Team(CassiopeiaObject):
 
     @property
     def dragon_kills(self) -> int:
-        return self._data[TeamData].objectives["dragon"].kills
+        return self._data[TeamData].objectives["dragonKills"].kills
 
     @property
     def side(self) -> Side:
