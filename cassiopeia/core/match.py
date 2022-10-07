@@ -789,21 +789,18 @@ class Timeline(CassiopeiaGhost):
         self,
         *,
         id: int = None,
-        continent: Continent = None,
         region: Union[Region, str] = None,
         platform: Platform = None,
     ):
-        kwargs = {"id": id}
-        if continent is not None:
-            kwargs["continent"] = continent
-        elif region is not None:
-            kwargs["continent"] = region.continent
-        elif platform is not None:
-            kwargs["continent"] = platform.continent
+        if isinstance(region, str):
+            region = Region(region)
+        if isinstance(platform, str):
+            platform = Platform(platform)
+        kwargs = {"platform": platform, "id": id}
         super().__init__(**kwargs)
 
     def __get_query__(self):
-        return {"continent": self.continent, "id": self.id}
+        return {"platform": self.platform, "id": self.id}
 
     @property
     def id(self):
@@ -811,15 +808,15 @@ class Timeline(CassiopeiaGhost):
 
     @property
     def continent(self) -> Continent:
-        return Continent(self._data[TimelineData].continent)
+        return self.platform.continent
 
     @property
     def region(self) -> Region:
-        return Region(self._data[TimelineData].region)
+        return self.platform.region
 
     @property
     def platform(self) -> Platform:
-        return self.region.platform
+        return Platform(self._data[TimelineData].platform)
 
     @CassiopeiaGhost.property(TimelineData)
     @ghost_load_on
@@ -1990,7 +1987,7 @@ class Match(CassiopeiaGhost):
     @lazy_property
     def timeline(self) -> Timeline:
         if self._timeline is None:
-            self._timeline = Timeline(id=self.id, continent=self.continent)
+            self._timeline = Timeline(id=self.id, region=self.region)
         return self._timeline
 
     @CassiopeiaGhost.property(MatchData)

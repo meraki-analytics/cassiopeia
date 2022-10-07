@@ -340,14 +340,12 @@ class UnloadedGhostStore(DataSource):
     )
 
     _validate_get_timeline_query = (
-        Query.has("continent")
-        .as_(Continent)
-        .or_("region")
+        Query.has("region")
         .as_(Region)
         .or_("platform")
         .as_(Platform)
         .also.has("id")
-        .as_(str)
+        .as_(int)
     )
 
     _validate_get_shard_status_query = Query.has("platform").as_(Platform)
@@ -473,7 +471,7 @@ class UnloadedGhostStore(DataSource):
         return Match._construct_normally(**query)
 
     @get.register(Timeline)
-    @validate_query(_validate_get_timeline_query, convert_to_continent)
+    @validate_query(_validate_get_timeline_query, convert_region_to_platform)
     def get_match_timeline(
         self, query: MutableMapping[str, Any], context: PipelineContext = None
     ) -> Timeline:

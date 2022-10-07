@@ -14,7 +14,7 @@ from datapipelines import (
 from .common import RiotAPIService, APINotFoundError
 from ...data import Continent, Region, Platform, MatchType, Queue, QUEUE_IDS
 from ...dto.match import MatchDto, MatchListDto, TimelineDto
-from ..uniquekeys import convert_to_continent
+from ..uniquekeys import convert_region_to_platform, convert_to_continent
 
 T = TypeVar("T")
 
@@ -249,24 +249,24 @@ class MatchAPI(RiotAPIService):
         return MatchListDto(data)
 
     _validate_get_timeline_query = (
-        Query.has("continent")
-        .as_(Continent)
-        .or_("region")
+        Query.has("region")
         .as_(Region)
         .or_("platform")
         .as_(Platform)
         .also.has("id")
-        .as_(str)
+        .as_(int)
     )
 
     @get.register(TimelineDto)
-    @validate_query(_validate_get_timeline_query, convert_to_continent)
+    @validate_query(_validate_get_timeline_query, convert_region_to_platform)
     def get_match_timeline(
         self, query: MutableMapping[str, Any], context: PipelineContext = None
     ) -> TimelineDto:
-        continent = query["continent"]
+        platform: Platform = query["platform"]
+        continent: Continent = platform.continent
         id = query["id"]
-        url = f"https://{continent.value.lower()}.api.riotgames.com/lol/match/v5/matches/{id}/timeline"
+
+        url = f"https://{continent.value.lower()}.api.riotgames.com/lol/match/v5/matches/{platform.value}_{id}/timeline"
         try:
             app_limiter, method_limiter = self._get_rate_limiter(
                 continent, "matches/id/timeline"
@@ -280,5 +280,5 @@ class MatchAPI(RiotAPIService):
             raise NotFoundError(str(error)) from error
 
         data["matchId"] = query["id"]
-        data["continent"] = continent.value
+        data["platform"] = platform.value
         return TimelineDto(data)

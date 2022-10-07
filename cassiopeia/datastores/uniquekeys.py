@@ -3009,20 +3009,20 @@ def for_many_match_query(query: Query) -> Generator[List[Tuple[str, str]], None,
 
 
 validate_match_timeline_query = (
-    Query.has("continent")
-    .as_(Continent)
-    .or_("region")
+    Query.has("region")
     .as_(Region)
+    .or_("platform")
+    .as_(Platform)
     .also.has("id")
-    .as_(str)
+    .as_(int)
 )
 
 
 validate_many_match_timeline_query = (
-    Query.has("continent")
-    .as_(Continent)
-    .or_("region")
+    Query.has("region")
     .as_(Region)
+    .or_("platform")
+    .as_(Platform)
     .also.has("ids")
     .as_(Iterable)
 )
