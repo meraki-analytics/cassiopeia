@@ -1045,7 +1045,7 @@ class ParticipantState:
             for ts, p in latest_event_with_ts
             if ts is not None and p is not None
         ]
-        latest_event_ts = sorted(latest_event_with_ts)[-1]
+        latest_event_ts = sorted(latest_event_with_ts, key=lambda pair: pair[0])[-1]
         if latest_frame_ts > latest_event_ts[0]:
             return self._latest_frame.position
         else:
