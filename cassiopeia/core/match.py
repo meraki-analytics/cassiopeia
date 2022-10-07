@@ -353,9 +353,6 @@ class ParticipantData(CoreData):
         }
         self.stats = ParticipantStatsData(**stats)
 
-        # TODO: I don't think this is supported anymore, same for the attributes relying on this (role, lane, ...)
-        if "timeline" in kwargs:
-            self.timeline = ParticipantTimelineData(**kwargs.pop("timeline"))
         if "teamId" in kwargs:
             self.side = Side(kwargs.pop("teamId"))
 
@@ -1628,11 +1625,11 @@ class Participant(CassiopeiaObject):
 
     @property
     def lane(self) -> Lane:
-        return Lane.from_match_naming_scheme(self._data[ParticipantData].timeline.lane)
+        return Lane.from_match_naming_scheme(self._data[ParticipantData].individualPosition)
 
     @property
     def role(self) -> Role:
-        return Role.from_match_naming_scheme(self._data[ParticipantData].timeline.role)
+        return Role.from_match_naming_scheme(self._data[ParticipantData].stats.role)
 
     @property
     def skill_order(self) -> List[Key]:
