@@ -411,7 +411,7 @@ class MatchData(CoreData):
         if "gameCreation" in kwargs:
             self.creation = arrow.get(kwargs["gameCreation"] / 1000)
         if "gameDuration" in kwargs:
-            self.duration = datetime.timedelta(seconds=kwargs["gameDuration"] / 1000)
+            self.duration = datetime.timedelta(seconds=kwargs["gameDuration"])
         if "gameStartTimestamp" in kwargs:
             self.start = arrow.get(kwargs["gameStartTimestamp"] / 1000)
 
@@ -1482,7 +1482,7 @@ class ParticipantStats(CassiopeiaObject):
     @property
     @load_match_on_attributeerror
     def total_damage_shielded_on_teammates(self) -> int:
-        return self._data[ParticipantStatsData].totalDamageshieldedOnTeammates
+        return self._data[ParticipantStatsData].totalDamageShieldedOnTeammates
 
     @property
     @load_match_on_attributeerror
@@ -2077,6 +2077,8 @@ class Match(CassiopeiaGhost):
 
     @property
     def is_remake(self) -> bool:
+        for p in self.participants:  # Force a load of the participants
+            pass
         # TODO: not sure how this should be handled, it feels like the early surrender state should belong the the match itself, not the participants
         if self.__participants[0] is not None:
             return self.__participants[
