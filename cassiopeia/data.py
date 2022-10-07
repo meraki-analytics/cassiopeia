@@ -66,9 +66,7 @@ class Region(Enum):
         if self is Region.north_america:
             return Continent.americas
         if self is Region.oceania:
-            return (
-                Continent.americas
-            )  # OCE content is managed by Americas server (as per https://i.imgur.com/FUyf5kv.png), this breaks OCE queries if set to Asia
+            return Continent.sea
         if self is Region.turkey:
             return Continent.europe
         if self is Region.russia:
@@ -138,6 +136,7 @@ class Continent(Enum):
     americas = "AMERICAS"
     asia = "ASIA"
     europe = "EUROPE"
+    sea = "SEA"
 
 
 class Key(Enum):
