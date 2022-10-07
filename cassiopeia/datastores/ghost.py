@@ -325,13 +325,13 @@ class UnloadedGhostStore(DataSource):
         .as_(Platform)
         .also.has("puuid")
         .as_(str)
-        .also.can_have("beginTime")
+        .also.can_have("startTime")
         .as_(int)
         .also.can_have("endTime")
         .as_(int)
-        .also.can_have("beginIndex")
+        .also.can_have("start")
         .as_(int)
-        .also.can_have("endIndex")
+        .also.can_have("pulled_match_count")
         .as_(int)
         .also.can_have("type")
         .as_(MatchType)
@@ -599,50 +599,33 @@ class UnloadedGhostStore(DataSource):
     ) -> MatchHistory:
         continent = query["continent"]
         puuid = query["puuid"]
-        begin_index = query.get("beginIndex", 0)
-        end_index = query.get("endIndex", None)
-        first_requested_dt = query.get(
-            "beginTime", 0
-        )  # (begin_time) Defaults to start of summoner's match history
-        most_recent_requested_dt = query.get(
-            "endTime", None
-        )  # (end_time) Defaults to now; end_time > begin_time
+        start = query.get("start", 0)
+        count = query.get("count", float("inf"))
         queue = query.get("queue", None)
         type = query.get("type", None)
+        start_time = query.get("startTime", None)
         end_time = query.get("endTime", None)
-
-        max_number_of_requested_matches = (
-            float("inf") if end_index is None else end_index - begin_index
-        )
-
-        # Convert times to datetimes
-        first_requested_dt = arrow.get(first_requested_dt / 1000)
-        if most_recent_requested_dt is not None:
-            most_recent_requested_dt = arrow.get(most_recent_requested_dt / 1000)
-            assert most_recent_requested_dt > first_requested_dt
 
         # Create the generator that will populate the match history object.
         def generate_matchlists(
-            begin_index: int,
-            max_number_of_requested_matches: int = None,
-            first_requested_dt: arrow.Arrow = None,
-            most_recent_requested_dt: Union[arrow.Arrow, None] = None,
+            start: int,
+            count: int = None,
         ):
-            _begin_index = begin_index
-            _current_first_requested_dt = first_requested_dt
+            _start = start
 
-            if isinstance(max_number_of_requested_matches, int):
-                max_number_of_requested_matches = float(max_number_of_requested_matches)
+            if isinstance(count, int):
+                count = float(count)
 
             pulled_matches = 0
-            while pulled_matches < max_number_of_requested_matches:
+            while pulled_matches < count:
                 new_query = {
                     "continent": continent,
                     "puuid": puuid,
-                    "beginIndex": _begin_index,
-                    "beginTime": _current_first_requested_dt.int_timestamp * 1000,
-                    "maxNumberOfMatches": max_number_of_requested_matches,
+                    "start": _start,
+                    "count": count,
                 }
+                if start_time is not None:
+                    new_query["startTime"] = start_time
                 if end_time is not None:
                     new_query["endTime"] = end_time
                 if queue is not None:
@@ -653,71 +636,31 @@ class UnloadedGhostStore(DataSource):
                 data = context[context.Keys.PIPELINE].get(
                     MatchListData, query=new_query
                 )
+
                 matchrefdata = None
                 for matchrefdata in data:
                     pulled_matches += 1
                     if pulled_matches > 0:
                         match = Match.from_match_reference(matchrefdata)
                         yield match
-                    if pulled_matches >= max_number_of_requested_matches:
+                    if pulled_matches >= count:
                         break
 
-                matches_pulled_this_iteration = len(data)
-                if hasattr(data, "endIndex"):
-                    expected_pulled_matches_this_iteration = (
-                        data.endIndex - data.beginIndex
-                    )
-                else:
-                    expected_pulled_matches_this_iteration = None
-                if (
-                    expected_pulled_matches_this_iteration is not None
-                    and matches_pulled_this_iteration
-                    < expected_pulled_matches_this_iteration
-                ):
+                if len(data) < data.pulled_match_count:
                     # Stop because the API returned less data than we asked for, and so there isn't any more left
                     break
 
-                if (
-                    most_recent_requested_dt is not None
-                    and matchrefdata is not None
-                    and matchrefdata.creation >= most_recent_requested_dt
-                ):
-                    # Stop because we have gotten all the matches in the requested time range
-                    break
+                _start += data.pulled_match_count
 
-                # Update the "start" values for the next iteration of calls
-                if hasattr(data, "endIndex"):
-                    _begin_index = data.endIndex
-                # else: Don't update _begin_index
-                if hasattr(data, "beginTime"):
-                    _current_first_requested_dt = arrow.get(data.beginTime / 1000)
-                    _earliest_dt_in_current_match_history = _current_first_requested_dt
-                else:
-                    _earliest_dt_in_current_match_history = matchrefdata.creation
-                # else: Don't update _current_first_requested_dt
-                max_number_of_requested_matches -= len(data)
-
-                if (
-                    first_requested_dt is not None
-                    and _earliest_dt_in_current_match_history <= first_requested_dt
-                ):
-                    # Stop because we have gotten all the matches in the requested time range
-                    break
-
-        generator = generate_matchlists(
-            begin_index,
-            max_number_of_requested_matches,
-            first_requested_dt,
-            most_recent_requested_dt,
-        )
+        generator = generate_matchlists(start, count)
 
         generator = MatchHistory.from_generator(
             generator=generator,
             puuid=puuid,
-            begin_index=begin_index,
-            end_index=end_index,
-            begin_time=first_requested_dt,
-            end_time=most_recent_requested_dt,
+            start=start,
+            count=count,
+            start_time=start_time,
+            end_time=end_time,
             queue=queue,
             type=type,
         )

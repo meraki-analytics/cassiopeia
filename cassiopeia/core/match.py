@@ -131,7 +131,7 @@ def _choose_staticdata_version(match):
 
 class MatchListData(CoreDataList):
     _dto_type = dto.MatchListDto
-    _renamed = {"champion": "championIds", "queue": "queues", "season": "seasons"}
+    _renamed = {}
 
 
 class PositionData(CoreData):
@@ -460,31 +460,28 @@ class MatchHistory(CassiopeiaLazyList):  # type: List[Match]
         *,
         puuid: str,
         continent: Continent = None,
-        region: Region = None,
-        platform: Platform = None,
-        begin_index: int = None,
-        end_index: int = None,
-        begin_time: arrow.Arrow = None,
+        start_time: arrow.Arrow = None,
         end_time: arrow.Arrow = None,
         queue: Queue = None,
         type: MatchType = None,
+        start: int = None,
+        count: int = None,
     ):
-        assert end_index is None or end_index > begin_index
-        if begin_time is not None and end_time is not None and begin_time > end_time:
-            raise ValueError("`end_time` should be greater than `begin_time`")
+        if start_time is not None and end_time is not None and start_time > end_time:
+            raise ValueError("`end_time` should be greater than `start_time`")
         kwargs = {
             "continent": continent,
             "puuid": puuid,
             "queue": queue,
             "type": type,
-            "begin_index": begin_index,
-            "end_index": end_index,
+            "start": start,
+            "count": count,
         }
-        if begin_time is not None and not isinstance(begin_time, (int, float)):
-            begin_time = begin_time.int_timestamp * 1000
-        kwargs["begin_time"] = begin_time
+        if start_time is not None and not isinstance(start_time, (int, float)):
+            start_time = start_time.int_timestamp
+        kwargs["start_time"] = start_time
         if end_time is not None and not isinstance(end_time, (int, float)):
-            end_time = end_time.int_timestamp * 1000
+            end_time = end_time.int_timestamp
         kwargs["end_time"] = end_time
         CassiopeiaObject.__init__(self, **kwargs)
 
@@ -494,31 +491,29 @@ class MatchHistory(CassiopeiaLazyList):  # type: List[Match]
         *,
         continent: Continent,
         puuid: str,
-        region: Region = None,
-        platform: Platform = None,
-        begin_index: int = None,
-        end_index: int = None,
-        begin_time: arrow.Arrow = None,
+        start_time: arrow.Arrow = None,
         end_time: arrow.Arrow = None,
         queue: Queue = None,
         type: MatchType = None,
+        start: int = None,
+        count: int = None,
     ):
         query = {"continent": continent, "puuid": puuid}
 
-        if begin_index is not None:
-            query["beginIndex"] = begin_index
+        if start is not None:
+            query["start"] = start
 
-        if end_index is not None:
-            query["endIndex"] = end_index
+        if count is not None:
+            query["count"] = count
 
-        if begin_time is not None:
-            if isinstance(begin_time, arrow.Arrow):
-                begin_time = begin_time.int_timestamp * 1000
-            query["beginTime"] = begin_time
+        if start_time is not None:
+            if isinstance(start_time, arrow.Arrow):
+                start_time = start_time.int_timestamp
+            query["startTime"] = start_time
 
         if end_time is not None:
             if isinstance(end_time, arrow.Arrow):
-                end_time = end_time.int_timestamp * 1000
+                end_time = end_time.int_timestamp
             query["endTime"] = end_time
 
         if queue is not None:
@@ -536,9 +531,9 @@ class MatchHistory(CassiopeiaLazyList):  # type: List[Match]
         return self
 
     def __call__(self, **kwargs) -> "MatchHistory":
-        kwargs.setdefault("begin_index", self.begin_index)
-        kwargs.setdefault("end_index", self.end_index)
-        kwargs.setdefault("begin_time", self.begin_time)
+        kwargs.setdefault("start", self.start)
+        kwargs.setdefault("count", self.count)
+        kwargs.setdefault("start_time", self.start_time)
         kwargs.setdefault("end_time", self.end_time)
         kwargs.setdefault("queue", self.queue)
         kwargs.setdefault("type", self.match_type)
@@ -547,14 +542,6 @@ class MatchHistory(CassiopeiaLazyList):  # type: List[Match]
     def continent(self) -> Continent:
         return Continent(self._data[MatchListData].continent)
 
-    @lazy_property
-    def region(self) -> Region:
-        return Region(self._data[MatchListData].region)
-
-    @lazy_property
-    def platform(self) -> Platform:
-        return self.region.platform
-
     def queue(self) -> Queue:
         return Queue(self._data[MatchListData].queue)
 
@@ -562,30 +549,30 @@ class MatchHistory(CassiopeiaLazyList):  # type: List[Match]
         return MatchType(self._data[MatchData].type)
 
     @property
-    def begin_index(self) -> Union[int, None]:
+    def start(self) -> Union[int, None]:
         try:
-            return self._data[MatchListData].beginIndex
+            return self._data[MatchListData].start
         except AttributeError:
             return None
 
     @property
-    def end_index(self) -> Union[int, None]:
+    def count(self) -> Union[int, None]:
         try:
-            return self._data[MatchListData].endIndex
+            return self._data[MatchListData].count
         except AttributeError:
             return None
 
     @property
-    def begin_time(self) -> arrow.Arrow:
-        time = self._data[MatchListData].begin_time
+    def start_time(self) -> arrow.Arrow:
+        time = self._data[MatchListData].start_time
         if time is not None:
-            return arrow.get(time / 1000)
+            return arrow.get(time)
 
     @property
     def end_time(self) -> arrow.Arrow:
         time = self._data[MatchListData].end_time
         if time is not None:
-            return arrow.get(time / 1000)
+            return arrow.get(time)
 
 
 class Position(CassiopeiaObject):
@@ -1930,7 +1917,7 @@ class Match(CassiopeiaGhost):
     def __init__(
         self,
         *,
-        id: int = None,
+        id: str = None,
         continent: Union[Continent, str] = None,
         region: Union[Region, str] = None,
         platform: Union[Platform, str] = None,
@@ -1981,7 +1968,7 @@ class Match(CassiopeiaGhost):
         return Platform(self._data[MatchData].platformId)
 
     @property
-    def id(self) -> int:
+    def id(self) -> str:
         return self._data[MatchData].id
 
     @lazy_property

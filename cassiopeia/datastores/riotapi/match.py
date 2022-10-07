@@ -136,13 +136,13 @@ class MatchAPI(RiotAPIService):
         .as_(Platform)
         .also.has("puuid")
         .as_(str)
-        .also.has("beginTime")
+        .also.can_have("startTime")
         .as_(int)
         .also.can_have("endTime")
         .as_(int)
-        .also.has("beginIndex")
+        .also.has("start")
         .as_(int)
-        .also.has("maxNumberOfMatches")
+        .also.has("count")
         .as_(float)
         .also.can_have("queue")
         .as_(Queue)
@@ -158,57 +158,24 @@ class MatchAPI(RiotAPIService):
         params = {}
 
         riot_index_interval = 100
-        riot_date_interval = datetime.timedelta(days=7)
 
-        begin_time = query["beginTime"]  # type: arrow.Arrow
-        end_time = query.get("endTime", arrow.now())  # type: arrow.Arrow
-        if isinstance(begin_time, int):
-            begin_time = arrow.get(begin_time / 1000)
-        if isinstance(end_time, int):
-            end_time = arrow.get(end_time / 1000)
+        start = query["start"]
+        params["start"] = start
 
-        def determine_calling_method(begin_time, end_time) -> str:
-            """Returns either "by_date" or "by_index"."""
-            matches_per_date_interval = 10  # This is an assumption
-            seconds_per_day = 60 * 60 * 24
-            riot_date_interval_in_days = (
-                riot_date_interval.total_seconds() / seconds_per_day
-            )  # in units of days
-            npulls_by_date = (
-                (end_time - begin_time).total_seconds()
-                / seconds_per_day
-                / riot_date_interval_in_days
-            )
-            npulls_by_index = (
-                (arrow.now() - begin_time).total_seconds()
-                / seconds_per_day
-                / riot_date_interval_in_days
-                * matches_per_date_interval
-                / riot_index_interval
-            )
-            if math.ceil(npulls_by_date) < math.ceil(npulls_by_index):
-                by = "by_date"
-            else:
-                by = "by_index"
-            return by
+        count = query["count"]
+        params["count"] = int(min(riot_index_interval, count))
 
-        calling_method = determine_calling_method(begin_time, end_time)
+        start_time = query.get("startTime", None)
+        if start_time is not None:
+            if isinstance(start_time, arrow.Arrow):
+                start_time = start_time.int_timestamp
+            params["startTime"] = start_time
 
-        if calling_method == "by_date":
-            params["beginTime"] = begin_time.int_timestamp * 1000
-            if "endTime" in query:
-                params["endTime"] = min(
-                    (begin_time + riot_date_interval).int_timestamp * 1000,
-                    query["endTime"],
-                )
-            else:
-                params["endTime"] = (
-                    begin_time + riot_date_interval
-                ).int_timestamp * 1000
-        else:
-            params["start"] = query["beginIndex"]
-            params["count"] = min(riot_index_interval, query["maxNumberOfMatches"])
-            params["count"] = int(params["count"])
+        end_time = query.get("endTime", None)
+        if end_time is not None:
+            if isinstance(end_time, arrow.Arrow):
+                end_time = end_time.int_timestamp
+            params["endTime"] = end_time
 
         queue = query.get("queue", None)
         if queue is not None:
@@ -237,15 +204,16 @@ class MatchAPI(RiotAPIService):
             "puuid": puuid,
             "type": type,
             "queue": queue,
+            "start": start,
+            "pulled_match_count": params["count"],
         }
 
-        if calling_method == "by_index":
-            data["beginIndex"] = params["start"]
-            data["endIndex"] = params["start"] + params["count"]
-            data["maxNumberOfMatches"] = query["maxNumberOfMatches"]
-        else:
-            data["beginTime"] = params["beginTime"]
-            data["endTime"] = params["endTime"]
+        if start_time is not None:
+            data["startTime"] = start_time
+
+        if end_time is not None:
+            data["endTime"] = end_time
+
         return MatchListDto(data)
 
     _validate_get_timeline_query = (
