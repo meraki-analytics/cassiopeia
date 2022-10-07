@@ -41,7 +41,6 @@ class TestSummoner(unittest.TestCase):
         self.assertIsNotNone(s.champion_masteries)
         self.assertIsNotNone(s.match_history)
         self.assertIsNotNone(s.league_entries)
-        # self.assertIsNotNone(s.rank_last_season)
 
     def test_equality(self):
         from_name = cassiopeia.get_summoner(name=SUMMONER_NAME, region="NA")

@@ -82,7 +82,6 @@ from .data import (
     MasteryTree,
     Tier,
     Division,
-    Season,
     GameType,
     Lane,
     Role,

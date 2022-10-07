@@ -12,7 +12,7 @@ try:
 except ImportError:
     import json
 
-from ..data import Region, Season
+from ..data import Region
 
 
 def pairwise(iterable):
@@ -29,7 +29,6 @@ class Patch(object):
     def __init__(
         self,
         region: Union[str, Region],
-        season: Season,
         name: str,
         start: Union[arrow.Arrow, float],
         end: Optional[Union[arrow.Arrow, float]],
@@ -41,7 +40,6 @@ class Patch(object):
         if not isinstance(region, Region):
             region = Region(region)
         self._region = region
-        self._season = season
         self._name = name
         self._start = start
         self._end = end
@@ -62,7 +60,7 @@ class Patch(object):
             raise ValueError("Unknown patch name {}".format(string))
 
     @classmethod
-    def from_date(cls, date: Union[arrow.Arrow], region: Union[Region, str]) -> "Patch":
+    def from_date(cls, date: arrow.Arrow, region: Union[Region, str]) -> "Patch":
         if not cls.__patches:
             cls.__load__()
         if not isinstance(region, Region):
@@ -93,13 +91,12 @@ class Patch(object):
                 start = arrow.get(patch["start"] + shifts[region.platform.value]).to(
                     region.timezone
                 )
-                season = Season.from_id(patch["season"])
                 name = patch["name"]
                 end = arrow.get(next_patch["start"] + shifts[region.platform.value]).to(
                     region.timezone
                 )
                 cls.__patches[region][i] = Patch(
-                    region=region, season=season, name=name, start=start, end=end
+                    region=region, name=name, start=start, end=end
                 )
 
         # Since pairwise skips the last patch in the list, add it manually here
@@ -108,11 +105,10 @@ class Patch(object):
             start = arrow.get(patch["start"] + shifts[region.platform.value]).to(
                 region.timezone
             )
-            season = Season.from_id(patch["season"])
             name = patch["name"]
             end = None
             cls.__patches[region][-1] = Patch(
-                region=region, season=season, name=name, start=start, end=end
+                region=region, name=name, start=start, end=end
             )
 
         # Sort each region's patches by start date
@@ -122,10 +118,6 @@ class Patch(object):
     @property
     def region(self) -> Region:
         return self._region
-
-    @property
-    def season(self) -> Season:
-        return self._season
 
     @property
     def name(self) -> str:

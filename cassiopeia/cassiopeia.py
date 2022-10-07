@@ -2,7 +2,7 @@ from typing import List, Set, Dict, Union, TextIO
 import arrow
 import datetime
 
-from .data import Region, Queue, Season, Tier, Division, Continent, Platform, MatchType
+from .data import Region, Queue, Tier, Division, Continent, Platform, MatchType
 from .core import (
     Champion,
     Summoner,
