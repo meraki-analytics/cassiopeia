@@ -1970,12 +1970,7 @@ class Match(CassiopeiaGhost):
 
     @property
     def id(self) -> str:
-        id = self._data[MatchData].id
-        # Before a match is loaded, its ID hasn't been processed and is still a string. Fix this manually.
-        # e.g. "NA1_4050871394" instead of 4050871394
-        if type(id) == str:
-            id = int(id.split("_")[1])
-        return id
+        return self._data[MatchData].id
 
     @lazy_property
     def timeline(self) -> Timeline:
