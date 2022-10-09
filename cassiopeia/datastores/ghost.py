@@ -306,14 +306,12 @@ class UnloadedGhostStore(DataSource):
     _validate_get_featured_matches_query = Query.has("platform").as_(Platform)
 
     _validate_get_match_query = (
-        Query.has("continent")
-        .as_(Continent)
-        .or_("region")
+        Query.has("region")
         .as_(Region)
         .or_("platform")
         .as_(Platform)
         .also.has("id")
-        .as_(str)
+        .as_(int)
     )
 
     _validate_get_match_history_query = (
@@ -464,7 +462,7 @@ class UnloadedGhostStore(DataSource):
         return ChampionMastery._construct_normally(**query)
 
     @get.register(Match)
-    @validate_query(_validate_get_match_query, convert_to_continent)
+    @validate_query(_validate_get_match_query, convert_region_to_platform)
     def get_match(
         self, query: MutableMapping[str, Any], context: PipelineContext = None
     ) -> Match:

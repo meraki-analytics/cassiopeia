@@ -39,24 +39,23 @@ class MatchAPI(RiotAPIService):
         pass
 
     _validate_get_match_query = (
-        Query.has("continent")
-        .as_(Continent)
-        .or_("region")
+        Query.has("region")
         .as_(Region)
         .or_("platform")
         .as_(Platform)
         .also.has("id")
-        .as_(str)
+        .as_(int)
     )
 
     @get.register(MatchDto)
-    @validate_query(_validate_get_match_query, convert_to_continent)
+    @validate_query(_validate_get_match_query, convert_region_to_platform)
     def get_match(
         self, query: MutableMapping[str, Any], context: PipelineContext = None
     ) -> MatchDto:
-        continent = query["continent"]
+        platform: Platform = query["platform"]
+        continent = platform.continent
         id = query["id"]
-        url = f"https://{continent.value.lower()}.api.riotgames.com/lol/match/v5/matches/{id}"
+        url = f"https://{continent.value.lower()}.api.riotgames.com/lol/match/v5/matches/{platform.value}_{id}"
         try:
             app_limiter, method_limiter = self._get_rate_limiter(
                 continent, "matches/id"
@@ -80,9 +79,7 @@ class MatchAPI(RiotAPIService):
         return MatchDto(data)
 
     _validate_get_many_match_query = (
-        Query.has("continent")
-        .as_(Continent)
-        .or_("region")
+        Query.has("region")
         .as_(Region)
         .or_("platform")
         .as_(Platform)
@@ -91,15 +88,16 @@ class MatchAPI(RiotAPIService):
     )
 
     @get_many.register(MatchDto)
-    @validate_query(_validate_get_many_match_query, convert_to_continent)
+    @validate_query(_validate_get_many_match_query, convert_region_to_platform)
     def get_many_match(
         self, query: MutableMapping[str, Any], context: PipelineContext = None
     ) -> Generator[MatchDto, None, None]:
-        continent = query["continent"]
+        platform: Platform = query["platform"]
+        continent = platform.continent
 
         def generator():
             for id in query["ids"]:
-                url = f"https://{continent.value.lower()}.api.riotgames.com/lol/match/v5/matches/{id}"
+                url = f"https://{continent.value.lower()}.api.riotgames.com/lol/match/v5/matches/{platform.value}_{id}"
                 try:
                     app_limiter, method_limiter = self._get_rate_limiter(
                         continent, "matches/id"

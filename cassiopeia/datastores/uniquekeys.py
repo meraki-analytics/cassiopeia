@@ -2963,47 +2963,43 @@ def for_many_shard_status_query(query: Query) -> Generator[List[str], None, None
 
 
 validate_match_query = (
-    Query.has("continent")
-    .as_(Continent)
-    .or_("region")
+    Query.has("region")
     .as_(Region)
+    .or_("platform")
+    .as_(Platform)
     .also.has("id")
-    .as_(str)
+    .as_(int)
 )
 
 
 validate_many_match_query = (
-    Query.has("continent")
-    .as_(Continent)
-    .or_("region")
+    Query.has("region")
     .as_(Region)
+    .or_("platform")
+    .as_(Platform)
     .also.has("ids")
     .as_(Iterable)
 )
 
 
 def for_match(match: Match) -> List[Tuple[str, str]]:
-    return [(match.continent.value, match.id)]
+    return [(match.platform.value, match.id)]
 
 
 def for_match_query(query: Query) -> List[Tuple[str, str]]:
-    convert_to_continent(query)
+    convert_region_to_platform(query)
     if "region" in query:
-        query["continent"] = query["region"].continent
-    if "platform" in query:
-        query["continent"] = query["platform"].continent
-    return [(query["continent"].value, query["id"])]
+        query["platform"] = query["region"].platform
+    return [(query["platform"].value, query["id"])]
 
 
 def for_many_match_query(query: Query) -> Generator[List[Tuple[str, str]], None, None]:
-    convert_to_continent(query)
+    convert_region_to_platform(query)
     if "region" in query:
-        query["continent"] = query["region"].continent
-    if "platform" in query:
-        query["continent"] = query["platform"].continent
+        query["platform"] = query["region"].platform
     for id in query["ids"]:
         try:
-            yield [(query["continent"].value, id)]
+            yield [(query["platform"].value, id)]
         except ValueError as e:
             raise QueryValidationError from e
 
@@ -3029,21 +3025,21 @@ validate_many_match_timeline_query = (
 
 
 def for_match_timeline(timeline: Timeline) -> List[Tuple[str, str]]:
-    return [(timeline.continent.value, timeline.id)]
+    return [(timeline.platform.value, timeline.id)]
 
 
 def for_match_timeline_query(query: Query) -> List[Tuple[str, str]]:
-    convert_to_continent(query)
-    return [(query["continent"].value, query["id"])]
+    convert_region_to_platform(query)
+    return [(query["platform"].value, query["id"])]
 
 
 def for_many_match_timeline_query(
     query: Query,
 ) -> Generator[List[Tuple[str, str]], None, None]:
-    convert_to_continent(query)
+    convert_region_to_platform(query)
     for id in query["ids"]:
         try:
-            yield [(query["continent"].value, id)]
+            yield [(query["platform"].value, id)]
         except ValueError as e:
             raise QueryValidationError from e
 

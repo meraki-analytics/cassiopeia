@@ -3,7 +3,7 @@ import arrow
 import datetime
 import itertools
 from collections import Counter
-from typing import List, Dict, Union, Generator
+from typing import List, Dict, Union, Generator, Optional
 
 from datapipelines import NotFoundError
 from merakicommons.cache import lazy, lazy_property
@@ -405,6 +405,7 @@ class MatchData(CoreData):
         "gameType": "type",
         "gameName": "name",
         "queueId": "queue",
+        "platformId": "platform",
     }
 
     def __call__(self, **kwargs):
@@ -838,11 +839,12 @@ class ParticipantTimeline(object):
         return self
 
     @property
-    def frames(self):
+    def frames(self) -> List[ParticipantFrame]:
+        timeline: Timeline = self.__match.timeline
         these = []
-        for frame in self.__match.timeline.frames:
+        for frame in timeline.frames:
             for pid, pframe in frame.participant_frames.items():
-                pframe.timestamp = frame.timestamp
+                pframe.timestamp = frame.timestamp  # Assign the match's Frame timestamp to the ParticipantFrame
                 if pframe.participant_id == self.id:
                     these.append(pframe)
         return these
@@ -941,7 +943,7 @@ class ParticipantState:
             if rounded_frame_timestamp > self._time:
                 break
             latest_frame = frame
-        self._latest_frame = latest_frame
+        self._latest_frame: Optional[ParticipantFrame] = latest_frame
         self._item_state = _ItemState()
         self._skills = Counter()
         self._kills = 0
@@ -974,6 +976,7 @@ class ParticipantState:
             # print(f"Did not process event {event.to_dict()}")
             pass
         self._processed_events.append(event)
+        self._processed_events.sort(key=lambda event: event.timestamp)
 
     @property
     def items(self) -> SearchableList:
@@ -1034,22 +1037,26 @@ class ParticipantState:
 
     @property
     def position(self) -> Position:
-        # The latest position is either from the latest event or from the participant timeline frame
+        # The latest position is either from the latest event or from the participant timeline frame.
+        # Get the most recent frame. This is our baseline.
         latest_frame_ts = self._latest_frame.timestamp
-        latest_event_with_ts = [
+        # Now loop through all events and use the latest event's position if the event was generated later than the frame.
+        events = [
             (getattr(event, "timestamp", None), getattr(event, "position", None))
             for event in self._processed_events
         ]
-        latest_event_with_ts = [
+        events_with_ts_and_position = [
             (ts, p)
-            for ts, p in latest_event_with_ts
+            for ts, p in events
             if ts is not None and p is not None
         ]
-        latest_event_ts = sorted(latest_event_with_ts, key=lambda pair: pair[0])[-1]
-        if latest_frame_ts > latest_event_ts[0]:
-            return self._latest_frame.position
-        else:
-            return latest_event_ts[1]
+        # If an event exists with both a timestamp and position, and the event was generated later that the frame, return its position.
+        if len(events_with_ts_and_position) > 0:
+            latest_event_ts, latest_event_position = events_with_ts_and_position[-1]
+            if latest_event_ts > latest_frame_ts:
+                return latest_event_position
+        # If we got this far, then the latest event (if it exists) is not relevant. Return the position from the latest frame.
+        return self._latest_frame.position
 
     @property
     def experience(self) -> int:
@@ -1908,25 +1915,29 @@ class Match(CassiopeiaGhost):
         self,
         *,
         id: str = None,
-        continent: Union[Continent, str] = None,
         region: Union[Region, str] = None,
         platform: Union[Platform, str] = None,
     ):
+        if isinstance(platform, str):
+            platform = Platform(platform)
         if isinstance(region, str):
             region = Region(region)
-        if region is not None:
-            continent = region.continent
-        kwargs = {"continent": continent, "id": id}
+        if platform is None:
+            platform = region.platform
+        kwargs = {"platform": platform, "id": id}
         super().__init__(**kwargs)
         self.__participants = []  # For lazy-loading the participants in a special way
         self._timeline = None
 
     def __get_query__(self):
-        return {"continent": self.continent, "id": self.id}
+        return {"platform": self.platform, "id": self.id}
 
     @classmethod
     def from_match_reference(cls, ref: MatchReferenceData):
-        instance = cls(id=ref.id, continent=ref.continent)
+        platform, id = ref.id.split("_")
+        id = int(id)
+        platform = Platform(platform)
+        instance = cls(id=id, platform=platform)
         instance._timeline = None
         return instance
 
@@ -1943,7 +1954,7 @@ class Match(CassiopeiaGhost):
     @lazy_property
     def continent(self) -> Continent:
         """The continent for this match."""
-        return Continent(self._data[MatchData].continent)
+        return self.platform.continent
 
     @lazy_property
     def region(self) -> Region:
@@ -1955,11 +1966,16 @@ class Match(CassiopeiaGhost):
     @lazy
     def platform(self) -> Platform:
         """The platform for this match."""
-        return Platform(self._data[MatchData].platformId)
+        return Platform(self._data[MatchData].platform)
 
     @property
     def id(self) -> str:
-        return self._data[MatchData].id
+        id = self._data[MatchData].id
+        # Before a match is loaded, its ID hasn't been processed and is still a string. Fix this manually.
+        # e.g. "NA1_4050871394" instead of 4050871394
+        if type(id) == str:
+            id = int(id.split("_")[1])
+        return id
 
     @lazy_property
     def timeline(self) -> Timeline:
