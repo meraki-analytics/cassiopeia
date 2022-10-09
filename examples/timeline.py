@@ -10,7 +10,7 @@ def print_newest_match(name: str, region: str):
     match = match_history[0]
     print("Match ID:", match.id)
 
-    # print("Frame interval:", match.timeline.frame_interval)
+    print("Frame interval:", match.timeline.frame_interval)
 
     # The cumulative timeline property allows you to get some info about participants during the match.
     #  You access the cumulative timeline by providing the duration into the game that you want the info for.

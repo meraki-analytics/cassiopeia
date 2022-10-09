@@ -1297,16 +1297,14 @@ class Cache(DataSource, DataSink):
     #############
 
     @get.register(Match)
-    @validate_query(uniquekeys.validate_match_query, uniquekeys.convert_to_continent)
+    @validate_query(uniquekeys.validate_match_query, uniquekeys.convert_region_to_platform)
     def get_match(
         self, query: Mapping[str, Any], context: PipelineContext = None
     ) -> Match:
         return self._get(Match, query, uniquekeys.for_match_query, context)
 
     @get_many.register(Match)
-    @validate_query(
-        uniquekeys.validate_many_match_query, uniquekeys.convert_to_continent
-    )
+    @validate_query(uniquekeys.validate_many_match_query, uniquekeys.convert_region_to_platform)
     def get_many_match(
         self, query: Mapping[str, Any], context: PipelineContext = None
     ) -> Generator[Match, None, None]:
@@ -1323,7 +1321,7 @@ class Cache(DataSource, DataSink):
         self._put_many(Match, items, uniquekeys.for_match, context=context)
 
     @get.register(MatchData)
-    @validate_query(uniquekeys.validate_match_query, uniquekeys.convert_to_continent)
+    @validate_query(uniquekeys.validate_match_query, uniquekeys.convert_region_to_platform)
     def get_match_data(
         self, query: Mapping[str, Any], context: PipelineContext = None
     ) -> MatchData:
@@ -1337,7 +1335,7 @@ class Cache(DataSource, DataSink):
 
     @get.register(Timeline)
     @validate_query(
-        uniquekeys.validate_match_timeline_query, uniquekeys.convert_to_continent
+        uniquekeys.validate_match_timeline_query, uniquekeys.convert_region_to_platform
     )
     def get_match_timeline(
         self, query: Mapping[str, Any], context: PipelineContext = None
@@ -1346,7 +1344,7 @@ class Cache(DataSource, DataSink):
 
     @get_many.register(Timeline)
     @validate_query(
-        uniquekeys.validate_many_match_timeline_query, uniquekeys.convert_to_continent
+        uniquekeys.validate_many_match_timeline_query, uniquekeys.convert_region_to_platform
     )
     def get_many_match_timeline(
         self, query: Mapping[str, Any], context: PipelineContext = None
@@ -1369,7 +1367,7 @@ class Cache(DataSource, DataSink):
 
     @get.register(TimelineData)
     @validate_query(
-        uniquekeys.validate_match_timeline_query, uniquekeys.convert_to_continent
+        uniquekeys.validate_match_timeline_query, uniquekeys.convert_region_to_platform
     )
     def get_match_timeline_data(
         self, query: Mapping[str, Any], context: PipelineContext = None

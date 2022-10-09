@@ -62,7 +62,7 @@ class MatchTransformer(DataTransformer):
         return MatchListData(
             [
                 self.match_reference_dto_to_data(
-                    {"id": id, "continent": value["continent"]}
+                    {"id": id}
                 )
                 for id in value["match_ids"]
             ],
