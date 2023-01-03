@@ -1993,7 +1993,7 @@ class Match(CassiopeiaGhost):
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on
-    def participants(self) -> List[Participant]:
+    def participants(self) -> SearchableList[Participant]:
         if hasattr(self._data[MatchData], "participants"):
             if not self._Ghost__is_loaded(MatchData):
                 self.__load__(MatchData)
