@@ -2000,7 +2000,7 @@ class Match(CassiopeiaGhost):
                 self._Ghost__set_loaded(
                     MatchData
                 )  # __load__ doesn't trigger __set_loaded.
-            # TODO: this is probably not the way to go, but that prevents participants being reappened every time match.participants is called
+            # TODO: this is probably not the way to go, but it prevents participants being reappended every time match.participants is called
             if len(self.__participants) == 0:
                 for p in self._data[MatchData].participants:
                     participant = Participant.from_data(p, match=self)
@@ -2015,6 +2015,11 @@ class Match(CassiopeiaGhost):
     @ghost_load_on
     @lazy
     def teams(self) -> List[Team]:
+        if not self._Ghost__is_loaded(MatchData):
+            self.__load__(MatchData)
+            self._Ghost__set_loaded(
+                MatchData
+            )  # __load__ doesn't trigger __set_loaded.
         return [
             Team.from_data(t, match=self)
             for i, t in enumerate(self._data[MatchData].teams)
