@@ -10,7 +10,6 @@ from merakicommons.cache import lazy, lazy_property
 from merakicommons.container import (
     searchable,
     SearchableList,
-    SearchableLazyList,
     SearchableDictionary,
 )
 
@@ -1993,7 +1992,7 @@ class Match(CassiopeiaGhost):
 
     @CassiopeiaGhost.property(MatchData)
     @ghost_load_on
-    def participants(self) -> SearchableList[Participant]:
+    def participants(self) -> SearchableList:
         if hasattr(self._data[MatchData], "participants"):
             if not self._Ghost__is_loaded(MatchData):
                 self.__load__(MatchData)
