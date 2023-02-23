@@ -86,7 +86,7 @@ class StatusAPI(RiotAPIService):
         def generator():
             for platform in query["platforms"]:
                 platform = Platform(platform.upper())
-                url = "https://{platform}.api.riotgames.com/lol/status/v3/shard-data".format(
+                url = "https://{platform}.api.riotgames.com/lol/status/v4/shard-data".format(
                     platform=platform.value.lower()
                 )
                 try:
