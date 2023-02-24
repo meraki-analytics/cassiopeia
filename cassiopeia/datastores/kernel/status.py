@@ -61,7 +61,7 @@ class StatusAPI(KernelSource):
         self, query: MutableMapping[str, Any], context: PipelineContext = None
     ) -> ShardStatusDto:
         parameters = {"platform": query["platform"].value}
-        endpoint = "lol/status/v3/shard-data".format()
+        endpoint = "lol/status/v4/platform-data".format()
         try:
             data = self._get(endpoint=endpoint, parameters=parameters)
         except APINotFoundError as error:
@@ -81,7 +81,7 @@ class StatusAPI(KernelSource):
             parameters = {"platform": query["platform"].value}
             for platform in query["platforms"]:
                 platform = Platform(platform.upper())
-                endpoint = "lol/status/v3/shard-data"
+                endpoint = "lol/status/v4/platform-data"
                 try:
                     data = self._get(endpoint=endpoint, parameters=parameters)
                 except APINotFoundError as error:

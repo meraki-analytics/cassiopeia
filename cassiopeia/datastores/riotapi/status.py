@@ -60,7 +60,7 @@ class StatusAPI(RiotAPIService):
     def get_status(
         self, query: MutableMapping[str, Any], context: PipelineContext = None
     ) -> ShardStatusDto:
-        url = "https://{platform}.api.riotgames.com/lol/status/v3/shard-data".format(
+        url = "https://{platform}.api.riotgames.com/lol/status/v4/platform-data".format(
             platform=query["platform"].value.lower()
         )
         try:
@@ -86,7 +86,7 @@ class StatusAPI(RiotAPIService):
         def generator():
             for platform in query["platforms"]:
                 platform = Platform(platform.upper())
-                url = "https://{platform}.api.riotgames.com/lol/status/v4/shard-data".format(
+                url = "https://{platform}.api.riotgames.com/lol/status/v4/platform-data".format(
                     platform=platform.value.lower()
                 )
                 try:
