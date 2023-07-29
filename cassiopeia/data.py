@@ -213,6 +213,7 @@ class Tier(Enum):
     grandmaster = "GRANDMASTER"
     master = "MASTER"
     diamond = "DIAMOND"
+    emerald = "EMERALD"
     platinum = "PLATINUM"
     gold = "GOLD"
     silver = "SILVER"
@@ -226,10 +227,11 @@ class Tier(Enum):
     @staticmethod
     def _order():
         return {
-            Tier.challenger: 9,
-            Tier.grandmaster: 8,
-            Tier.master: 7,
-            Tier.diamond: 6,
+            Tier.challenger: 10,
+            Tier.grandmaster: 9,
+            Tier.master: 8,
+            Tier.diamond: 7,
+            Tier.emerald: 6,
             Tier.platinum: 5,
             Tier.gold: 4,
             Tier.silver: 3,
