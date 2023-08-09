@@ -165,7 +165,6 @@ DEFAULT_LOCALE = {
     Platform.taiwan: "zh_TW",
     Region.vietnam: "vn_VN",
     Platform.vietnam: "vn_VN",
-    
 }
 
 
