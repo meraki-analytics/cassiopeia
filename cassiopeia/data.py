@@ -363,6 +363,9 @@ class Lane(Enum):
             "TOP": Lane.top_lane,
             "JUNGLE": Lane.jungle,
             "UTILITY": Lane.utility,
+            "INVALID": None,
+            "Invalid": None,
+            "": None,
             "NONE": None,
         }[string]
 
@@ -373,6 +376,8 @@ class Role(Enum):
     duo_support = "DUO_SUPPORT"
     none = "NONE"
     solo = "SOLO"
+    carry = "CARRY"
+    support = "SUPPORT"    
 
     def from_match_naming_scheme(string: str):
         return {
@@ -381,6 +386,8 @@ class Role(Enum):
             "DUO_SUPPORT": Role.duo_support,
             "NONE": Role.none,
             "SOLO": Role.solo,
+            "CARRY": Role.carry,
+            "SUPPORT": Role.support,        
         }[string]
 
 
