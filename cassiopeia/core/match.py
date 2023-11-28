@@ -1203,12 +1203,12 @@ class ParticipantStats(CassiopeiaObject):
     @property
     @load_match_on_attributeerror
     def bounty_level(self) -> int:
-        return self._data[TeamData].bountyLevel
+        return self._data[ParticipantStatsData].bountyLevel
 
     @property
     @load_match_on_attributeerror
     def champion_experience(self) -> int:
-        return self._data[TeamData].championExperience
+        return self._data[ParticipantStatsData].champExperience
 
     @property
     @load_match_on_attributeerror
@@ -1218,7 +1218,7 @@ class ParticipantStats(CassiopeiaObject):
     @load_match_on_attributeerror
     @property
     def champion_transform(self) -> int:
-        return self._data[TeamData].championTransform
+        return self._data[ParticipantStatsData].championTransform
 
     @property
     @load_match_on_attributeerror
