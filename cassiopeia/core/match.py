@@ -1208,7 +1208,7 @@ class ParticipantStats(CassiopeiaObject):
     @property
     @load_match_on_attributeerror
     def champion_experience(self) -> int:
-        return self._data[ParticipantStatsData].championExperience
+        return self._data[ParticipantStatsData].champExperience
 
     @property
     @load_match_on_attributeerror
