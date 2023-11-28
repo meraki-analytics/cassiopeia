@@ -236,6 +236,7 @@ class GameMode(Enum):
     nexus_blitz = "NEXUSBLITZ"
     odyssey = "ODYSSEY"
     utlbook = "ULTBOOK"
+    cherry = "CHERRY"
 
 
 class MasteryTree(Enum):
