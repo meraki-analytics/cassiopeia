@@ -316,7 +316,16 @@ class Rune(CassiopeiaGhost):
 
     @property
     def is_keystone(self) -> bool:
-        return self.tier == 0
+        excluded_ids = {
+            5001,
+            5002,
+            5003,
+            5005,
+            5007,
+            5008,
+        }  # These are the ids of the stat shard runes which have a tier of 0 but are not keystones
+        # alternatively, we could add tier values to the hardcoded stat runes in datastores/ddragon.py
+        return self.tier == 0 and self.id not in excluded_ids
 
     @CassiopeiaGhost.property(RuneData)
     @ghost_load_on
