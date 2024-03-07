@@ -92,12 +92,18 @@ class LolWikia(DataSource):
                 "http://leagueoflegends.wikia.com/wiki/List_of_champions"
             )
             soup = BeautifulSoup(page.text, "html.parser")
-            table = soup.find_all("table", {"class": "wikitable"})[1]
 
+            table = soup.find_all(name="table", attrs={"class": "article-table"})[0]
             rows = table.find_all("tr")[1:]
             for i, row in enumerate(rows):
-                row = [r.text.strip() for r in row.find_all("td")]
-                row = [str(row[0]), row[3]]
+                row = [
+                    r.get_text(strip=True, separator="\n").splitlines()
+                    for r in row.find_all("td")
+                ]
+                row = [
+                    str(row[0][0]),
+                    row[2][0],
+                ]  # [0][0] to get the champion name without title. e.g. "Aatrox" instead of "Aatrox, the Darkin Blade"
                 try:
                     row[0] = row[0][: row[0].index("\xa0")]
                 except ValueError:
