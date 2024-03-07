@@ -104,14 +104,6 @@ class LolWikia(DataSource):
                     str(row[0][0]),
                     row[2][0],
                 ]  # [0][0] to get the champion name without title. e.g. "Aatrox" instead of "Aatrox, the Darkin Blade"
-                try:
-                    row[0] = row[0][: row[0].index("\xa0")]
-                except ValueError:
-                    pass
-                try:
-                    row[0] = row[0][: row[0].index(",")]
-                except ValueError:
-                    pass
                 row[1] = arrow.get(row[1])
                 rows[i] = row
 
