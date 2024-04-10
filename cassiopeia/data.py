@@ -1,5 +1,4 @@
 from enum import Enum
-import arrow
 
 
 class Region(Enum):
@@ -54,7 +53,6 @@ class Region(Enum):
             "TH": "GMT+7",
             "TW": "GMT+8",
             "VN": "GMT+7",
-
         }
         return tzs[self.value]
 
@@ -378,7 +376,7 @@ class Role(Enum):
     none = "NONE"
     solo = "SOLO"
     carry = "CARRY"
-    support = "SUPPORT"    
+    support = "SUPPORT"
 
     def from_match_naming_scheme(string: str):
         return {
@@ -388,7 +386,7 @@ class Role(Enum):
             "NONE": Role.none,
             "SOLO": Role.solo,
             "CARRY": Role.carry,
-            "SUPPORT": Role.support,        
+            "SUPPORT": Role.support,
         }[string]
 
 
@@ -463,6 +461,7 @@ class SummonersRiftArea(Enum):
             map = SummonersRiftArea.__map
         except AttributeError:
             import os
+
             from PIL import Image
 
             script_dir = os.path.dirname(__file__)
@@ -604,6 +603,8 @@ class Queue(Enum):
     deprecated_nexus_blitz = "NEXUS_BLITZ"  # 1200
     nexus_blitz = "NEXUS_BLITZ"  # 1300
     ultimate_spellbook = "ULTIMATE_SPELLBOOK"  # 1400
+    rings_of_wrath = "RINGS_OF_WRATH"  # 1700
+    pick_urf_games = "PICK_URF_GAMES"  # 1900
     tutorial1 = "TUTORIAL_1"  # Summoner's Rift  Tutorial 1
     tutorial2 = "TUTORIAL_2"  # Summoner's Rift  Tutorial 2
     tutorial3 = "TUTORIAL_3"  # Summoner's Rift  Tutorial 3
@@ -696,6 +697,8 @@ QUEUE_IDS = {
     Queue.deprecated_nexus_blitz: 1200,  # Nexus Blitz map    Nexus Blitz Deprecated in patch 9.2 in favor of queueId 1300
     Queue.nexus_blitz: 1300,  # Nexus Blitz map    Nexus Blitz
     Queue.ultimate_spellbook: 1400,  # Summoner's Rift   Ultimate Spellbook
+    Queue.rings_of_wrath: 1700,  # Rings of Wrath
+    Queue.pick_urf_games: 1900,  # Summoner's Rift   Pick URF Games
     Queue.tutorial1: 2000,  # Summoner's Rift  Tutorial 1
     Queue.tutorial2: 2010,  # Summoner's Rift  Tutorial 2
     Queue.tutorial3: 2020,  # Summoner's Rift  Tutorial 3
