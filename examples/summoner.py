@@ -1,10 +1,16 @@
 import cassiopeia as cass
-from cassiopeia import Summoner
+from cassiopeia import Account
 
 
-def print_summoner(name: str, region: str):
-    summoner = Summoner(name=name, region=region)
-    print("Name:", summoner.name)
+def print_summoner(name: str, tagline: str, region: str):
+    account = Account(
+        # puuid="ba4FMWMmGaz-FFY2WWj6YZ5MsG12CoRGeeWz9PVmGuQMZ1LRklyg3x5UTkgaPivKcvMA3A6VEhhiVw",
+        name=name,
+        tagline=tagline,
+        region=region,
+    )
+    summoner = account.summoner
+    print("Name:", account.name_with_tagline)
     print("ID:", summoner.id)
     print("Account ID:", summoner.account_id)
     print("Level:", summoner.level)
@@ -16,4 +22,4 @@ def print_summoner(name: str, region: str):
 
 
 if __name__ == "__main__":
-    print_summoner("Kalturi", "NA")
+    print_summoner("BadM0j08", "Style", "NA")

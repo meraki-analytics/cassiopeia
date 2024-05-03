@@ -7,7 +7,6 @@ def get_champions():
     for champion in champions:
         print(champion.name, champion.id)
 
-    # annie = Champion(name="Annie", region="NA")
     annie = Champion(name="Annie", region="NA")
     print(annie.name)
     print(annie.title)

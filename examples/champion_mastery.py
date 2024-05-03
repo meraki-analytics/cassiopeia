@@ -1,5 +1,8 @@
 import cassiopeia as cass
-from cassiopeia import Summoner, Champion, ChampionMastery
+from cassiopeia import Account, Champion, ChampionMasteries, ChampionMastery
+
+
+# TODO: Update all the examples
 
 
 def print_champion_mastery():
@@ -7,7 +10,7 @@ def print_champion_mastery():
     # ID: 21359666
     # Account ID: 34718348
 
-    me = Summoner(name="Kalturi", region="NA")
+    me = Account(name="Kalturi", tagline="NA1", region="NA").summoner
     karma = Champion(name="Karma", id=43, region="NA")
     # cm = ChampionMastery(champion=karma, summoner=me, region="NA")
     cm = cass.get_champion_mastery(champion=karma, summoner=me, region="NA")

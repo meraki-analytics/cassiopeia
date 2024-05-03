@@ -1,5 +1,4 @@
 from typing import Type, TypeVar, MutableMapping, Any, Iterable
-import urllib
 
 from datapipelines import (
     DataSource,
@@ -10,13 +9,13 @@ from datapipelines import (
 )
 from .common import RiotAPIService, APINotFoundError
 from ...data import Platform
-from ...dto.summoner import SummonerDto
+from ...dto.account import AccountDto
 from ..uniquekeys import convert_region_to_platform
 
 T = TypeVar("T")
 
 
-class SummonerAPI(RiotAPIService):
+class AccountAPI(RiotAPIService):
     @DataSource.dispatch
     def get(
         self,
@@ -35,39 +34,41 @@ class SummonerAPI(RiotAPIService):
     ) -> Iterable[T]:
         pass
 
-    _validate_get_summoner_query = (
-        Query.has("id")
+    _validate_get_account_query = (
+        Query.has("puuid")
         .as_(str)
-        .or_("accountId")
+        .or_("name")
         .as_(str)
-        .or_("puuid")
+        .or_("tagline")
+        .as_(str)
+        .or_("name")
         .as_(str)
         .also.has("platform")
         .as_(Platform)
     )
 
-    @get.register(SummonerDto)
-    @validate_query(_validate_get_summoner_query, convert_region_to_platform)
-    def get_summoner(
+    @get.register(AccountDto)
+    @validate_query(_validate_get_account_query, convert_region_to_platform)
+    def get_account(
         self, query: MutableMapping[str, Any], context: PipelineContext = None
-    ) -> SummonerDto:
-        if "id" in query:
-            url = "https://{platform}.api.riotgames.com/lol/summoner/v4/summoners/{summonerId}".format(
-                platform=query["platform"].value.lower(), summonerId=query["id"]
+    ) -> AccountDto:
+        platform: Platform = query["platform"]
+        continent = platform.continent
+        if "puuid" in query:
+            puuid = query["puuid"]
+            url = "https://{continent}.api.riotgames.com/riot/account/v1/accounts/{puuid}".format(
+                continent=continent.value.lower(), puuid=puuid
             )
-            endpoint = "summoners/summonerId"
-        elif "accountId" in query:
-            url = "https://{platform}.api.riotgames.com/lol/summoner/v4/summoners/by-account/{accountId}".format(
-                platform=query["platform"].value.lower(), accountId=query["accountId"]
+            endpoint = "accounts/puuid"
+        elif "name" in query and "tagline" in query:
+            game_name = query["name"].replace(" ", "%20")
+            tagline = query["tagline"].replace(" ", "%20")
+            url = "https://{continent}.api.riotgames.com/riot/account/v1/accounts/{game_name}/{tagline}".format(
+                continent=continent.value.lower(),
+                game_name=game_name,
+                tagline=tagline,
             )
-            endpoint = "summoners/by-account/accountId"
-        elif "puuid" in query:
-            url = url = (
-                "https://{platform}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{puuid}".format(
-                    platform=query["platform"].value.lower(), puuid=query["puuid"]
-                )
-            )
-            endpoint = "summoners/by-puuid/puuid"
+            endpoint = "accounts/name"
         else:
             endpoint = ""
 
@@ -82,4 +83,4 @@ class SummonerAPI(RiotAPIService):
             raise NotFoundError(str(error)) from error
 
         data["region"] = query["platform"].region.value
-        return SummonerDto(**data)
+        return AccountDto(**data)

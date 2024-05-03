@@ -1,5 +1,4 @@
-from typing import Type, TypeVar, MutableMapping, Any, Iterable, Union
-import arrow
+from typing import Type, TypeVar, MutableMapping, Any, Iterable
 import copy
 
 from datapipelines import DataSource, PipelineContext, Query, validate_query
@@ -15,6 +14,7 @@ from ..core import (
     ProfileIcon,
     LanguageStrings,
     Summoner,
+    Account,
     ChampionMastery,
     Match,
     CurrentMatch,
@@ -361,6 +361,17 @@ class UnloadedGhostStore(DataSource):
         .as_(Platform)
     )
 
+    _validate_get_account_query = (
+        Query.has("puuid")
+        .as_(str)
+        .or_("name")
+        .as_(str)
+        .or_("tagline")
+        .as_(str)
+        .also.has("platform")
+        .as_(Platform)
+    )
+
     _validate_get_verification_string_query = (
         Query.has("platform").as_(Platform).also.has("summoner.id").as_(str)
     )
@@ -443,6 +454,17 @@ class UnloadedGhostStore(DataSource):
             kwargs["account_id"] = kwargs.pop("accountId")
         return Summoner._construct_normally(**kwargs)
 
+    @get.register(Account)
+    @validate_query(_validate_get_account_query, convert_region_to_platform)
+    def get_account(
+        self, query: MutableMapping[str, Any], context: PipelineContext = None
+    ) -> Account:
+        kwargs = copy.deepcopy(query)
+        kwargs["region"] = kwargs.pop("platform").region
+        if "name" in kwargs:
+            kwargs["name"] = kwargs.pop("name")
+        return Account._construct_normally(**kwargs)
+
     @get.register(ChampionMastery)
     @validate_query(_validate_get_champion_mastery_query, convert_region_to_platform)
     def get_champion_mastery(
@@ -451,8 +473,6 @@ class UnloadedGhostStore(DataSource):
         query["region"] = query.pop("platform").region
         if "summoner.id" in query:
             query["summoner"] = query.pop("summoner.id")
-        if "summoner.name" in query:
-            query["summoner"] = query.pop("summoner.name")
         if "summoner.accountId" in query:
             query["_account_id"] = query.pop("summoner.accountId")
         if "champion.id" in query:

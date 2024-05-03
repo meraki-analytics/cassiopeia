@@ -9,6 +9,7 @@ def _default_services(server_url: str, port: int) -> Set[KernelSource]:
     from ..image import ImageDataSource
     from .champion import ChampionAPI
     from .summoner import SummonerAPI
+    from .account import AccountAPI
     from .championmastery import ChampionMasteryAPI
     from .match import MatchAPI
     from .spectator import SpectatorAPI
@@ -21,6 +22,7 @@ def _default_services(server_url: str, port: int) -> Set[KernelSource]:
         ImageDataSource(client),
         ChampionAPI(server_url=server_url, port=port, http_client=client),
         SummonerAPI(server_url=server_url, port=port, http_client=client),
+        AccountAPI(server_url=server_url, port=port, http_client=client),
         ChampionMasteryAPI(server_url=server_url, port=port, http_client=client),
         MatchAPI(server_url=server_url, port=port, http_client=client),
         SpectatorAPI(server_url=server_url, port=port, http_client=client),

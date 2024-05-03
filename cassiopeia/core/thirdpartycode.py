@@ -1,3 +1,6 @@
+# TODO: Delete this file and surrounding functionality.
+
+
 from typing import Union
 
 from merakicommons.cache import lazy_property

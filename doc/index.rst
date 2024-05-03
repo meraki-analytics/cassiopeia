@@ -40,8 +40,8 @@ We will quickly and efficiently look up the champion masteries for the summoner 
 
 .. code-block:: python
 
-    kalturi = Summoner(name="Kalturi")
-    good_with = kalturi.champion_masteries.filter(lambda cm: cm.level >= 6)
+    perkz = Account(name="Perkz", tagline="Style").summoner
+    good_with = perkz.champion_masteries.filter(lambda cm: cm.level >= 6)
     print([cm.champion.name for cm in good_with])
 
     # At the time of writing this, this prints:
@@ -51,19 +51,25 @@ The above three lines are relatively concise code, and if you know what lambdas 
 
 .. code-block:: python
 
-    kalturi = Summoner(name="Kalturi")
+    Account(name="Perkz", tagline="Style")
 
-First, we create a summoner with a ``name`` and ``id``. Note that creating ``kalturi`` doesn't trigger a call to the Riot API -- it merely instantiates a ``Summoner`` object with a name and id.
-
-.. code-block:: python
-
-    ... = kalturi.champion_masteries ...
-
-Next we ask for the champion  masteries for ``kalturi`` by running ``kalturi.champion_masteries``. This creates an un-instantiated list which will contain champion masteries if any item in it is accessed.
+First, we create an Account with a ``name`` and ``tagline``. This code **does not** make a call to the Riot API, it merely creates an ``Account`` object where the ``name`` and ``tagline`` fields are populated.
 
 .. code-block:: python
 
-    good_with = kalturi.champion_masteries.filter(lambda cm: cm.level >= 6)
+    perkz = Account(name="Perkz", tagline="Style").summoner
+
+The ``Account``'s '``.summoner`` field is accessed and an API call is made to the Riot API to get the rest of the **account** information based on the ``name`` and ``tagline`` (i.e. the ``puuid`` is pulled from the Riot API). Then a ``Summoner`` object is stored in the ``perkz`` variable. Note that the code has not yet made an API call for the **summoner**.
+
+.. code-block:: python
+
+    ... = perkz.champion_masteries ...
+
+Next we ask for the champion  masteries for ``perkz`` by running ``perkz.champion_masteries``. This creates an un-instantiated list which will contain champion masteries if any item in it is accessed.
+
+.. code-block:: python
+
+    good_with = perks.champion_masteries.filter(lambda cm: cm.level >= 6)
 
 Third, the ``.filter`` method is called on the list of champion masteries. ``filter`` is a python built-in that operates on a list and filters the items in it based on some criteria. That criteria is defined py the ``lambda`` function we pass in.
 
@@ -132,6 +138,7 @@ Top Level APIs
 * :ref:`Status`
 * :ref:`Spectator`
 * :ref:`Summoners`
+* :ref:`Accounts`
 * :ref:`Summoner_Spells`
 * :ref:`Versions`
 

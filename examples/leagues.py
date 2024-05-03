@@ -1,15 +1,15 @@
 import cassiopeia as cass
-from cassiopeia.data import Queue, Position
-from cassiopeia.core import Summoner
+from cassiopeia.data import Queue
+from cassiopeia.core import Account
 
 
-def print_leagues(summoner_name: str, region: str):
-    summoner = Summoner(name=summoner_name, region=region)
-    print("Name:", summoner.name)
-    print("ID:", summoner.id)
+def print_leagues(name: str, tagline: str, region: str):
+    account = Account(name=name, tagline=tagline, region=region)
+    print("Name:", account.name)
+    print("ID:", account.summoner.id)
 
     # entries = cass.get_league_entries(summoner, region=region)
-    entries = summoner.league_entries
+    entries = account.summoner.league_entries
     if entries.fives.promos is not None:
         # If the summoner is in their promos, print some info
         print("Promos progress:", entries.fives.promos.progress)
@@ -44,4 +44,4 @@ def print_leagues(summoner_name: str, region: str):
 
 
 if __name__ == "__main__":
-    print_leagues("Kalturi", "NA")
+    print_leagues("Kalturi", "NA1", "NA")

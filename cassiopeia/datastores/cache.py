@@ -55,6 +55,7 @@ from ..core.league import (
 )
 from ..core.match import MatchData, TimelineData, Match, Timeline
 from ..core.summoner import SummonerData, Summoner
+from ..core.account import AccountData, Account
 from ..core.status import ShardStatusData, ShardStatus
 from ..core.spectator import (
     CurrentGameInfoData,
@@ -95,6 +96,7 @@ default_expirations = {
     Match: datetime.timedelta(days=3),
     Timeline: datetime.timedelta(days=1),
     Summoner: datetime.timedelta(days=1),
+    Account: datetime.timedelta(days=1),
     ShardStatus: datetime.timedelta(hours=1),
     CurrentMatch: datetime.timedelta(hours=0.5),
     FeaturedMatches: datetime.timedelta(hours=0.5),
@@ -1297,14 +1299,18 @@ class Cache(DataSource, DataSink):
     #############
 
     @get.register(Match)
-    @validate_query(uniquekeys.validate_match_query, uniquekeys.convert_region_to_platform)
+    @validate_query(
+        uniquekeys.validate_match_query, uniquekeys.convert_region_to_platform
+    )
     def get_match(
         self, query: Mapping[str, Any], context: PipelineContext = None
     ) -> Match:
         return self._get(Match, query, uniquekeys.for_match_query, context)
 
     @get_many.register(Match)
-    @validate_query(uniquekeys.validate_many_match_query, uniquekeys.convert_region_to_platform)
+    @validate_query(
+        uniquekeys.validate_many_match_query, uniquekeys.convert_region_to_platform
+    )
     def get_many_match(
         self, query: Mapping[str, Any], context: PipelineContext = None
     ) -> Generator[Match, None, None]:
@@ -1321,7 +1327,9 @@ class Cache(DataSource, DataSink):
         self._put_many(Match, items, uniquekeys.for_match, context=context)
 
     @get.register(MatchData)
-    @validate_query(uniquekeys.validate_match_query, uniquekeys.convert_region_to_platform)
+    @validate_query(
+        uniquekeys.validate_match_query, uniquekeys.convert_region_to_platform
+    )
     def get_match_data(
         self, query: Mapping[str, Any], context: PipelineContext = None
     ) -> MatchData:
@@ -1344,7 +1352,8 @@ class Cache(DataSource, DataSink):
 
     @get_many.register(Timeline)
     @validate_query(
-        uniquekeys.validate_many_match_timeline_query, uniquekeys.convert_region_to_platform
+        uniquekeys.validate_many_match_timeline_query,
+        uniquekeys.convert_region_to_platform,
     )
     def get_many_match_timeline(
         self, query: Mapping[str, Any], context: PipelineContext = None
@@ -1526,5 +1535,52 @@ class Cache(DataSource, DataSink):
             SummonerData
         ):
             return result._data[SummonerData]
+        else:
+            raise NotFoundError
+
+    ###############
+    # Account API #
+    ###############
+
+    @get.register(Account)
+    @validate_query(
+        uniquekeys.validate_account_query, uniquekeys.convert_region_to_platform
+    )
+    def get_account(
+        self, query: Mapping[str, Any], context: PipelineContext = None
+    ) -> Account:
+        return self._get(Account, query, uniquekeys.for_account_query, context)
+
+    @get_many.register(Account)
+    @validate_query(
+        uniquekeys.validate_many_account_query, uniquekeys.convert_region_to_platform
+    )
+    def get_many_account(
+        self, query: Mapping[str, Any], context: PipelineContext = None
+    ) -> Generator[Account, None, None]:
+        return self._get_many(
+            Account, query, uniquekeys.for_many_account_query, context
+        )
+
+    @put.register(Account)
+    def put_account(self, item: Account, context: PipelineContext = None) -> None:
+        self._put(Account, item, uniquekeys.for_account, context=context)
+
+    @put_many.register(Account)
+    def put_many_account(
+        self, items: Iterable[Account], context: PipelineContext = None
+    ) -> None:
+        self._put_many(Account, items, uniquekeys.for_account, context=context)
+
+    @get.register(Account)
+    @validate_query(
+        uniquekeys.validate_account_query, uniquekeys.convert_region_to_platform
+    )
+    def get_account_data(
+        self, query: Mapping[str, Any], context: PipelineContext = None
+    ) -> Account:
+        result = self.get_account(query=query, context=context)
+        if result._data[Account] is not None and result._Ghost__is_loaded(Account):
+            return result._data[Account]
         else:
             raise NotFoundError

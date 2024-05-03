@@ -843,7 +843,9 @@ class ParticipantTimeline(object):
         these = []
         for frame in timeline.frames:
             for pid, pframe in frame.participant_frames.items():
-                pframe.timestamp = frame.timestamp  # Assign the match's Frame timestamp to the ParticipantFrame
+                pframe.timestamp = (
+                    frame.timestamp
+                )  # Assign the match's Frame timestamp to the ParticipantFrame
                 if pframe.participant_id == self.id:
                     these.append(pframe)
         return these
@@ -1045,9 +1047,7 @@ class ParticipantState:
             for event in self._processed_events
         ]
         events_with_ts_and_position = [
-            (ts, p)
-            for ts, p in events
-            if ts is not None and p is not None
+            (ts, p) for ts, p in events if ts is not None and p is not None
         ]
         # If an event exists with both a timestamp and position, and the event was generated later that the frame, return its position.
         if len(events_with_ts_and_position) > 0:
@@ -1634,7 +1634,9 @@ class Participant(CassiopeiaObject):
 
     @property
     def lane(self) -> Lane:
-        return Lane.from_match_naming_scheme(self._data[ParticipantData].individualPosition)
+        return Lane.from_match_naming_scheme(
+            self._data[ParticipantData].individualPosition
+        )
 
     @property
     def role(self) -> Role:
@@ -1771,6 +1773,7 @@ class Participant(CassiopeiaObject):
         except AttributeError:
             pass
         try:
+            # ParticipantData.summonerName exists even after the introduction of gameName/tagLine.
             kwargs["name"] = self._data[ParticipantData].summonerName
         except AttributeError:
             pass
@@ -1844,9 +1847,11 @@ class Team(CassiopeiaObject):
     def bans(self) -> List["Champion"]:
         version = _choose_staticdata_version(self.__match)
         return [
-            Champion(id=ban.championId, version=version, region=self.__match.region)
-            if ban.championId != -1
-            else None
+            (
+                Champion(id=ban.championId, version=version, region=self.__match.region)
+                if ban.championId != -1
+                else None
+            )
             for ban in self._data[TeamData].bans
         ]
 
@@ -2016,9 +2021,7 @@ class Match(CassiopeiaGhost):
     def teams(self) -> List[Team]:
         if not self._Ghost__is_loaded(MatchData):
             self.__load__(MatchData)
-            self._Ghost__set_loaded(
-                MatchData
-            )  # __load__ doesn't trigger __set_loaded.
+            self._Ghost__set_loaded(MatchData)  # __load__ doesn't trigger __set_loaded.
         return [
             Team.from_data(t, match=self)
             for i, t in enumerate(self._data[MatchData].teams)

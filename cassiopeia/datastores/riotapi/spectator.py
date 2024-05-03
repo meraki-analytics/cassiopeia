@@ -54,7 +54,7 @@ class SpectatorAPI(RiotAPIService):
     ################
 
     _validate_get_current_game_query = (
-        Query.has("platform").as_(Platform).also.has("summoner.id").as_(str)
+        Query.has("platform").as_(Platform).also.has("summoner.puuid").as_(str)
     )
 
     @get.register(CurrentGameInfoDto)
@@ -62,8 +62,8 @@ class SpectatorAPI(RiotAPIService):
     def get_current_game(
         self, query: MutableMapping[str, Any], context: PipelineContext = None
     ) -> CurrentGameInfoDto:
-        url = "https://{platform}.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/{id}".format(
-            platform=query["platform"].value.lower(), id=query["summoner.id"]
+        url = "https://{platform}.api.riotgames.com/lol/spectator/v5/active-games/by-summoner/{puuid}".format(
+            platform=query["platform"].value.lower(), puuid=query["summoner.puuid"]
         )
         try:
             app_limiter, method_limiter = self._get_rate_limiter(
@@ -76,7 +76,7 @@ class SpectatorAPI(RiotAPIService):
             raise NotFoundError(str(error)) from error
 
         data["region"] = query["platform"].region.value
-        data["summonerId"] = query["summoner.id"]
+        data["puuid"] = query["puuid"]
         return CurrentGameInfoDto(data)
 
     #################
@@ -90,7 +90,7 @@ class SpectatorAPI(RiotAPIService):
     def get_featured_games(
         self, query: MutableMapping[str, Any], context: PipelineContext = None
     ) -> FeaturedGamesDto:
-        url = "https://{platform}.api.riotgames.com/lol/spectator/v4/featured-games".format(
+        url = "https://{platform}.api.riotgames.com/lol/spectator/v5/featured-games".format(
             platform=query["platform"].value.lower()
         )
         try:
