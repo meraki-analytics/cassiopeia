@@ -2,29 +2,33 @@ import random
 from sortedcontainers import SortedList
 import arrow
 
-from cassiopeia.core import Summoner, MatchHistory, Match
+from cassiopeia.core import Account, Summoner, MatchHistory, Match
 from cassiopeia import Queue, Patch
 
 
-def filter_match_history(summoner, patch):
+def filter_match_history(summoner: Summoner, patch: Patch):
     end_time = patch.end
     if end_time is None:
         end_time = arrow.now()
     match_history = MatchHistory(
-        summoner=summoner,
-        queues={Queue.aram},
-        begin_time=patch.start,
+        puuid=summoner.puuid,
+        continent=summoner.continent,
+        queue=Queue.ranked_solo_fives,
+        start_time=patch.start,
         end_time=end_time,
     )
     return match_history
 
 
 def collect_matches():
-    initial_summoner_name = "GustavEnk"
-    region = "EUW"
+    initial_summoner_name, initial_summoner_tagline = "Pobelter", "NA1"
+    region = "NA"
 
-    summoner = Summoner(name=initial_summoner_name, region=region)
-    patch = Patch.from_str("8.9", region=region)
+    account = Account(
+        name=initial_summoner_name, tagline=initial_summoner_tagline, region=region
+    )
+    summoner = account.summoner
+    patch = Patch.from_str("14.1", region=region)
 
     unpulled_summoner_ids = SortedList([summoner.id])
     pulled_summoner_ids = SortedList()

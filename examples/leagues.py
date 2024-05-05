@@ -30,7 +30,6 @@ def print_leagues(name: str, tagline: str, region: str):
     print(f"Listing all summoners in this league:")
     for position, entry in enumerate(entries.fives.league.entries):
         print(
-            entry.summoner.name,
             entry.league_points,
             entry.tier,
             entry.division,
@@ -44,4 +43,4 @@ def print_leagues(name: str, tagline: str, region: str):
 
 
 if __name__ == "__main__":
-    print_leagues("Kalturi", "NA1", "NA")
+    print_leagues("Pobelter", "NA1", "NA")

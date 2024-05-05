@@ -235,6 +235,7 @@ class GameMode(Enum):
     odyssey = "ODYSSEY"
     utlbook = "ULTBOOK"
     cherry = "CHERRY"
+    wipmode = "WIPMODEWIP"
 
 
 class MasteryTree(Enum):

@@ -52,11 +52,11 @@ class AccountAPI(KernelSource):
         parameters = {"platform": query["platform"].value}
         if "puuid" in query:
             puuid = query["puuid"]
-            endpoint = f"riot/account/v1/accounts/{puuid}"
+            endpoint = f"riot/account/v1/accounts/by-puuid/{puuid}"
         elif "name" in query and "tagline" in query:
             game_name = query["name"].replace(" ", "%20")
             tagline = query["tagline"].replace(" ", "%20")
-            endpoint = f"riot/account/v1/accounts/{game_name}/{tagline}"
+            endpoint = f"riot/account/v1/accounts/by-riot-id/{game_name}/{tagline}"
         else:
             RuntimeError("Impossible")
 

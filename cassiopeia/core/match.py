@@ -69,7 +69,7 @@ def load_match_on_attributeerror(method):
             else:
                 raise RuntimeError("Impossible!")
             for participant in match.participants:
-                if participant.summoner.name == old_participant.summoner.name:
+                if participant.summoner_name == old_participant.summoner_name:
                     if isinstance(self, Participant):
                         self._data[ParticipantData] = participant._data[ParticipantData]
                     elif isinstance(self, ParticipantStats):
@@ -429,6 +429,19 @@ class MatchData(CoreData):
 
         teams = kwargs.pop("teams", [])
         self.teams = []
+
+        # There's a weird thing where teamIds can be set to 0. Try to fix it.
+        team_ids = set([team["teamId"] for team in teams])
+        if not (len(team_ids) == 2 and 100 in team_ids and 200 in team_ids):
+            if 100 in team_ids:
+                for team in teams:
+                    if team["teamId"] != 100:
+                        team["teamId"] = 200
+            if 200 in team_ids:
+                for team in teams:
+                    if team["teamId"] != 200:
+                        team["teamId"] = 100
+
         for team in teams:
             team_side = Side(team["teamId"])
             participants = []
@@ -1140,6 +1153,14 @@ class _ItemState:
                 2013,
                 2421,
                 3600,
+                2145,
+                220000,
+                220001,
+                220002,
+                220003,
+                220004,
+                220005,
+                220006,
             ):  # Something weird can happen with trinkets and klepto items
                 pass
             else:
@@ -1772,11 +1793,6 @@ class Participant(CassiopeiaObject):
             kwargs["id"] = self._data[ParticipantData].summonerId
         except AttributeError:
             pass
-        try:
-            # ParticipantData.summonerName exists even after the introduction of gameName/tagLine.
-            kwargs["name"] = self._data[ParticipantData].summonerName
-        except AttributeError:
-            pass
         kwargs["puuid"] = self._data[ParticipantData].puuid
         kwargs["region"] = Platform(self._data[ParticipantData].platformId).region
         summoner = Summoner(**kwargs)
@@ -1785,6 +1801,10 @@ class Participant(CassiopeiaObject):
         except AttributeError:
             pass
         return summoner
+
+    @property
+    def summoner_name(self) -> str:
+        return self._data[ParticipantData].summonerName
 
     @property
     def team(self) -> "Team":

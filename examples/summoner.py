@@ -4,7 +4,6 @@ from cassiopeia import Account
 
 def print_summoner(name: str, tagline: str, region: str):
     account = Account(
-        # puuid="ba4FMWMmGaz-FFY2WWj6YZ5MsG12CoRGeeWz9PVmGuQMZ1LRklyg3x5UTkgaPivKcvMA3A6VEhhiVw",
         name=name,
         tagline=tagline,
         region=region,
@@ -22,4 +21,4 @@ def print_summoner(name: str, tagline: str, region: str):
 
 
 if __name__ == "__main__":
-    print_summoner("BadM0j08", "Style", "NA")
+    print_summoner("Pobelter", "NA1", "NA")

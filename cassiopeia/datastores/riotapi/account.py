@@ -56,14 +56,14 @@ class AccountAPI(RiotAPIService):
         continent = platform.continent
         if "puuid" in query:
             puuid = query["puuid"]
-            url = "https://{continent}.api.riotgames.com/riot/account/v1/accounts/{puuid}".format(
+            url = "https://{continent}.api.riotgames.com/riot/account/v1/accounts/by-puuid/{puuid}".format(
                 continent=continent.value.lower(), puuid=puuid
             )
             endpoint = "accounts/puuid"
         elif "name" in query and "tagline" in query:
             game_name = query["name"].replace(" ", "%20")
             tagline = query["tagline"].replace(" ", "%20")
-            url = "https://{continent}.api.riotgames.com/riot/account/v1/accounts/{game_name}/{tagline}".format(
+            url = "https://{continent}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{game_name}/{tagline}".format(
                 continent=continent.value.lower(),
                 game_name=game_name,
                 tagline=tagline,

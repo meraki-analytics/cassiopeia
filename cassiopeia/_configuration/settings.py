@@ -3,6 +3,7 @@ import logging
 import importlib
 import inspect
 import copy
+import os
 
 from datapipelines import (
     DataPipeline,
@@ -126,7 +127,7 @@ def get_default_config():
         "pipeline": {
             "Cache": {},
             "DDragon": {},
-            "RiotAPI": {"api_key": "RIOT_API_KEY"},
+            "RiotAPI": {"api_key": "$RIOT_API_KEY"},
         },
         "logging": {
             "print_calls": True,
@@ -163,6 +164,16 @@ class Settings(object):
             logger.setLevel(level)
             for handler in logger.handlers:
                 handler.setLevel(level)
+        if (
+            _defaults.get("pipeline", {})
+            .get("RiotAPI", {})
+            .get("api_key", "")
+            .startswith("$")
+        ):
+            riot_api_key_env_var_name = _defaults["pipeline"]["RiotAPI"]["api_key"][1:]
+            riot_api_key = os.environ.get(riot_api_key_env_var_name, None)
+            if riot_api_key:
+                self.set_riot_api_key(riot_api_key)
 
     @property
     def pipeline(self) -> DataPipeline:

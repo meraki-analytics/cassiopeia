@@ -6,7 +6,7 @@ from datapipelines import NotFoundError
 from merakicommons.cache import lazy_property
 from merakicommons.container import searchable
 
-from ..data import Region, Platform, Rank
+from ..data import Region, Platform, Continent, Rank
 from .common import CoreData, CassiopeiaGhost, ghost_load_on
 from .staticdata import ProfileIcon
 from ..dto.summoner import SummonerDto
@@ -141,6 +141,11 @@ class Summoner(CassiopeiaGhost):
     def platform(self) -> Platform:
         """The platform for this summoner."""
         return self.region.platform
+
+    @lazy_property
+    def continent(self) -> Continent:
+        """The continent for this summoner."""
+        return self.region.continent
 
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on
