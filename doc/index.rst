@@ -40,7 +40,7 @@ We will quickly and efficiently look up the champion masteries for the summoner 
 
 .. code-block:: python
 
-    kalturi = Account(name="Kalturi", tagline="NA1").summoner
+    kalturi = Account(name="Kalturi", tagline="NA1", region="NA").summoner
     good_with = kalturi.champion_masteries.filter(lambda cm: cm.level >= 6)
     print([cm.champion.name for cm in good_with])
 
@@ -51,21 +51,21 @@ The above three lines are relatively concise code, and if you know what lambdas 
 
 .. code-block:: python
 
-    Account(name="Perkz", tagline="Style")
+    Account(name="Kalturi", tagline="NA1", region="NA")
 
 First, we create an Account with a ``name`` and ``tagline``. This code **does not** make a call to the Riot API, it merely creates an ``Account`` object where the ``name`` and ``tagline`` fields are populated.
 
 .. code-block:: python
 
-    perkz = Account(name="Perkz", tagline="Style").summoner
+    kalturi = Account(name="Kalturi", tagline="NA1", region="NA").summoner
 
-The ``Account``'s '``.summoner`` field is accessed and an API call is made to the Riot API to get the rest of the **account** information based on the ``name`` and ``tagline`` (i.e. the ``puuid`` is pulled from the Riot API). Then a ``Summoner`` object is stored in the ``perkz`` variable. Note that the code has not yet made an API call for the **summoner**.
+The ``Account``'s '``.summoner`` field is accessed and an API call is made to the Riot API to get the rest of the **account** information based on the ``name`` and ``tagline`` (i.e. the ``puuid`` is pulled from the Riot API). Then a ``Summoner`` object is stored in the ``kalturi`` variable. Note that the code has not yet made an API call for the **summoner**.
 
 .. code-block:: python
 
-    ... = perkz.champion_masteries ...
+    ... = kalturi.champion_masteries ...
 
-Next we ask for the champion  masteries for ``perkz`` by running ``perkz.champion_masteries``. This creates an un-instantiated list which will contain champion masteries if any item in it is accessed.
+Next we ask for the champion  masteries for ``kalturi`` by running ``kalturi.champion_masteries``. This creates an un-instantiated list which will contain champion masteries if any item in it is accessed.
 
 .. code-block:: python
 
@@ -84,19 +84,6 @@ The ``.filter(lambda cm: cm.level > 6)`` therefore operates on the list of champ
 Finally, the third line prints a list of the champion names for those champions.
 
 Together these three lines illustrate the concise user interface that Cass provides, the way in which the data can be used, when the data is pulled (queried).
-
-Django web Framework
-####################
-There is an integration of cassiopeia to the popular python web framework Django made by Mori(Paaksing), this integration is aimed to fix most issues/conflicts related to co-ocurrence of cassiopeia and Django. In this integration will give you better tools for building your Django/DRF based app, you will have the ability to use any production tested cache backends that Django's cache framework supports.
-
-**New in v2.0:** A new datastore called `Omnistone` is introduced in response to issue #1 of this repo, this is a refined version of `Cache` that automatically deletes expired objects when `MAX_ENTRIES` is hit, then culls the datastore according to the `CULL_FRECUENCY` given. The culling strategy used is the same as Django Cache Framework, which is LRU culling (Least Recently Used).
-
-* Link to `django-cassiopeia` [repository](https://github.com/paaksing/django-cassiopeia) (If you love using it, make sure to star!).
-* Link to `django-cassiopeia` [documentations](https://paaksing.github.io/django-cassiopeia/) (Production Release v2.0).
-* If you have any issues or feature requests with `django-cassiopeia`, tag Mori in our discord server, or fire an issue in the repository.
-
-Unfortunately, we currently don't have an integration to Flask and any contribution is welcome.
-
 
 Contributing
 ============
@@ -117,6 +104,7 @@ Overview
     datapipeline
     plugins
     contributing
+    regions
 
 Top Level APIs
 ==============
