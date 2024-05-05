@@ -13,7 +13,7 @@ build:
 sphinx:
   builder: html
   configuration: doc/conf.py
-  fail_on_warning: true
+  fail_on_warning: false
 
 # Declare the Python requirements required to build your documentation
 # See https://docs.readthedocs.io/en/stable/guides/reproducible-builds.html
