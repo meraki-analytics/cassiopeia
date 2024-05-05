@@ -4,6 +4,7 @@ from .staticdata import StaticDataTransformer
 from .champion import ChampionTransformer
 from .championmastery import ChampionMasteryTransformer
 from .summoner import SummonerTransformer
+from .account import AccountTransformer
 from .match import MatchTransformer
 from .spectator import SpectatorTransformer
 from .status import StatusTransformer
@@ -17,6 +18,7 @@ riotapi_transformer = CompositeDataTransformer(
         ChampionTransformer(),
         ChampionMasteryTransformer(),
         SummonerTransformer(),
+        AccountTransformer(),
         MatchTransformer(),
         SpectatorTransformer(),
         StatusTransformer(),

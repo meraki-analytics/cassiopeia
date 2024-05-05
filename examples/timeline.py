@@ -1,12 +1,12 @@
 import datetime
 import cassiopeia as cass
-from cassiopeia import Summoner
+from cassiopeia import Account
 
 
-def print_newest_match(name: str, region: str):
-    summoner = Summoner(name=name, region=region)
+def print_newest_match(name: str, tagline: str, region: str):
+    account = Account(name=name, tagline=tagline, region=region)
 
-    match_history = summoner.match_history
+    match_history = account.summoner.match_history
     match = match_history[0]
     print("Match ID:", match.id)
 
@@ -16,7 +16,7 @@ def print_newest_match(name: str, region: str):
     #  You access the cumulative timeline by providing the duration into the game that you want the info for.
     #  In this case, we're accessing the game at 15 minutes and 30 seconds.
     #  Some data is only available every one minute.
-    p = match.participants[summoner]
+    p = match.participants[account.summoner]
     p_state = p.cumulative_timeline[datetime.timedelta(minutes=15, seconds=30)]
     # You can also use a string instead of datetime.timedelta
     p_state = p.cumulative_timeline["15:30"]
@@ -41,4 +41,4 @@ def print_newest_match(name: str, region: str):
 
 
 if __name__ == "__main__":
-    print_newest_match(name="Perkz", region="NA")
+    print_newest_match(name="Pobelter", tagline="NA1", region="NA")

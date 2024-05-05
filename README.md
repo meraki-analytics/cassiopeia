@@ -47,8 +47,9 @@ import cassiopeia as cass
 
 cass.set_riot_api_key("YOUR_KEY")  # This overrides the value set in your configuration/settings.
 
-summoner = cass.get_summoner(name="Perkz", region="NA")
-print("{name} is a level {level} summoner on the {region} server.".format(name=summoner.name,
+account = cass.get_account(name="Perkz", tagline="Style", region="NA")
+summoner = account.summoner
+print("{name} is a level {level} summoner on the {region} server.".format(name=account.name_with_tagline,
                                                                           level=summoner.level,
                                                                           region=summoner.region))
 

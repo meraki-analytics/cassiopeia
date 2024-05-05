@@ -88,11 +88,17 @@ class Patch(object):
         cls.__patches = defaultdict(lambda: [None for _ in range(len(patches))])
         for i, (patch, next_patch) in enumerate(pairwise(patches)):
             for region in Region:
-                start = arrow.get(patch["start"] + shifts[region.platform.value]).to(
+                if region.platform.value in shifts:
+                    region_key = region.platform.value
+                elif region.value in shifts:
+                    region_key = region.value
+                else:
+                    raise ValueError(f"Known region in patch data: {region}")
+                start = arrow.get(patch["start"] + shifts[region_key]).to(
                     region.timezone
                 )
                 name = patch["name"]
-                end = arrow.get(next_patch["start"] + shifts[region.platform.value]).to(
+                end = arrow.get(next_patch["start"] + shifts[region_key]).to(
                     region.timezone
                 )
                 cls.__patches[region][i] = Patch(
@@ -102,9 +108,13 @@ class Patch(object):
         # Since pairwise skips the last patch in the list, add it manually here
         patch = patches[-1]
         for region in Region:
-            start = arrow.get(patch["start"] + shifts[region.platform.value]).to(
-                region.timezone
-            )
+            if region.platform.value in shifts:
+                region_key = region.platform.value
+            elif region.value in shifts:
+                region_key = region.value
+            else:
+                raise ValueError(f"Known region in patch data: {region}")
+            start = arrow.get(patch["start"] + shifts[region_key]).to(region.timezone)
             name = patch["name"]
             end = None
             cls.__patches[region][-1] = Patch(

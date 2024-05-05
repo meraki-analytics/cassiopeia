@@ -3,15 +3,15 @@ from cassiopeia import Items, Item
 
 
 def get_items():
-    items = cass.get_items(region="NA")
+    # Print all items
+    items = cass.get_items(region="NA")  # Alternatively:  items = Items(region="NA")
     for item in items:
-        print(item.name)
-    items = cass.get_items(region="NA")
-    print(items[10].name)
+        print(item.name, item.id)
+    print()
+
+    # Specify a specific item by name
     dagger = Item(name="Dagger", region="NA")
     print(dagger.name, dagger.id)
-    items = Items(region="NA")
-    print(items[10].name)
 
 
 if __name__ == "__main__":

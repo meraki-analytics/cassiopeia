@@ -13,6 +13,7 @@ def _default_services(
     from ..image import ImageDataSource
     from .champion import ChampionAPI
     from .summoner import SummonerAPI
+    from .account import AccountAPI
     from .championmastery import ChampionMasteryAPI
     from .match import MatchAPI
     from .spectator import SpectatorAPI
@@ -36,6 +37,12 @@ def _default_services(
             http_client=client,
         ),
         SummonerAPI(
+            api_key,
+            app_rate_limiter=app_rate_limiter,
+            request_error_handling=request_error_handling,
+            http_client=client,
+        ),
+        AccountAPI(
             api_key,
             app_rate_limiter=app_rate_limiter,
             request_error_handling=request_error_handling,

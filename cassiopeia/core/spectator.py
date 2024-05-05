@@ -145,8 +145,8 @@ class Participant(CassiopeiaObject):
         )
         if hasattr(self._data[CurrentGameParticipantData], "summonerId"):
             return Summoner(
+                puuid=self._data[CurrentGameParticipantData].puuid,
                 id=self._data[CurrentGameParticipantData].summonerId,
-                name=self._data[CurrentGameParticipantData].summonerName,
                 region=self.__match.region,
             )
         else:
@@ -253,22 +253,17 @@ class CurrentMatch(CassiopeiaGhost):
 
         if summoner is not None:
             if isinstance(summoner, str):
-                if len(summoner) < 35:
-                    summoner = Summoner(name=summoner, region=region)
-                else:
-                    summoner = Summoner(id=summoner, region=region)
+                summoner = Summoner(id=summoner, region=region)
             self.__summoner = summoner
         super().__init__(**kwargs)
 
     @classmethod
     def from_data(cls, data: CurrentGameInfoData, summoner: Union[Summoner, str]):
         self = super().from_data(data)
+        # TODO: There's no region here! This is an old bug, ignoring for now.
         if isinstance(summoner, str):
-            if len(summoner) < 35:
-                summoner = Summoner(name=summoner, region=region)
-            else:
-                summoner = Summoner(id=summoner, region=region)
-                self.__summoner = summoner
+            summoner = Summoner(id=summoner, region=region)
+            self.__summoner = summoner
         return self
 
     @classmethod
@@ -277,12 +272,12 @@ class CurrentMatch(CassiopeiaGhost):
     ) -> dict:
         query = {"region": region}
         if isinstance(summoner, Summoner):
-            query["summoner.id"] = summoner.id
+            query["summoner.puuid"] = summoner.puuid
         elif isinstance(summoner, str):
-            if len(summoner) < 35:
-                query["summoner.id"] = Summoner(name=summoner, region=region).id
+            if 70 < len(summoner) < 85:
+                query["summoner.puuid"] = summoner
             else:
-                query["summoner.id"] = summoner
+                query["summoner.puuid"] = Summoner(id=summoner, region=region).puuid
         assert "summoner.id" in query
         return query
 
@@ -290,7 +285,7 @@ class CurrentMatch(CassiopeiaGhost):
         return {
             "region": self.region,
             "platform": self.platform,
-            "summoner.id": self.__summoner.id,
+            "summoner.puuid": self.__summoner.puuid,
         }
 
     @property

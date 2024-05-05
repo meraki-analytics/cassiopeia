@@ -9,13 +9,13 @@ from datapipelines import (
 )
 from .common import KernelSource, APINotFoundError
 from ...data import Platform
-from ...dto.summoner import SummonerDto
+from ...dto.account import AccountDto
 from ..uniquekeys import convert_region_to_platform
 
 T = TypeVar("T")
 
 
-class SummonerAPI(KernelSource):
+class AccountAPI(KernelSource):
     @DataSource.dispatch
     def get(
         self,
@@ -34,35 +34,29 @@ class SummonerAPI(KernelSource):
     ) -> Iterable[T]:
         pass
 
-    _validate_get_summoner_query = (
-        Query.has("id")
+    _validate_get_account_query = (
+        Query.has("puuid")
         .as_(str)
-        .or_("accountId")
+        .or_("name")
         .as_(str)
-        .or_("puuid")
-        .as_(str)
+        .or_("tagline")
         .also.has("platform")
         .as_(Platform)
     )
 
-    @get.register(SummonerDto)
-    @validate_query(_validate_get_summoner_query, convert_region_to_platform)
-    def get_summoner(
+    @get.register(AccountDto)
+    @validate_query(_validate_get_account_query, convert_region_to_platform)
+    def get_account(
         self, query: MutableMapping[str, Any], context: PipelineContext = None
-    ) -> SummonerDto:
+    ) -> AccountDto:
         parameters = {"platform": query["platform"].value}
-        if "id" in query:
-            endpoint = "lol/summoner/v4/summoners/{summonerId}".format(
-                summonerId=query["id"]
-            )
-        elif "accountId" in query:
-            endpoint = "lol/summoner/v4/summoners/by-account/{accountId}".format(
-                accountId=query["accountId"]
-            )
-        elif "puuid" in query:
-            endpoint = "lol/summoner/v4/summoners/by-puuid/{puuid}".format(
-                puuid=query["puuid"]
-            )
+        if "puuid" in query:
+            puuid = query["puuid"]
+            endpoint = f"riot/account/v1/accounts/by-puuid/{puuid}"
+        elif "name" in query and "tagline" in query:
+            game_name = query["name"].replace(" ", "%20")
+            tagline = query["tagline"].replace(" ", "%20")
+            endpoint = f"riot/account/v1/accounts/by-riot-id/{game_name}/{tagline}"
         else:
             RuntimeError("Impossible")
 
@@ -72,4 +66,4 @@ class SummonerAPI(KernelSource):
             raise NotFoundError(str(error)) from error
 
         data["region"] = query["platform"].region.value
-        return SummonerDto(**data)
+        return AccountDto(**data)

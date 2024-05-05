@@ -11,7 +11,7 @@ There are a few major parts that make Cass work, with minor parts that go along 
 Two Interfaces
 """"""""""""""
 
-Cass has two interfaces that work nearly identically. Depending on your coding style, you can choose the one that you prefer. One uses ``.get_...`` methods to get objects, while the other prefers constructors to create objects. Both are equally good. As an example, both ``cass.get_summoner(name="Kalturi", region="NA")`` and ``Summoner(name="Kalturi", region="NA")`` work exactly the same.
+Cass has two interfaces that work nearly identically. Depending on your coding style, you can choose the one that you prefer. One uses ``.get_...`` methods to get objects, while the other prefers constructors to create objects. Both are equally good. As an example, both ``cass.get_summoner(puuid="...", region="NA")`` and ``Summoner(puuid="...", region="NA")`` work exactly the same.
 
 
 Settings
@@ -25,7 +25,7 @@ There are a few settings in Cass that should be modified, and more that can be m
 Ghost Loading
 """""""""""""
 
-A *ghost object* is an object that can be instantiated without all of its data. It is therefore a shadow of itself, or a *ghost*. Ghost objects know how to load the rest of their data using what they were given at init. This is what allows you to write ``kalturi = Summoner(name="Kalturi", region="NA")`` followed by ``kalturi.level``. The latter will trigger a call to the data pipeline (discussed below) to pull the rest of the data for ``kalturi`` by using ``kalturi.name``.
+A *ghost object* is an object that can be instantiated without all of its data. It is therefore a shadow of itself, or a *ghost*. Ghost objects know how to load the rest of their data using what they were given at init. This is what allows you to write ``a_summoner = Summoner(puuid="...", region="NA")`` followed by ``a_summoner.level``. The latter will trigger a call to the data pipeline (discussed below) to pull the rest of the data for ``a_summoner`` by using ``a_summoner.puuid``.
 
 Most top-level objects in Cass are ghost objects and therefore know how to load their own data.
 
@@ -57,7 +57,7 @@ Most lists, dictionaries, and sets (all of which are containers) can be searched
 
 .. code-block:: python
 
-    a_teemo_game = Summoner(name="Dabblegamer", region="NA").match_history["Teemo"]
+    a_teemo_game = Summoner(puuid="...", region="NA").match_history["Teemo"]
 
 You can also search using objects rather than strings:
 
@@ -65,14 +65,14 @@ You can also search using objects rather than strings:
 
     all_champions = Champions(region="NA")
     teemo = all_champions["Teemo"]
-    a_teemo_game = Summoner(name="Dabblegamer", region="NA").match_history[teemo]
+    a_teemo_game = Summoner(puuid="...", region="NA").match_history[teemo]
 
 All matches in a summoner's match history where ``Teemo`` was in the game can be found by using ``.search`` rather than the ``[...]`` syntax:
 
 .. code-block:: python
 
     # We will truncate the summoner's match history so we don't pull thousands of matches
-    match_history = Summoner(name="Dabblegamer", region="NA").match_history(begin_time=Patch.from_str("9.1", region="NA").start)
+    match_history = Summoner(puuid="...", region="NA").match_history(begin_time=Patch.from_str("9.1", region="NA").start)
     all_teemo_games = match_history.search("Teemo")
 
 You can also index on items in a match. For example:
@@ -87,7 +87,7 @@ Below is a final (very convenient) snippit that allows you to get your participa
 
 .. code-block:: python
 
-    me = Summoner(name="Kalturi", region="NA")
+    me = Summoner(puuid="...", region="NA")
     match = me.match_history[0]
     champion_played = match.participants[me].champion
 

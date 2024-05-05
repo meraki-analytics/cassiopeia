@@ -51,7 +51,7 @@ class SpectatorTransformer(DataTransformer):
         from ..core.summoner import Summoner
 
         summoner = Summoner(
-            name=value.teams[0].participants[0].summoner_name,
+            puuid=value.teams[0].participants[0].puuid,
             id=value.teams[0].participants[0].summoner_id,
             region=value.region,
         )
@@ -65,6 +65,7 @@ class SpectatorTransformer(DataTransformer):
 
         matches = []
         for match in value:
+            # TODO: What do we do here? Do we delete the name field? Do we need a puuid?
             summoner = Summoner(
                 name=match.teams[0].participants[0].summoner_name,
                 id=match.teams[0].participants[0].summoner_id,

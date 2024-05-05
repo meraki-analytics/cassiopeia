@@ -6,8 +6,8 @@ def get_champions():
     champions = Champions(region="NA")
     for champion in champions:
         print(champion.name, champion.id)
+    print()
 
-    # annie = Champion(name="Annie", region="NA")
     annie = Champion(name="Annie", region="NA")
     print(annie.name)
     print(annie.title)
@@ -17,8 +17,6 @@ def get_champions():
     print(annie.info.difficulty)
     print(annie.passive.name)
     print(annie.free_to_play)
-
-    print(annie.win_rates)
 
 
 if __name__ == "__main__":

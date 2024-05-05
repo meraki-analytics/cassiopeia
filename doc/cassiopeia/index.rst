@@ -8,17 +8,17 @@ Example usage of the two interfaces:
 .. code-block:: python
 
     import cassiopeia as cass
-    kalturi = cass.get_summoner(name="Kalturi", region="NA")
+    kalturi = cass.get_summoner(puuid="...", region="NA")
 
     from cassiopeia import Summoner
-    kalturi = Summoner(name="Kalturi", region="NA")
+    kalturi = Summoner(puuid="...", region="NA")
 
 Also note that many types can be pulled from ``Summoner`` objects. This is the preferred way to interact with these types. They are listed below:
 
 .. code-block:: python
 
     from cassiopeia import Summoner
-    kalturi = Summoner(name="Kalturi", region="NA")
+    kalturi = Summoner(puuid="...", region="NA")
     kalturi.champion_masteries
     kalturi.match_history
     kalturi.current_match

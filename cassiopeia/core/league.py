@@ -269,7 +269,6 @@ class LeagueEntry(CassiopeiaGhost):
     def summoner(self) -> Summoner:
         return Summoner(
             id=self._data[LeagueEntryData].summonerId,
-            name=self._data[LeagueEntryData].summonerName,
             region=self.region,
         )
 
@@ -375,12 +374,7 @@ class LeagueSummonerEntries(CassiopeiaLazyList):
         if isinstance(summoner, Summoner):
             query["summoner.id"] = summoner.id
         elif isinstance(summoner, str):
-            if len(summoner) < 35:
-                query["summoner.id"] = Summoner(
-                    name=summoner, region=summoner.region
-                ).id
-            else:
-                query["summoner.id"] = summoner
+            query["summoner.id"] = summoner
         assert "summoner.id" in query
         return query
 

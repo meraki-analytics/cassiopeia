@@ -28,7 +28,12 @@ def use_pipeline():
 
     summoner_dto = pipeline.get(
         cass.dto.summoner.SummonerDto,
-        query={"name": "Kalturi", "platform": Platform.north_america},
+        query={
+            "id": "BwhEDkJhEasBJ9PjHbYqCWlGVz3Fa139gpI2LlNN5Q",
+            "name": "Pobelter",
+            "tagline": "NA1",
+            "platform": Platform.north_america,
+        },
     )
     print(summoner_dto)
     print(summoner_dto.to_json(indent=2))
@@ -37,7 +42,7 @@ def use_pipeline():
     print()
     match_dto = pipeline.get(
         cass.dto.match.MatchDto,
-        query={"id": 3000332065, "platform": Platform.north_america},
+        query={"id": 4990351922, "platform": Platform.north_america},
     )
     print(match_dto.keys())
     print(match_dto["gameCreation"])

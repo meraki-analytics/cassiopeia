@@ -94,6 +94,7 @@ It takes one optional parameter (called ``expirations``), which is a mapping of 
     Match: datetime.timedelta(days=3),
     Timeline: datetime.timedelta(days=1),
     Summoner: datetime.timedelta(days=1),
+    Account: datetime.timedelta(days=1),
     ShardStatus: datetime.timedelta(hours=1),
     CurrentMatch: datetime.timedelta(hours=0.5),
     FeaturedMatches: datetime.timedelta(hours=0.5)

@@ -6,6 +6,7 @@ from .data import Region, Queue, Tier, Division, Continent, Platform, MatchType
 from .core import (
     Champion,
     Summoner,
+    Account,
     ChampionMastery,
     Rune,
     Item,
@@ -168,10 +169,19 @@ def get_summoner(
     *,
     id: str = None,
     account_id: str = None,
-    name: str = None,
-    region: Union[Region, str] = None
+    puuid: str = None,
+    region: Union[Region, str] = None,
 ) -> Summoner:
-    return Summoner(id=id, account_id=account_id, name=name, region=region)
+    return Summoner(id=id, account_id=account_id, puuid=puuid, region=region)
+
+
+def get_account(
+    *,
+    puuid: str = None,
+    name: str = None,
+    tagline: str = None,
+) -> Account:
+    return Account(puuid=puuid, name=name, tagline=tagline)
 
 
 def get_champion(key: Union[str, int], region: Union[Region, str] = None) -> Champion:

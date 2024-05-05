@@ -18,6 +18,7 @@ from .staticdata import (
 )
 from .champion import ChampionRotation
 from .summoner import Summoner
+from .account import Account
 from .championmastery import ChampionMastery, ChampionMasteries
 from .match import Match, MatchHistory
 from .spectator import CurrentMatch, FeaturedMatches

@@ -1,17 +1,24 @@
 import cassiopeia as cass
-from cassiopeia import Summoner
-
-cass.set_riot_api_key("API_KEY")
+from cassiopeia import Account, Summoner
 
 
 def get_participant_data(participants):
     team_participant_data = []
     for p in participants:
-        p_data = {"summoner": p.summoner.name, "champion": p.champion.name, "runes": p.runes.keystone.name,
-                    "d_spell": p.summoner_spell_d.name, "f_spell": p.summoner_spell_f.name,
-                    "kills": p.stats.kills, "assist": p.stats.assists, "deaths": p.stats.deaths,
-                    "kda_ratio": round(p.stats.kda, 2), "damage_dealt": p.stats.total_damage_dealt,
-                    "creep_score": p.stats.total_minions_killed, "vision_score": p.stats.vision_score}
+        p_data = {
+            "summoner": p.summoner_name,
+            "champion": p.champion.name,
+            "runes": p.runes.keystone.name,
+            "d_spell": p.summoner_spell_d.name,
+            "f_spell": p.summoner_spell_f.name,
+            "kills": p.stats.kills,
+            "assist": p.stats.assists,
+            "deaths": p.stats.deaths,
+            "kda_ratio": round(p.stats.kda, 2),
+            "damage_dealt": p.stats.total_damage_dealt,
+            "creep_score": p.stats.total_minions_killed,
+            "vision_score": p.stats.vision_score,
+        }
 
         p_items = []
         number_of_item_slots = 6
@@ -42,9 +49,11 @@ def print_match_history(summoner, num_matches):
 
 
 def main():
-    name = "Irucin"
-    server = "NA"
-    summoner = Summoner(name=name, region=server)
+    name = "Pobelter"
+    tagline = "NA1"
+    region = "NA"
+    account = Account(name=name, tagline=tagline, region=region)
+    summoner = account.summoner
     print_match_history(summoner, 5)
 
 

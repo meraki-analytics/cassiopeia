@@ -6,8 +6,8 @@ from datapipelines import NotFoundError
 from merakicommons.cache import lazy_property
 from merakicommons.container import searchable
 
-from ..data import Region, Platform, Rank
-from .common import CoreData, CassiopeiaObject, CassiopeiaGhost, ghost_load_on
+from ..data import Region, Platform, Continent, Rank
+from .common import CoreData, CassiopeiaGhost, ghost_load_on
 from .staticdata import ProfileIcon
 from ..dto.summoner import SummonerDto
 
@@ -29,7 +29,7 @@ class SummonerData(CoreData):
 
 @searchable(
     {
-        str: ["name", "region", "platform", "id", "account_id", "puuid"],
+        str: ["region", "platform", "id", "account_id", "puuid"],
         Region: ["region"],
         Platform: ["platform"],
     }
@@ -43,8 +43,7 @@ class Summoner(CassiopeiaGhost):
         id: str = None,
         account_id: str = None,
         puuid: str = None,
-        name: str = None,
-        region: Union[Region, str] = None
+        region: Union[Region, str] = None,
     ):
         kwargs = {"region": region}
 
@@ -54,8 +53,6 @@ class Summoner(CassiopeiaGhost):
             kwargs["accountId"] = account_id
         if puuid is not None:
             kwargs["puuid"] = puuid
-        if name is not None:
-            kwargs["name"] = name
         super().__init__(**kwargs)
 
     @classmethod
@@ -65,8 +62,7 @@ class Summoner(CassiopeiaGhost):
         id: str = None,
         account_id: str = None,
         puuid: str = None,
-        name: str = None,
-        region: Union[Region, str]
+        region: Union[Region, str],
     ) -> dict:
         query = {"region": region}
         if id is not None:
@@ -75,8 +71,6 @@ class Summoner(CassiopeiaGhost):
             query["accountId"] = account_id
         if puuid is not None:
             query["puuid"] = puuid
-        if name is not None:
-            query["name"] = name
         return query
 
     def __get_query__(self):
@@ -93,13 +87,7 @@ class Summoner(CassiopeiaGhost):
             query["accountId"] = self._data[SummonerData].accountId
         except AttributeError:
             pass
-        try:
-            query["name"] = self._data[SummonerData].name
-        except AttributeError:
-            pass
-        assert (
-            "id" in query or "name" in query or "accountId" in query or "puuid" in query
-        )
+        assert "id" in query or "accountId" in query or "puuid" in query
         return query
 
     def __eq__(self, other: "Summoner"):
@@ -111,10 +99,6 @@ class Summoner(CassiopeiaGhost):
             s["id"] = self.id
         if hasattr(other._data[SummonerData], "id"):
             o["id"] = other.id
-        if hasattr(self._data[SummonerData], "name"):
-            s["name"] = self.sanitized_name
-        if hasattr(other._data[SummonerData], "name"):
-            o["name"] = other.sanitized_name
         if hasattr(self._data[SummonerData], "accountId"):
             s["accountId"] = self.account_id
         if hasattr(other._data[SummonerData], "accountId"):
@@ -126,11 +110,8 @@ class Summoner(CassiopeiaGhost):
 
     def __str__(self):
         id_ = "?"
-        name = "?"
         if hasattr(self._data[SummonerData], "id"):
             id_ = self.id
-        if hasattr(self._data[SummonerData], "name"):
-            name = self.name
         try:
             account_id = self._data[SummonerData].accountId
         except AttributeError:
@@ -139,9 +120,7 @@ class Summoner(CassiopeiaGhost):
             puuid = self._data[SummonerData].puuid
         except AttributeError:
             puuid = "?"
-        return "Summoner(id={id_}, account_id={account_id}, name='{name}', puuid='{puuid}')".format(
-            id_=id_, name=name, account_id=account_id, puuid=puuid
-        )
+        return f"Summoner(id={id_}, account_id={account_id}, puuid='{puuid}')"
 
     @property
     def exists(self):
@@ -163,6 +142,11 @@ class Summoner(CassiopeiaGhost):
         """The platform for this summoner."""
         return self.region.platform
 
+    @lazy_property
+    def continent(self) -> Continent:
+        """The continent for this summoner."""
+        return self.region.continent
+
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on
     def account_id(self) -> str:
@@ -177,15 +161,6 @@ class Summoner(CassiopeiaGhost):
     @ghost_load_on
     def id(self) -> str:
         return self._data[SummonerData].id
-
-    @CassiopeiaGhost.property(SummonerData)
-    @ghost_load_on
-    def name(self) -> str:
-        return self._data[SummonerData].name
-
-    @property
-    def sanitized_name(self) -> str:
-        return self.name.replace(" ", "").lower()
 
     @CassiopeiaGhost.property(SummonerData)
     @ghost_load_on
