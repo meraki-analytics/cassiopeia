@@ -3079,12 +3079,12 @@ def for_many_match_timeline_query(
 #################
 
 validate_current_match_query = (
-    Query.has("platform").as_(Platform).also.has("summoner.id").as_(str)
+    Query.has("platform").as_(Platform).also.has("summoner.puuid").as_(str)
 )
 
 
 validate_many_current_match_query = (
-    Query.has("platform").as_(Platform).also.has("summoner.ids").as_(Iterable)
+    Query.has("platform").as_(Platform).also.has("summoner.puuids").as_(Iterable)
 )
 
 
@@ -3102,13 +3102,13 @@ def for_current_match(current_match_info: CurrentMatch) -> List[Tuple[str, str]]
 
 
 def for_current_match_query(query: Query) -> List[Tuple[str, str]]:
-    return [(query["platform"].value, query["summoner.id"])]
+    return [(query["platform"].value, query["summoner.puuid"])]
 
 
 def for_many_current_match_query(
     query: Query,
 ) -> Generator[List[Tuple[str, str]], None, None]:
-    for summoner_id in query["summoner.ids"]:
+    for summoner_id in query["summoner.puuids"]:
         try:
             summoner_id = int(summoner_id)
             yield [(query["platform"].value, summoner_id)]

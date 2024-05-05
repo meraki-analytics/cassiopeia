@@ -54,7 +54,7 @@ class SpectatorAPI(KernelSource):
     ################
 
     _validate_get_current_game_query = (
-        Query.has("platform").as_(Platform).also.has("summoner.id").as_(str)
+        Query.has("platform").as_(Platform).also.has("summoner.puuid").as_(str)
     )
 
     @get.register(CurrentGameInfoDto)
@@ -63,8 +63,8 @@ class SpectatorAPI(KernelSource):
         self, query: MutableMapping[str, Any], context: PipelineContext = None
     ) -> CurrentGameInfoDto:
         parameters = {"platform": query["platform"].value}
-        endpoint = "lol/spectator/v4/active-games/by-summoner/{id}".format(
-            id=query["summoner.id"]
+        endpoint = "lol/spectator/v5/active-games/by-summoner/{id}".format(
+            id=query["summoner.puuid"]
         )
         try:
             data = self._get(endpoint=endpoint, parameters=parameters)
@@ -72,7 +72,7 @@ class SpectatorAPI(KernelSource):
             raise NotFoundError(str(error)) from error
 
         data["region"] = query["platform"].region.value
-        data["summonerId"] = query["summoner.id"]
+        data["summonerPuuid"] = query["summoner.puuid"]
         return CurrentGameInfoDto(data)
 
     #################
@@ -87,7 +87,7 @@ class SpectatorAPI(KernelSource):
         self, query: MutableMapping[str, Any], context: PipelineContext = None
     ) -> FeaturedGamesDto:
         parameters = {"platform": query["platform"].value}
-        endpoint = "lol/spectator/v4/featured-games"
+        endpoint = "lol/spectator/v5/featured-games"
         try:
             data = self._get(endpoint=endpoint, parameters=parameters)
         except APINotFoundError as error:

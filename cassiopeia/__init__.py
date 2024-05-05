@@ -67,7 +67,6 @@ from .core import (
     LeagueEntries,
     League,
     Patch,
-    VerificationString,
     MatchHistory,
     ChampionRotation,
     LeagueSummonerEntries,

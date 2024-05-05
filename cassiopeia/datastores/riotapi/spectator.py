@@ -76,7 +76,6 @@ class SpectatorAPI(RiotAPIService):
             raise NotFoundError(str(error)) from error
 
         data["region"] = query["platform"].region.value
-        data["puuid"] = query["puuid"]
         return CurrentGameInfoDto(data)
 
     #################

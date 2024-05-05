@@ -1,12 +1,12 @@
-from typing import Type, TypeVar
 from copy import deepcopy
+from typing import Type, TypeVar
 
 from datapipelines import DataTransformer, PipelineContext
 
 from ..core.spectator import (
     CurrentGameInfoData,
-    FeaturedGamesData,
     CurrentMatch,
+    FeaturedGamesData,
     FeaturedMatches,
 )
 from ..dto.spectator import CurrentGameInfoDto, FeaturedGamesDto
@@ -39,7 +39,6 @@ class SpectatorTransformer(DataTransformer):
         return FeaturedGamesData(
             [CurrentGameInfoData(**game) for game in data],
             region=value["region"],
-            clientRefreshInterval=value["clientRefreshInterval"],
         )
 
     # Data to Core

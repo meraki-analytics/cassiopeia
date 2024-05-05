@@ -35,7 +35,6 @@ from ..core import (
     ChampionMasteries,
     LeagueEntries,
     FeaturedMatches,
-    VerificationString,
 )
 from ..core.match import Timeline, MatchListData
 from ..core.championmastery import ChampionMasteryListData
@@ -300,7 +299,7 @@ class UnloadedGhostStore(DataSource):
     )
 
     _validate_get_current_match_query = (
-        Query.has("platform").as_(Platform).also.has("summoner.id").as_(str)
+        Query.has("platform").as_(Platform).also.has("summoner.puuid").as_(str)
     )
 
     _validate_get_featured_matches_query = Query.has("platform").as_(Platform)
@@ -497,7 +496,7 @@ class UnloadedGhostStore(DataSource):
         self, query: MutableMapping[str, Any], context: PipelineContext = None
     ) -> CurrentMatch:
         query["region"] = query.pop("platform").region
-        query["summoner"] = query.pop("summoner.id")
+        query["summoner"] = query.pop("summoner.puuid")
         return CurrentMatch._construct_normally(**query)
 
     @get.register(ShardStatus)

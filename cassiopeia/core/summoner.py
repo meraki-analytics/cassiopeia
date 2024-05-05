@@ -217,9 +217,16 @@ class Summoner(CassiopeiaGhost):
             ranks[position.queue] = Rank(tier=position.tier, division=position.division)
         return ranks
 
+    @lazy_property
+    def account(self) -> "Account":
+        from .account import Account
+
+        return Account(puuid=self.puuid, region=self.region)
+
 
 # Add circular references at the bottom
 from .championmastery import ChampionMasteries
 from .match import MatchHistory
 from .spectator import CurrentMatch
 from .league import LeagueSummonerEntries
+from .account import Account

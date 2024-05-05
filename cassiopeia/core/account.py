@@ -165,7 +165,7 @@ class Account(CassiopeiaGhost):
 
     @property
     def name_with_tagline(self) -> str:
-        return f"{self.name} #{self.tagline}"
+        return f"{self.name}#{self.tagline}"
 
     # Special core methods
 

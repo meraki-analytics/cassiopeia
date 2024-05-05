@@ -143,15 +143,9 @@ class Participant(CassiopeiaObject):
             id=self._data[CurrentGameParticipantData].profileIconId,
             region=self.__match.region,
         )
-        if hasattr(self._data[CurrentGameParticipantData], "summonerId"):
+        if hasattr(self._data[CurrentGameParticipantData], "puuid"):
             return Summoner(
                 puuid=self._data[CurrentGameParticipantData].puuid,
-                id=self._data[CurrentGameParticipantData].summonerId,
-                region=self.__match.region,
-            )
-        else:
-            return Summoner(
-                name=self._data[CurrentGameParticipantData].summonerName,
                 region=self.__match.region,
             )
 
@@ -253,16 +247,15 @@ class CurrentMatch(CassiopeiaGhost):
 
         if summoner is not None:
             if isinstance(summoner, str):
-                summoner = Summoner(id=summoner, region=region)
+                summoner = Summoner(puuid=summoner, region=region)
             self.__summoner = summoner
         super().__init__(**kwargs)
 
     @classmethod
     def from_data(cls, data: CurrentGameInfoData, summoner: Union[Summoner, str]):
         self = super().from_data(data)
-        # TODO: There's no region here! This is an old bug, ignoring for now.
         if isinstance(summoner, str):
-            summoner = Summoner(id=summoner, region=region)
+            summoner = Summoner(puuid=summoner, region=data.region)
             self.__summoner = summoner
         return self
 
@@ -278,7 +271,7 @@ class CurrentMatch(CassiopeiaGhost):
                 query["summoner.puuid"] = summoner
             else:
                 query["summoner.puuid"] = Summoner(id=summoner, region=region).puuid
-        assert "summoner.id" in query
+        assert "summoner.puuid" in query
         return query
 
     def __get_query__(self):

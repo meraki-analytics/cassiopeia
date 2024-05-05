@@ -36,7 +36,6 @@ from .core import (
     LeagueSummonerEntries,
     LeagueEntries,
     Patch,
-    VerificationString,
     ChampionRotation,
 )
 from .datastores import common as _common_datastore

@@ -21,7 +21,6 @@ from cassiopeia import (
     SummonerSpell,
     SummonerSpells,
     GameMode,
-    VerificationString,
     Role,
 )
 
