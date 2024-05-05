@@ -13,10 +13,9 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys
 import os
+import sys
 from unittest.mock import MagicMock
-
 
 # Add all plugins to RTDs arguments so it reads them all.
 sys.argv.append("all_plugins.json")
@@ -70,7 +69,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "Cassiopeia"
-copyright = "2017, Meraki Analytics"
+copyright = "2024, Meraki Analytics"
 author = "Meraki Analytics"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -323,10 +322,10 @@ intersphinx_mapping = {"https://docs.python.org/": None}
 
 # JJM: Add custom documenter for properties so that the docs contain the return type annotation
 from sphinx.ext.autodoc import (
-    DocstringSignatureMixin,
     ClassLevelDocumenter,
-    inspect,
+    DocstringSignatureMixin,
     Signature,
+    inspect,
 )
 
 
