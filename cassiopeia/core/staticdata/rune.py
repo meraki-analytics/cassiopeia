@@ -323,6 +323,10 @@ class Rune(CassiopeiaGhost):
             5005,
             5007,
             5008,
+            5010,
+            5011,
+            5012,
+            5013,
         }  # These are the ids of the stat shard runes which have a tier of 0 but are not keystones
         # alternatively, we could add tier values to the hardcoded stat runes in datastores/ddragon.py
         return self.tier == 0 and self.id not in excluded_ids
