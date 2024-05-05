@@ -246,10 +246,6 @@ def get_version(
     return None
 
 
-def get_verification_string(summoner: Summoner) -> VerificationString:
-    return VerificationString(summoner=summoner)
-
-
 def get_champion_rotations(region: Union[Region, str] = None) -> ChampionRotation:
     return ChampionRotation(region=region)
 

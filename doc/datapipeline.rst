@@ -33,15 +33,10 @@ Below is an example (which uses more datastores than Cass uses by default):
 
         "RiotAPI": {
           "api_key": "RIOT_API_KEY"
-        },
-
-        "ChampionGG": {
-          "package": "cassiopeia_championgg",
-          "api_key": "CHAMPIONGG_KEY"  # See api.champion.gg
         }
     }
 
-In brief, this means that the sequence for looking for data will be:  1) Look in the cache, 2) look in our disk-based database, 3) if it's static data, get it from data dragon, 4) pull the data from the Riot API, 5) pull the data from ChampionGG.
+In brief, this means that the sequence for looking for data will be:  1) Look in the cache, 2) look in our disk-based database, 3) if it's static data, get it from data dragon, 4) pull the data from the Riot API.
 
 
 Defining Components in your Settings
@@ -150,11 +145,6 @@ SQLAlchemy Database Support
 """""""""""""""""""""""""""
 
 This is a database system that supports all databases that `SQLAlchemy <https://www.sqlalchemy.org/>`_ supports. It is not provided by Cass by default, and needs to be installed separately. See :ref:`plugins` for more information.
-
-ChampionGG
-""""""""""
-
-The ChampionGG plugin has its own data source if it is included. See :ref:`plugins`.
 
 
 Unloaded Ghost Store

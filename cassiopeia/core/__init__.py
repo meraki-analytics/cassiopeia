@@ -32,4 +32,3 @@ from .league import (
     LeagueEntries,
 )
 from .patch import Patch
-from .thirdpartycode import VerificationString

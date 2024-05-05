@@ -210,13 +210,6 @@ class Summoner(CassiopeiaGhost):
         leagues = LeagueSummonerEntries(summoner=self)
         return leagues
 
-    @property
-    def verification_string(self) -> str:
-        from .thirdpartycode import VerificationString
-
-        vs = VerificationString(summoner=self, region=self.region)
-        return vs.string
-
     @lazy_property
     def ranks(self):
         ranks = {}
@@ -230,4 +223,3 @@ from .championmastery import ChampionMasteries
 from .match import MatchHistory
 from .spectator import CurrentMatch
 from .league import LeagueSummonerEntries
-from .thirdpartycode import VerificationString

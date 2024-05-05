@@ -35,7 +35,6 @@ from .cassiopeia import (
     get_versions,
     get_champion_rotations,
     get_paginated_league_entries,
-    get_verification_string,
 )
 from .cassiopeia import apply_settings, set_riot_api_key, print_calls, _get_pipeline
 from .core import (

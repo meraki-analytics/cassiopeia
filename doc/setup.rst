@@ -1,11 +1,11 @@
 Setup
 #####
 
-**Cassiopeia requires Python 3.6 and we highly recommend installing Anaconda with Python 3.6.**
+**Cassiopeia requires Python 3.6 and we highly recommend installing Python with Anaconda, Miniconda, or Mamba.**
 
 Install using pip
 =================
-Simply ``pip install cassiopeia`` to get the latest release. (See the `pip <https://pip.pypa.io/en/stable/installing/>`_ install page if you do not have ``pip`` installed.) If you want to pull the most recent version, you can install directly from GitHub using ``pip install git+https://github.com/meraki-analytics/cassiopeia.git`` instead. We may not make a PyPy release (which ``pip`` usually pulls from) for small changes to the code.
+Simply run ``pip install cassiopeia`` to get the latest release. (See the `pip <https://pip.pypa.io/en/stable/installing/>`_ install page if you do not have ``pip`` installed.) If you want to pull the most recent version, you can install directly from GitHub using ``pip install git+https://github.com/meraki-analytics/cassiopeia.git`` instead. We may not make a PyPi release (which ``pip`` usually pulls from) for small changes to the code.
 
 
 PyCurl Issues

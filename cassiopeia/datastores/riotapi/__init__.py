@@ -19,7 +19,6 @@ def _default_services(
     from .spectator import SpectatorAPI
     from .status import StatusAPI
     from .leagues import LeaguesAPI
-    from .thirdpartycode import ThirdPartyCodeAPI
     from ...data import Platform, Continent
 
     app_rate_limiter = {
@@ -73,12 +72,6 @@ def _default_services(
             http_client=client,
         ),
         LeaguesAPI(
-            api_key,
-            app_rate_limiter=app_rate_limiter,
-            request_error_handling=request_error_handling,
-            http_client=client,
-        ),
-        ThirdPartyCodeAPI(
             api_key,
             app_rate_limiter=app_rate_limiter,
             request_error_handling=request_error_handling,

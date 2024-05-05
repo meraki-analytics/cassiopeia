@@ -372,10 +372,6 @@ class UnloadedGhostStore(DataSource):
         .as_(Platform)
     )
 
-    _validate_get_verification_string_query = (
-        Query.has("platform").as_(Platform).also.has("summoner.id").as_(str)
-    )
-
     @get.register(Champion)
     @validate_query(_validate_get_champion_query, convert_region_to_platform)
     def get_champion(
@@ -598,17 +594,6 @@ class UnloadedGhostStore(DataSource):
         return LeagueSummonerEntries.from_generator(
             generator=league_summoner_entries_generator(query), **kwargs
         )
-
-    @get.register(VerificationString)
-    @validate_query(_validate_get_verification_string_query, convert_region_to_platform)
-    def get_verification_string(
-        self, query: MutableMapping[str, Any], context: PipelineContext = None
-    ) -> VerificationString:
-        query["region"] = query.pop("platform").region
-        query["summoner"] = Summoner(
-            id=query.pop("summoner.id"), region=query["region"]
-        )
-        return VerificationString._construct_normally(**query)
 
     @get.register(MatchHistory)
     @validate_query(_validate_get_match_history_query, convert_to_continent)

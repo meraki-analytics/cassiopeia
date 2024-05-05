@@ -15,7 +15,6 @@ def _default_services(server_url: str, port: int) -> Set[KernelSource]:
     from .spectator import SpectatorAPI
     from .status import StatusAPI
     from .leagues import LeaguesAPI
-    from .thirdpartycode import ThirdPartyCodeAPI
 
     client = HTTPClient()
     services = {
@@ -28,7 +27,6 @@ def _default_services(server_url: str, port: int) -> Set[KernelSource]:
         SpectatorAPI(server_url=server_url, port=port, http_client=client),
         StatusAPI(server_url=server_url, port=port, http_client=client),
         LeaguesAPI(server_url=server_url, port=port, http_client=client),
-        ThirdPartyCodeAPI(server_url=server_url, port=port, http_client=client),
     }
 
     return services

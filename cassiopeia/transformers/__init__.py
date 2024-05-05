@@ -9,7 +9,6 @@ from .match import MatchTransformer
 from .spectator import SpectatorTransformer
 from .status import StatusTransformer
 from .leagues import LeagueTransformer
-from .thirdpartycode import ThirdPartyCodeTransformer
 
 
 riotapi_transformer = CompositeDataTransformer(
@@ -23,7 +22,6 @@ riotapi_transformer = CompositeDataTransformer(
         SpectatorTransformer(),
         StatusTransformer(),
         LeagueTransformer(),
-        ThirdPartyCodeTransformer(),
     ]
 )
 

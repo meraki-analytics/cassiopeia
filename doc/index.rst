@@ -40,8 +40,8 @@ We will quickly and efficiently look up the champion masteries for the summoner 
 
 .. code-block:: python
 
-    perkz = Account(name="Perkz", tagline="Style").summoner
-    good_with = perkz.champion_masteries.filter(lambda cm: cm.level >= 6)
+    kalturi = Account(name="Kalturi", tagline="NA1").summoner
+    good_with = kalturi.champion_masteries.filter(lambda cm: cm.level >= 6)
     print([cm.champion.name for cm in good_with])
 
     # At the time of writing this, this prints:
