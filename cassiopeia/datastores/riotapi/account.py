@@ -8,7 +8,7 @@ from datapipelines import (
     validate_query,
 )
 from .common import RiotAPIService, APINotFoundError
-from ...data import Platform
+from ...data import Platform, Continent
 from ...dto.account import AccountDto
 from ..uniquekeys import convert_region_to_platform
 
@@ -54,6 +54,9 @@ class AccountAPI(RiotAPIService):
     ) -> AccountDto:
         platform: Platform = query["platform"]
         continent = platform.continent
+        # For some reason, Riot routes the SEA region/continent to ASIA for this endpoint.
+        if continent == Continent.sea:
+            continent = Continent.asia
         if "puuid" in query:
             puuid = query["puuid"]
             url = "https://{continent}.api.riotgames.com/riot/account/v1/accounts/by-puuid/{puuid}".format(
