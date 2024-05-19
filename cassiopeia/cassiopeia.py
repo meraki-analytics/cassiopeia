@@ -179,8 +179,9 @@ def get_account(
     puuid: str = None,
     name: str = None,
     tagline: str = None,
+    region: str = None,
 ) -> Account:
-    return Account(puuid=puuid, name=name, tagline=tagline)
+    return Account(puuid=puuid, name=name, tagline=tagline, region=region)
 
 
 def get_champion(key: Union[str, int], region: Union[Region, str] = None) -> Champion:
