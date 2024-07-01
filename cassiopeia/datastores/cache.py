@@ -1580,7 +1580,11 @@ class Cache(DataSource, DataSink):
         self, query: Mapping[str, Any], context: PipelineContext = None
     ) -> Account:
         result = self.get_account(query=query, context=context)
-        if result._data[Account] is not None and result._Ghost__is_loaded(Account):
-            return result._data[Account]
-        else:
+        # Previously threw "KeyError: <class 'cassiopeia.core.account.Account'>"
+        try:
+            if result._data[Account] is not None and result._Ghost__is_loaded(Account):
+                return result._data[Account]
+            else:
+                raise NotFoundError
+        except:
             raise NotFoundError
