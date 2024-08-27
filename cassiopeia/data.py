@@ -605,6 +605,7 @@ class Queue(Enum):
     nexus_blitz = "NEXUS_BLITZ"  # 1300
     ultimate_spellbook = "ULTIMATE_SPELLBOOK"  # 1400
     rings_of_wrath = "RINGS_OF_WRATH"  # 1700
+    arena = "CHERRY" #1710
     pick_urf_games = "PICK_URF_GAMES"  # 1900
     tutorial1 = "TUTORIAL_1"  # Summoner's Rift  Tutorial 1
     tutorial2 = "TUTORIAL_2"  # Summoner's Rift  Tutorial 2
@@ -699,6 +700,7 @@ QUEUE_IDS = {
     Queue.nexus_blitz: 1300,  # Nexus Blitz map    Nexus Blitz
     Queue.ultimate_spellbook: 1400,  # Summoner's Rift   Ultimate Spellbook
     Queue.rings_of_wrath: 1700,  # Rings of Wrath
+    Queue.arena: 1710,  # Cherry
     Queue.pick_urf_games: 1900,  # Summoner's Rift   Pick URF Games
     Queue.tutorial1: 2000,  # Summoner's Rift  Tutorial 1
     Queue.tutorial2: 2010,  # Summoner's Rift  Tutorial 2
