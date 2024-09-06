@@ -43,19 +43,19 @@ import cassiopeia as cass
 
 cass.set_riot_api_key("YOUR_KEY")  # This overrides the value set in your configuration/settings.
 
-account = cass.get_account(name="Kalturi", tagline="NA1", region="NA")
+region = 'NA'
+
+account = cass.get_account(name="Kalturi", tagline="NA1", region=region)
 summoner = account.summoner
-print("{name} is a level {level} summoner on the {region} server.".format(name=account.name_with_tagline,
-                                                                          level=summoner.level,
-                                                                          region=summoner.region))
+print(f"{account.name_with_tagline} is a level {summoner.level} summoner on the {summoner.region} server.")
 
-champions = cass.get_champions(region="NA")
+champions = cass.get_champions(region=region)
 random_champion = random.choice(champions)
-print("He enjoys playing champions such as {name}.".format(name=random_champion.name))
+print(f"He enjoys playing champions such as {random_champion.name}.")
 
-challenger_league = cass.get_challenger_league(queue=cass.Queue.ranked_solo_fives, region="NA")
-best_na = challenger_league[0].summoner
-print("He's not as good as {name} at League, but probably a better python programmer!".format(name=best_na.account.name))
+challenger_league = cass.get_challenger_league(queue=cass.Queue.ranked_solo_fives, region=region)
+challenger_player = challenger_league[0].summoner
+print(f"He's not as good as {challenger_player.account.name} at League, but probably a better python programmer!")
 ```
 
 ## Questions/Contributions
