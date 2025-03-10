@@ -1,4 +1,5 @@
 from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
+import json
 
 from datapipelines import (
     DataSource,
@@ -71,11 +72,13 @@ class LeaguesAPI(RiotAPIService):
             app_limiter, method_limiter = self._get_rate_limiter(
                 query["platform"], "leagues/paginated-entries"
             )
-            data = self._get(
-                url,
-                parameters={"page": query["page"]},
-                app_limiter=app_limiter,
-                method_limiter=method_limiter,
+            data = json.loads(
+                self._get(
+                    url,
+                    parameters={"page": query["page"]},
+                    app_limiter=app_limiter,
+                    method_limiter=method_limiter,
+                )
             )
         except APINotFoundError:
             data = []
@@ -109,8 +112,8 @@ class LeaguesAPI(RiotAPIService):
             app_limiter, method_limiter = self._get_rate_limiter(
                 query["platform"], "leagues/summoner-entries"
             )
-            data = self._get(
-                url, app_limiter=app_limiter, method_limiter=method_limiter
+            data = json.loads(
+                self._get(url, app_limiter=app_limiter, method_limiter=method_limiter)
             )
         except APINotFoundError:
             data = []
@@ -140,8 +143,10 @@ class LeaguesAPI(RiotAPIService):
             app_limiter, method_limiter = self._get_rate_limiter(
                 query["platform"], endpoint
             )
-            data = self._get(
-                url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+            data = json.loads(
+                self._get(
+                    url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                )
             )
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
@@ -171,8 +176,13 @@ class LeaguesAPI(RiotAPIService):
                     app_limiter, method_limiter = self._get_rate_limiter(
                         query["platform"], endpoint
                     )
-                    data = self._get(
-                        url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                    data = json.loads(
+                        self._get(
+                            url,
+                            {},
+                            app_limiter=app_limiter,
+                            method_limiter=method_limiter,
+                        )
                     )
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
@@ -204,8 +214,10 @@ class LeaguesAPI(RiotAPIService):
             app_limiter, method_limiter = self._get_rate_limiter(
                 query["platform"], endpoint
             )
-            data = self._get(
-                url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+            data = json.loads(
+                self._get(
+                    url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                )
             )
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
@@ -239,8 +251,13 @@ class LeaguesAPI(RiotAPIService):
                     app_limiter, method_limiter = self._get_rate_limiter(
                         query["platform"], endpoint
                     )
-                    data = self._get(
-                        url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                    data = json.loads(
+                        self._get(
+                            url,
+                            {},
+                            app_limiter=app_limiter,
+                            method_limiter=method_limiter,
+                        )
                     )
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
@@ -271,8 +288,10 @@ class LeaguesAPI(RiotAPIService):
             app_limiter, method_limiter = self._get_rate_limiter(
                 query["platform"], endpoint
             )
-            data = self._get(
-                url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+            data = json.loads(
+                self._get(
+                    url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                )
             )
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
@@ -306,8 +325,13 @@ class LeaguesAPI(RiotAPIService):
                     app_limiter, method_limiter = self._get_rate_limiter(
                         query["platform"], endpoint
                     )
-                    data = self._get(
-                        url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                    data = json.loads(
+                        self._get(
+                            url,
+                            {},
+                            app_limiter=app_limiter,
+                            method_limiter=method_limiter,
+                        )
                     )
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
@@ -338,8 +362,10 @@ class LeaguesAPI(RiotAPIService):
             app_limiter, method_limiter = self._get_rate_limiter(
                 query["platform"], endpoint
             )
-            data = self._get(
-                url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+            data = json.loads(
+                self._get(
+                    url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                )
             )
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
@@ -371,8 +397,13 @@ class LeaguesAPI(RiotAPIService):
                     app_limiter, method_limiter = self._get_rate_limiter(
                         query["platform"], endpoint
                     )
-                    data = self._get(
-                        url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                    data = json.loads(
+                        self._get(
+                            url,
+                            {},
+                            app_limiter=app_limiter,
+                            method_limiter=method_limiter,
+                        )
                     )
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error

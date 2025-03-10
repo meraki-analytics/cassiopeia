@@ -1,4 +1,5 @@
 from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
+import json
 
 from datapipelines import (
     DataSource,
@@ -43,7 +44,7 @@ class ChampionMasteryAPI(RiotAPIService):
         .as_(Platform)
         .also.has("summoner.id")
         .as_(str)
-        .also.has('puuid')
+        .also.has("puuid")
         .as_(str)
         .also.has("champion.id")
         .as_(int)
@@ -60,14 +61,14 @@ class ChampionMasteryAPI(RiotAPIService):
             championId=query["champion.id"],
         )
         try:
-            endpoint = (
-                "champion-masteries/by-puuid/puuid/by-champion/championId"
-            )
+            endpoint = "champion-masteries/by-puuid/puuid/by-champion/championId"
             app_limiter, method_limiter = self._get_rate_limiter(
                 query["platform"], endpoint
             )
-            data = self._get(
-                url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+            data = json.loads(
+                self._get(
+                    url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                )
             )
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
@@ -102,8 +103,10 @@ class ChampionMasteryAPI(RiotAPIService):
             app_limiter, method_limiter = self._get_rate_limiter(
                 query["platform"], endpoint
             )
-            data = self._get(
-                url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+            data = json.loads(
+                self._get(
+                    url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                )
             )
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
@@ -146,8 +149,10 @@ class ChampionMasteryAPI(RiotAPIService):
             app_limiter, method_limiter = self._get_rate_limiter(
                 query["platform"], endpoint
             )
-            data = self._get(
-                url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+            data = json.loads(
+                self._get(
+                    url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                )
             )
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
@@ -183,8 +188,13 @@ class ChampionMasteryAPI(RiotAPIService):
                     app_limiter, method_limiter = self._get_rate_limiter(
                         query["platform"], endpoint
                     )
-                    data = self._get(
-                        url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                    data = json.loads(
+                        self._get(
+                            url,
+                            {},
+                            app_limiter=app_limiter,
+                            method_limiter=method_limiter,
+                        )
                     )
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error
@@ -200,7 +210,12 @@ class ChampionMasteryAPI(RiotAPIService):
         return generator()
 
     _validate_get_champion_mastery_score_query = (
-        Query.has("platform").as_(Platform).also.has("summoner.id").as_(str).also.has("puuid").as_(str)
+        Query.has("platform")
+        .as_(Platform)
+        .also.has("summoner.id")
+        .as_(str)
+        .also.has("puuid")
+        .as_(str)
     )
 
     @get.register(ChampionMasteryScoreDto)
@@ -218,8 +233,10 @@ class ChampionMasteryAPI(RiotAPIService):
             app_limiter, method_limiter = self._get_rate_limiter(
                 query["platform"], endpoint
             )
-            data = self._get(
-                url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+            data = json.loads(
+                self._get(
+                    url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                )
             )
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
@@ -253,8 +270,13 @@ class ChampionMasteryAPI(RiotAPIService):
                     app_limiter, method_limiter = self._get_rate_limiter(
                         query["platform"], endpoint
                     )
-                    data = self._get(
-                        url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                    data = json.loads(
+                        self._get(
+                            url,
+                            {},
+                            app_limiter=app_limiter,
+                            method_limiter=method_limiter,
+                        )
                     )
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error

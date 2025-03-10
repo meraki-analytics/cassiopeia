@@ -1,7 +1,6 @@
 from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
 import arrow
-import datetime
-import math
+import json
 
 from datapipelines import (
     DataSource,
@@ -60,8 +59,10 @@ class MatchAPI(RiotAPIService):
             app_limiter, method_limiter = self._get_rate_limiter(
                 continent, "matches/id"
             )
-            data = self._get(
-                url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+            data = json.loads(
+                self._get(
+                    url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                )
             )
             # metadata = data["metadata"]
             data = data["info"]  # Drop the metadata
@@ -102,8 +103,13 @@ class MatchAPI(RiotAPIService):
                     app_limiter, method_limiter = self._get_rate_limiter(
                         continent, "matches/id"
                     )
-                    data = self._get(
-                        url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                    data = json.loads(
+                        self._get(
+                            url,
+                            {},
+                            app_limiter=app_limiter,
+                            method_limiter=method_limiter,
+                        )
                     )
                     # metadata = data["metadata"]
                     data = data["info"]  # Drop the metadata
@@ -190,8 +196,10 @@ class MatchAPI(RiotAPIService):
             app_limiter, method_limiter = self._get_rate_limiter(
                 continent, "matchlists/by-puuid/puuid"
             )
-            data = self._get(
-                url, params, app_limiter=app_limiter, method_limiter=method_limiter
+            data = json.loads(
+                self._get(
+                    url, params, app_limiter=app_limiter, method_limiter=method_limiter
+                )
             )
         except APINotFoundError:
             data = []
@@ -237,8 +245,10 @@ class MatchAPI(RiotAPIService):
             app_limiter, method_limiter = self._get_rate_limiter(
                 continent, "matches/id/timeline"
             )
-            data = self._get(
-                url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+            data = json.loads(
+                self._get(
+                    url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                )
             )
             # metadata = data["metadata"]
             data = data["info"]  # Drop the metadata

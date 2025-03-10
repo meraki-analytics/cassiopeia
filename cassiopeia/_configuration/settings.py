@@ -1,4 +1,4 @@
-from typing import TypeVar, Type, Dict, Union, List
+from typing import TypeVar, Type, Dict
 import logging
 import importlib
 import inspect
@@ -9,11 +9,8 @@ from datapipelines import (
     DataPipeline,
     DataSink,
     DataSource,
-    CompositeDataTransformer,
     DataTransformer,
 )
-
-from ..data import Region, Platform
 
 T = TypeVar("T")
 
@@ -199,34 +196,34 @@ class Settings(object):
                 if isinstance(source, RiotAPI):
                     source.set_api_key(key)
 
-    def clear_sinks(self, type: Type[T] = None):
-        types = {type}
-        if type is not None:
+    def clear_sinks(self, type_: Type[T] | None = None):
+        types = {type_}
+        if type_ is not None:
             from ..core.common import CoreData, CassiopeiaObject
 
-            if issubclass(type, CassiopeiaObject):
-                for t in type._data_types:
+            if issubclass(type_, CassiopeiaObject):
+                for t in type_._data_types:
                     types.add(t)
                     types.add(t._dto_type)
-            elif issubclass(type, CoreData):
-                types.add(type._dto_type)
+            elif issubclass(type_, CoreData):
+                types.add(type_._dto_type)
 
         for sink in self.pipeline._sinks:
-            for type in types:
-                sink.clear(type)
+            for type_ in types:
+                sink.clear(type_)
 
-    def expire_sinks(self, type: Type[T] = None):
-        types = {type}
-        if type is not None:
+    def expire_sinks(self, type_: Type[T] | None = None):
+        types = {type_}
+        if type_ is not None:
             from ..core.common import CoreData, CassiopeiaObject
 
-            if issubclass(type, CassiopeiaObject):
-                for t in type._data_types:
+            if issubclass(type_, CassiopeiaObject):
+                for t in type_._data_types:
                     types.add(t)
                     types.add(t._dto_type)
-            elif issubclass(type, CoreData):
-                types.add(type._dto_type)
+            elif issubclass(type_, CoreData):
+                types.add(type_._dto_type)
 
         for sink in self.pipeline._sinks:
-            for type in types:
-                sink.expire(type)
+            for type_ in types:
+                sink.expire(type_)

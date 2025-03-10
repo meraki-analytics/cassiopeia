@@ -1,4 +1,5 @@
 from typing import Type, TypeVar, MutableMapping, Any, Iterable
+import json
 
 from datapipelines import (
     DataSource,
