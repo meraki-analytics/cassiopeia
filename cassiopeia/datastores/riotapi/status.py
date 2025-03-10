@@ -1,4 +1,5 @@
 from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
+import json
 
 from datapipelines import (
     DataSource,
@@ -8,7 +9,7 @@ from datapipelines import (
     validate_query,
 )
 from .common import RiotAPIService, APINotFoundError
-from ...data import Platform, Region
+from ...data import Platform
 from ...dto.staticdata.version import VersionListDto
 from ...dto.status import ShardStatusDto
 from ..uniquekeys import convert_region_to_platform
@@ -93,8 +94,13 @@ class StatusAPI(RiotAPIService):
                     app_limiter, method_limiter = self._get_rate_limiter(
                         query["platform"], "status"
                     )
-                    data = self._get(
-                        url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                    data = json.loads(
+                        self._get(
+                            url,
+                            {},
+                            app_limiter=app_limiter,
+                            method_limiter=method_limiter,
+                        )
                     )
                 except APINotFoundError as error:
                     raise NotFoundError(str(error)) from error

@@ -1,5 +1,5 @@
 from typing import Type, TypeVar, MutableMapping, Any, Iterable
-import urllib
+import json
 
 from datapipelines import (
     DataSource,
@@ -62,10 +62,8 @@ class SummonerAPI(RiotAPIService):
             )
             endpoint = "summoners/by-account/accountId"
         elif "puuid" in query:
-            url = url = (
-                "https://{platform}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{puuid}".format(
-                    platform=query["platform"].value.lower(), puuid=query["puuid"]
-                )
+            url = "https://{platform}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{puuid}".format(
+                platform=query["platform"].value.lower(), puuid=query["puuid"]
             )
             endpoint = "summoners/by-puuid/puuid"
         else:
@@ -75,8 +73,10 @@ class SummonerAPI(RiotAPIService):
             app_limiter, method_limiter = self._get_rate_limiter(
                 query["platform"], endpoint
             )
-            data = self._get(
-                url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+            data = json.loads(
+                self._get(
+                    url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                )
             )
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error

@@ -1,0 +1,39 @@
+[project]
+name = "cassiopeia"
+version = "5.1.3"  # Keep the Cass version at parity with the largest Riot API major version, use the minor version for breaking changes, and the patch version for everything else
+authors = [
+    { name = "Jason Maldonis", email = "team@merakianalytics.com" },
+    { name = "Rob Rua", email = "team@merakianalytics.com" }
+]
+description = "Riot Games Developer API Wrapper (3rd Party)"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "flake8",
+    "pytest",
+    "merakicommons>=1.0.7",
+    "datapipelines>=1.0.7",
+    "Pillow",
+    "arrow",
+    "requests",
+    "dotenv>=0.9.9",
+    "matplotlib>=3.10.1",
+    "sortedcontainers>=2.4.0",
+]
+keywords = ["LoL", "League of Legends", "Riot Games", "API", "REST"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "Environment :: Web Environment",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Games/Entertainment",
+    "Topic :: Games/Entertainment :: Real Time Strategy",
+    "Topic :: Games/Entertainment :: Role-Playing",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+license = { text = "MIT" }
+
+[tool.uv.workspace]
+members = ["cass"]

@@ -19,7 +19,6 @@ from ..data import (
     Region,
     Platform,
     Continent,
-    Tier,
     GameType,
     GameMode,
     MatchType,
@@ -231,7 +230,7 @@ class ParticipantData(CoreData):
             s["perk"]: [s.pop("var1"), s.pop("var2"), s.pop("var3")] for s in selections
         }
         self.stat_perks = stat_perks
-        non_stats = {
+        non_stats = {  # noqa: F841
             "championId": kwargs.get("championId", None),
             "championName": kwargs.get("championName", None),
             "gameEndedInEarlySurrender": kwargs.get("gameEndedInEarlySurrender", None),
@@ -459,7 +458,7 @@ class MatchData(CoreData):
 ##############
 
 
-class MatchHistory(CassiopeiaLazyList):  # type: List[Match]
+class MatchHistory(CassiopeiaLazyList):
     """The match history for a summoner. By default, this will return the entire match history."""
 
     _data_types = {MatchListData}
@@ -2141,7 +2140,7 @@ class Match(CassiopeiaGhost):
         elif self.map.name == "Howling Abyss":
             rx0, ry0, rx1, ry1 = -28, -19, 12849, 12858
         else:
-            raise NotImplemented
+            raise NotImplementedError(f"Map {self.map.name} not supported")
 
         imx0, imy0, imx1, imy1 = self.map.image.image.getbbox()
 

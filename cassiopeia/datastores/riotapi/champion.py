@@ -1,5 +1,6 @@
-import copy
 from typing import Type, TypeVar, MutableMapping, Any, Iterable, Generator
+import copy
+import json
 
 from datapipelines import (
     DataSource,
@@ -49,8 +50,10 @@ class ChampionAPI(RiotAPIService):
             app_limiter, method_limiter = self._get_rate_limiter(
                 query["platform"], "champion/rotations"
             )
-            data = self._get(
-                url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+            data = json.loads(
+                self._get(
+                    url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                )
             )
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error

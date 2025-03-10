@@ -189,9 +189,9 @@ class RiotAPIService(DataSource):
             "exponential_backoff": lambda **init_args: ExponentialBackoff(**init_args),
             "retry_from_headers": lambda **init_args: RetryFromHeaders(**init_args),
         }
-        self._handlers = {
-            429: {}
-        }  # type: Dict[Union[str, int], Union[Dict[Union[str, int], Callable], Callable]]
+        self._handlers: Dict[
+            Union[str, int], Union[Dict[Union[str, int], Callable], Callable]
+        ] = {429: {}}
         for code, config in request_error_handling.items():
             config = copy.deepcopy(config)
             if code != "timeout":
