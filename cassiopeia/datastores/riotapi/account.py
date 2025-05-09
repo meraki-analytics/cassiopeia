@@ -80,8 +80,10 @@ class AccountAPI(RiotAPIService):
             app_limiter, method_limiter = self._get_rate_limiter(
                 query["platform"], endpoint
             )
-            data = self._get(
-                url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+            data = json.loads(
+                self._get(
+                    url, {}, app_limiter=app_limiter, method_limiter=method_limiter
+                )
             )
         except APINotFoundError as error:
             raise NotFoundError(str(error)) from error
