@@ -54,6 +54,8 @@ class LeagueEntryData(CoreData):
             self.promos = MiniSeriesData(**(kwargs.pop("miniSeries") or {}))
         if "summonerId" in kwargs:
             self.summonerId = kwargs.pop("summonerId")
+        if "puuid" in kwargs:
+            self.puuid = kwargs.pop("puuid")
         super().__call__(**kwargs)
         return self
 
@@ -267,6 +269,13 @@ class LeagueEntry(CassiopeiaGhost):
 
     @lazy_property
     def summoner(self) -> Summoner:
+        # The Riot API now returns puuid instead of summonerId in league entries
+        if hasattr(self._data[LeagueEntryData], "puuid"):
+            return Summoner(
+                puuid=self._data[LeagueEntryData].puuid,
+                region=self.region,
+            )
+        # Fallback for older data that still has summonerId
         return Summoner(
             id=self._data[LeagueEntryData].summonerId,
             region=self.region,

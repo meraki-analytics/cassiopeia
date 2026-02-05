@@ -25,11 +25,12 @@ def print_newest_match(name: str, tagline: str, region: str):
 
     print("\nNow pull the full match data by iterating over all the participants:")
     for p in match.participants:
-        print(f"{p.summoner_name} with ID {p.summoner.id} played {p.champion.name}")
+        p.summoner.load()
+        print(f"{p.account.name} with ID {p.summoner.id} played {p.champion.name}")
     print()
     print("Iterate over all the participants again and note the data is not repulled:")
     for p in match.participants:
-        print(f"{p.summoner_name} with ID {p.summoner.id} played {p.champion.name}")
+        print(f"{p.account.name} with ID {p.summoner.id} played {p.champion.name}")
     print()
 
     print("Blue team won?", match.blue_team.win)
@@ -38,7 +39,7 @@ def print_newest_match(name: str, tagline: str, region: str):
 
     print("Participants on blue team:")
     for p in match.blue_team.participants:
-        print(f"{p.summoner_name}: {p.champion.name}")
+        print(f"{p.account.name}: {p.champion.name}")
     print()
 
     print("Keystone and stat runes for each player:")
@@ -49,4 +50,4 @@ def print_newest_match(name: str, tagline: str, region: str):
 
 
 if __name__ == "__main__":
-    print_newest_match(name="Pobelter", tagline="NA1", region="NA")
+    print_newest_match(name="Kalturi", tagline="NA1", region="NA")

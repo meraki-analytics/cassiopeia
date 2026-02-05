@@ -5,9 +5,9 @@ import itertools
 from collections import Counter
 from typing import List, Dict, Union, Generator, Optional
 
-from datapipelines import NotFoundError
-from merakicommons.cache import lazy, lazy_property
-from merakicommons.container import (
+from datapipelines import NotFoundError  # type: ignore
+from merakicommons.cache import lazy, lazy_property  # type: ignore
+from merakicommons.container import (  # type: ignore
     searchable,
     SearchableList,
     SearchableDictionary,
@@ -40,6 +40,7 @@ from .common import (
 )
 from ..dto import match as dto
 from .patch import Patch
+from .account import Account
 from .summoner import Summoner
 from .staticdata.champion import Champion
 from .staticdata.rune import Rune
@@ -81,10 +82,10 @@ def load_match_on_attributeerror(method):
     return wrapper
 
 
-_staticdata_to_version_mapping = {}
+_staticdata_to_version_mapping: dict[str, str] = {}
 
 
-def _choose_staticdata_version(match):
+def _choose_staticdata_version(match: "Match") -> Optional[str]:
     # If we want to pull the data for the correct version, we need to pull the entire match data.
     # However, we can use the creation date (which comes with a matchref) and get the ~ patch and therefore extract the version from the patch.
     if (
@@ -467,13 +468,13 @@ class MatchHistory(CassiopeiaLazyList):
         self,
         *,
         puuid: str,
-        continent: Continent = None,
-        start_time: arrow.Arrow = None,
-        end_time: arrow.Arrow = None,
-        queue: Queue = None,
-        type: MatchType = None,
-        start: int = None,
-        count: int = None,
+        continent: Optional[Continent] = None,
+        start_time: Optional[arrow.Arrow] = None,
+        end_time: Optional[arrow.Arrow] = None,
+        queue: Optional[Queue] = None,
+        type: Optional[MatchType] = None,
+        start: Optional[int] = None,
+        count: Optional[int] = None,
     ):
         if start_time is not None and end_time is not None and start_time > end_time:
             raise ValueError("`end_time` should be greater than `start_time`")
@@ -494,7 +495,7 @@ class MatchHistory(CassiopeiaLazyList):
         CassiopeiaObject.__init__(self, **kwargs)
 
     @classmethod
-    def __get_query_from_kwargs__(
+    def __get_query_from_kwargs__(  # type: ignore
         cls,
         *,
         continent: Continent,
@@ -1818,6 +1819,16 @@ class Participant(CassiopeiaObject):
             return self.__match.red_team
         else:
             return self.__match.blue_team
+
+    @lazy_property
+    def account(self) -> Account:
+        if self.__match._data[MatchData].privateGame:
+            return None
+        kwargs = {}
+        kwargs["puuid"] = self._data[ParticipantData].puuid
+        kwargs["region"] = Platform(self._data[ParticipantData].platformId).region
+        account = Account(**kwargs)
+        return account
 
 
 @searchable(

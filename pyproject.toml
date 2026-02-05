@@ -1,6 +1,6 @@
 [project]
 name = "cassiopeia"
-version = "5.1.3"  # Keep the Cass version at parity with the largest Riot API major version, use the minor version for breaking changes, and the patch version for everything else
+version = "5.2.0"  # Keep the Cass version at parity with the largest Riot API major version, use the minor version for breaking changes, and the patch version for everything else
 authors = [
     { name = "Jason Maldonis", email = "team@merakianalytics.com" },
     { name = "Rob Rua", email = "team@merakianalytics.com" }
@@ -19,6 +19,8 @@ dependencies = [
     "dotenv>=0.9.9",
     "matplotlib>=3.10.1",
     "sortedcontainers>=2.4.0",
+    "setuptools>=76.0.0",
+    "twine>=6.1.0",
 ]
 keywords = ["LoL", "League of Legends", "Riot Games", "API", "REST"]
 classifiers = [

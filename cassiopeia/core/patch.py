@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Union, Optional, Self, Any
 from functools import total_ordering
 from collections import defaultdict
 import arrow
@@ -6,11 +6,6 @@ from itertools import tee
 
 from .. import configuration
 from ..dto.patch import PatchListDto
-
-try:
-    import ujson as json
-except ImportError:
-    import json
 
 from ..data import Region
 
@@ -23,17 +18,18 @@ def pairwise(iterable):
 
 
 @total_ordering
-class Patch(object):
-    __patches = None
+class Patch:
+    __patches: dict[Region, list[Self]] | None = None
+    __core_data: dict[str, Any]
 
     def __init__(
         self,
         region: Union[str, Region],
         name: str,
-        start: Union[arrow.Arrow, float],
+        start: Optional[Union[arrow.Arrow, float]],
         end: Optional[Union[arrow.Arrow, float]],
     ):
-        if not isinstance(start, arrow.Arrow):
+        if start is not None and not isinstance(start, arrow.Arrow):
             start = arrow.get(start)
         if end is not None and not isinstance(end, arrow.Arrow):
             end = arrow.get(end)
@@ -43,26 +39,30 @@ class Patch(object):
         self._name = name
         self._start = start
         self._end = end
+        self.__core_data = {}
 
     def __str__(self) -> str:
         return self._name
 
     @classmethod
-    def from_str(cls, string: str, region: Union[Region, str]) -> "Patch":
+    def from_str(cls, string: str, region: Union[Region, str]) -> Self:
         if not cls.__patches:
             cls.__load__()
+            assert cls.__patches is not None
         if not isinstance(region, Region):
             region = Region(region)
         for patch in cls.__patches[region]:
             if string in patch.name:
                 return patch
         else:
-            raise ValueError("Unknown patch name {}".format(string))
+            self = cls(region, string, -1, -1)
+            return self
 
     @classmethod
-    def from_date(cls, date: arrow.Arrow, region: Union[Region, str]) -> "Patch":
+    def from_date(cls, date: arrow.Arrow, region: Union[Region, str]) -> Self:
         if not cls.__patches:
             cls.__load__()
+            assert cls.__patches is not None
         if not isinstance(region, Region):
             region = Region(region)
         for patch in cls.__patches[region]:
@@ -73,11 +73,12 @@ class Patch(object):
             raise ValueError("Unknown patch date {}".format(date))
 
     @classmethod
-    def latest(cls, region: Union[Region, str] = None) -> "Patch":
+    def latest(cls, region: Union[Region, str]) -> Self:
         if isinstance(region, str):
             region = Region(region)
         if cls.__patches is None:
             cls.__load__()
+            assert cls.__patches is not None
         return cls.__patches[region][-1]
 
     @classmethod
@@ -85,8 +86,9 @@ class Patch(object):
         data = configuration.settings.pipeline.get(PatchListDto, query={})
         patches = data["patches"]
         shifts = data["shifts"]
-        cls.__patches = defaultdict(lambda: [None for _ in range(len(patches))])
-        for i, (patch, next_patch) in enumerate(pairwise(patches)):
+        cls.__patches = defaultdict(list)
+        end: Optional[arrow.Arrow] = None
+        for patch, next_patch in pairwise(patches):
             for region in Region:
                 if region.platform.value in shifts:
                     region_key = region.platform.value
@@ -101,8 +103,8 @@ class Patch(object):
                 end = arrow.get(next_patch["start"] + shifts[region_key]).to(
                     region.timezone
                 )
-                cls.__patches[region][i] = Patch(
-                    region=region, name=name, start=start, end=end
+                cls.__patches[region].append(
+                    Patch(region=region, name=name, start=start, end=end)
                 )
 
         # Since pairwise skips the last patch in the list, add it manually here
@@ -135,10 +137,14 @@ class Patch(object):
 
     @property
     def start(self) -> arrow.Arrow:
+        if self._start is None:
+            raise ValueError(
+                f"Patch start date is unknown for patch {self.name}. Patch data may not exist."
+            )
         return self._start
 
     @property
-    def end(self) -> arrow.Arrow:
+    def end(self) -> arrow.Arrow | None:
         return self._end
 
     @property
@@ -157,10 +163,10 @@ class Patch(object):
     def revision(self) -> str:
         return ".".join(self.name.split(".")[2:])
 
-    def __eq__(self, other: "Patch") -> bool:
+    def __eq__(self, other: Self) -> bool:  # type: ignore
         return self.name == other.name
 
-    def __lt__(self, other: "Patch") -> bool:
+    def __lt__(self, other: Self) -> bool:
         if int(self.major) < int(other.major) or (
             self.major == other.major and int(self.minor) < int(other.minor)
         ):
